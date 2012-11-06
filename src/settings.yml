@@ -1,0 +1,68 @@
+Database:
+  ## MySQL, if false, SQLite will be used, SQLite is recomended to a maximum of 20 players.
+  MySQL: false
+  ## host, the MySQL host name
+  host: localhost
+  ## port, the MySQL port
+  port: 3306
+  ## user, the MySQL user name
+  user: root
+  ## pass, the MySQL password
+  pass: 123
+  ## database, the MySQL database to be used by this plugin
+  database: minecraft
+  ## prefix, the prefix used to create the tables in the sql database
+  prefix: cc_
+
+Queue:
+  ## time, time between each execution [miliseconds]
+  time: 200
+  ## force, run at least X entries
+  force: 20
+  ## delay, delay between each execution [seconds]
+  delay: 5
+
+Cache:
+  ## MaxCapacity, the maximum cache capacity, higher this value is, better will be the performance, but also the memory usage will increase.
+  MaxCapacity: 15000
+  ## PreCache, the amount of items to be cached on startup
+  PreCache: 10000
+
+Configurations:
+  ## Single, if true, only the world.yml file will be used, other ones will be ignored.
+  Single: false
+  ## Conflict, if true, if required, some functions of this plugin will be automatically disabled to avoid conflict.
+  Conflict: true
+  ## FriendSystem, if true, the friend system will be enabled, this may take a bit of resources, just a bit.
+  FriendSystem: false
+
+Updater:
+  ## Check for updates?
+  Enabled: true
+
+Permissions:
+  ## Op have all permissions?
+  OpHasPerm: true
+
+Events:
+  ## Use Player Move Event? This may take a lot of resources on large servers, but is required to Creative/Survival regions work.
+  PlayerMove: false
+  ## Enable MiscProtections? This may take some extra resource, but will be much more comfortable to play with creative mode.
+  MiscProtection: false
+
+PlayerData:
+  ## Inventory, if true, will have an inventory to survival and other to creative
+  Inventory: true
+  ## Status, if true, will save the player survival status [e.g Health, Food, etc]
+  Status: true
+  ## Teleport, if true, the player will be teleported to the floor on login if needed
+  Teleport: false
+
+Communicator:
+  ## Quiet, if true, any messages will be displayed
+  Quiet: false
+  Debug:
+    ## Console, if true, debug messages will be displayed in the console
+    Console: false
+    ## Stack, if true, common errors will be printed by full [leave it true C:]
+    Stack: true

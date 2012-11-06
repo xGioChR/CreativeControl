@@ -1,0 +1,224 @@
+## This is the CreativeControl Messages File.
+## You can translate everything before the ":"
+## Also, everything between "{}" will be replaced by something...
+## You can use any color codes. e.g &1 &k ...
+## Don't use any caracter diferent than A-Za-z0-9
+## Don't forgot to share your translation back with us!
+prefix:
+  tag: "&4[CreativeControl]:&7"
+  small: "&4[CC]:&7"
+ingame:
+  updater:
+    new: "&7New Version Found: &4{0}&7 (You have: &4{1}&7)"
+    visit: "&7Visit:&4 http://bit.ly/creativecontrol/"
+  blocks:
+    nocreative: "[SMALL]&7 Creative mode &4isn''t&7 allowed in this world"
+    nosurvival: "[SMALL]&7 Survival mode &4isn''t&7 allowed in this world"
+    cantplace: "[TAG] &7You can''t place {0}"
+    snowgolem: "[TAG] &7You can''t create Snow Golens"
+    irongolem: "[TAG] &7You can''t create Iron Golens"
+    wither: "[TAG] &7You can''t create Withers"
+    cantbreak: "[TAG] &7You can''t break {0}"
+    pertence: "[TAG] &7This block belongs to &4{0}"
+    bedrock: "[TAG] &7You can''t break that bedrock!"
+    creative: "[TAG] &7This block can''t be breaked in survival mode!"
+    nodrop: "[TAG] &7That block was placed in creative, Therefore was not dropped."
+  entity:
+    pvp: "[TAG] &7You can''t attack other players!"
+    mob: "[TAG] &7You can''t attack {0}"
+  player:
+    cmdblacklist: "[SMALL]&7 This comand &4isn''t&7 allowed in creative mode!"
+    cantuse: "[TAG] &7You can''t use this in creative mode!"
+    cantdrop: "[TAG] &7You can''t drop {0}"
+    chicken: "[TAG] &7You can''t use chicken eggs"
+    cantusethis: "[TAG] &7You can''t use {0}"
+    cantdo: "[TAG] &7You can''t do that while in creative mode!"
+  selection:
+    otherName: "[TAG] &cYou can''t use other players name!"
+    selnull: "[TAG] &cSelect a region first!"
+    size: "&7Selection size: &4{0} &7blocks."
+    while: "&7Processing..."
+    processed: "&7Blocks &4successfully&7 processed in &4{0}&7 ms"
+    first: "&7First point selected! (&4{0}&7,&4 {1}&7,&4 {2}&7)"
+    second: "&7Second point selected! (&4{0}&7,&4 {1}&7,&4 {2}&7)"
+  region:
+    CreativeWelcome: "&7Welcome to the &4creative&7 region"
+    CreativeLeave: "&7You leave the &4creative&7 region"
+    SurvivalWelcome: "&7Welcome to the &4survival&7 region"
+    SurvivalLeave: "&7You leave the &4survival&7 region"
+  blockInfo:
+    owner: "&4Owner: &7{0}"
+    data: "&4Block Data: &7World: {0}&4, X &7{1}&4, Y &7{2}&4, Z &7{3} &4Type: &7{4}"
+    cachedTrue: "&4Cached: &7true"
+    cachedFalse: "&4Cached: &7false"
+    memoryStatus: "&4Status: &7In Memory [Queue]"
+    dbStatus: "&4Status: &7SQL Database"
+    notIn: "[TAG] &cThis block isn't in the database"
+  addBlock:
+    already: "[TAG] &cThis block is already registred"
+    added: "[TAG] &aBlock added to the database"
+    cant: "[TAG] &cThis block type are excluded"
+  delBlock:
+    deleted: "[TAG] &aBlock removed from the database"
+    
+Commands:
+  type: "[TAG] &8Type &4'/cc help'&8 to see the commands"
+  NotHere: "[TAG] This command can''t be used here, sorry."
+  NoPerm: "&cYou don't have permission to use this command."
+  Tool:
+    deactivated: "[TAG] &cUtility tool deactivated!"
+    activated: "[TAG] &aUtility tool activated!"
+    invFull: "[TAG] &cYour Inventory is full."
+    morehelp: "&7Type: &4/cc tool [add/del] ? &7- To see more help"
+    add:
+      help: "&4/cc tool add - &7Give you a tool to &4add blocks&7 manualy to the database, every block that you &4left click&7 will be added to the database &4in your name&7, if you &4right click&7, you will see &4informations&7 about the block"
+      usage: "&4/cc tool add - &7Tool to add blocks to the database"
+    del:
+      help: "&4/cc tool del - &7Give you a tool to &4delete blocks&7 manualy from the database, every block that you &4left click&7, if you have permission or own the block, he will be remove from the database, if you &4right click&7, you will see &4informations&7 about the block"
+      usage: "&4/cc tool del - &7Tool to delete blocks from the database"
+  Status:
+    help: "&4/cc status - &7Print a superficial status of the database"
+    Queue: "[TAG] SQL Queue: {0}"
+    Reads: "[TAG] SQL Reads: {0}"
+    Writes: "[TAG] SQL Writes: {0}"
+    Cache: "[TAG] SQL Cache: {0}/{1}"
+    CacheReads: "[TAG] Cache Reads: {0}"
+    CacheWrites: "[TAG] Cache Writes: {0}"
+  Del:
+    morehelp: "&7Type: &4/cc del [all/type/player] ? &7- To see more help"
+    all:
+      help: "&4/cc del all - &7This command will &4remove&7 all blocks &4inside the selection&7 from the database, the &4block will be preserved&7 and the &4ownship will be respected&7, the player need to have permission to remove blocks if the configuration is &4NoDrop&7"
+      usage: "&4/cc del all - &7Remove the blocks from the database"
+    type:
+      help: "&4/cc del type [TypeId] - &7This command will &4remove&7 all blocks &4inside the selection&7 of a &4specific type&7 from the database, this is a admin command and &4normal players should not have it&7 the block will be preserved but &4the ownship will NOT be respected&7."
+      usage: "&4/cc del type [TypeId] - &7Remove the blocks of a specific type"
+    player:
+      help: "&4/cc del player [PlayerName] - &7This command will &4remove&7 all blocks of a &4specific player inside the selection&7 from the database this is a admin command and &4normal players should not have it&7, the block will be preserved but &4the ownship will NOT be respected&7."
+      usage: "&4/cc del player [Player] - &7Remove the blocks of a player"
+  Add:
+    morehelp: "&7Type: &4/cc add <player> ? &7- To see more help"
+    usage: "&4/cc add - &7Add all blocks to the database"
+    help: "&4/cc add - &7This command will &4add&7 all blocks &4inside the selection&7 to the database, using &4your name."
+    player:
+      help: "&4/cc add player [PlayerName] - &7This command will &4add&7 all blocks &4inside the selection&7 to the database, using a &4defined owner."
+      usage: "&4/cc add player [PlayerName] - &7Add blocks with other name."
+  Cleanup:
+    morehelp: "&7Type: &4/cc cleanup [all/type/player/world] ? &7- To see more help"
+    processed: "[TAG] &aBlocks successfully processed!"
+    cleanup:
+      loading: "&7Loading database..."
+      size: "&7Loaded &4{0}&7 Protections in &4{1}&7 ms."
+      searching: "&7Searching for corrupted protections..."
+      removed: "&7Removed &4{0}&7 corrupted protections in &4{1}&7 ms."
+      usage: "&c/cc cleanup corrupt - &7Remove corrupted protections."
+      help: "&7cc cleanup corrupt - &7This command will &4remove&7 all protections that the block type in the world isnt compatible with the block type in the database."
+    all:
+      help: "&4/cc cleanup all - &7This command will &4clean your entire database&7, every block in the database &4will be erased&7, players &4inventory/status will be preserved."
+      usage: "&4/cc cleanup all - &7Clean your entire database"
+    type:
+      help: "&4/cc cleanup type [TypeId] - &7This command will &4clean all blocks of a specific type from the database&7, every block in the database with the &4specified type id will be erased&7, players &4inventory/status will be preserved."
+      usage: "&4/cc cleanup type [TypeId] - &7Clean blocks of a specific type"
+    player:
+      help: "&4/cc cleanup player [PlayerName] - &7This command will &4clean all blocks of a specific player from the database&7, every block in the database with the &4specified player will be erased&7, players &4inventory/status will be preserved."
+      usage: "&4/cc cleanup player [PlayerName] - &7Clean blocks of a player"
+    world:
+      help: "&4/cc cleanup world [WorldName] - &7This command will &4clean all blocks of a specific world from the database&7, every block in the database with the &4specified world will be erased&7, players &4inventory/status will be preserved."
+      usage: "&4/cc cleanup player [WorldName] - &7Clean blocks of a world"
+  Reload:
+    reloading: "[TAG] Reloading the configuration file"
+    reloaded: "[TAG] &aConfiguration file reloaded successfuly"
+    help: "&4/cc reload - &7This command will reload &4all your configuration files&7, this include every .yml file inside your CreativeControl folder, &4but not the player data files."
+  Region:
+    define: "&4/cc region define [creative/survival] [name]"
+    morehelp: "&7Type: &4/cc region [define/remove/expand] ? &7- To see more help"
+    Creative:
+      DefineHelp: "&4/cc region define creative [name] - &7This command create an region to use &$gamemode creative only&7, the player &4need permission &7to use this area."
+      Usage: "&4/cc region define creative [name] - &7Create a Creative Region"
+    Survival:
+      DefineHelp: "&4/cc region define survival [name] - &7This command create an region to use &$gamemode survival only&7, the player &4don''t need permission &7to use this area."
+      Usage: "&4/cc region define survival [name] - &7Create a Survival Region"
+    Created: "&7Region created successfuly!"
+    Remove:
+      Usage: "&4/cc region remove [name] - &7Remove an Region"
+      Success: "&7Region removed successfuly!"
+      RemoveHelp: "&4/cc region remove [name] - &7This command will remove an defined region"
+  Selection:
+    morehelp: "&7Type: &4/cc sel expand [up/down/vert] ? &7- To see more help"
+    number: "&cYou need to use numbers"
+    up:
+      help: "&4/cc sel expand up <amount> -  &7This command expands &4your selection&7 in a defined amount of blocks up"
+      usage: "&4/cc sel expand up <amount> -  &7Expand up the selection"
+      expanded: "&7Region expanded to &4{0}&7 blocks"
+    down:
+      help: "&4/cc sel expand down <amount> -  &7This command expands &4your selection&7 in a defined amount of blocks down"
+      usage: "&4/cc sel expand down <amount> - &7Expand down the selection"
+      expanded: "&7Region expanded to &4{0}&7 blocks"
+    vert:
+      help: "&4/cc sel expand vert -  &7This command expands &4your selection&7 from bedrock to sky"
+      usage: "&4/cc sel expand vert - &7Expand the selection bedrock to sky"
+      expanded: "&7Region expanded from bedrock to the sky"
+  debug:
+    help: "&4/cc debug - &7This command toggle if the debug messages will show or not for you."
+    usage: "&4/cc debug - &7Toggle debug messages"
+    activated: "&aDebug messages activated!"
+    deactivated: "&cDebug messages deactivated!"
+  Check:
+    morehelp: "&7Type: &4/cc check [player/status] ? &7- To see more help"
+    status:
+      help: "&4/cc check status - &7This command prints the total players in survival and creative mode"
+      usage: "&4/cc check status - &7Show the total players with gamemode"
+      there: "&7Here are: &4{0}&7 Survival and &4{1}&7 Creative players"
+    player:
+      help: "&4/cc check [player] - &7This command show the current gamemode of some player"
+      usage: "&4/cc check [player] - &7Show the current gamemode"
+      hasGm: "&7{0} has gamemode &4{1}"
+      notOn: "&7{0} &4is not&7 online!"
+  Friend:
+    morehelp: "&7Type: &4/cc f [list/add/remove/allow/transfer] ? &7- To see more help"
+    list:
+      help: "&4/cc f list - &7This command list all your friends, you can also put the player name int the end to check other players friends."
+      usage: "&4/cc f list - &7List your friends"
+      hnoFriends: "&7He don't have any friends :c"
+      unoFriends: "&7You don't any friends :c"
+      Friends: "&4Friends: &7{0}"
+    add:
+      help: "&4/cc f add <name> - &7This command add new friends to your list, your friends will be able to place blocks next to yours and break any block that you place, nothing more than that."
+      usage: "&4/cc f add <name> - &7Add a new friend"
+      added: "&4{0}&7 has been added to your friend list!"
+      already: "&4{0}&7 is your friend already!"
+    rem:
+      help: "&4/cc f remove <name> - &7This command will remove the player from your friend list."
+      usage: "&4/cc f remove <name> - &7Remove a Friend"
+      empty: "&7Your friend list is empty!"
+      removed: "&4{0}&7 has been removed from your friend list!"
+      notin: "&4{0}&7 is not in your friend list!"
+    allow:
+      help: "&4/cc f allow <playername> - &7This command will allow a player in the blocks inside the selection."
+      usage: "&4/cc f allow <name> - &7Allow player in your blocks"
+    transfer:
+      help: "&4/cc f transfer <playername/all> - &7This command will transfer your blocks to other player name, this can be just the blocks inside the selection or all your blocks in the database [all]."
+      usage: "&4/cc f transfer <name/all> - &7Transfer block ownship"
+  Updater:
+    Loading: "&7Loading protections..."
+    LoadFailed: "&cFailed to load the protections!"
+    Loaded: "&a{0}&7 protections loaded in &a{1}&7 ms"
+    Process: "&a{0}&7 of &a{1}&7 protections converted, &a{2} &7skipped, &a{3}%"
+    Duplicated: "&7Duplicated protection W&8:&a{0}&7 X&8:&a{1}&7 Y&8:&a{2}&7 Z&8:&a{3}&7"
+    CheckFailed: "&cFailed to convert the protections!"
+    Done: "&a{0}&7 Protections converted in &a{1}&7 ms!"
+
+    Locked: "&cVoc\u00ea nao pode executar duas atualiza\u00e7oes ao mesmo tempo!"
+    NotRequired: "&cNao é necessário executar uma atualiza\u00e7ao!"
+    TryAgain: "&7Se você deseja ignorar este aviso, use o comando novamente!"
+  Help:
+    cmd1: "[TAG] /cc add - add blocks from the selection"
+    cmd2: "[TAG] /cc del - del blocks from the selection"
+    cmd3: "[TAG] /cc reload - Reload the configuration file"
+    cmd4: "[TAG] /cc cleanup - Database Cleanup"
+    cmd5: "[TAG] /cc status - Show the database Status"
+    cmd8: "[TAG] /cc region - Region commands"
+    cmd9: "[TAG] /cc sel - Selection commands"
+    cmd10: "[TAG] /cc check - check players gamemode"
+    cmd11: "[TAG] /cc f - Block permission commands"
+    cmd6: "[TAG] /cc tool - Give you a utily tool"
+    cmd7: "[TAG] /cc <command> ?"

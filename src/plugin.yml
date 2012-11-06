@@ -1,0 +1,11 @@
+name: CreativeControl
+version: 5.2.0
+author: FurmigaHumana
+description: Keep yours creatives in the line!
+main: me.FurH.CreativeControl.CreativeControl
+softdepend: ['Vault']
+commands:
+  creativecontrol:
+    aliases: [cc, ccontrol]
+    description: CreativeControl Commands
+    usage: /creativecontrol help
