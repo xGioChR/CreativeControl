@@ -411,6 +411,17 @@ public class CreativeMessages {
         updater_duplicated             = getMessage("Commands.Updater.Duplicated");
         updater_checkfailed            = getMessage("Commands.Updater.CheckFailed");
         updater_done                   = getMessage("Commands.Updater.Done");
+        
+        backup_generating              = getMessage("Commands.Backup.Creating");
+        backup_done                    = getMessage("Commands.Backup.Done");
+        
+        cleanup_locked                 = getMessage("Commands.Cleanup.Locked");
+        cleanup_searching              = getMessage("Commands.Cleanup.Searching");
+        cleanup_process                = getMessage("Commands.Cleanup.Process");
+        cleanup_corrupted              = getMessage("Commands.Cleanup.Corrupted");
+        cleanup_duplicated             = getMessage("Commands.Cleanup.Duplicated");
+        cleanup_checkfailed            = getMessage("Commands.Cleanup.CheckFailed");
+        cleanup_done                   = getMessage("Commands.Cleanup.Done");
     }
     
     private String getMessage(String node) {

@@ -30,10 +30,7 @@ import me.FurH.CreativeControl.util.CreativeUtil;
  */
 public class CreativeSQLBackup extends Thread {
     
-    public static void backup(List<String> backup) {
-        Thread t = CreativeSQLBackup.currentThread();
-        System.out.println("Thread: " + t.getName());
-        
+    public static void backup(List<String> backup) {        
         CreativeCommunicator com = CreativeControl.getCommunicator();
         CreativeControl plugin = CreativeControl.getPlugin();
         
