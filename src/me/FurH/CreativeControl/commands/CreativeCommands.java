@@ -310,7 +310,7 @@ public class CreativeCommands implements CommandExecutor {
                                                     ResultSet rs = db.getQuery("SELECT * FROM `"+db.prefix+"blocks` WHERE owner = '"+sender.getName().toLowerCase()+"'");
                                                     while (rs.next()) {
                                                         locations.add(rs.getString("location"));
-                                                        backup.add("INSERT INTO `"+db.prefix+"_blocks` (id, owner, location, type, allowed, time) VALUES ('"+rs.getInt("id")+"',"
+                                                        backup.add("INSERT INTO `"+db.prefix+"blocks` (id, owner, location, type, allowed, time) VALUES ('"+rs.getInt("id")+"',"
                                                                 + " '"+rs.getString("owner")+"', '"+rs.getString("location")+"', '"+rs.getInt("type")+"', '"+rs.getString("allowed")+"', '"+rs.getInt("time")+"')");
                                                     }
                                                 } catch (SQLException ex) {
@@ -334,7 +334,7 @@ public class CreativeCommands implements CommandExecutor {
                                                     cache.remove(location);
                                                 }
                                                 
-                                                String query = "UPDATE `"+db.prefix+"_blocks` SET owner = '"+args[3].toLowerCase()+"' WHERE owner = '"+sender.getName().toLowerCase()+"'";
+                                                String query = "UPDATE `"+db.prefix+"blocks` SET owner = '"+args[3].toLowerCase()+"' WHERE owner = '"+sender.getName().toLowerCase()+"'";
                                                 db.executeQuery(query);
                                                 
                                                 msg(sender, messages.commands_cleanup_processed);
@@ -552,7 +552,7 @@ public class CreativeCommands implements CommandExecutor {
                             msg(sender, messages.commands_acleanup_help);
                             return true;
                         } else {
-                            String query = "DELETE FROM `"+db.prefix+"_blocks`";
+                            String query = "DELETE FROM `"+db.prefix+"blocks`";
                             cache.clear();
                             db.executeQuery(query);
                             msg(sender, messages.commands_cleanup_processed);
@@ -585,7 +585,7 @@ public class CreativeCommands implements CommandExecutor {
                                         ResultSet rs = db.getQuery("SELECT * FROM `"+db.prefix+"blocks` WHERE type = '"+args[2].toLowerCase()+"'");
                                         while (rs.next()) {
                                             locations.add(rs.getString("location"));
-                                            backup.add("INSERT INTO `"+db.prefix+"_blocks` (id, owner, location, type, allowed, time) VALUES ('"+rs.getInt("id")+"',"
+                                            backup.add("INSERT INTO `"+db.prefix+"blocks` (id, owner, location, type, allowed, time) VALUES ('"+rs.getInt("id")+"',"
                                                     + " '"+rs.getString("owner")+"', '"+rs.getString("location")+"', '"+rs.getInt("type")+"', '"+rs.getString("allowed")+"', '"+rs.getInt("time")+"')");
                                         }
                                     } catch (SQLException ex) {
@@ -608,7 +608,7 @@ public class CreativeCommands implements CommandExecutor {
                                     for (String location : locations) {
                                         Location loc = CreativeUtil.getLocation(location);
                                         if (loc.getWorld().getName().equalsIgnoreCase(args[2])) {
-                                            String query = "DELETE FROM `"+db.prefix+"_blocks` WHERE location = '"+location+"'";
+                                            String query = "DELETE FROM `"+db.prefix+"blocks` WHERE location = '"+location+"'";
                                             cache.remove(location);
                                             db.executeQuery(query);
                                         }
@@ -650,7 +650,7 @@ public class CreativeCommands implements CommandExecutor {
                                         ResultSet rs = db.getQuery("SELECT * FROM `"+db.prefix+"blocks` WHERE owner = '"+args[2].toLowerCase()+"'");
                                         while (rs.next()) {
                                             locations.add(rs.getString("location"));
-                                            backup.add("INSERT INTO `"+db.prefix+"_blocks` (id, owner, location, type, allowed, time) VALUES ('"+rs.getInt("id")+"',"
+                                            backup.add("INSERT INTO `"+db.prefix+"blocks` (id, owner, location, type, allowed, time) VALUES ('"+rs.getInt("id")+"',"
                                                     + " '"+rs.getString("owner")+"', '"+rs.getString("location")+"', '"+rs.getInt("type")+"', '"+rs.getString("allowed")+"', '"+rs.getInt("time")+"')");
                                         }
                                     } catch (SQLException ex) {
@@ -673,7 +673,7 @@ public class CreativeCommands implements CommandExecutor {
                                     for (String location : locations) {
                                         Location loc = CreativeUtil.getLocation(location);
                                         if (loc.getWorld().getName().equalsIgnoreCase(args[2])) {
-                                            String query = "DELETE FROM `"+db.prefix+"_blocks` WHERE location = '"+location+"'";
+                                            String query = "DELETE FROM `"+db.prefix+"blocks` WHERE location = '"+location+"'";
                                             cache.remove(location);
                                             db.executeQuery(query);
                                         }
@@ -712,10 +712,10 @@ public class CreativeCommands implements CommandExecutor {
 
                                     msg(sender, messages.updater_loading);
                                     try {
-                                        ResultSet rs = db.getQuery("SELECT location FROM `"+db.prefix+"blocks`");
+                                        ResultSet rs = db.getQuery("SELECT * FROM `"+db.prefix+"blocks`");
                                         while (rs.next()) {
                                             locations.add(rs.getString("location"));
-                                            backup.add("INSERT INTO `"+db.prefix+"_blocks` (id, owner, location, type, allowed, time) VALUES ('"+rs.getInt("id")+"',"
+                                            backup.add("INSERT INTO `"+db.prefix+"blocks` (id, owner, location, type, allowed, time) VALUES ('"+rs.getInt("id")+"',"
                                                     + " '"+rs.getString("owner")+"', '"+rs.getString("location")+"', '"+rs.getInt("type")+"', '"+rs.getString("allowed")+"', '"+rs.getInt("time")+"')");
                                         }
                                     } catch (SQLException ex) {
@@ -738,7 +738,7 @@ public class CreativeCommands implements CommandExecutor {
                                     for (String location : locations) {
                                         Location loc = CreativeUtil.getLocation(location);
                                         if (loc.getWorld().getName().equalsIgnoreCase(args[2])) {
-                                            String query = "DELETE FROM `"+db.prefix+"_blocks` WHERE location = '"+location+"'";
+                                            String query = "DELETE FROM `"+db.prefix+"blocks` WHERE location = '"+location+"'";
                                             cache.remove(location);
                                             db.executeQuery(query);
                                         }

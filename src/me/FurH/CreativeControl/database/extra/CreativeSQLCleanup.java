@@ -63,14 +63,14 @@ public class CreativeSQLCleanup extends Thread {
 
         CreativeSQLDatabase db = CreativeControl.getDb();
         try {
-            PreparedStatement ps = db.prepare("SELECT * FROM `"+db.prefix+"_blocks` ORDER BY `id` DESC");
+            PreparedStatement ps = db.prepare("SELECT * FROM `"+db.prefix+"blocks` ORDER BY `id` DESC");
             ps.execute();
 
             ResultSet rs = ps.getResultSet();
             while (rs.next()) {
                 db.reads++;
                 blocks.add(new String[] { rs.getString("location"), Integer.toString(rs.getInt("type")) });
-                backup.add("INSERT INTO `"+db.prefix+"_blocks` (id, owner, location, type, allowed, time) VALUES ('"+rs.getInt("id")+"',"
+                backup.add("INSERT INTO `"+db.prefix+"blocks` (id, owner, location, type, allowed, time) VALUES ('"+rs.getInt("id")+"',"
                         + " '"+rs.getString("owner")+"', '"+rs.getString("location")+"', '"+rs.getInt("type")+"', '"+rs.getString("allowed")+"', '"+rs.getInt("time")+"')");
             }
             

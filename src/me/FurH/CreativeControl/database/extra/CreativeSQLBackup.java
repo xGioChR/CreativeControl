@@ -28,9 +28,12 @@ import me.FurH.CreativeControl.util.CreativeUtil;
  *
  * @author FurmigaHumana
  */
-public class CreativeSQLBackup {
+public class CreativeSQLBackup extends Thread {
     
     public static void backup(List<String> backup) {
+        Thread t = CreativeSQLBackup.currentThread();
+        System.out.println("Thread: " + t.getName());
+        
         CreativeCommunicator com = CreativeControl.getCommunicator();
         CreativeControl plugin = CreativeControl.getPlugin();
         
