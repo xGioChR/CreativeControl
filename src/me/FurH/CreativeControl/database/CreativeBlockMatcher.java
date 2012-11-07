@@ -29,10 +29,10 @@ import org.bukkit.block.BlockFace;
  */
 public class CreativeBlockMatcher {
     
-    public static List<Block> getAttach(Block block) {
+    public static List<Block> getAttached(Block block) {
         List<Block> blocks = new ArrayList<Block>();
-
-        List BLOCKUP = Arrays.asList(new Integer[] {6, 31, 32, 37, 38, 39, 40, 55, 59, 63, 70, 72, 76, 78, 81, 83, 92, 93, 94, 104, 105, 111, 115, 132});
+        
+        List BLOCKUP = Arrays.asList(new Integer[] { 6, 31, 32, 37, 38, 39, 40, 55, 59, 63, 70, 72, 76, 78, 81, 83, 92, 93, 94, 104, 105, 111, 115, 132, 141, 142 });
         Block relative = block.getRelative(BlockFace.UP);
         if ((relative != null) && (relative.getType() != Material.AIR)) {
             if (BLOCKUP.contains(relative.getTypeId())) {
@@ -42,7 +42,7 @@ public class CreativeBlockMatcher {
             }
         }
 
-        BlockFace[] ALLFACES = new BlockFace[]{ BlockFace.UP, BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST };
+        BlockFace[] ALLFACES = new BlockFace[] { BlockFace.UP, BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST };
         for (BlockFace face : ALLFACES) {
             relative = block.getRelative(face);
             if ((relative != null) && (relative.getType() != Material.AIR)) {

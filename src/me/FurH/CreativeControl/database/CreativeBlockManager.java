@@ -70,11 +70,22 @@ public class CreativeBlockManager {
         
         return data;
     }
+    
+    public String[] getDoor3(Block b) {
+        Block blockup = b.getRelative(BlockFace.UP);
+        String[] data = null;
+                
+        if (blockup.getTypeId() == 64 || blockup.getTypeId() == 71) {
+            data = getBlock(blockup);
+        }
+        
+        return data;
+    }
 
     /*
      * return a expencive protected door
      */
-    public String[] getDoor(Block b) {
+    private String[] getDoor(Block b) { //Expensive unrequired check
         
         Block blockup = b.getRelative(BlockFace.UP);
         if (blockup.getTypeId() == 64 || blockup.getTypeId() == 71) {

@@ -232,7 +232,7 @@ public class CreativeBlockListener implements Listener {
          */
         if (config.world_exclude) { return; }
         
-        /*
+        /* TODO: Find a way to check if is a economy sign! Some plugins uses breakevent to buy/sell in signs as well
         if (config.prevent_economy) {
             if (b.getType() == Material.WALL_SIGN || b.getType() == Material.SIGN_POST) {
                 com.msg(p, messages.player_cantdo);
@@ -267,12 +267,11 @@ public class CreativeBlockListener implements Listener {
                 }
             }
         }
-        
+
+        /*
+         * Anti BedRock Breaking
+         */
         if (p.getGameMode().equals(GameMode.CREATIVE)) {
-            
-            /*
-             * Anti BedRock Breaking
-             */
             if ((config.prevent_bedrock) && (!plugin.hasPerm(p, "Preventions.BreakBedRock"))) {
                 if (b.getType() == Material.BEDROCK) {
                     if (b.getY() < 1) {
@@ -318,7 +317,7 @@ public class CreativeBlockListener implements Listener {
                         process(e, data, b, p);
                     }
                 } else {
-                    data = manager.getDoor(b);
+                    data = manager.getDoor3(b);
                     if (data != null) {
                         if (!manager.isAllowed(p, data)) {
                             com.msg(p, messages.blocks_pertence, data[0]);
@@ -327,7 +326,7 @@ public class CreativeBlockListener implements Listener {
                             process(e, data, b, p);
                         }
                     } else {
-                        List<Block> attach = CreativeBlockMatcher.getAttach(b);
+                        List<Block> attach = CreativeBlockMatcher.getAttached(b);
                         if (attach != null && attach.size() > 0) {
                             for (Block ba1 : attach) {
                                 data = manager.getBlock(ba1);
@@ -356,11 +355,11 @@ public class CreativeBlockListener implements Listener {
                 if (data != null) {
                     process(e, data, b, p);
                 } else {
-                    data = manager.getDoor(b);
+                    data = manager.getDoor3(b);
                     if (data != null) {
                         process(e, data, b, p);
                     } else {
-                        List<Block> attach = CreativeBlockMatcher.getAttach(b);
+                        List<Block> attach = CreativeBlockMatcher.getAttached(b);
                         if (attach != null && attach.size() > 0) {
                             for (Block ba1 : attach) {
                                 data = manager.getBlock(ba1);

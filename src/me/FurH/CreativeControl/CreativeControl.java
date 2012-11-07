@@ -111,11 +111,11 @@ public class CreativeControl extends JavaPlugin {
         communicator = new CreativeCommunicator();
         messages = new CreativeMessages();
         messages.load();
-        
+
+        communicator.log("[TAG] Initializing configurations...");
         mainconfig = new CreativeMainConfig();
         mainconfig.load();
-        
-        communicator.log("[TAG] Initializing configurations...");
+
         if (!mainconfig.config_single) {
             for (World w : getServer().getWorlds()) { CreativeWorldConfig.load(w); }
         } else {
@@ -158,7 +158,8 @@ public class CreativeControl extends JavaPlugin {
         setupPermission();
         setupLogBlock();
 
-        communicator.log("[TAG] Cached {0} Protections", manager.preCache());
+        communicator.log("[TAG] Cached {0} protections", manager.preCache());
+        communicator.log("[TAG] Loaded {0} regions", regions.get().size());
         
         PluginDescriptionFile version = getDescription();
         currentversion = "v"+version.getVersion();
@@ -225,7 +226,7 @@ public class CreativeControl extends JavaPlugin {
         if (ssql != newssql) {
             new CreativeSQLDatabase(this, false);
             database = new CreativeSQLDatabase(this, true);
-            communicator.msg(p, "[TAG] Database Type: &4{0}&7, Conected.", newssql ? "MySQL" : "SQLite");
+            communicator.msg(p, "[TAG] Database Type: &4{0}&7 Defined.", newssql ? "MySQL" : "SQLite");
         }
         
         PluginManager pm = getServer().getPluginManager();
@@ -386,10 +387,6 @@ public class CreativeControl extends JavaPlugin {
         }
         
         return true;
-    }
-
-    public void loadRegions() {
-        getRegioner().loadRegions();
     }
 
     private int survival = 0;
