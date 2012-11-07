@@ -40,13 +40,13 @@ public class CreativeSQLBackup extends Thread {
         PrintWriter writer = null;
         
         try {
-            writer = new PrintWriter(new File(dir.getAbsolutePath() + "backup-" + CreativeUtil.getSimpleDate(System.currentTimeMillis()) + ".sql"));
+            writer = new PrintWriter(new File(dir.getAbsolutePath(), "backup-" + CreativeUtil.getSimpleDate(System.currentTimeMillis()) + ".sql"));
         } catch (FileNotFoundException ex) {
             com.error("[TAG] Failed to backup the protections, {0}", ex, ex.getMessage());
         }
 
         for (String query : backup) {
-            writer.println(query);
+            writer.println(query + ";");
         }
 
         writer.close();

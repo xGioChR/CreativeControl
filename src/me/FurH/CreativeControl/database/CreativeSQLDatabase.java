@@ -145,15 +145,16 @@ public final class CreativeSQLDatabase {
             
             double process = 0;
             double done = 0;
+            double total = queue.size();
             while (!queue.isEmpty()) {
                 done++;
                 String query = queue.poll();
                 if (query == null) { continue; }
                 
-                process = ((done / queue.size()) * 100.0D);
+                process = ((done / total) * 100.0D);
                 
                 if (process % 1 == 0) {
-                    com.log("[TAG] Processed {0} of {1} querys, {2}%", done, queue.size(), process);
+                    com.log("[TAG] Processed {0} of {1} querys, {2}%", done, total, process);
                 }
                 executeQuery(query, true);
             }
