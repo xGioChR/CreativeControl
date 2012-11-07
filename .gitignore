@@ -1,5 +1,6 @@
 /build
-/dist
+/dist/lib
 /nbproject
 *.xml
 *.mf
+*.txt
