@@ -71,6 +71,8 @@ public class CreativeMessages {
     public String entity_mobs                    = "ingame.entity.mob";
     
     public String sel_null                       = "ingame.selection.selnull";
+    public String sel_first                      = "ingame.selection.first";
+    public String sel_second                     = "ingame.selection.second";
     
     public String commands_type                  = "Commands.type";
     public String commands_noperm                = "Commands.NoPerm";
@@ -255,7 +257,9 @@ public class CreativeMessages {
         entity_mobs                    = getMessage("ingame.entity.mob");
 
         sel_null                       = getMessage("ingame.selection.selnull");
-
+        sel_first                      = getMessage("ingame.selection.first");
+        sel_second                     = getMessage("ingame.selection.second");
+    
         commands_type                  = getMessage("Commands.type");
         commands_noperm                = getMessage("Commands.NoPerm");
         commands_nothere               = getMessage("Commands.NotHere");

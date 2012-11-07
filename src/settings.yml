@@ -43,6 +43,10 @@ Updater:
 Permissions:
   ## Op have all permissions?
   OpHasPerm: true
+  
+Selection:
+  ## The Item ID used to select regions
+  Tool: 378
 
 Events:
   ## Use Player Move Event? This may take a lot of resources on large servers, but is required to Creative/Survival regions work.

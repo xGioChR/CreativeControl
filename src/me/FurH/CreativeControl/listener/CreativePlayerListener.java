@@ -392,75 +392,81 @@ public class CreativePlayerListener implements Listener {
         CreativeCommunicator  com      = CreativeControl.getCommunicator();
         CreativeMessages      messages = CreativeControl.getMessages();
         CreativeControl       plugin   = CreativeControl.getPlugin();
-        CreativeWorldNodes config = CreativeWorldConfig.get(world);
+        CreativeWorldNodes    config   = CreativeWorldConfig.get(world);
+        CreativeMainConfig    main     = CreativeControl.getMainConfig();
 
         if (config.prevent_economy) {
             if (i.getType() == Material.WALL_SIGN || i.getType() == Material.SIGN_POST) {
                 com.msg(p, messages.player_cantdo);
                 e.setCancelled(true);
+                return;
             }
         }
-        
-        /*
-        if (plugin.getConfig().getInt("Utily.Sel") == item) {
+
+        if (main.selection_tool == p.getItemInHand().getTypeId()) {
             if (plugin.hasPerm(p, "Utily.Selection")) {
                 if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
                     Location right = e.getClickedBlock().getLocation();
                     plugin.right.put(p, right);
-                    com.msg(p, config.getMessage("ingame.selection.first"), Msg.MSG, right.getBlockX(), right.getBlockY(), right.getBlockZ());
+                    com.msg(p, messages.sel_second, right.getBlockX(), right.getBlockY(), right.getBlockZ());
                     e.setCancelled(true);
+                    return;
                 } else
                 if (e.getAction() == Action.LEFT_CLICK_BLOCK) {
                     Location left = e.getClickedBlock().getLocation();
                     plugin.left.put(p, left);
-                    com.msg(p, config.getMessage("ingame.selection.second"), Msg.MSG, left.getBlockX(), left.getBlockY(), left.getBlockZ());
+                    com.msg(p, messages.sel_first, left.getBlockX(), left.getBlockY(), left.getBlockZ());
                     e.setCancelled(true);
+                    return;
                 }
             }
         }
         
-        if (plugin.getConfig().getInt("Utily.Add") == item) {
-            if (plugin.addTool.contains(p.getName())) {
-                if (plugin.hasPerm(p, "Utily.Tool.info")) {
-                    if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
-                        blockInfo(e);
+        if (plugin.mods.containsKey(p.getName())) {
+            String data = plugin.mods.get(p.getName());
+            if (data.equals("Block-Add-Tool")) {
+                if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
+                    if (plugin.hasPerm(p, "Utily.Tool.info")) {
+                        
                         e.setCancelled(true);
-                    } else
-                    if (e.getAction() == Action.LEFT_CLICK_BLOCK) {
-                        if (plugin.hasPerm(p, "Utily.Tool.add")) {
-                            addBlock(e);
-                            e.setCancelled(true);
-                        }
+                        return;
+                    }
+                } else
+                if (e.getAction() == Action.LEFT_CLICK_BLOCK) {
+                    if (plugin.hasPerm(p, "Utily.Tool.add")) {
+                        
+                        e.setCancelled(true);
+                        return;
+                    }
+                }
+            } else 
+            if (data.equals("Block-Del-Tool")) {
+                if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
+                    if (plugin.hasPerm(p, "Utily.Tool.info")) {
+                        
+                        e.setCancelled(true);
+                        return;
+                    }
+                } else
+                if (e.getAction() == Action.LEFT_CLICK_BLOCK) {
+                    if (plugin.hasPerm(p, "Utily.Tool.del")) {
+                        
+                        e.setCancelled(true);
+                        return;
                     }
                 }
             }
         }
-        
-        if (plugin.getConfig().getInt("Utily.Del") == item) {
-            if (plugin.delTool.contains(p.getName())) {
-                if (plugin.hasPerm(p, "Utily.Tool.info")) {
-                    if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
-                        blockInfo(e);
-                        e.setCancelled(true);
-                    } else
-                    if (e.getAction() == Action.LEFT_CLICK_BLOCK) {
-                        if (plugin.hasPerm(p, "Utily.Tool.del")) {
-                            delBlock(e);
-                            e.setCancelled(true);
-                        }
-                    }
-                }
-            }
-        }
-        */ 
+
         if (config.world_exclude) { return; }
-        
+
         if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
             if (p.getGameMode().equals(GameMode.CREATIVE)) {
                 if (config.black_interact.contains(i.getTypeId())) {
                     if (!plugin.hasPerm(p, "BlackList.ItemInteract")) {
                         com.msg(p, messages.player_cantuse, i.getType().toString().toLowerCase().replace("_", " "));
                         e.setCancelled(true);
+                        return;
                     }
 
                 }
@@ -475,6 +481,7 @@ public class CreativePlayerListener implements Listener {
                             if (!plugin.hasPerm(p, "Preventions.Eggs")) {
                                 com.msg(p, messages.player_cantuse, ItemName);
                                 e.setCancelled(true);
+                                return;
                             }
                         }
                     }
@@ -483,6 +490,7 @@ public class CreativePlayerListener implements Listener {
                         if (!plugin.hasPerm(p, "BlackList.ItemUse")) {
                             com.msg(p, messages.player_cantuse, ItemName);
                             e.setCancelled(true);
+                            return;
                         }
                     } 
 
@@ -491,6 +499,7 @@ public class CreativePlayerListener implements Listener {
                             if (!plugin.hasPerm(p, "Preventions.PotionSplash")) {
                                 com.msg(p, messages.player_cantuse, ItemName);
                                 e.setCancelled(true);
+                                return;
                             }
                         }
                     }

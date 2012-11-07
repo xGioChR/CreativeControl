@@ -16,6 +16,9 @@
 
 package me.FurH.CreativeControl.commands;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import me.FurH.CreativeControl.CreativeControl;
@@ -29,6 +32,7 @@ import me.FurH.CreativeControl.selection.CreativeBlocksSelection;
 import me.FurH.CreativeControl.selection.CreativeBlocksSelection.Type;
 import me.FurH.CreativeControl.selection.CreativeSelection;
 import me.FurH.CreativeControl.util.CreativeCommunicator;
+import me.FurH.CreativeControl.util.CreativeUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -121,6 +125,10 @@ public class CreativeCommands implements CommandExecutor {
         CreativeControl          plugin    = CreativeControl.getPlugin();
         CreativePlayerFriends    friends   = CreativeControl.getFriends();
         CreativeBlocksSelection  selection = CreativeControl.getSelector();
+        CreativeBlockCache       cache     = CreativeControl.getCache();
+        CreativeSQLDatabase      db        = CreativeControl.getDb();
+        CreativeCommunicator     com       = CreativeControl.getCommunicator();
+        
         if (!plugin.hasPerm(sender, "Commands.Friend")) {
             msg(sender, messages.commands_noperm);
             return false;
@@ -289,9 +297,25 @@ public class CreativeCommands implements CommandExecutor {
                                                 msg(sender, messages.commands_noperm);
                                                 return false;
                                             } else {
-                                                //String query = "UPDATE cc_blocks SET owner = '"+args[3].toLowerCase()+"' WHERE owner = '"+sender.getName()+"'";
-                                                //db.executeQuery(query);
-                                                //TODO: Transfer Ownship
+                                                List<String> locations = new ArrayList<String>();
+                                                
+                                                try {
+                                                    ResultSet rs = db.getQuery("SELECT location FROM `"+db.prefix+"blocks` WHERE owner = '"+sender.getName().toLowerCase()+"'");
+                                                    while (rs.next()) {
+                                                        locations.add(rs.getString("location"));
+                                                    }
+                                                } catch (SQLException ex) {
+                                                    com.error("[TAG] Failed to get the block from the database, {0}", ex, ex.getMessage());
+                                                    if (!db.isOk()) { db.fix(); }
+                                                }
+
+                                                for (String location : locations) {
+                                                    cache.remove(location);
+                                                }
+                                                
+                                                String query = "UPDATE `"+db.prefix+"_blocks` SET owner = '"+args[3].toLowerCase()+"' WHERE owner = '"+sender.getName().toLowerCase()+"'";
+                                                db.executeQuery(query);
+                                                
                                                 msg(sender, messages.commands_cleanup_processed);
                                                 return true;
                                             }
@@ -489,6 +513,10 @@ public class CreativeCommands implements CommandExecutor {
     public boolean cleanupCmd(CommandSender sender, Command cmd, String string, String[] args) {
         CreativeMessages         messages  = CreativeControl.getMessages();
         CreativeControl          plugin    = CreativeControl.getPlugin();
+        CreativeBlockCache       cache     = CreativeControl.getCache();
+        CreativeSQLDatabase      db        = CreativeControl.getDb();
+        CreativeCommunicator     com       = CreativeControl.getCommunicator();
+        
         if (!plugin.hasPerm(sender, "Commands.Cleanup")) {
             msg(sender, messages.commands_noperm);
             return false;
@@ -503,7 +531,9 @@ public class CreativeCommands implements CommandExecutor {
                             msg(sender, messages.commands_acleanup_help);
                             return true;
                         } else {
-                            //TODO: Full Cleanup
+                            String query = "DELETE FROM `"+db.prefix+"_blocks`";
+                            cache.clear();
+                            db.executeQuery(query);
                             msg(sender, messages.commands_cleanup_processed);
                             return true;
                         }
@@ -523,7 +553,27 @@ public class CreativeCommands implements CommandExecutor {
                                     msg(sender, messages.commands_tcleanup_help);
                                     return true;
                                 } else {
-                                    //TODO: Cleanup Type
+                                    List<String> locations = new ArrayList<String>();
+
+                                    try {
+                                        ResultSet rs = db.getQuery("SELECT location FROM `"+db.prefix+"blocks` WHERE type = '"+args[2].toLowerCase()+"'");
+                                        while (rs.next()) {
+                                            locations.add(rs.getString("location"));
+                                        }
+                                    } catch (SQLException ex) {
+                                        com.error("[TAG] Failed to get the block from the database, {0}", ex, ex.getMessage());
+                                        if (!db.isOk()) { db.fix(); }
+                                    }
+
+                                    for (String location : locations) {
+                                        Location loc = CreativeUtil.getLocation(location);
+                                        if (loc.getWorld().getName().equalsIgnoreCase(args[2])) {
+                                            String query = "DELETE FROM `"+db.prefix+"_blocks` WHERE location = '"+location+"'";
+                                            cache.remove(location);
+                                            db.executeQuery(query);
+                                        }
+                                    }
+                                    
                                     msg(sender, messages.commands_cleanup_processed);
                                     return true;
                                 }
@@ -549,7 +599,27 @@ public class CreativeCommands implements CommandExecutor {
                                     msg(sender, messages.commands_pcleanup_help);
                                     return true;
                                 } else {
-                                    //TODO: Cleanup Player
+                                    List<String> locations = new ArrayList<String>();
+
+                                    try {
+                                        ResultSet rs = db.getQuery("SELECT location FROM `"+db.prefix+"blocks` WHERE owner = '"+args[2].toLowerCase()+"'");
+                                        while (rs.next()) {
+                                            locations.add(rs.getString("location"));
+                                        }
+                                    } catch (SQLException ex) {
+                                        com.error("[TAG] Failed to get the block from the database, {0}", ex, ex.getMessage());
+                                        if (!db.isOk()) { db.fix(); }
+                                    }
+
+                                    for (String location : locations) {
+                                        Location loc = CreativeUtil.getLocation(location);
+                                        if (loc.getWorld().getName().equalsIgnoreCase(args[2])) {
+                                            String query = "DELETE FROM `"+db.prefix+"_blocks` WHERE location = '"+location+"'";
+                                            cache.remove(location);
+                                            db.executeQuery(query);
+                                        }
+                                    }
+                                    
                                     msg(sender, messages.commands_cleanup_processed);
                                     return true;
                                 }
@@ -575,7 +645,26 @@ public class CreativeCommands implements CommandExecutor {
                                     msg(sender, messages.commands_wcleanup_help);
                                     return true;
                                 } else {
-                                    //TODO: World Cleaup
+                                    List<String> locations = new ArrayList<String>();
+
+                                    try {
+                                        ResultSet rs = db.getQuery("SELECT location FROM `"+db.prefix+"blocks`");
+                                        while (rs.next()) {
+                                            locations.add(rs.getString("location"));
+                                        }
+                                    } catch (SQLException ex) {
+                                        com.error("[TAG] Failed to get the block from the database, {0}", ex, ex.getMessage());
+                                        if (!db.isOk()) { db.fix(); }
+                                    }
+
+                                    for (String location : locations) {
+                                        Location loc = CreativeUtil.getLocation(location);
+                                        if (loc.getWorld().getName().equalsIgnoreCase(args[2])) {
+                                            String query = "DELETE FROM `"+db.prefix+"_blocks` WHERE location = '"+location+"'";
+                                            cache.remove(location);
+                                            db.executeQuery(query);
+                                        }
+                                    }
                                     msg(sender, messages.commands_cleanup_processed);
                                     return true;
                                 }
@@ -1056,9 +1145,15 @@ public class CreativeCommands implements CommandExecutor {
                                         msg(sender, messages.commands_noperm);
                                         return true;
                                     } else {
-                                        //TODO: Add Tool
-                                        msg(sender, messages.commands_tool_act);
-                                        return true;
+                                        if (plugin.mods.containsKey(p.getName())) {
+                                            msg(sender, messages.commands_tool_dec);
+                                            plugin.mods.remove(p.getName());
+                                            return true;
+                                        } else {
+                                            plugin.mods.put(p.getName(), "Block-Add-Tool");
+                                            msg(sender, messages.commands_tool_act);
+                                            return true;
+                                        }
                                     }
                                 }
                             } else 
@@ -1071,9 +1166,15 @@ public class CreativeCommands implements CommandExecutor {
                                         msg(sender, messages.commands_noperm);
                                         return true;
                                     } else {
-                                        //TODO: Del Tool
-                                        msg(sender, messages.commands_tool_dec);
-                                        return true;
+                                        if (plugin.mods.containsKey(p.getName())) {
+                                            msg(sender, messages.commands_tool_dec);
+                                            plugin.mods.remove(p.getName());
+                                            return true;
+                                        } else {
+                                            plugin.mods.put(p.getName(), "Block-Del-Tool");
+                                            msg(sender, messages.commands_tool_act);
+                                            return true;
+                                        }
                                     }
                                 }
                             } else {

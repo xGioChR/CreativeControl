@@ -54,6 +54,8 @@ public class CreativeMainConfig {
         
     public boolean         perm_ophas        = false;
     
+    public int             selection_tool    = 378;
+    
     public boolean         events_move       = false;
     public boolean         events_misc       = false;
     
@@ -88,6 +90,8 @@ public class CreativeMainConfig {
         updater_enabled  = getBoolean("Updater.Enabled");
         
         perm_ophas       = getBoolean("Permissions.OpHasPerm");
+        
+        selection_tool    = getInteger("Selection.Tool");
         
         events_move      = getBoolean("Events.PlayerMove");
         events_misc      = getBoolean("Events.MiscProtection");

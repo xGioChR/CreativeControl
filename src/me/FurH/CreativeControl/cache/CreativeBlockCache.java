@@ -28,6 +28,10 @@ public class CreativeBlockCache {
     private int writes = 0;
     private int reads = 0;
 
+    public ConcurrentHashMap<String, String[]> get() {
+        return cache;
+    }
+    
     public int getMax() {
         return CreativeControl.getMainConfig().cache_capacity;
     }
