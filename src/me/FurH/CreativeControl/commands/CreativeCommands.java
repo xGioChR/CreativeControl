@@ -26,6 +26,8 @@ import me.FurH.CreativeControl.cache.CreativeBlockCache;
 import me.FurH.CreativeControl.configuration.CreativeMessages;
 import me.FurH.CreativeControl.data.friend.CreativePlayerFriends;
 import me.FurH.CreativeControl.database.CreativeSQLDatabase;
+import me.FurH.CreativeControl.database.extra.CreativeSQLBackup;
+import me.FurH.CreativeControl.database.extra.CreativeSQLCleanup;
 import me.FurH.CreativeControl.region.CreativeRegion;
 import me.FurH.CreativeControl.region.CreativeRegionCreator;
 import me.FurH.CreativeControl.selection.CreativeBlocksSelection;
@@ -298,17 +300,36 @@ public class CreativeCommands implements CommandExecutor {
                                                 return false;
                                             } else {
                                                 List<String> locations = new ArrayList<String>();
+                                                List<String> backup = new ArrayList<String>();
                                                 
+                                                long startTimer = System.currentTimeMillis();
+                                                long elapsedTime = 0;
+                                                
+                                                msg(sender, messages.updater_loading);
                                                 try {
-                                                    ResultSet rs = db.getQuery("SELECT location FROM `"+db.prefix+"blocks` WHERE owner = '"+sender.getName().toLowerCase()+"'");
+                                                    ResultSet rs = db.getQuery("SELECT * FROM `"+db.prefix+"blocks` WHERE owner = '"+sender.getName().toLowerCase()+"'");
                                                     while (rs.next()) {
                                                         locations.add(rs.getString("location"));
+                                                        backup.add("INSERT INTO `"+db.prefix+"_blocks` (id, owner, location, type, allowed, time) VALUES ('"+rs.getInt("id")+"',"
+                                                                + " '"+rs.getString("owner")+"', '"+rs.getString("location")+"', '"+rs.getInt("type")+"', '"+rs.getString("allowed")+"', '"+rs.getInt("time")+"')");
                                                     }
                                                 } catch (SQLException ex) {
                                                     com.error("[TAG] Failed to get the block from the database, {0}", ex, ex.getMessage());
                                                     if (!db.isOk()) { db.fix(); }
                                                 }
+                                                
+                                                elapsedTime = (System.currentTimeMillis() - startTimer);
+                                                msg(sender, messages.updater_loaded, locations.size(), elapsedTime);
 
+                                                /* Backup Start */
+                                                msg(sender, messages.backup_generating);
+
+                                                CreativeSQLBackup.backup(backup);
+
+                                                elapsedTime = (System.currentTimeMillis() - startTimer);
+                                                msg(sender, messages.backup_done, elapsedTime);
+                                                /* Backup End */
+                                                
                                                 for (String location : locations) {
                                                     cache.remove(location);
                                                 }
@@ -554,16 +575,35 @@ public class CreativeCommands implements CommandExecutor {
                                     return true;
                                 } else {
                                     List<String> locations = new ArrayList<String>();
+                                    List<String> backup = new ArrayList<String>();
 
+                                    long startTimer = System.currentTimeMillis();
+                                    long elapsedTime = 0;
+
+                                    msg(sender, messages.updater_loading);
                                     try {
-                                        ResultSet rs = db.getQuery("SELECT location FROM `"+db.prefix+"blocks` WHERE type = '"+args[2].toLowerCase()+"'");
+                                        ResultSet rs = db.getQuery("SELECT * FROM `"+db.prefix+"blocks` WHERE type = '"+args[2].toLowerCase()+"'");
                                         while (rs.next()) {
                                             locations.add(rs.getString("location"));
+                                            backup.add("INSERT INTO `"+db.prefix+"_blocks` (id, owner, location, type, allowed, time) VALUES ('"+rs.getInt("id")+"',"
+                                                    + " '"+rs.getString("owner")+"', '"+rs.getString("location")+"', '"+rs.getInt("type")+"', '"+rs.getString("allowed")+"', '"+rs.getInt("time")+"')");
                                         }
                                     } catch (SQLException ex) {
                                         com.error("[TAG] Failed to get the block from the database, {0}", ex, ex.getMessage());
                                         if (!db.isOk()) { db.fix(); }
                                     }
+                                    
+                                    elapsedTime = (System.currentTimeMillis() - startTimer);
+                                    msg(sender, messages.updater_loaded, locations.size(), elapsedTime);
+
+                                    /* Backup Start */
+                                    msg(sender, messages.backup_generating);
+
+                                    CreativeSQLBackup.backup(backup);
+
+                                    elapsedTime = (System.currentTimeMillis() - startTimer);
+                                    msg(sender, messages.backup_done, elapsedTime);
+                                    /* Backup End */
 
                                     for (String location : locations) {
                                         Location loc = CreativeUtil.getLocation(location);
@@ -600,16 +640,35 @@ public class CreativeCommands implements CommandExecutor {
                                     return true;
                                 } else {
                                     List<String> locations = new ArrayList<String>();
+                                    List<String> backup = new ArrayList<String>();
 
+                                    long startTimer = System.currentTimeMillis();
+                                    long elapsedTime = 0;
+
+                                    msg(sender, messages.updater_loading);
                                     try {
-                                        ResultSet rs = db.getQuery("SELECT location FROM `"+db.prefix+"blocks` WHERE owner = '"+args[2].toLowerCase()+"'");
+                                        ResultSet rs = db.getQuery("SELECT * FROM `"+db.prefix+"blocks` WHERE owner = '"+args[2].toLowerCase()+"'");
                                         while (rs.next()) {
                                             locations.add(rs.getString("location"));
+                                            backup.add("INSERT INTO `"+db.prefix+"_blocks` (id, owner, location, type, allowed, time) VALUES ('"+rs.getInt("id")+"',"
+                                                    + " '"+rs.getString("owner")+"', '"+rs.getString("location")+"', '"+rs.getInt("type")+"', '"+rs.getString("allowed")+"', '"+rs.getInt("time")+"')");
                                         }
                                     } catch (SQLException ex) {
                                         com.error("[TAG] Failed to get the block from the database, {0}", ex, ex.getMessage());
                                         if (!db.isOk()) { db.fix(); }
                                     }
+                                    
+                                    elapsedTime = (System.currentTimeMillis() - startTimer);
+                                    msg(sender, messages.updater_loaded, locations.size(), elapsedTime);
+
+                                    /* Backup Start */
+                                    msg(sender, messages.backup_generating);
+
+                                    CreativeSQLBackup.backup(backup);
+
+                                    elapsedTime = (System.currentTimeMillis() - startTimer);
+                                    msg(sender, messages.backup_done, elapsedTime);
+                                    /* Backup End */
 
                                     for (String location : locations) {
                                         Location loc = CreativeUtil.getLocation(location);
@@ -646,16 +705,35 @@ public class CreativeCommands implements CommandExecutor {
                                     return true;
                                 } else {
                                     List<String> locations = new ArrayList<String>();
+                                    List<String> backup = new ArrayList<String>();
 
+                                    long startTimer = System.currentTimeMillis();
+                                    long elapsedTime = 0;
+
+                                    msg(sender, messages.updater_loading);
                                     try {
                                         ResultSet rs = db.getQuery("SELECT location FROM `"+db.prefix+"blocks`");
                                         while (rs.next()) {
                                             locations.add(rs.getString("location"));
+                                            backup.add("INSERT INTO `"+db.prefix+"_blocks` (id, owner, location, type, allowed, time) VALUES ('"+rs.getInt("id")+"',"
+                                                    + " '"+rs.getString("owner")+"', '"+rs.getString("location")+"', '"+rs.getInt("type")+"', '"+rs.getString("allowed")+"', '"+rs.getInt("time")+"')");
                                         }
                                     } catch (SQLException ex) {
                                         com.error("[TAG] Failed to get the block from the database, {0}", ex, ex.getMessage());
                                         if (!db.isOk()) { db.fix(); }
                                     }
+                                    
+                                    elapsedTime = (System.currentTimeMillis() - startTimer);
+                                    msg(sender, messages.updater_loaded, locations.size(), elapsedTime);
+
+                                    /* Backup Start */
+                                    msg(sender, messages.backup_generating);
+
+                                    CreativeSQLBackup.backup(backup);
+
+                                    elapsedTime = (System.currentTimeMillis() - startTimer);
+                                    msg(sender, messages.backup_done, elapsedTime);
+                                    /* Backup End */
 
                                     for (String location : locations) {
                                         Location loc = CreativeUtil.getLocation(location);
@@ -684,8 +762,18 @@ public class CreativeCommands implements CommandExecutor {
                             msg(sender, messages.commands_ccleanup_help);
                             return true;
                         } else {
-                            //TODO: Cleanup
-                            return true;
+                            CreativeSQLCleanup cleanup = new CreativeSQLCleanup(null);
+                            if (sender instanceof Player) {
+                                cleanup = new CreativeSQLCleanup((Player)sender);
+                            }
+                            
+                            if (cleanup.lock) {
+                                msg(sender, messages.cleanup_locked);
+                                return true;
+                            } else {
+                                cleanup.start();
+                                return true;
+                            }
                         }
                     }
                 } else {

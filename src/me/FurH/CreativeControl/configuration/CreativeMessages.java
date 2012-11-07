@@ -216,6 +216,17 @@ public class CreativeMessages {
     public String updater_checkfailed            = "Commands.Updater.CheckFailed";
     public String updater_done                   = "Commands.Updater.Done";
     
+    public String backup_generating              = "Commands.Backup.Creating";
+    public String backup_done                    = "Commands.Backup.Done";
+    
+    public String cleanup_locked                 = "Commands.Cleanup.Locked";
+    public String cleanup_searching              = "Commands.Cleanup.Searching";
+    public String cleanup_process                = "Commands.Cleanup.Process";
+    public String cleanup_corrupted              = "Commands.Cleanup.Corrupted";
+    public String cleanup_duplicated             = "Commands.Cleanup.Duplicated";
+    public String cleanup_checkfailed            = "Commands.Cleanup.CheckFailed";
+    public String cleanup_done                   = "Commands.Cleanup.Done";
+
     public void load() {
         prefix_tag                     = getMessage("prefix.tag");
         prefix_small                   = getMessage("prefix.small");

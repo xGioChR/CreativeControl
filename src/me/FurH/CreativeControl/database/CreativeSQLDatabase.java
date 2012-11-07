@@ -390,7 +390,7 @@ public final class CreativeSQLDatabase {
     /*
      * Prepare and add the statement to the cache
      */
-    private PreparedStatement prepare(String query) {
+    public PreparedStatement prepare(String query) {
         if (cache.containsKey(query)) { 
             return cache.get(query); 
         } else {

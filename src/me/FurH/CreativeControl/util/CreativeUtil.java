@@ -218,4 +218,8 @@ public class CreativeUtil {
             return null;
         }
     }
+
+    public static String getSimpleDate(long date) {
+        return new SimpleDateFormat("dd-MM-yyyy-HH-mm-ss").format(date);
+    }
 }

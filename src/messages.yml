@@ -206,10 +206,17 @@ Commands:
     Duplicated: "&7Duplicated protection W&8:&a{0}&7 X&8:&a{1}&7 Y&8:&a{2}&7 Z&8:&a{3}&7"
     CheckFailed: "&cFailed to convert the protections!"
     Done: "&a{0}&7 Protections converted in &a{1}&7 ms!"
-
-    Locked: "&cVoc\u00ea nao pode executar duas atualiza\u00e7oes ao mesmo tempo!"
-    NotRequired: "&cNao é necessário executar uma atualiza\u00e7ao!"
-    TryAgain: "&7Se você deseja ignorar este aviso, use o comando novamente!"
+  Backup:
+    Creating: "&7Generating backup..."
+    Done: "&7Backup generated in &a{0}&7 ms"
+  Cleanup:
+    Locked: "&cYou cant ran multiples updates at the same time!"
+    Searching: "&7Searching for corrupted protections..."
+    Process: "&a{0}&7 of &a{1}&7 protections checked, &a{2}&7 corrupted, &a{3}%"
+    Corrupted: "&7Corrupted protection W&8:&a{0}&7 X&8:&a{1}&7 Y&8:&a{2}&7 Z&8:&a{3}&7 T&8:&a{4}&8/&a{5}"
+    Duplicated: "&7Duplicated protection W&8:&a{0}&7 X&8:&a{1}&7 Y&8:&a{2}&7 Z&8:&a{3}&7"
+    CheckFailed: "&cFailed to check for corrupted protections!"
+    Done: "&a{0}&7 protections removed in &a{1}&7 ms!"
   Help:
     cmd1: "[TAG] /cc add - add blocks from the selection"
     cmd2: "[TAG] /cc del - del blocks from the selection"
