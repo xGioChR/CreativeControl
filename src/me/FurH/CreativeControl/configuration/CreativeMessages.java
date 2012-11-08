@@ -69,6 +69,7 @@ public class CreativeMessages {
     
     public String entity_pvp                     = "ingame.entity.pvp";
     public String entity_mobs                    = "ingame.entity.mob";
+    public String entity_vehicle                 = "ingame.entity.vehicle";
     
     public String sel_null                       = "ingame.selection.selnull";
     public String sel_first                      = "ingame.selection.first";
@@ -266,6 +267,7 @@ public class CreativeMessages {
 
         entity_pvp                     = getMessage("ingame.entity.pvp");
         entity_mobs                    = getMessage("ingame.entity.mob");
+        entity_vehicle                 = getMessage("ingame.entity.vehicle");
 
         sel_null                       = getMessage("ingame.selection.selnull");
         sel_first                      = getMessage("ingame.selection.first");

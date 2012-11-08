@@ -70,4 +70,6 @@ public class CreativeWorldNodes {
     public boolean prevent_potion        = true;
     public boolean prevent_frame         = true;
     public boolean prevent_economy       = true;
+    public boolean prevent_vehicle       = true;
+    public int prevent_limitvechile      = -1;
 }

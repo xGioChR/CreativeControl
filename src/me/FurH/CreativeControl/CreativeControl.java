@@ -21,6 +21,11 @@ import de.diddiz.LogBlock.Consumer;
 import de.diddiz.LogBlock.LogBlock;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.WeakHashMap;
 import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -97,6 +102,10 @@ public class CreativeControl extends JavaPlugin {
     public WeakHashMap<Player, Location> left = new WeakHashMap<Player, Location>();
     
     public WeakHashMap<String, String> mods = new WeakHashMap<String, String>();
+    
+    public List<UUID> entity = new ArrayList<UUID>();
+    public Map<String, Integer> limits = new HashMap<String, Integer>();
+    public Player player = null;
     
     private Runnable update;
     
@@ -189,6 +198,7 @@ public class CreativeControl extends JavaPlugin {
         data.clear();
         friends.clear();
         database.clear();
+        entity.clear();
         
         database.close();
         logger.info("[CreativeControl] CreativeControl " + currentversion + " Disabled");
@@ -207,6 +217,7 @@ public class CreativeControl extends JavaPlugin {
         data.clear();
         friends.clear();
         database.clear();
+        entity.clear();
         
         messages.load();
         mainconfig.load();

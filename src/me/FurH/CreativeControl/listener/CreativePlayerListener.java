@@ -29,7 +29,9 @@ import me.FurH.CreativeControl.util.CreativeCommunicator;
 import me.FurH.CreativeControl.util.CreativeUtil;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.HumanEntity;
+import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -470,8 +472,13 @@ public class CreativePlayerListener implements Listener {
                         e.setCancelled(true);
                         return;
                     }
-
                 }
+            }
+        }
+        
+        if (p.getItemInHand().getType() == Material.MINECART || p.getItemInHand().getType() == Material.BOAT) {
+            if (p.getGameMode().equals(GameMode.CREATIVE)) {
+                plugin.player = p;
             }
         }
         

@@ -99,6 +99,8 @@ public class CreativeWorldConfig {
         nodes.prevent_potion        = getBoolean(w, "Preventions.PotionSplash");
         nodes.prevent_frame         = getBoolean(w, "Preventions.ItemFrame");
         nodes.prevent_economy       = getBoolean(w, "Preventions.EconomySign");
+        nodes.prevent_vehicle       = getBoolean(w, "Preventions.VehicleDrop");
+        nodes.prevent_limitvechile  = getInteger(w, "Preventions.VehicleLimit");
 
         CreativeMainConfig   main   = CreativeControl.getMainConfig();
         if (!main.config_single) {
@@ -111,6 +113,13 @@ public class CreativeWorldConfig {
      */
     private static boolean getBoolean(World w, String node) {
         return Boolean.parseBoolean(getSetting(node, w));
+    }
+    
+    /*
+     * return a Integer from the settings file
+     */
+    private static int getInteger(World w, String node) {
+        return Integer.parseInt(getSetting(node, w));
     }
 
     /*

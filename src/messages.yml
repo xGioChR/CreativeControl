@@ -26,6 +26,7 @@ ingame:
   entity:
     pvp: "[TAG] &7You can''t attack other players!"
     mob: "[TAG] &7You can''t attack {0}"
+    vehicle: "[TAG] &7You reach the limit of vehicles, destroy the old ones!"
   player:
     cmdblacklist: "[SMALL]&7 This comand &4isn''t&7 allowed in creative mode!"
     cantuse: "[TAG] &7You can''t use this in creative mode!"
