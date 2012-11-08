@@ -978,7 +978,7 @@ public class CreativeCommands implements CommandExecutor {
                                 }
                             } else {
                                 if (args[2].equalsIgnoreCase("vert")) {
-                                    if (args[3].equalsIgnoreCase("?")) {
+                                    if (args.length > 3) {
                                         msg(sender, messages.commands_vsel_help);
                                         msg(sender, messages.commands_sel_more);
                                         return true;
