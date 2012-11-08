@@ -199,6 +199,7 @@ public class CreativeControl extends JavaPlugin {
         friends.clear();
         database.clear();
         entity.clear();
+        limits.clear();
         
         database.close();
         logger.info("[CreativeControl] CreativeControl " + currentversion + " Disabled");
@@ -218,6 +219,7 @@ public class CreativeControl extends JavaPlugin {
         friends.clear();
         database.clear();
         entity.clear();
+        limits.clear();
         
         messages.load();
         mainconfig.load();
