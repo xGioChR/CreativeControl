@@ -58,13 +58,15 @@ public class CreativePlayerListener implements Listener {
 
         if (player instanceof Player) {
             Player p = (Player)player;
-            CreativeWorldNodes config = CreativeWorldConfig.get(p.getWorld());
-            CreativeControl       plugin   = CreativeControl.getPlugin();
-            if (config.world_exclude) { return; }
-            if (!plugin.hasPerm(p, "BlackList.Inventory")) {
-                for (ItemStack item : p.getInventory().getContents()) {
-                    if (config.black_inventory.contains(item.getTypeId())) {
-                        p.getInventory().remove(item);
+            if (p.getGameMode().equals(GameMode.CREATIVE)) {
+                CreativeWorldNodes config = CreativeWorldConfig.get(p.getWorld());
+                CreativeControl       plugin   = CreativeControl.getPlugin();
+                if (config.world_exclude) { return; }
+                if (!plugin.hasPerm(p, "BlackList.Inventory")) {
+                    for (ItemStack item : p.getInventory().getContents()) {
+                        if (config.black_inventory.contains(item.getTypeId())) {
+                            p.getInventory().remove(item);
+                        }
                     }
                 }
             }
@@ -499,7 +501,6 @@ public class CreativePlayerListener implements Listener {
                             if (!plugin.hasPerm(p, "Preventions.PotionSplash")) {
                                 com.msg(p, messages.player_cantuse, ItemName);
                                 e.setCancelled(true);
-                                return;
                             }
                         }
                     }
