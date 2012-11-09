@@ -48,17 +48,7 @@ import org.bukkit.inventory.ItemStack;
  * @author FurmigaHumana
  */
 public class CreativePlayerListener implements Listener {
-    
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
-    public void onInventoryClick2(InventoryClickEvent e) {
-        HumanEntity player = e.getWhoClicked();
-        
-        if (player instanceof Player) {
-            Player p = (Player)player;
 
-        }
-    }
-    
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onPlayerGameModeChange(final PlayerGameModeChangeEvent e) {
         if (e.isCancelled()) { return; }
@@ -219,10 +209,12 @@ public class CreativePlayerListener implements Listener {
                 if (cursor.getAmount() > stacklimit) {
                     cursor.setAmount(stacklimit);
                 }
-                
+
                 for (ItemStack item : p.getInventory().getContents()) {
-                    if (item != null && item.getAmount() > stacklimit) {
-                        item.setAmount(stacklimit);
+                    if (item != null) {
+                        if (item.getAmount() > stacklimit) {
+                            item.setAmount(stacklimit);
+                        }
                     }
                 }
             }
@@ -241,8 +233,10 @@ public class CreativePlayerListener implements Listener {
                 }
 
                 for (ItemStack item : p.getInventory().getContents()) {
-                    if (item != null && config.black_inventory.contains(item.getTypeId())) {
-                        p.getInventory().remove(item);
+                    if (item != null) {
+                        if (config.black_inventory.contains(item.getTypeId())) {
+                            p.getInventory().remove(item);
+                        }
                     }
                 }
             }
