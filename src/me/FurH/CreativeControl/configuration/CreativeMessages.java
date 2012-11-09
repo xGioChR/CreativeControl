@@ -220,13 +220,13 @@ public class CreativeMessages {
     public String backup_generating              = "Commands.Backup.Creating";
     public String backup_done                    = "Commands.Backup.Done";
     
-    public String cleanup_locked                 = "Commands.Cleanup.Locked";
-    public String cleanup_searching              = "Commands.Cleanup.Searching";
-    public String cleanup_process                = "Commands.Cleanup.Process";
-    public String cleanup_corrupted              = "Commands.Cleanup.Corrupted";
-    public String cleanup_duplicated             = "Commands.Cleanup.Duplicated";
-    public String cleanup_checkfailed            = "Commands.Cleanup.CheckFailed";
-    public String cleanup_done                   = "Commands.Cleanup.Done";
+    public String cleanup_locked                 = "Commands.CleanupProcess.Locked";
+    public String cleanup_searching              = "Commands.CleanupProcess.Searching";
+    public String cleanup_process                = "Commands.CleanupProcess.Process";
+    public String cleanup_corrupted              = "Commands.CleanupProcess.Corrupted";
+    public String cleanup_duplicated             = "Commands.CleanupProcess.Duplicated";
+    public String cleanup_checkfailed            = "Commands.CleanupProcess.CheckFailed";
+    public String cleanup_done                   = "Commands.CleanupProcess.Done";
 
     public void load() {
         prefix_tag                     = getMessage("prefix.tag");
@@ -417,13 +417,13 @@ public class CreativeMessages {
         backup_generating              = getMessage("Commands.Backup.Creating");
         backup_done                    = getMessage("Commands.Backup.Done");
         
-        cleanup_locked                 = getMessage("Commands.Cleanup.Locked");
-        cleanup_searching              = getMessage("Commands.Cleanup.Searching");
-        cleanup_process                = getMessage("Commands.Cleanup.Process");
-        cleanup_corrupted              = getMessage("Commands.Cleanup.Corrupted");
-        cleanup_duplicated             = getMessage("Commands.Cleanup.Duplicated");
-        cleanup_checkfailed            = getMessage("Commands.Cleanup.CheckFailed");
-        cleanup_done                   = getMessage("Commands.Cleanup.Done");
+        cleanup_locked                 = getMessage("Commands.CleanupProcess.Locked");
+        cleanup_searching              = getMessage("Commands.CleanupProcess.Searching");
+        cleanup_process                = getMessage("Commands.CleanupProcess.Process");
+        cleanup_corrupted              = getMessage("Commands.CleanupProcess.Corrupted");
+        cleanup_duplicated             = getMessage("Commands.CleanupProcess.Duplicated");
+        cleanup_checkfailed            = getMessage("Commands.CleanupProcess.CheckFailed");
+        cleanup_done                   = getMessage("Commands.CleanupProcess.Done");
     }
     
     private String getMessage(String node) {

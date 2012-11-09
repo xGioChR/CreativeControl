@@ -210,7 +210,7 @@ Commands:
   Backup:
     Creating: "&7Generating backup..."
     Done: "&7Backup generated in &a{0}&7 ms"
-  Cleanup:
+  CleanupProcess:
     Locked: "&cYou cant ran multiples updates at the same time!"
     Searching: "&7Searching for corrupted protections..."
     Process: "&a{0}&7 of &a{1}&7 protections checked, &a{2}&7 corrupted, &a{3}%"
