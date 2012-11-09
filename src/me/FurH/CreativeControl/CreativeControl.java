@@ -58,6 +58,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.Plugin;
@@ -191,6 +192,7 @@ public class CreativeControl extends JavaPlugin {
     public void onDisable() {
         HandlerList.unregisterAll(this);
 
+        clear();
         right.clear();
         left.clear();
         mods.clear();
@@ -211,6 +213,7 @@ public class CreativeControl extends JavaPlugin {
         boolean move = mainconfig.events_move;
         boolean misc = mainconfig.events_misc;
         
+        clear();
         right.clear();
         left.clear();
         mods.clear();
@@ -260,6 +263,16 @@ public class CreativeControl extends JavaPlugin {
             } else {
                 HandlerList.unregisterAll(new CreativeMoveListener());
                 communicator.msg(p, "[TAG] CreativeMiscListener unregistered, Listener disabled.");
+            }
+        }
+    }
+    
+    private void clear() {
+        for (World w : getServer().getWorlds()) {
+            for (Entity x : w.getEntities()) {
+                if (entity.contains(x.getUniqueId())) {
+                    x.remove();
+                }
             }
         }
     }
