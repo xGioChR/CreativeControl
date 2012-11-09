@@ -443,28 +443,28 @@ public class CreativeMessages {
 
                 if (rsconfig.contains(node)) {
                     config.set(node, rsconfig.getString(node));
-                    com.log(CreativeControl.tag + "Messages file updated, check at: {0}", node);
+                    com.log(CreativeControl.tag + "Messages file updated, check at: " + node);
                 } else {
                     config.set(node, node);
-                    com.log(CreativeControl.tag + "Can't get the message node {0}, contact the developer.", Type.SEVERE, node);
+                    com.log(CreativeControl.tag + "Can't get the message node "+node+", contact the developer.", Type.SEVERE);
                 }
 
                 try {
                     config.save(dir);
                 } catch (IOException ex) {
-                    com.error(CreativeControl.tag + "Can't update the messages file: {0}", ex, ex.getMessage());
+                    com.error(CreativeControl.tag + "Can't update the messages file: " + ex.getMessage(), ex);
                 }
             }
         } catch (IOException e) {
-            com.error(CreativeControl.tag + "Can't load the messages file: {0}", e, e.getMessage());
+            com.error(CreativeControl.tag + "Can't load the messages file: " + e.getMessage(), e);
         } catch (InvalidConfigurationException ex) {
-            com.error(CreativeControl.tag + "Can't load the messages file: {0}", ex, ex.getMessage());
-            com.log(CreativeControl.tag + " You have a broken message node at: {0}", node);
+            com.error(CreativeControl.tag + "Can't load the messages file: "+ ex.getMessage(), ex);
+            com.log(CreativeControl.tag + " You have a broken message node at: " + node);
         }
         
         String value = config.getString(node);
         if (value == null || "".equals(value)) {
-            com.log(CreativeControl.tag + " You have a missing message node at: {0}", Type.SEVERE, node);
+            com.log(CreativeControl.tag + " You have a missing message node at: " + node, Type.SEVERE);
             value = node;
         }
         return value;
