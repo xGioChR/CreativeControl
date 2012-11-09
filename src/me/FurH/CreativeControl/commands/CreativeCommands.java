@@ -1213,7 +1213,7 @@ public class CreativeCommands implements CommandExecutor {
             return false;
         } else {
             msg(sender, messages.commands_reloading);
-            plugin.reload((Player)sender);
+            plugin.reload(sender);
             msg(sender, messages.commands_reloaded);
         }
         if(args.length > 1) {

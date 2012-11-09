@@ -208,7 +208,7 @@ public class CreativeControl extends JavaPlugin {
         getServer().getScheduler().cancelTasks(this);
     }
     
-    public void reload(Player p) {
+    public void reload(CommandSender sender) {
         boolean ssql = mainconfig.database_mysql;
         boolean move = mainconfig.events_move;
         boolean misc = mainconfig.events_misc;
@@ -242,27 +242,27 @@ public class CreativeControl extends JavaPlugin {
         if (ssql != newssql) {
             new CreativeSQLDatabase(this, false);
             database = new CreativeSQLDatabase(this, true);
-            communicator.msg(p, "[TAG] Database Type: &4{0}&7 Defined.", newssql ? "MySQL" : "SQLite");
+            communicator.msg(sender, "[TAG] Database Type: &4{0}&7 Defined.", newssql ? "MySQL" : "SQLite");
         }
         
         PluginManager pm = getServer().getPluginManager();
         if (move != newmove) {
             if (newmove) {
                 pm.registerEvents(new CreativeMoveListener(), this);
-                communicator.msg(p, "[TAG] CreativeMoveListener registred, Listener enabled.");
+                communicator.msg(sender, "[TAG] CreativeMoveListener registred, Listener enabled.");
             } else {
                 HandlerList.unregisterAll(new CreativeMoveListener());
-                communicator.msg(p, "[TAG] CreativeMoveListener unregistered, Listener disabled.");
+                communicator.msg(sender, "[TAG] CreativeMoveListener unregistered, Listener disabled.");
             }
         }
 
         if (misc != newmisc) {
             if (newmisc) {
                 pm.registerEvents(new CreativeMiscListener(), this);
-                communicator.msg(p, "[TAG] CreativeMiscListener registred, Listener enabled.");
+                communicator.msg(sender, "[TAG] CreativeMiscListener registred, Listener enabled.");
             } else {
                 HandlerList.unregisterAll(new CreativeMoveListener());
-                communicator.msg(p, "[TAG] CreativeMiscListener unregistered, Listener disabled.");
+                communicator.msg(sender, "[TAG] CreativeMiscListener unregistered, Listener disabled.");
             }
         }
     }
