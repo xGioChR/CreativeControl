@@ -29,7 +29,6 @@ import me.FurH.CreativeControl.util.CreativeCommunicator;
 import me.FurH.CreativeControl.util.CreativeUtil;
 import org.bukkit.*;
 import org.bukkit.block.Block;
-import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -417,10 +416,12 @@ public class CreativePlayerListener implements Listener {
         CreativeMainConfig    main     = CreativeControl.getMainConfig();
         
         if (config.prevent_economy) {
-            if (i != null && i.getType() == Material.WALL_SIGN || i.getType() == Material.SIGN_POST) {
-                com.msg(p, messages.player_cantdo);
-                e.setCancelled(true);
-                return;
+            if (i != null) {
+                if (i.getType() == Material.WALL_SIGN || i.getType() == Material.SIGN_POST) {
+                    com.msg(p, messages.player_cantdo);
+                    e.setCancelled(true);
+                    return;
+                }
             }
         }
 
