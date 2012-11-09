@@ -38,7 +38,6 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.enchantment.EnchantItemEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.InventoryView;
@@ -51,25 +50,12 @@ import org.bukkit.inventory.ItemStack;
 public class CreativePlayerListener implements Listener {
     
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
-    public void onInventoryClose(InventoryCloseEvent e) {        
-        HumanEntity player = e.getPlayer();
+    public void onInventoryClick2(InventoryClickEvent e) {
+        HumanEntity player = e.getWhoClicked();
         
-        if (e.getInventory().getType() != InventoryType.PLAYER) { return; }
-
         if (player instanceof Player) {
             Player p = (Player)player;
-            if (p.getGameMode().equals(GameMode.CREATIVE)) {
-                CreativeWorldNodes config = CreativeWorldConfig.get(p.getWorld());
-                CreativeControl       plugin   = CreativeControl.getPlugin();
-                if (config.world_exclude) { return; }
-                if (!plugin.hasPerm(p, "BlackList.Inventory")) {
-                    for (ItemStack item : p.getInventory().getContents()) {
-                        if (config.black_inventory.contains(item.getTypeId())) {
-                            p.getInventory().remove(item);
-                        }
-                    }
-                }
-            }
+
         }
     }
     
@@ -208,8 +194,8 @@ public class CreativePlayerListener implements Listener {
         if (config.world_exclude) { return; }
         
         if (p.getGameMode().equals(GameMode.CREATIVE)) {
+            CreativeControl       plugin   = CreativeControl.getPlugin();
             if (config.prevent_invinteract) {
-                CreativeControl       plugin   = CreativeControl.getPlugin();
                 if (!plugin.hasPerm(p, "Preventions.InventoryInteract")) {
                     int slot = e.getRawSlot();
                     if (e.getInventory().getType() == InventoryType.PLAYER) {
@@ -218,6 +204,45 @@ public class CreativePlayerListener implements Listener {
                         }
                     } else {
                         e.setCancelled(true);
+                    }
+                }
+            }
+            
+            if (!plugin.hasPerm(p, "Preventions.StackLimit")) {
+                int stacklimit = config.prevent_stacklimit;
+                ItemStack current = e.getCurrentItem();
+                if (current.getAmount() > stacklimit) {
+                    current.setAmount(stacklimit);
+                }
+                
+                ItemStack cursor = e.getCursor();
+                if (cursor.getAmount() > stacklimit) {
+                    cursor.setAmount(stacklimit);
+                }
+                
+                for (ItemStack item : p.getInventory().getContents()) {
+                    if (item != null && item.getAmount() > stacklimit) {
+                        item.setAmount(stacklimit);
+                    }
+                }
+            }
+            
+            if (!plugin.hasPerm(p, "BlackList.Inventory")) {
+                ItemStack current = e.getCurrentItem();
+                if (config.black_inventory.contains(current.getTypeId())) {
+                    p.getInventory().remove(current);
+                    e.setCancelled(true);
+                }
+                
+                ItemStack cursor = e.getCursor();
+                if (config.black_inventory.contains(cursor.getTypeId())) {
+                    p.getInventory().remove(cursor);
+                    e.setCancelled(true);
+                }
+
+                for (ItemStack item : p.getInventory().getContents()) {
+                    if (item != null && config.black_inventory.contains(item.getTypeId())) {
+                        p.getInventory().remove(item);
                     }
                 }
             }

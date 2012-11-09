@@ -103,6 +103,7 @@ public class CreativeWorldConfig {
         x.prevent_economy       = getBoolean(w, "Preventions.EconomySign");
         x.prevent_vehicle       = getBoolean(w, "Preventions.VehicleDrop");
         x.prevent_limitvechile  = getInteger(w, "Preventions.VehicleLimit");
+        x.prevent_stacklimit    = getInteger(w, "Preventions.StackLimit");
 
         CreativeMainConfig   main   = CreativeControl.getMainConfig();
         if (!main.config_single) {

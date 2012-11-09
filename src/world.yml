@@ -103,3 +103,5 @@ Preventions:
   VehicleDrop: true
   ## VehicleLimit, set a limit of how much vehicles a creative player can create without destroying the old one
   VehicleLimit: -1
+  ## StackLimit, set the limit of amount per item that a creative player can have
+  StackLimit: 1

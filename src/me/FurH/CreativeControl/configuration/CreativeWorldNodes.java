@@ -72,4 +72,5 @@ public class CreativeWorldNodes {
     public boolean prevent_economy       = true;
     public boolean prevent_vehicle       = true;
     public int prevent_limitvechile      = -1;
+    public int prevent_stacklimit        = 1;
 }
