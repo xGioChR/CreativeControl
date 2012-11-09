@@ -21,7 +21,6 @@ import java.sql.SQLException;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.database.CreativeSQLDatabase;
 import me.FurH.CreativeControl.region.CreativeRegion.gmType;
-import me.FurH.CreativeControl.selection.CreativeSelection;
 import me.FurH.CreativeControl.util.CreativeCommunicator;
 import me.FurH.CreativeControl.util.CreativeUtil;
 import org.bukkit.Location;
@@ -88,21 +87,19 @@ public class CreativeRegionCreator {
     /*
      * Save regions
      */
-    public void saveRegion(String name, gmType type, CreativeSelection sel) {                
-        String start = CreativeUtil.getLocation(sel.getStart());
-        String end = CreativeUtil.getLocation(sel.getEnd());
-        
+    public void saveRegion(String name, gmType type, Location start, Location end) {          
+
         CreativeSQLDatabase db = CreativeControl.getDb();
         CreativeRegion regions = CreativeControl.getRegions();
 
         if (!getRegion(name)) {
-            regions.add(name, sel.getStart(), sel.getEnd(), type.toString());
-            String query = "INSERT INTO `"+db.prefix+"regions` (name, start, end, type) VALUES ('"+name+"', '"+start+"', '"+end+"', '"+type.toString()+"')";
+            regions.add(name, start, end, type.toString());
+            String query = "INSERT INTO `"+db.prefix+"regions` (name, start, end, type) VALUES ('"+name+"', '"+CreativeUtil.getLocation(start)+"', '"+CreativeUtil.getLocation(end)+"', '"+type.toString()+"')";
             db.executeQuery(query);
         } else {
             regions.remove(name);
-            regions.add(name, sel.getStart(), sel.getEnd(), type.toString());
-            String query = "UPDATE `"+db.prefix+"regions` SET start = '"+start+"', end = '"+end+"', type = '"+type.toString()+"' WHERE name = '"+name+"'";
+            regions.add(name, start, end, type.toString());
+            String query = "UPDATE `"+db.prefix+"regions` SET start = '"+CreativeUtil.getLocation(start)+"', end = '"+CreativeUtil.getLocation(end)+"', type = '"+type.toString()+"' WHERE name = '"+name+"'";
             db.executeQuery(query);
         }
     }

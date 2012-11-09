@@ -16,6 +16,7 @@
 
 package me.FurH.CreativeControl.commands;
 
+import com.sk89q.worldedit.bukkit.selections.Selection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -23,12 +24,14 @@ import java.util.Arrays;
 import java.util.List;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.cache.CreativeBlockCache;
+import me.FurH.CreativeControl.configuration.CreativeMainConfig;
 import me.FurH.CreativeControl.configuration.CreativeMessages;
 import me.FurH.CreativeControl.data.friend.CreativePlayerFriends;
 import me.FurH.CreativeControl.database.CreativeSQLDatabase;
 import me.FurH.CreativeControl.database.extra.CreativeSQLBackup;
 import me.FurH.CreativeControl.database.extra.CreativeSQLCleanup;
 import me.FurH.CreativeControl.region.CreativeRegion;
+import me.FurH.CreativeControl.region.CreativeRegion.gmType;
 import me.FurH.CreativeControl.region.CreativeRegionCreator;
 import me.FurH.CreativeControl.selection.CreativeBlocksSelection;
 import me.FurH.CreativeControl.selection.CreativeBlocksSelection.Type;
@@ -1046,6 +1049,8 @@ public class CreativeCommands implements CommandExecutor {
     public boolean regionCmd(CommandSender sender, Command cmd, String string, String[] args) {
         CreativeMessages         messages  = CreativeControl.getMessages();
         CreativeControl          plugin    = CreativeControl.getPlugin();
+        CreativeBlocksSelection  selection = CreativeControl.getSelector();
+        CreativeMainConfig       main      = CreativeControl.getMainConfig();
         if (!(sender instanceof Player)) {
             msg(sender, messages.commands_nothere);
             return false;
@@ -1076,14 +1081,34 @@ public class CreativeCommands implements CommandExecutor {
                                                 msg(sender, messages.commands_crdefine_help);
                                                 return true;
                                             } else {
-                                                if ((left == null) || (right == null)) {
-                                                    msg(sender, messages.sel_null);
-                                                } else {
+                                                Location start = null;
+                                                Location end = null;
+                                                
+                                                if (!main.selection_usewe || selection.getSelection((Player)sender) == null) {
+                                                    if ((left == null) || (right == null)) {
+                                                        msg(sender, messages.sel_null);
+                                                        return true;
+                                                    }
+                                                    
                                                     CreativeSelection sel = new CreativeSelection(left, right);
-                                                    setRegion(CreativeRegion.gmType.CREATIVE, args[3], sel);
-                                                    msg(sender, messages.commands_region_created, args[3]);
-                                                    return true;
+
+                                                    start = sel.getStart();
+                                                    end = sel.getEnd();
+                                                } else {
+                                                    Selection sel = selection.getSelection((Player)sender);
+
+                                                    if (sel == null) {
+                                                        msg(sender, messages.sel_null);
+                                                        return true;
+                                                    }
+
+                                                    start = sel.getMinimumPoint();
+                                                    end = sel.getMaximumPoint();
                                                 }
+
+                                                setRegion(gmType.CREATIVE, args[3], start, end);
+                                                msg(sender, messages.commands_region_created, args[3]);
+                                                return true;
                                             }
                                         } else
                                         if (args[2].equalsIgnoreCase("survival")) {
@@ -1092,14 +1117,34 @@ public class CreativeCommands implements CommandExecutor {
                                                 msg(sender, messages.commands_srdefine_help);
                                                 return true;
                                             } else {
-                                                if ((left == null) || (right == null)) {
-                                                    msg(sender, messages.sel_null);
-                                                } else {
+                                                Location start = null;
+                                                Location end = null;
+                                                
+                                                if (!main.selection_usewe || selection.getSelection((Player)sender) == null) {
+                                                    if ((left == null) || (right == null)) {
+                                                        msg(sender, messages.sel_null);
+                                                        return true;
+                                                    }
+                                                    
                                                     CreativeSelection sel = new CreativeSelection(left, right);
-                                                    setRegion(CreativeRegion.gmType.SURVIVAL, args[3], sel);
-                                                    msg(sender, messages.commands_region_created, args[3]);
-                                                    return true;
+
+                                                    start = sel.getStart();
+                                                    end = sel.getEnd();
+                                                } else {
+                                                    Selection sel = selection.getSelection((Player)sender);
+
+                                                    if (sel == null) {
+                                                        msg(sender, messages.sel_null);
+                                                        return true;
+                                                    }
+
+                                                    start = sel.getMinimumPoint();
+                                                    end = sel.getMaximumPoint();
                                                 }
+
+                                                setRegion(gmType.SURVIVAL, args[3], start, end);
+                                                msg(sender, messages.commands_region_created, args[3]);
+                                                return true;
                                             }
                                         } else {
                                             msg(sender, messages.commands_crdefine_usage);
@@ -1284,10 +1329,10 @@ public class CreativeCommands implements CommandExecutor {
         return true;
     }
     
-    public void setRegion(CreativeRegion.gmType type, String name, CreativeSelection sel) {
+    public void setRegion(CreativeRegion.gmType type, String name, Location start, Location end) {
         CreativeRegionCreator    region    = CreativeControl.getRegioner();
-        CreativeControl.getRegions().add(type, name, sel);
-        region.saveRegion(name, type, sel);
+        CreativeControl.getRegions().add(name, start, end, type.toString());
+        region.saveRegion(name, type, start, end);
     }
 
     private void removeRegion(String string) {

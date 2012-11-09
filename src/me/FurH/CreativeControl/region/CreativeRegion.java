@@ -18,7 +18,6 @@ package me.FurH.CreativeControl.region;
 
 import java.util.ArrayList;
 import me.FurH.CreativeControl.CreativeControl;
-import me.FurH.CreativeControl.selection.CreativeSelection;
 import org.bukkit.Location;
 import org.bukkit.World;
 
@@ -28,7 +27,6 @@ import org.bukkit.World;
  */
 public class CreativeRegion {
     private ArrayList<CreativeRegion> areas = new ArrayList<CreativeRegion>();
-    private CreativeSelection selection;
     private Location start, end;
     private gmType type;
     private String name;
@@ -43,11 +41,7 @@ public class CreativeRegion {
     public void add(String name, Location start, Location end, String type) {
         areas.add(new CreativeRegion(type, name, start, end));
     }
-    
-    public void add(gmType type, String name, CreativeSelection sel) {
-        add(name, sel.getStart(), sel.getEnd(), type.toString());
-    }
-    
+
     public void remove(String name) {
         for (CreativeRegion region: areas) {
             if (region.name.equalsIgnoreCase(name)) {
@@ -61,7 +55,6 @@ public class CreativeRegion {
     public CreativeRegion(Location loc) {
         for (CreativeRegion region : areas) {
             if (region.contains(loc)) {
-                this.selection = region.getSelection();
                 this.start = region.getStart();
                 this.end = region.getEnd(); 
                 this.type = region.type;
@@ -72,18 +65,8 @@ public class CreativeRegion {
             break; //TODO: NEEDED?
         }
     }
-    
-    public CreativeRegion(gmType type, String name, CreativeSelection sel) {
-        this.selection = sel;
-        this.start = sel.getStart();
-        this.end = sel.getEnd(); 
-        this.type = type;
-        this.name = name;
-        this.world = start.getWorld();
-    }
-    
+
     public CreativeRegion(String type, String name, Location start, Location end) {
-        this.selection = new CreativeSelection(start, end);
         this.start = start;
         this.end = end;
         
@@ -96,10 +79,6 @@ public class CreativeRegion {
 
         this.name = name;
         this.world = start.getWorld();
-    }
-    
-    public CreativeSelection getSelection() {
-        return selection;
     }
     
     public Location getStart() {

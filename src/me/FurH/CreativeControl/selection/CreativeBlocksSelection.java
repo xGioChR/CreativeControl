@@ -16,9 +16,12 @@
 
 package me.FurH.CreativeControl.selection;
 
+import com.sk89q.worldedit.bukkit.WorldEditPlugin;
+import com.sk89q.worldedit.bukkit.selections.Selection;
 import java.util.ArrayList;
 import java.util.List;
 import me.FurH.CreativeControl.CreativeControl;
+import me.FurH.CreativeControl.configuration.CreativeMainConfig;
 import me.FurH.CreativeControl.configuration.CreativeMessages;
 import me.FurH.CreativeControl.configuration.CreativeWorldConfig;
 import me.FurH.CreativeControl.configuration.CreativeWorldNodes;
@@ -31,7 +34,6 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.util.Vector;
 
 /**
  *
@@ -39,7 +41,8 @@ import org.bukkit.util.Vector;
  */
 public class CreativeBlocksSelection {
     private long elapsedTime = 0;
-    private Vector vector;
+    private Location min = null;
+    private Location max = null;
 
     public enum Type {
         DELALL, DELPLAYER, DELTYPE, ADD, ALLOW, TRANSFER;
@@ -50,24 +53,41 @@ public class CreativeBlocksSelection {
         final CreativeBlockManager manager  = CreativeControl.getManager();
         final CreativeCommunicator com      = CreativeControl.getCommunicator();
         final CreativeMessages     messages = CreativeControl.getMessages();
+        final CreativeMainConfig   main     = CreativeControl.getMainConfig();
         
         if (!plugin.hasPerm(sender, "Commands.Use.others")) {
             if ((!args.equalsIgnoreCase(sender.getName()))) {
                 com.msg(sender, messages.allblocks_othername);
-                return false;
+                return true;
             }
         }
         
-        if (!plugin.left.containsKey((Player)sender) && !plugin.right.containsKey((Player)sender)) {
-            com.msg(sender, messages.allblocks_selnull);
-            return false;
+        int area = 0;
+        if (!main.selection_usewe || getSelection((Player)sender) == null) {
+            if (!plugin.left.containsKey((Player)sender) && !plugin.right.containsKey((Player)sender)) {
+                com.msg(sender, messages.allblocks_selnull);
+                return true;
+            }
+        
+            final CreativeSelection sel = new CreativeSelection(plugin.left.get((Player)sender), plugin.right.get((Player)sender));
+            
+            area = sel.getArea();
+            min = sel.getStart();
+            max = sel.getEnd();
+        } else {
+            Selection sel = getSelection((Player)sender);
+            
+            if (sel == null) {
+                com.msg(sender, messages.allblocks_selnull);
+                return true;
+            }
+            
+            area = sel.getArea();
+            min = sel.getMinimumPoint();
+            max = sel.getMaximumPoint();
         }
-        
-        final CreativeSelection sel = new CreativeSelection(plugin.left.get((Player)sender), plugin.right.get((Player)sender));
-        
-        vector = sel.getVector();
-        
-        com.msg(sender, messages.allblocks_selsize, sel.getArea());
+
+        com.msg(sender, messages.allblocks_selsize, area);
         com.msg(sender, messages.allblocks_while);
 
         long startTimer = System.currentTimeMillis();
@@ -75,15 +95,16 @@ public class CreativeBlocksSelection {
         Thread t = new Thread() {
             @Override
             public void run() {
-                for (int x = 0; x <= Math.abs(vector.getBlockX()); x++) {
-                    for (int y = 0; y <= Math.abs(vector.getBlockY()); y++) {
-                        for (int z = 0; z <= Math.abs(vector.getBlockZ()); z++) {
-                            Location start = sel.getStart();
-                            Block block = start.getWorld().getBlockAt(start.getBlockX() + x, start.getBlockY() + y, start.getBlockZ() + z);
+                for (int x = min.getBlockX(); x <= max.getBlockX(); x++) {
+                    for (int y = min.getBlockY(); y <= max.getBlockY(); y++) {
+                        for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
+                            World world = min.getWorld();
+                            
+                            Location loc = new Location(world, x, y, z);
+                            Block block = world.getBlockAt(loc);
+                            
                             if (block.getType() == Material.AIR) { continue; }
-                            
-                            World world = block.getWorld();
-                            
+                                                        
                             CreativeWorldNodes wconfig = CreativeWorldConfig.get(world);
                             
                             if (type == Type.DELALL) {
@@ -184,6 +205,15 @@ public class CreativeBlocksSelection {
 
         elapsedTime = (System.currentTimeMillis() - startTimer);
         com.msg(sender, messages.allblocks_processed, elapsedTime);
-        return false;
+        return true;
+    }
+    
+    public Selection getSelection(Player p) {
+        CreativeControl plugin = CreativeControl.getPlugin();
+        WorldEditPlugin we = plugin.getWorldEdit();
+        if (we != null) {
+            return plugin.getWorldEdit().getSelection(p);
+        }
+        return null;
     }
 }
