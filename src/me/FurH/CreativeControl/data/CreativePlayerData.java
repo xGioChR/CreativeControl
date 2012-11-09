@@ -49,28 +49,37 @@ public class CreativePlayerData {
     }
     
     public void process(Player player, GameMode newgm, GameMode oldgm) {
-        save(player, oldgm);
-        restore(player, newgm);
+        if (save(player, oldgm)) {
+            restore(player, newgm);
+        }
     }
     
-    public void save(Player p, GameMode gm) {
+    public boolean save(Player p, GameMode gm) {
         CreativeSQLDatabase db = CreativeControl.getDb();
         if (gm.equals(GameMode.ADVENTURE)) {
             CreativePlayerCache cache = hasAdv(p.getName());
             
             if (cache == null) {
                 cache = new CreativePlayerCache(); cache.name = p.getName().toLowerCase();
+                
+                cache = newCache(p, cache);
+                adventurer_cache.put(cache.name, cache);
+                
                 String query = "INSERT INTO `"+db.prefix+"players_adventurer` (player, health, foodlevel, exhaustion, saturation, experience, armor, inventory) VALUES "
                         + "('"+cache.name+"', '"+cache.health+"', '"+cache.food+"', '"+cache.ex+"', '"+cache.sat+"', '" + cache.exp +"', '"+ toListString(cache.armor) +"', '"+ toListString(cache.items) +"');";
+                
                 db.executeQuery(query, true);
+                return true;
             } else {
                 cache = newCache(p, cache);
                 
-                adventurer_cache.replace(cache.name, cache);
+                adventurer_cache.remove(cache.name);
+                adventurer_cache.put(cache.name, cache);
                 
                 String query = "UPDATE `"+db.prefix+"players_adventurer` SET health = '"+cache.health+"', foodlevel = '"+cache.food+"', exhaustion = '"+cache.ex+"', "
                         + "saturation = '"+cache.sat+"', experience = '"+cache.exp+"', armor = '"+toListString(cache.armor)+"', inventory = '"+ toListString(cache.items) +"' WHERE id = '"+cache.id+"'";
                 db.executeQuery(query);
+                return true;
             }
         } else 
         if (gm.equals(GameMode.CREATIVE)) {
@@ -78,16 +87,24 @@ public class CreativePlayerData {
             
             if (cache == null) {
                 cache = new CreativePlayerCache(); cache.name = p.getName().toLowerCase();
+                
+                cache = newCache(p, cache);
+                creative_cache.put(cache.name, cache);
+                
                 String query = "INSERT INTO `"+db.prefix+"players_creative` (player, armor, inventory) VALUES "
                         + "('"+cache.name+"', '"+ toListString(cache.armor) +"', '"+ toListString(cache.items) +"');";
+                
                 db.executeQuery(query, true);
+                return true;
             } else {
                 cache = newCache(p, cache);
                 
-                creative_cache.replace(cache.name, cache);
+                creative_cache.remove(cache.name);
+                creative_cache.put(cache.name, cache);
                 
                 String query = "UPDATE `"+db.prefix+"players_creative` SET armor = '"+toListString(cache.armor)+"', inventory = '"+ toListString(cache.items) +"' WHERE id = '"+cache.id+"'";
                 db.executeQuery(query);
+                return true;
             }
         } else 
         if (gm.equals(GameMode.SURVIVAL)) {
@@ -95,18 +112,28 @@ public class CreativePlayerData {
             
             if (cache == null) {
                 cache = new CreativePlayerCache(); cache.name = p.getName().toLowerCase();
+                
+                cache = newCache(p, cache);
+                survival_cache.put(cache.name, cache);
+                
                 String query = "INSERT INTO `"+db.prefix+"players_survival` (player, health, foodlevel, exhaustion, saturation, experience, armor, inventory) VALUES "
                         + "('"+cache.name+"', '"+cache.health+"', '"+cache.food+"', '"+cache.ex+"', '"+cache.sat+"', '" + cache.exp +"', '"+ toListString(cache.armor) +"', '"+ toListString(cache.items) +"');";
+                
                 db.executeQuery(query, true);
+                return true;
             } else {
                 cache = newCache(p, cache);
                 
-                survival_cache.replace(cache.name, cache);
+                survival_cache.remove(cache.name);
+                survival_cache.put(cache.name, cache);
                 
                 String query = "UPDATE `"+db.prefix+"players_survival` SET health = '"+cache.health+"', foodlevel = '"+cache.food+"', exhaustion = '"+cache.ex+"', "
                         + "saturation = '"+cache.sat+"', experience = '"+cache.exp+"', armor = '"+toListString(cache.armor)+"', inventory = '"+ toListString(cache.items) +"' WHERE id = '"+cache.id+"'";
                 db.executeQuery(query);
+                return true;
             }
+        } else {
+            return false;
         }
     }
     

@@ -16,6 +16,7 @@
 
 package me.FurH.CreativeControl.data;
 
+import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 /**
@@ -23,7 +24,7 @@ import org.bukkit.inventory.ItemStack;
  * @author FurmigaHumana
  */
 public class CreativePlayerCache {
-    public ItemStack[] armor = new ItemStack[] {};
+    public ItemStack[] armor = new ItemStack[] { new ItemStack(Material.AIR), new ItemStack(Material.AIR), new ItemStack(Material.AIR), new ItemStack(Material.AIR) };
     public int health = 20;
     public int food = 20;
     public float ex = 0;
@@ -31,5 +32,5 @@ public class CreativePlayerCache {
     public int exp = 0;
     public float sat = 0;
     public String name = "";
-    public ItemStack[] items = new ItemStack[] {};
+    public ItemStack[] items = new ItemStack[] { new ItemStack(Material.AIR) };
 }
