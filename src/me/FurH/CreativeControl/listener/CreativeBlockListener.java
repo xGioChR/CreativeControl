@@ -297,6 +297,20 @@ public class CreativeBlockListener implements Listener {
 
         CreativeBlockManager    manager    = CreativeControl.getManager();
         if (config.block_ownblock) {
+            List<Block> attach = CreativeBlockMatcher.getAttached(b);
+            if (attach != null && attach.size() > 0) {
+                for (Block ba1 : attach) {
+                    String[] data = manager.getBlock(ba1);
+                    if (data != null) {
+                        if (!manager.isAllowed(p, data)) {
+                            com.msg(p, messages.blocks_pertence, data[0]);
+                            e.setCancelled(true);
+                        } else {
+                            process(e, data, ba1, p);
+                        }
+                    }
+                }
+            }
             if (b.getTypeId() == 64 || b.getTypeId() == 71) {
                 String[] data = manager.getDoor2(b);
                 if (data != null) {
@@ -325,26 +339,20 @@ public class CreativeBlockListener implements Listener {
                         } else {
                             process(e, data, b, p);
                         }
-                    } else {
-                        List<Block> attach = CreativeBlockMatcher.getAttached(b);
-                        if (attach != null && attach.size() > 0) {
-                            for (Block ba1 : attach) {
-                                data = manager.getBlock(ba1);
-                                if (data != null) {
-                                    if (!manager.isAllowed(p, data)) {
-                                        com.msg(p, messages.blocks_pertence, data[0]);
-                                        e.setCancelled(true);
-                                    } else {
-                                        process(e, data, ba1, p);
-                                    }
-                                }
-                            }
-                        }
                     }
                 }
             }
         } else
         if (config.block_nodrop) {
+            List<Block> attach = CreativeBlockMatcher.getAttached(b);
+            if (attach != null && attach.size() > 0) {
+                for (Block ba1 : attach) {
+                    String[] data = manager.getBlock(ba1);
+                    if (data != null) {
+                        process(e, data, ba1, p);
+                    }
+                }
+            }
             if (b.getTypeId() == 64 || b.getTypeId() == 71) {
                 String[] data = manager.getDoor2(b);
                 if (data != null) {
@@ -358,16 +366,6 @@ public class CreativeBlockListener implements Listener {
                     data = manager.getDoor3(b);
                     if (data != null) {
                         process(e, data, b, p);
-                    } else {
-                        List<Block> attach = CreativeBlockMatcher.getAttached(b);
-                        if (attach != null && attach.size() > 0) {
-                            for (Block ba1 : attach) {
-                                data = manager.getBlock(ba1);
-                                if (data != null) {
-                                    process(e, data, ba1, p);
-                                }
-                            }
-                        }
                     }
                 }
             }
