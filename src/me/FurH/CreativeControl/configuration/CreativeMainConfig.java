@@ -54,6 +54,7 @@ public class CreativeMainConfig {
         
     public boolean         perm_ophas        = false;
     
+    public boolean         selection_usewe   = false;
     public int             selection_tool    = 378;
     
     public boolean         events_move       = false;
@@ -91,6 +92,7 @@ public class CreativeMainConfig {
         
         perm_ophas       = getBoolean("Permissions.OpHasPerm");
         
+        selection_usewe   = getBoolean("Selection.UseWorldEdit");
         selection_tool    = getInteger("Selection.Tool");
         
         events_move      = getBoolean("Events.PlayerMove");

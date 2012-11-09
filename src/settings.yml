@@ -45,6 +45,8 @@ Permissions:
   OpHasPerm: true
   
 Selection:
+  ## UseWorldEdit, if true, worldedit will be used to make selections.
+  UseWorldEdit: false
   ## The Item ID used to select regions
   Tool: 378
 

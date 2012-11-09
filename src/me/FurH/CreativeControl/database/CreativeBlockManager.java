@@ -331,10 +331,24 @@ public class CreativeBlockManager {
     }
 
     public void delPlayer(String args, Block block) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        String[] data = getBlock(block);
+        
+        if (data != null) {
+            if (data[0].equalsIgnoreCase(args)) {
+                delBlock(block);
+            }
+        }
     }
 
     public void delType(String args, Block block) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try {
+            int type = Integer.parseInt(args);
+            if (block.getTypeId() == type) {
+                delBlock(block);
+            }
+        } catch (Exception ex) {
+            CreativeCommunicator com        = CreativeControl.getCommunicator();
+            com.error("[TAG] {0} is not a valid number!", ex, args);
+        }
     }
 }
