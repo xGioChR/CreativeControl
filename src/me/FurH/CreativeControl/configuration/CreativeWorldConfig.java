@@ -64,6 +64,7 @@ public class CreativeWorldConfig {
         x.black_break           = getIntegerList(w, "BlackList.BlockBreak");
         x.black_use             = getIntegerList(w, "BlackList.ItemUse");
         x.black_interact        = getIntegerList(w, "BlackList.ItemInteract");
+        x.black_inventory       = getIntegerList(w, "BlackList.Inventory");
 
         x.misc_tnt              = getBoolean(w, "MiscProtection.NoTNTExplosion");
         x.misc_ice              = getBoolean(w, "MiscProtection.IceMelt");
