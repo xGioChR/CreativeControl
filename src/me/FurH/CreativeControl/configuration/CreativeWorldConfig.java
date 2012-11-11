@@ -65,6 +65,7 @@ public class CreativeWorldConfig {
         x.black_use             = getIntegerList(w, "BlackList.ItemUse");
         x.black_interact        = getIntegerList(w, "BlackList.ItemInteract");
         x.black_inventory       = getIntegerList(w, "BlackList.Inventory");
+        x.black_sign            = getStringList(w, "BlackList.EconomySigns");
 
         x.misc_tnt              = getBoolean(w, "MiscProtection.NoTNTExplosion");
         x.misc_ice              = getBoolean(w, "MiscProtection.IceMelt");
@@ -100,7 +101,6 @@ public class CreativeWorldConfig {
         x.prevent_villager      = getBoolean(w, "Preventions.InteractVillagers");
         x.prevent_potion        = getBoolean(w, "Preventions.PotionSplash");
         x.prevent_frame         = getBoolean(w, "Preventions.ItemFrame");
-        x.prevent_economy       = getBoolean(w, "Preventions.EconomySign");
         x.prevent_vehicle       = getBoolean(w, "Preventions.VehicleDrop");
         x.prevent_limitvechile  = getInteger(w, "Preventions.VehicleLimit");
         x.prevent_stacklimit    = getInteger(w, "Preventions.StackLimit");

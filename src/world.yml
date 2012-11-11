@@ -19,9 +19,12 @@ BlackList:
   ## ItemUse, Creative players will be unable to use those Items, this means right/left click
   ItemUse: 259, 326, 327, 384, 385, 389
   ## ItemInteract, Creative payers will be unable to interact with those Items/Blocks, this means right click only
-  ItemInteract: 23, 54, 58, 61, 62, 63, 68, 84, 116, 117, 130, 145
+  ItemInteract: 23, 54, 58, 61, 62, 84, 116, 117, 130, 145
   ## Inventory, Creative players will be unable to have those items in their inventory
   Inventory: []
+  ## EconomySign, List here, the first line of all signs that creative players will be unable to interact with.
+  ## Obs: DONT INCLUDE [] or color codes, ONLY letter from A to Z or Numbers!, use _ for spaces! LOWER CASE ONLY!
+  EconomySigns: buy, sell, trade
 
 ## To any option in "MiscProtection" Works, Events.MiscProtection has to be "true" in config.yml.
 MiscProtection:
@@ -97,8 +100,6 @@ Preventions:
   PotionSplash: true
   ## ItemFrame, if true, Creative players will be unable to use itemframes
   ItemFrame: true
-  ## EconomySign, if true, This plugin will try to prevent creative players from interacting with economy signs.
-  EconomySign: false
   ## VehicleDrop, if trus, This plugin will try to prevent minecarts and boats created by creative player to drop!
   VehicleDrop: true
   ## VehicleLimit, set a limit of how much vehicles a creative player can create without destroying the old one

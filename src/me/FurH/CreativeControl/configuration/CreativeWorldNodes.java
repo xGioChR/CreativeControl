@@ -34,6 +34,7 @@ public class CreativeWorldNodes {
     public List<Integer> black_use       = Arrays.asList(new Integer[] { 259, 326, 327, 384, 385 });
     public List<Integer> black_interact  = Arrays.asList(new Integer[] { 23, 54, 58, 61, 62, 63, 68, 84, 116, 117, 130, 138, 145 });
     public List<Integer> black_inventory = Arrays.asList(new Integer[] { });
+    public List<String> black_sign       = Arrays.asList(new String[] { "buy", "sell", "trade" });
     
     public boolean misc_tnt              = false;
     public boolean misc_ice              = false;
@@ -69,7 +70,6 @@ public class CreativeWorldNodes {
     public boolean prevent_villager      = true;
     public boolean prevent_potion        = true;
     public boolean prevent_frame         = true;
-    public boolean prevent_economy       = false;
     public boolean prevent_vehicle       = true;
     public int prevent_limitvechile      = -1;
     public int prevent_stacklimit        = 1;

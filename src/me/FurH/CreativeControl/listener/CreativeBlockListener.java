@@ -26,11 +26,13 @@ import me.FurH.CreativeControl.configuration.CreativeWorldNodes;
 import me.FurH.CreativeControl.database.CreativeBlockManager;
 import me.FurH.CreativeControl.database.CreativeBlockMatcher;
 import me.FurH.CreativeControl.util.CreativeCommunicator;
+import me.FurH.CreativeControl.util.CreativeUtil;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -67,11 +69,12 @@ public class CreativeBlockListener implements Listener {
          */
         if (config.world_exclude) { return; }
         
-        if (config.prevent_economy) {
-            if (p.getGameMode().equals(GameMode.CREATIVE)) {
-                if (e.isCancelled()) {
-                    if (e.getBlockAgainst().getType() == Material.WALL_SIGN || e.getBlockAgainst().getType() == Material.SIGN_POST) {
-                        if (!plugin.hasPerm(p, "Preventions.EconomySigns")) {
+        if (p.getGameMode().equals(GameMode.CREATIVE)) {
+            if (e.isCancelled()) {
+                if (e.getBlockAgainst().getType() == Material.WALL_SIGN || e.getBlockAgainst().getType() == Material.SIGN_POST) {
+                    Sign sign = (Sign)e.getBlockAgainst().getState();
+                    if (CreativeUtil.isEconomySign(sign)) {
+                        if (!plugin.hasPerm(p, "BlackList.EconomySigns")) {
                             com.msg(p, messages.player_cantdo);
                             e.setCancelled(true);
                             return;
@@ -238,15 +241,20 @@ public class CreativeBlockListener implements Listener {
          */
         if (config.world_exclude) { return; }
         
-        /* TODO: Find a way to check if is a economy sign! Some plugins uses breakevent to buy/sell in signs as well
-        if (config.prevent_economy) {
-            if (b.getType() == Material.WALL_SIGN || b.getType() == Material.SIGN_POST) {
-                com.msg(p, messages.player_cantdo);
-                e.setCancelled(true);
-                return;
+        if (p.getGameMode().equals(GameMode.CREATIVE)) {
+            if (e.isCancelled()) {
+                if (b.getType() == Material.WALL_SIGN || b.getType() == Material.SIGN_POST) {
+                    Sign sign = (Sign)b.getState();
+                    if (CreativeUtil.isEconomySign(sign)) {
+                        if (!plugin.hasPerm(p, "BlackList.EconomySigns")) {
+                            com.msg(p, messages.player_cantdo);
+                            e.setCancelled(true);
+                            return;
+                        }
+                    }
+                }
             }
         }
-        */
         
         if (e.isCancelled()) { return; }
         /*

@@ -22,12 +22,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import me.FurH.CreativeControl.CreativeControl;
+import me.FurH.CreativeControl.configuration.CreativeWorldConfig;
+import me.FurH.CreativeControl.configuration.CreativeWorldNodes;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
@@ -36,6 +39,25 @@ import org.bukkit.plugin.Plugin;
  * @author FurmigaHumana
  */
 public class CreativeUtil {
+    
+    /*
+     * return true if the first line of the sign is listed as a economy sign
+     */
+    public static boolean isEconomySign(Sign sign) {
+        String line1 = sign.getLine(0).replaceAll(" ", "_");
+
+        CreativeWorldNodes config = CreativeWorldConfig.get(sign.getWorld());
+
+        if (line1.contains("§")) {
+            line1 = line1.replaceAll("§([0-9a-fk-or])", "");
+        }
+
+        if (config.black_sign.contains(line1.toLowerCase().replaceAll("[^a-zA-Z0-9]", ""))) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
     /*
      * convert and string to a list
