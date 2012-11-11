@@ -68,12 +68,14 @@ public class CreativeBlockListener implements Listener {
         if (config.world_exclude) { return; }
         
         if (config.prevent_economy) {
-            if (e.isCancelled()) {
-                if (e.getBlockAgainst().getType() == Material.WALL_SIGN || e.getBlockAgainst().getType() == Material.SIGN_POST) {
-                    if (!plugin.hasPerm(p, "Preventions.EconomySigns")) {
-                        com.msg(p, messages.player_cantdo);
-                        e.setCancelled(true);
-                        return;
+            if (p.getGameMode().equals(GameMode.CREATIVE)) {
+                if (e.isCancelled()) {
+                    if (e.getBlockAgainst().getType() == Material.WALL_SIGN || e.getBlockAgainst().getType() == Material.SIGN_POST) {
+                        if (!plugin.hasPerm(p, "Preventions.EconomySigns")) {
+                            com.msg(p, messages.player_cantdo);
+                            e.setCancelled(true);
+                            return;
+                        }
                     }
                 }
             }
