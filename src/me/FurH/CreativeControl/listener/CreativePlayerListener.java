@@ -414,13 +414,15 @@ public class CreativePlayerListener implements Listener {
         CreativeControl       plugin   = CreativeControl.getPlugin();
         CreativeWorldNodes    config   = CreativeWorldConfig.get(world);
         CreativeMainConfig    main     = CreativeControl.getMainConfig();
-        
+
         if (config.prevent_economy) {
             if (i != null) {
                 if (i.getType() == Material.WALL_SIGN || i.getType() == Material.SIGN_POST) {
-                    com.msg(p, messages.player_cantdo);
-                    e.setCancelled(true);
-                    return;
+                    if (!plugin.hasPerm(p, "Preventions.EconomySigns")) {
+                        com.msg(p, messages.player_cantdo);
+                        e.setCancelled(true);
+                        return;
+                    }
                 }
             }
         }

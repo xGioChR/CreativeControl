@@ -98,7 +98,7 @@ Preventions:
   ## ItemFrame, if true, Creative players will be unable to use itemframes
   ItemFrame: true
   ## EconomySign, if true, This plugin will try to prevent creative players from interacting with economy signs.
-  EconomySign: true
+  EconomySign: false
   ## VehicleDrop, if trus, This plugin will try to prevent minecarts and boats created by creative player to drop!
   VehicleDrop: true
   ## VehicleLimit, set a limit of how much vehicles a creative player can create without destroying the old one

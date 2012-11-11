@@ -375,8 +375,8 @@ public class CreativeControl extends JavaPlugin {
             if (!(sender instanceof Player)) {
                 return true;
             } else {
-                Player player = (Player) sender;
-                if (player.isOp()) {
+                Player p = (Player) sender;
+                if (p.isOp()) {
                     if (mainconfig.perm_ophas) {
                         return true;
                     } else {
@@ -384,13 +384,13 @@ public class CreativeControl extends JavaPlugin {
                     }
                 } else {
                     if (permission != null) {
-                        if (permission.has(player, "CreativeControl."+perm)) {
+                        if (permission.has(p, "CreativeControl."+perm)) {
                             return true;
                         } else {
                             return false;
                         }
                     } else {
-                        if (player.hasPermission("CreativeControl."+perm)) {
+                        if (p.hasPermission("CreativeControl."+perm)) {
                             return true;
                         } else {
                             return false;
