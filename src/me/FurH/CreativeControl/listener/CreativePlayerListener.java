@@ -38,6 +38,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.enchantment.EnchantItemEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.InventoryView;
@@ -168,6 +169,33 @@ public class CreativePlayerListener implements Listener {
             }
         }
     }
+    
+    /*
+     * Inventory Close Event
+     */
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
+    public void onInventoryClose(InventoryCloseEvent e) {
+        if (!(e.getPlayer() instanceof Player)) { return; }
+        
+        Player p = (Player)e.getPlayer();
+        World world = p.getWorld();
+        
+        CreativeWorldNodes config = CreativeWorldConfig.get(world);
+        
+        if (config.world_exclude) { return; }
+        if (p.getGameMode().equals(GameMode.CREATIVE)) {
+            CreativeControl       plugin   = CreativeControl.getPlugin();
+            if (!plugin.hasPerm(p, "BlackList.Inventory")) {
+                for (ItemStack item : p.getInventory().getContents()) {
+                    if (item != null) {
+                        if (config.black_inventory.contains(item.getTypeId())) {
+                            p.getInventory().remove(item);
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     /*
      * Inventory Click Module
@@ -201,13 +229,17 @@ public class CreativePlayerListener implements Listener {
             if (!plugin.hasPerm(p, "Preventions.StackLimit")) {
                 int stacklimit = config.prevent_stacklimit;
                 ItemStack current = e.getCurrentItem();
-                if (current.getAmount() > stacklimit) {
-                    current.setAmount(stacklimit);
+                if (current != null) {
+                    if (current.getAmount() > stacklimit) {
+                        current.setAmount(stacklimit);
+                    }
                 }
                 
                 ItemStack cursor = e.getCursor();
-                if (cursor.getAmount() > stacklimit) {
-                    cursor.setAmount(stacklimit);
+                if (cursor != null) {
+                    if (cursor.getAmount() > stacklimit) {
+                        cursor.setAmount(stacklimit);
+                    }
                 }
 
                 for (ItemStack item : p.getInventory().getContents()) {
@@ -221,15 +253,19 @@ public class CreativePlayerListener implements Listener {
             
             if (!plugin.hasPerm(p, "BlackList.Inventory")) {
                 ItemStack current = e.getCurrentItem();
-                if (config.black_inventory.contains(current.getTypeId())) {
-                    p.getInventory().remove(current);
-                    e.setCancelled(true);
+                if (current != null) {
+                    if (config.black_inventory.contains(current.getTypeId())) {
+                        p.getInventory().remove(current);
+                        e.setCancelled(true);
+                    }
                 }
                 
                 ItemStack cursor = e.getCursor();
-                if (config.black_inventory.contains(cursor.getTypeId())) {
-                    p.getInventory().remove(cursor);
-                    e.setCancelled(true);
+                if (cursor != null) {
+                    if (config.black_inventory.contains(cursor.getTypeId())) {
+                        p.getInventory().remove(cursor);
+                        e.setCancelled(true);
+                    }
                 }
 
                 for (ItemStack item : p.getInventory().getContents()) {
