@@ -106,8 +106,8 @@ public class CreativeEntityListener implements Listener {
     public void onEntityExplode(EntityExplodeEvent e) {
         if (e.isCancelled()) { return; }
 
-        CreativeWorldNodes config = CreativeWorldConfig.get(e.getEntity().getWorld());
-        
+        CreativeWorldNodes config = CreativeWorldConfig.get(e.getLocation().getWorld());
+
         if (config.world_exclude) { return; }
         
         if (config.block_explosion) {
