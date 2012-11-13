@@ -112,16 +112,20 @@ public class CreativeEntityListener implements Listener {
         
         if (config.block_explosion) {
             CreativeBlockManager manager    = CreativeControl.getManager();
-            for (Block b : e.blockList()) {
-                if (config.block_ownblock) {
-                    if (manager.isProtected(b)) {
-                        e.blockList().remove(b);
-                    }
-                } else
-                if (config.block_nodrop) {
-                    if (manager.isProtected(b)) {
-                        manager.delBlock(b);
-                        b.setType(Material.AIR);
+            if (e.blockList() != null && e.blockList().size() > 0) {
+                for (Block b : e.blockList()) {
+                    if (b != null && b.getType() != Material.AIR) {
+                        if (config.block_ownblock) {
+                            if (manager.isProtected(b)) {
+                                e.blockList().remove(b);
+                            }
+                        } else
+                        if (config.block_nodrop) {
+                            if (manager.isProtected(b)) {
+                                manager.delBlock(b);
+                                b.setType(Material.AIR);
+                            }
+                        }
                     }
                 }
             }
