@@ -227,6 +227,23 @@ public class CreativeMessages {
     public String cleanup_duplicated             = "Commands.CleanupProcess.Duplicated";
     public String cleanup_checkfailed            = "Commands.CleanupProcess.CheckFailed";
     public String cleanup_done                   = "Commands.CleanupProcess.Done";
+    
+    public String blockinfo_world                = "Manager.BlockInfo.World";
+    public String blockinfo_protectable          = "Manager.BlockInfo.Protectable";
+    public String blockinfo_notprotected         = "Manager.BlockInfo.Unprotected";
+    public String blockinfo_owner                = "Manager.BlockInfo.Owner";
+    public String blockinfo_location             = "Manager.BlockInfo.Data";
+    public String blockinfo_allowed              = "Manager.BlockInfo.Perm";
+    public String blockinfo_status               = "Manager.BlockInfo.Status";
+    public String blockinfo_date                 = "Manager.BlockInfo.Created";
+    public String blockinfo_incache              = "Manager.BlockInfo.InCache";
+    public String blockinfo_insql                = "Manager.BlockInfo.InDb";
+    public String blockinfo_queue                = "Manager.BlockInfo.InLine";
+    
+    public String blockadd_already               = "Manager.BlockAdd.Already";
+    public String blockadd_protected             = "Manager.BlockAdd.Success";
+    
+    public String blockdel_disprotected          = "Manager.BlockDel.Success";
 
     public void load() {
         prefix_tag                     = getMessage("prefix.tag");
@@ -424,6 +441,23 @@ public class CreativeMessages {
         cleanup_duplicated             = getMessage("Commands.CleanupProcess.Duplicated");
         cleanup_checkfailed            = getMessage("Commands.CleanupProcess.CheckFailed");
         cleanup_done                   = getMessage("Commands.CleanupProcess.Done");
+
+        blockinfo_world                = getMessage("Manager.BlockInfo.World");
+        blockinfo_protectable          = getMessage("Manager.BlockInfo.Protectable");
+        blockinfo_notprotected         = getMessage("Manager.BlockInfo.Unprotected");
+        blockinfo_owner                = getMessage("Manager.BlockInfo.Owner");
+        blockinfo_location             = getMessage("Manager.BlockInfo.Data");
+        blockinfo_allowed              = getMessage("Manager.BlockInfo.Perm");
+        blockinfo_status               = getMessage("Manager.BlockInfo.Status");
+        blockinfo_date                 = getMessage("Manager.BlockInfo.Created");
+        blockinfo_incache              = getMessage("Manager.BlockInfo.InCache");
+        blockinfo_insql                = getMessage("Manager.BlockInfo.InDb");
+        blockinfo_queue                = getMessage("Manager.BlockInfo.InLine");
+
+        blockadd_already               = getMessage("Manager.BlockAdd.Already");
+        blockadd_protected             = getMessage("Manager.BlockAdd.Success");
+
+        blockdel_disprotected          = getMessage("Manager.BlockDel.Success");
     }
     
     private String getMessage(String node) {

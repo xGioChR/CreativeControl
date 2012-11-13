@@ -244,4 +244,11 @@ public class CreativeUtil {
     public static String getSimpleDate(long date) {
         return new SimpleDateFormat("dd-MM-yyyy-HH-mm-ss").format(date);
     }
+
+    /*
+     * return the date in the defined miliseconds
+     */
+    public static String getDate(long date) {
+        return new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(date);
+    }
 }

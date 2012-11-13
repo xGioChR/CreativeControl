@@ -18,12 +18,14 @@ package me.FurH.CreativeControl.listener;
 
 import com.sk89q.worldedit.bukkit.selections.Selection;
 import me.FurH.CreativeControl.CreativeControl;
+import me.FurH.CreativeControl.cache.CreativeBlockCache;
 import me.FurH.CreativeControl.configuration.CreativeMainConfig;
 import me.FurH.CreativeControl.configuration.CreativeMessages;
 import me.FurH.CreativeControl.configuration.CreativeWorldConfig;
 import me.FurH.CreativeControl.configuration.CreativeWorldNodes;
 import me.FurH.CreativeControl.data.CreativePlayerData;
 import me.FurH.CreativeControl.data.friend.CreativePlayerFriends;
+import me.FurH.CreativeControl.database.CreativeBlockManager;
 import me.FurH.CreativeControl.integration.worldedit.CreativeWorldEditHook;
 import me.FurH.CreativeControl.util.CreativeCommunicator;
 import me.FurH.CreativeControl.util.CreativeUtil;
@@ -491,14 +493,14 @@ public class CreativePlayerListener implements Listener {
             if (data.equals("Block-Add-Tool")) {
                 if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
                     if (plugin.hasPerm(p, "Utily.Tool.info")) {
-                        
+                        info(p, i);
                         e.setCancelled(true);
                         return;
                     }
                 } else
                 if (e.getAction() == Action.LEFT_CLICK_BLOCK) {
                     if (plugin.hasPerm(p, "Utily.Tool.add")) {
-                        
+                        add(p, i);
                         e.setCancelled(true);
                         return;
                     }
@@ -507,14 +509,14 @@ public class CreativePlayerListener implements Listener {
             if (data.equals("Block-Del-Tool")) {
                 if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
                     if (plugin.hasPerm(p, "Utily.Tool.info")) {
-                        
+                        info(p, i);
                         e.setCancelled(true);
                         return;
                     }
                 } else
                 if (e.getAction() == Action.LEFT_CLICK_BLOCK) {
                     if (plugin.hasPerm(p, "Utily.Tool.del")) {
-                        
+                        del(p, i);
                         e.setCancelled(true);
                         return;
                     }
@@ -579,124 +581,154 @@ public class CreativePlayerListener implements Listener {
     /*
      * Block info Module
      */
-    
     /*
-    private void blockInfo(PlayerInteractEvent e) {
-        Player p = e.getPlayer();
-        String player = p.getName();
-        Block b = e.getClickedBlock();
-        World world = b.getWorld();
-        
-        int x = b.getX(); int y = b.getY(); int z = b.getZ(); int type = b.getTypeId();
-        
-        CreativeMainConfig config = CreativeControl.getConf();
-        CreativeSQLDatabase db = CreativeControl.getSQL();
+     * Print informations about the block
+     */
+    public void info(Player p, Block b) {
+        if (!is(p, b)) { return; }
+
+        CreativeBlockManager manager = CreativeControl.getManager();
         CreativeBlockCache cache = CreativeControl.getCache();
-        
-        CreativeBlockLocation block = new CreativeBlockLocation(player, b, null, null);
-        CreativeBlockLocation blockdb = db.getBlock(block);
-        if (blockdb != null) {
-            msg(p, config.getMessage("ingame.blockInfo.owner"), Msg.MSG, blockdb.getOwner());
-            msg(p, config.getMessage("ingame.blockInfo.data"), Msg.MSG, world.getName(), x, y, z, type);
 
-            if (cache.isCached(block.toString())) {
-                msg(p, config.getMessage("ingame.blockInfo.cachedTrue"), Msg.MSG);
-            } else {
-                msg(p, config.getMessage("ingame.blockInfo.cachedFalse"), Msg.MSG);
-            }
-            msg(p, config.getMessage("ingame.blockInfo.dbStatus"), Msg.MSG);
-        } else {
-            if (cache.isCached(block.toString())) {
-                msg(p, config.getMessage("ingame.blockInfo.owner"), Msg.MSG, cache.getOwner(block.toString()));
-                msg(p, config.getMessage("ingame.blockInfo.data"), Msg.MSG, world.getName(), x, y, z, type);
-                msg(p, config.getMessage("ingame.blockInfo.cachedTrue"), Msg.MSG);
-                msg(p, config.getMessage("ingame.blockInfo.memoryStatus"), Msg.MSG);
-            } else {
-                msg(p, config.getMessage("ingame.blockInfo.notIn"), Msg.MSG);
-            }
-        }
-    }
+        String[] data1 = manager.getFullData(CreativeUtil.getLocation(b.getLocation()));        
+        String[] data2 = cache.get(CreativeUtil.getLocation(b.getLocation()));
 
-    /*
-     * Manualy Add block module
-     */
-    /*
-    private boolean addBlock(PlayerInteractEvent e) {
-        Block b = e.getClickedBlock();
-        Player p = e.getPlayer();
-        World world = p.getWorld();
+        boolean insql = data1 != null;
+        boolean incache = data2 != null;
         
-        CreativeMainConfig config = CreativeControl.getConf();
-        CreativeBlockManager protection = CreativeControl.getProtection();
+        CreativeCommunicator com = CreativeControl.getCommunicator();
+        CreativeMessages messages = CreativeControl.getMessages();
+        CreativeControl plugin = CreativeControl.getPlugin();
         
-        if (!config.isExcluded(world, b.getTypeId())) {
-            if ((config.getWorldBoolean(world, "BlockProtection.NoDrop")) || (config.getWorldBoolean(world, "BlockProtection.OwnBlocks"))) {
-                if (protection.isProtected(b)) {
-                    msg(p, config.getMessage("ingame.addBlock.already"), Msg.MSG);
-                    return true;
-                } else {
-                    protection.addBlock(p.getName(), b);
-                    msg(p, config.getMessage("ingame.addBlock.added"), Msg.MSG);
-                    return true;
-                }
-            }
-        } else {
-            msg(p, config.getMessage("ingame.addBlock.cant"), Msg.MSG);
-            return true;
-        }
-        return false;
-    }
-
-    /*
-     * Manualy del Block module
-     */
-    /*
-    private boolean delBlock(PlayerInteractEvent e) {
-        Block b = e.getClickedBlock();
-        Player p = e.getPlayer();
-        World world = p.getWorld();
-        
-        CreativeBlockManager protection = CreativeControl.getProtection();
-        CreativeMainConfig config = CreativeControl.getConf();
-        if (config.getWorldBoolean(world, "BlockProtection.OwnBlocks")) {
-            if (protection.isProtected(b)) {
-                if (protection.isOwner(p)) {
-                    protection.delBlock(b);
-                    msg(p, config.getMessage("ingame.delBlock.deleted"), Msg.MSG);
-                    return true;
-                } else {
-                    msg(p, config.getMessage("ingame.blocks.pertence"), Msg.MSG, protection.getOwner());
-                    return true;
-                }
-            } else {
-                msg(p, config.getMessage("ingame.blockInfo.notIn"), Msg.MSG);
-                return true;
-            }
+        if (!insql && !incache) {
+            com.msg(p, messages.blockinfo_notprotected);
+            plugin.mods.remove(p.getName());
+            return;
         }
 
-        if (config.getWorldBoolean(world, "BlockProtection.NoDrop")) {
-            if (plugin.hasPerm(p, "NoDrop.Command")) {
-                protection.delBlock(b);
-                return true;
-            }
+        String owner = null;
+        String allowed = null;
+        String type = null;
+        String date = null;
+        
+        if (insql) {
+            owner = data1[0];
+            allowed = data1[1];
+            type = data1[2];
+            date = data1[3];
+        } else
+        if (incache) {
+            owner = data2[0];
+            allowed = data2[1];
+            type = Integer.toString(b.getTypeId());
+            date = Long.toString(System.currentTimeMillis());
         }
-        return false;
+
+        Location loc = b.getLocation();
+        com.msg(p, messages.blockinfo_owner, owner);
+        com.msg(p, messages.blockinfo_location, loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), loc.getBlock().getTypeId(), type);
+        if (!"".equals(allowed) && allowed != null && !"null".equals(allowed) && !allowed.isEmpty() && !"[]".equals(allowed)) {
+            com.msg(p, messages.blockinfo_allowed, allowed.replaceAll(" ,", " &a,&7").replaceAll("\\[", "").replaceAll("\\]", ""));
+        }
+        com.msg(p, messages.blockinfo_status, (incache ? messages.blockinfo_incache : ""), (insql ? messages.blockinfo_insql : messages.blockinfo_queue));
+        com.msg(p, messages.blockinfo_date, CreativeUtil.getDate(Long.parseLong(date)));
+        plugin.mods.remove(p.getName());
     }
     
-    private void msg(Player p, String message, Msg type, Object...objects) {
-        CreativeCommunicator com = CreativeControl.getCom();
-        com.msg(p, message, type, objects);
-    }
+    /*
+     * Add a block to the database
+     */
+    public void add(Player p, Block b) {
+        if (!is(p, b)) { return; }
+        
+        CreativeCommunicator com = CreativeControl.getCommunicator();
+        CreativeBlockManager manager = CreativeControl.getManager();
+        CreativeMessages messages = CreativeControl.getMessages();
+        CreativeControl plugin = CreativeControl.getPlugin();
 
-    private void clearHash(Player p) {
-        plugin.right.remove(p);
-        plugin.left.remove(p);
-        plugin.debug.remove(p.getName());
-        CreativeMainConfig config = CreativeControl.getConf();
-        config.clearFriends(p);
-    }
-    */ 
+        if (b.getTypeId() == 64 || b.getTypeId() == 71) {
+            String[] data = manager.getDoor2(b);
+            if (data != null) {
+                com.msg(p, messages.blockadd_already);
+            } else {
+                com.msg(p, messages.blockadd_protected);
+                manager.addBlock(p, b);
+            }
+        } else {
+            String[] data = manager.getBlock(b);
+            if (data != null) {
+                com.msg(p, messages.blockadd_already);
+            } else {
+                com.msg(p, messages.blockadd_protected);
+                manager.addBlock(p, b);
+            }
+        }
 
+        plugin.mods.remove(p.getName());
+    }
+    
+    /*
+     * Remove a protection from the block
+     */
+    public void del(Player p, Block b) {
+        if (!is(p, b)) { return; }
+        
+        CreativeCommunicator com = CreativeControl.getCommunicator();
+        CreativeBlockManager manager = CreativeControl.getManager();
+        CreativeMessages messages = CreativeControl.getMessages();
+        CreativeControl plugin = CreativeControl.getPlugin();
+
+        if (b.getTypeId() == 64 || b.getTypeId() == 71) {
+            String[] data = manager.getDoor2(b);
+            if (data != null) {
+                if (!manager.isOwner(p, data[0])) {
+                    com.msg(p, messages.blocks_pertence, data[0]);
+                } else {
+                    com.msg(p, messages.blockdel_disprotected);
+                    manager.delBlock(b);
+                }
+            } else {
+                com.msg(p, messages.blockinfo_notprotected);
+            }
+        } else {
+            String[] data = manager.getBlock(b);
+            if (data != null) {
+                if (!manager.isOwner(p, data[0])) {
+                    com.msg(p, messages.blocks_pertence, data[0]);
+                } else {
+                    com.msg(p, messages.blockdel_disprotected);
+                    manager.delBlock(b);
+                }
+            } else {
+                com.msg(p, messages.blockinfo_notprotected);
+            }
+        }
+
+        plugin.mods.remove(p.getName());
+    }
+    
+    private boolean is(Player p, Block b) {
+        CreativeCommunicator com = CreativeControl.getCommunicator();
+        CreativeBlockManager manager = CreativeControl.getManager();
+        CreativeMessages messages = CreativeControl.getMessages();
+        CreativeControl plugin = CreativeControl.getPlugin();
+        CreativeWorldNodes config = CreativeWorldConfig.get(b.getWorld());
+        
+        if (config.world_exclude) {
+            com.msg(p, messages.blockinfo_world);
+            plugin.mods.remove(p.getName());
+            return false;
+        }
+        
+        if (!manager.isProtectable(b.getWorld(), b.getTypeId())) {
+            com.msg(p, messages.blockinfo_protectable);
+            plugin.mods.remove(p.getName());
+            return false;
+        }
+        
+        return true;
+    }
+ 
     private void cleanup(Player p) {
         CreativeControl plugin = CreativeControl.getPlugin();
         plugin.right.remove(p);
