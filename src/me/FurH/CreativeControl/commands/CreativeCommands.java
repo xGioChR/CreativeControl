@@ -609,12 +609,9 @@ public class CreativeCommands implements CommandExecutor {
                                     /* Backup End */
 
                                     for (String location : locations) {
-                                        Location loc = CreativeUtil.getLocation(location);
-                                        if (loc.getWorld().getName().equalsIgnoreCase(args[2])) {
-                                            String query = "DELETE FROM `"+db.prefix+"blocks` WHERE location = '"+location+"'";
-                                            cache.remove(location);
-                                            db.executeQuery(query);
-                                        }
+                                        String query = "DELETE FROM `"+db.prefix+"blocks` WHERE location = '"+location+"'";
+                                        cache.remove(location);
+                                        db.executeQuery(query);
                                     }
                                     
                                     msg(sender, messages.commands_cleanup_processed);
@@ -674,12 +671,9 @@ public class CreativeCommands implements CommandExecutor {
                                     /* Backup End */
 
                                     for (String location : locations) {
-                                        Location loc = CreativeUtil.getLocation(location);
-                                        if (loc.getWorld().getName().equalsIgnoreCase(args[2])) {
-                                            String query = "DELETE FROM `"+db.prefix+"blocks` WHERE location = '"+location+"'";
-                                            cache.remove(location);
-                                            db.executeQuery(query);
-                                        }
+                                        String query = "DELETE FROM `"+db.prefix+"blocks` WHERE location = '"+location+"'";
+                                        cache.remove(location);
+                                        db.executeQuery(query);
                                     }
                                     
                                     msg(sender, messages.commands_cleanup_processed);
