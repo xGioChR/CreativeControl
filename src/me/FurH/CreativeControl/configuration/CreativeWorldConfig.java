@@ -54,60 +54,62 @@ public class CreativeWorldConfig {
     }
 
     public static void load(World w) {
-        CreativeWorldNodes x = new CreativeWorldNodes();
-        x.world_creative        = getBoolean(w, "World.Creative");
-        x.world_exclude         = getBoolean(w, "World.Exclude");
-        x.world_changegm        = getBoolean(w, "World.ChangeGameMode");
-
-        x.black_cmds            = getStringList(w, "BlackList.Commands");
-        x.black_place           = getIntegerList(w, "BlackList.BlockPlace");
-        x.black_break           = getIntegerList(w, "BlackList.BlockBreak");
-        x.black_use             = getIntegerList(w, "BlackList.ItemUse");
-        x.black_interact        = getIntegerList(w, "BlackList.ItemInteract");
-        x.black_inventory       = getIntegerList(w, "BlackList.Inventory");
-        x.black_sign            = getStringList(w, "BlackList.EconomySigns");
-
-        x.misc_tnt              = getBoolean(w, "MiscProtection.NoTNTExplosion");
-        x.misc_ice              = getBoolean(w, "MiscProtection.IceMelt");
-        x.misc_liquid           = getBoolean(w, "MiscProtection.LiquidControl");
-        x.misc_fire             = getBoolean(w, "MiscProtection.Fire");
-
-        x.block_worledit        = getBoolean(w, "BlockProtection.WorldEdit");
-        x.block_ownblock        = getBoolean(w, "BlockProtection.OwnBlocks");
-        x.block_nodrop          = getBoolean(w, "BlockProtection.NoDrop");
-        x.block_explosion       = getBoolean(w, "BlockProtection.Explosions");
-        x.block_creative        = getBoolean(w, "BlockProtection.CreativeOnly");
-        x.block_pistons         = getBoolean(w, "BlockProtection.Pistons");
-        x.block_pistons         = getBoolean(w, "BlockProtection.BlockAgainst");
-        x.block_invert          = getBoolean(w, "BlockProtection.inverted");
-        x.block_exclude         = getIntegerList(w, "BlockProtection.exclude");
-
-        x.prevent_drop          = getBoolean(w, "Preventions.ItemDrop");
-        x.prevent_pickup        = getBoolean(w, "Preventions.ItemPickup");
-        x.prevent_pvp           = getBoolean(w, "Preventions.PvP");
-        x.prevent_mobs          = getBoolean(w, "Preventions.Mobs");
-        x.prevent_eggs          = getBoolean(w, "Preventions.Eggs");
-        x.prevent_target        = getBoolean(w, "Preventions.Target");
-        x.prevent_mobsdrop      = getBoolean(w, "Preventions.MobsDrop");
-        x.prevent_irongolem     = getBoolean(w, "Preventions.IronGolem");
-        x.prevent_snowgolem     = getBoolean(w, "Preventions.SnowGolem");
-        x.prevent_wither        = getBoolean(w, "Preventions.Wither");
-        x.prevent_drops         = getBoolean(w, "Preventions.ClearDrops");
-        x.prevent_enchant       = getBoolean(w, "Preventions.Enchantments");
-        x.prevent_mcstore       = getBoolean(w, "Preventions.MineCartStorage");
-        x.prevent_bedrock       = getBoolean(w, "Preventions.BreakBedRock");
-        x.prevent_invinteract   = getBoolean(w, "Preventions.InvInteract");
-        x.prevent_bonemeal      = getBoolean(w, "Preventions.Bonemeal");
-        x.prevent_villager      = getBoolean(w, "Preventions.InteractVillagers");
-        x.prevent_potion        = getBoolean(w, "Preventions.PotionSplash");
-        x.prevent_frame         = getBoolean(w, "Preventions.ItemFrame");
-        x.prevent_vehicle       = getBoolean(w, "Preventions.VehicleDrop");
-        x.prevent_limitvechile  = getInteger(w, "Preventions.VehicleLimit");
-        x.prevent_stacklimit    = getInteger(w, "Preventions.StackLimit");
-
         CreativeMainConfig   main   = CreativeControl.getMainConfig();
+        
+        CreativeWorldNodes x = new CreativeWorldNodes();
         if (!main.config_single) {
+            x.world_creative        = getBoolean(w, "World.Creative");
+            x.world_exclude         = getBoolean(w, "World.Exclude");
+            x.world_changegm        = getBoolean(w, "World.ChangeGameMode");
+
+            x.black_cmds            = getStringList(w, "BlackList.Commands");
+            x.black_place           = getIntegerList(w, "BlackList.BlockPlace");
+            x.black_break           = getIntegerList(w, "BlackList.BlockBreak");
+            x.black_use             = getIntegerList(w, "BlackList.ItemUse");
+            x.black_interact        = getIntegerList(w, "BlackList.ItemInteract");
+            x.black_inventory       = getIntegerList(w, "BlackList.Inventory");
+            x.black_sign            = getStringList(w, "BlackList.EconomySigns");
+
+            x.misc_tnt              = getBoolean(w, "MiscProtection.NoTNTExplosion");
+            x.misc_ice              = getBoolean(w, "MiscProtection.IceMelt");
+            x.misc_liquid           = getBoolean(w, "MiscProtection.LiquidControl");
+            x.misc_fire             = getBoolean(w, "MiscProtection.Fire");
+
+            x.block_worledit        = getBoolean(w, "BlockProtection.WorldEdit");
+            x.block_ownblock        = getBoolean(w, "BlockProtection.OwnBlocks");
+            x.block_nodrop          = getBoolean(w, "BlockProtection.NoDrop");
+            x.block_explosion       = getBoolean(w, "BlockProtection.Explosions");
+            x.block_creative        = getBoolean(w, "BlockProtection.CreativeOnly");
+            x.block_pistons         = getBoolean(w, "BlockProtection.Pistons");
+            x.block_pistons         = getBoolean(w, "BlockProtection.BlockAgainst");
+            x.block_invert          = getBoolean(w, "BlockProtection.inverted");
+            x.block_exclude         = getIntegerList(w, "BlockProtection.exclude");
+
+            x.prevent_drop          = getBoolean(w, "Preventions.ItemDrop");
+            x.prevent_pickup        = getBoolean(w, "Preventions.ItemPickup");
+            x.prevent_pvp           = getBoolean(w, "Preventions.PvP");
+            x.prevent_mobs          = getBoolean(w, "Preventions.Mobs");
+            x.prevent_eggs          = getBoolean(w, "Preventions.Eggs");
+            x.prevent_target        = getBoolean(w, "Preventions.Target");
+            x.prevent_mobsdrop      = getBoolean(w, "Preventions.MobsDrop");
+            x.prevent_irongolem     = getBoolean(w, "Preventions.IronGolem");
+            x.prevent_snowgolem     = getBoolean(w, "Preventions.SnowGolem");
+            x.prevent_wither        = getBoolean(w, "Preventions.Wither");
+            x.prevent_drops         = getBoolean(w, "Preventions.ClearDrops");
+            x.prevent_enchant       = getBoolean(w, "Preventions.Enchantments");
+            x.prevent_mcstore       = getBoolean(w, "Preventions.MineCartStorage");
+            x.prevent_bedrock       = getBoolean(w, "Preventions.BreakBedRock");
+            x.prevent_invinteract   = getBoolean(w, "Preventions.InvInteract");
+            x.prevent_bonemeal      = getBoolean(w, "Preventions.Bonemeal");
+            x.prevent_villager      = getBoolean(w, "Preventions.InteractVillagers");
+            x.prevent_potion        = getBoolean(w, "Preventions.PotionSplash");
+            x.prevent_frame         = getBoolean(w, "Preventions.ItemFrame");
+            x.prevent_vehicle       = getBoolean(w, "Preventions.VehicleDrop");
+            x.prevent_limitvechile  = getInteger(w, "Preventions.VehicleLimit");
+            x.prevent_stacklimit    = getInteger(w, "Preventions.StackLimit");
             cache.put(w.getName(), x);
+        } else {
+            nodes = x;
         }
     }
     
