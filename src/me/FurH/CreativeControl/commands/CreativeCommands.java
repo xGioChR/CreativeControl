@@ -314,7 +314,7 @@ public class CreativeCommands implements CommandExecutor {
                                                     while (rs.next()) {
                                                         locations.add(rs.getString("location"));
                                                         backup.add("INSERT INTO `"+db.prefix+"blocks` (id, owner, location, type, allowed, time) VALUES ('"+rs.getInt("id")+"',"
-                                                                + " '"+rs.getString("owner")+"', '"+rs.getString("location")+"', '"+rs.getInt("type")+"', '"+rs.getString("allowed")+"', '"+rs.getInt("time")+"')");
+                                                                + " '"+rs.getString("owner")+"', '"+rs.getString("location")+"', '"+rs.getInt("type")+"', '"+rs.getString("allowed")+"', '"+rs.getString("time")+"')");
                                                     }
                                                 } catch (SQLException ex) {
                                                     com.error("[TAG] Failed to get the block from the database, {0}", ex, ex.getMessage());
@@ -589,7 +589,7 @@ public class CreativeCommands implements CommandExecutor {
                                         while (rs.next()) {
                                             locations.add(rs.getString("location"));
                                             backup.add("INSERT INTO `"+db.prefix+"blocks` (id, owner, location, type, allowed, time) VALUES ('"+rs.getInt("id")+"',"
-                                                    + " '"+rs.getString("owner")+"', '"+rs.getString("location")+"', '"+rs.getInt("type")+"', '"+rs.getString("allowed")+"', '"+rs.getInt("time")+"')");
+                                                    + " '"+rs.getString("owner")+"', '"+rs.getString("location")+"', '"+rs.getInt("type")+"', '"+rs.getString("allowed")+"', '"+rs.getString("time")+"')");
                                         }
                                     } catch (SQLException ex) {
                                         com.error("[TAG] Failed to get the block from the database, {0}", ex, ex.getMessage());
@@ -651,7 +651,7 @@ public class CreativeCommands implements CommandExecutor {
                                         while (rs.next()) {
                                             locations.add(rs.getString("location"));
                                             backup.add("INSERT INTO `"+db.prefix+"blocks` (id, owner, location, type, allowed, time) VALUES ('"+rs.getInt("id")+"',"
-                                                    + " '"+rs.getString("owner")+"', '"+rs.getString("location")+"', '"+rs.getInt("type")+"', '"+rs.getString("allowed")+"', '"+rs.getInt("time")+"')");
+                                                    + " '"+rs.getString("owner")+"', '"+rs.getString("location")+"', '"+rs.getInt("type")+"', '"+rs.getString("allowed")+"', '"+rs.getString("time")+"')");
                                         }
                                     } catch (SQLException ex) {
                                         com.error("[TAG] Failed to get the block from the database, {0}", ex, ex.getMessage());
@@ -713,7 +713,7 @@ public class CreativeCommands implements CommandExecutor {
                                         while (rs.next()) {
                                             locations.add(rs.getString("location"));
                                             backup.add("INSERT INTO `"+db.prefix+"blocks` (id, owner, location, type, allowed, time) VALUES ('"+rs.getInt("id")+"',"
-                                                    + " '"+rs.getString("owner")+"', '"+rs.getString("location")+"', '"+rs.getInt("type")+"', '"+rs.getString("allowed")+"', '"+rs.getInt("time")+"')");
+                                                    + " '"+rs.getString("owner")+"', '"+rs.getString("location")+"', '"+rs.getInt("type")+"', '"+rs.getString("allowed")+"', '"+rs.getString("time")+"')");
                                         }
                                     } catch (SQLException ex) {
                                         com.error("[TAG] Failed to get the block from the database, {0}", ex, ex.getMessage());
