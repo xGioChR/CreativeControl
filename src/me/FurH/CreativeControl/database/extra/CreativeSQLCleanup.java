@@ -71,7 +71,7 @@ public class CreativeSQLCleanup extends Thread {
                 db.reads++;
                 blocks.add(new String[] { rs.getString("location"), Integer.toString(rs.getInt("type")) });
                 backup.add("INSERT INTO `"+db.prefix+"blocks` (id, owner, location, type, allowed, time) VALUES ('"+rs.getInt("id")+"',"
-                        + " '"+rs.getString("owner")+"', '"+rs.getString("location")+"', '"+rs.getInt("type")+"', '"+rs.getString("allowed")+"', '"+rs.getInt("time")+"')");
+                        + " '"+rs.getString("owner")+"', '"+rs.getString("location")+"', '"+rs.getInt("type")+"', '"+rs.getString("allowed")+"', '"+rs.getString("time")+"')");
             }
             
             rs.close();

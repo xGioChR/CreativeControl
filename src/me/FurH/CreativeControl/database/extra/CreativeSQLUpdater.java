@@ -69,7 +69,7 @@ public class CreativeSQLUpdater {
 
             while (rs.next()) {
                 db.reads++;
-                blocks.add(new String[] { rs.getInt("id")+"" , rs.getString("owner"), rs.getString("world"), rs.getInt("x")+"", rs.getInt("y")+"", rs.getInt("z")+"", rs.getInt("type")+"", rs.getString("allowed"), rs.getLong("time")+""});
+                blocks.add(new String[] { rs.getInt("id")+"" , rs.getString("owner"), rs.getString("world"), rs.getInt("x")+"", rs.getInt("y")+"", rs.getInt("z")+"", rs.getInt("type")+"", rs.getString("allowed"), rs.getString("time")+""});
             }
 
             rs.close();
