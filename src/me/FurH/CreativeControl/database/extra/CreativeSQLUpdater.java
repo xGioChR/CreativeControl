@@ -100,14 +100,14 @@ public class CreativeSQLUpdater {
         double process = 0;
         int skip = 0;
         int sucess = 0;
-        
+
         for (String[] string : blocks) {
             done++;
             process = ((done / blocks.size()) * 100.0D);
-            
-            if (process % 1 == 0) {
+
+            //if (process % 1 == 0) {
                 com.msg(p, messages.updater_process, done, blocks.size(), skip, process);
-            }
+            //}
 
             try {
                 String owner = string[1];
@@ -120,7 +120,7 @@ public class CreativeSQLUpdater {
                 if (string[7] != null) {
                     allowed = string[7];
                 }
-                int time = Integer.parseInt(string[8]);
+                String time = string[8];
                 World w = Bukkit.getWorld(world);
                 if (w != null) {
                     Location loc = new Location(w, x, y, z);
