@@ -175,7 +175,7 @@ public class CreativeMainConfig {
         }
         
         String value = config.getString(node);
-        if (value == null || "".equals(value)) {
+        if (value == null) {
             com.log(CreativeControl.tag + " You have a missing setting node at: {0}", Type.SEVERE, node);
             value = node;
         }
