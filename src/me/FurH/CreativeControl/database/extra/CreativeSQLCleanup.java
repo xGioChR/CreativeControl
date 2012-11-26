@@ -20,6 +20,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.configuration.CreativeMessages;
@@ -100,7 +101,7 @@ public class CreativeSQLCleanup extends Thread {
         double done = 0;
         double process = 0;
 
-        List<String> locations = new ArrayList<String>();
+        HashSet<String> locations = new HashSet<String>();
         for (String[] string : blocks) {
             done++;
             process = ((done / blocks.size()) * 100.0D);

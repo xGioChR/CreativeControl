@@ -18,6 +18,7 @@ package me.FurH.CreativeControl.database;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashSet;
 import java.util.List;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.cache.CreativeBlockCache;
@@ -184,7 +185,7 @@ public class CreativeBlockManager {
                     return true;
                 } else {
                     if (config.config_friend) {
-                        List<String> friend = friends.getFriends(data[0]);
+                        HashSet<String> friend = friends.getFriends(data[0]);
                         if (friend.contains(p.getName().toLowerCase())) {
                             return true;
                         } else {
@@ -196,7 +197,7 @@ public class CreativeBlockManager {
                 }
             } else {
                 if (config.config_friend) {
-                    List<String> friend = friends.getFriends(data[0]);
+                    HashSet<String> friend = friends.getFriends(data[0]);
                     if (friend.contains(p.getName().toLowerCase())) {
                         return true;
                     } else {

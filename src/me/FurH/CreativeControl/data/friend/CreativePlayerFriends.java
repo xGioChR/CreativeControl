@@ -18,8 +18,7 @@ package me.FurH.CreativeControl.data.friend;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.concurrent.ConcurrentHashMap;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.database.CreativeSQLDatabase;
@@ -32,7 +31,7 @@ import org.bukkit.entity.Player;
  * @author FurmigaHumana
  */
 public class CreativePlayerFriends {
-    private ConcurrentHashMap<String, List<String>> hascache = new ConcurrentHashMap<String, List<String>>(500);
+    private ConcurrentHashMap<String, HashSet<String>> hascache = new ConcurrentHashMap<String, HashSet<String>>(500);
     
     public void uncache(Player p) {
         hascache.remove(p.getName().toLowerCase());
@@ -42,7 +41,7 @@ public class CreativePlayerFriends {
         hascache.clear();
     }
     
-    public void saveFriends(String player, List<String> friends) {
+    public void saveFriends(String player, HashSet<String> friends) {
         CreativeSQLDatabase db = CreativeControl.getDb();
         
         hascache.replace(player, friends);
@@ -51,8 +50,8 @@ public class CreativePlayerFriends {
         db.executeQuery(query);
     }
     
-    public List<String> getFriends(String player) {
-        List<String> friends = hascache.get(player);
+    public HashSet<String> getFriends(String player) {
+        HashSet<String> friends = hascache.get(player);
         
         CreativeCommunicator com        = CreativeControl.getCommunicator();
         CreativeSQLDatabase db = CreativeControl.getDb();
@@ -62,9 +61,9 @@ public class CreativePlayerFriends {
                 ResultSet rs = db.getQuery("SELECT * FROM `"+db.prefix+"friends` WHERE player = '" + player.toLowerCase() + "'");
                 
                 if (rs.next()) {
-                    friends = CreativeUtil.toStringList(rs.getString("friends"), ", ");
+                    friends = CreativeUtil.toStringHashSet(CreativeUtil.toStringList(rs.getString("friends"), ", "));
                 } else {
-                    friends = new ArrayList<String>();
+                    friends = new HashSet<String>();
                     db.executeQuery("INSERT INTO `"+db.prefix+"friends` (player, friends) VALUES ('"+ player.toLowerCase() +"', '"+ friends.toString() +"');", true);
                 }
 

@@ -20,6 +20,7 @@ import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.configuration.CreativeWorldConfig;
@@ -39,6 +40,24 @@ import org.bukkit.plugin.Plugin;
  * @author FurmigaHumana
  */
 public class CreativeUtil {
+    
+    /*
+     * return a HashSet of the List contends
+     */
+    public static HashSet<String> toStringHashSet(List<String> list) {
+        HashSet<String> set = new HashSet<String>();
+        set.addAll(list);
+        return set;
+    }
+    
+    /*
+     * return a HashSet of the List contends
+     */
+    public static HashSet<Integer> toIntegerHashSet(List<Integer> list) {
+        HashSet<Integer> set = new HashSet<Integer>();
+        set.addAll(list);
+        return set;
+    }
     
     /*
      * return true if the first line of the sign is listed as a economy sign

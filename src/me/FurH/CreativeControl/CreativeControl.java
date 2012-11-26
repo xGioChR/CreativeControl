@@ -21,9 +21,8 @@ import de.diddiz.LogBlock.Consumer;
 import de.diddiz.LogBlock.LogBlock;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.UUID;
 import java.util.WeakHashMap;
@@ -104,7 +103,7 @@ public class CreativeControl extends JavaPlugin {
     
     public WeakHashMap<String, String> mods = new WeakHashMap<String, String>();
     
-    public List<UUID> entity = new ArrayList<UUID>();
+    public HashSet<UUID> entity = new HashSet<UUID>();
     public Map<String, Integer> limits = new HashMap<String, Integer>();
     public Player player = null;
     

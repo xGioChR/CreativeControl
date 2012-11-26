@@ -17,6 +17,7 @@
 package me.FurH.CreativeControl.region;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import me.FurH.CreativeControl.CreativeControl;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -26,7 +27,7 @@ import org.bukkit.World;
  * @author FurmigaHumana
  */
 public class CreativeRegion {
-    private ArrayList<CreativeRegion> areas = new ArrayList<CreativeRegion>();
+    private HashSet<CreativeRegion> areas = new HashSet<CreativeRegion>();
     private Location start, end;
     private gmType type;
     private String name;
@@ -34,7 +35,7 @@ public class CreativeRegion {
     
     public CreativeRegion(CreativeControl plugin) { }
     
-    public ArrayList<CreativeRegion> get() {
+    public HashSet<CreativeRegion> get() {
         return areas;
     }
     

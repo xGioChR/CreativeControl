@@ -20,7 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import me.FurH.CreativeControl.CreativeControl;
@@ -130,12 +130,12 @@ public class CreativeWorldConfig {
     /*
      * return a List from the Settings file
      */
-    private static List<String> getStringList(World w, String node) {
-        return Arrays.asList(getSetting(node, w).replaceAll(" ", "").split(","));
+    private static HashSet<String> getStringList(World w, String node) {
+        return CreativeUtil.toStringHashSet(Arrays.asList(getSetting(node, w).replaceAll(" ", "").split(",")));
     }
     
-    private static List<Integer> getIntegerList(World w, String node) {
-        return CreativeUtil.toIntegerList(getSetting(node, w).replaceAll(" ", ""), ",");
+    private static HashSet<Integer> getIntegerList(World w, String node) {
+        return CreativeUtil.toIntegerHashSet(CreativeUtil.toIntegerList(getSetting(node, w).replaceAll(" ", ""), ","));
     }
 
     /*

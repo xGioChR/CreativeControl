@@ -21,6 +21,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.cache.CreativeBlockCache;
@@ -190,12 +191,12 @@ public class CreativeCommands implements CommandExecutor {
                                     return true;
                                 } else {
                                     if (friends.getFriends(sender.getName()) == null) {
-                                        List list = Arrays.asList(args[2]);
+                                        HashSet<String> list = CreativeUtil.toStringHashSet(Arrays.asList(args[2]));
                                         friends.saveFriends(sender.getName(), list);
                                         msg(sender, messages.commands_fadd_added, args[2]);
                                         return true;
                                     } else {
-                                        List list = friends.getFriends(sender.getName());
+                                        HashSet<String> list = friends.getFriends(sender.getName());
                                         if (list.contains(args[2])) {
                                             msg(sender, messages.commands_fadd_already, args[2]);
                                             return true;
@@ -232,7 +233,7 @@ public class CreativeCommands implements CommandExecutor {
                                         msg(sender, messages.commands_frem_empty, args[2]);
                                         return true;
                                     } else {
-                                        List list = friends.getFriends(sender.getName());
+                                        HashSet<String> list = friends.getFriends(sender.getName());
                                         if (list.contains(args[2])) {
                                             list.remove(args[2]);
                                             friends.saveFriends(sender.getName(), list);

@@ -16,8 +16,7 @@
 
 package me.FurH.CreativeControl.configuration;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.HashSet;
 
 /**
  *
@@ -28,13 +27,13 @@ public class CreativeWorldNodes {
     public boolean world_exclude         = false;
     public boolean world_changegm        = false;
     
-    public List<String> black_cmds       = Arrays.asList(new String[] { "/buy", "/sell", "/logout" });
-    public List<Integer> black_place     = Arrays.asList(new Integer[] { 8, 9, 10, 11, 46, 51, 52, 79 });
-    public List<Integer> black_break     = Arrays.asList(new Integer[] { });
-    public List<Integer> black_use       = Arrays.asList(new Integer[] { 259, 326, 327, 384, 385 });
-    public List<Integer> black_interact  = Arrays.asList(new Integer[] { 23, 54, 58, 61, 62, 63, 68, 84, 116, 117, 130, 138, 145 });
-    public List<Integer> black_inventory = Arrays.asList(new Integer[] { });
-    public List<String> black_sign       = Arrays.asList(new String[] { "buy", "sell", "trade" });
+    public HashSet<String> black_cmds       = new HashSet<String>();//Arrays.asList(new String[] { "/buy", "/sell", "/logout" });
+    public HashSet<Integer> black_place     = new HashSet<Integer>();//Arrays.asList(new Integer[] { 8, 9, 10, 11, 46, 51, 52, 79 });
+    public HashSet<Integer> black_break     = new HashSet<Integer>();//Arrays.asList(new Integer[] { });
+    public HashSet<Integer> black_use       = new HashSet<Integer>();//Arrays.asList(new Integer[] { 259, 326, 327, 384, 385 });
+    public HashSet<Integer> black_interact  = new HashSet<Integer>();//Arrays.asList(new Integer[] { 23, 54, 58, 61, 62, 63, 68, 84, 116, 117, 130, 138, 145 });
+    public HashSet<Integer> black_inventory = new HashSet<Integer>();//Arrays.asList(new Integer[] { });
+    public HashSet<String> black_sign       = new HashSet<String>();//Arrays.asList(new String[] { "buy", "sell", "trade" });
     
     public boolean misc_tnt              = false;
     public boolean misc_ice              = false;
@@ -49,7 +48,7 @@ public class CreativeWorldNodes {
     public boolean block_pistons         = false;
     public boolean block_against         = false;
     public boolean block_invert          = false;
-    public List<Integer> block_exclude   = Arrays.asList(new Integer[] { 0, 8, 9, 10, 11 });
+    public HashSet<Integer> block_exclude   = new HashSet<Integer>();//Arrays.asList(new Integer[] { 0, 8, 9, 10, 11 });
     
     public boolean prevent_drop          = true;
     public boolean prevent_pickup        = true;
