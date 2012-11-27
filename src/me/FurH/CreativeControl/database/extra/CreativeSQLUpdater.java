@@ -18,9 +18,7 @@ package me.FurH.CreativeControl.database.extra;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.configuration.CreativeMessages;
 import me.FurH.CreativeControl.database.CreativeSQLDatabase;
@@ -62,7 +60,7 @@ public class CreativeSQLUpdater {
         com.msg(p, messages.updater_loading);
 
         HashSet<String> locations = new HashSet<String>();
-        List<String[]> blocks = new ArrayList<String[]>();
+        HashSet<String[]> blocks = new HashSet<String[]>();
 
         CreativeSQLDatabase db = CreativeControl.getDb();
         try {

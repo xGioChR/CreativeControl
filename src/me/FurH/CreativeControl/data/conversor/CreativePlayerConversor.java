@@ -16,7 +16,6 @@
 
 package me.FurH.CreativeControl.data.conversor;
 
-import me.FurH.CreativeControl.util.CreativePlayerInv;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -27,6 +26,7 @@ import me.FurH.CreativeControl.data.CreativePlayerCache;
 import me.FurH.CreativeControl.data.CreativePlayerData;
 import me.FurH.CreativeControl.database.CreativeSQLDatabase;
 import me.FurH.CreativeControl.util.CreativeCommunicator;
+import me.FurH.CreativeControl.util.CreativePlayerInv;
 import org.bukkit.GameMode;
 import org.bukkit.inventory.ItemStack;
 

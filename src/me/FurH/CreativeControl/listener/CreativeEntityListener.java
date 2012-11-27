@@ -201,7 +201,7 @@ public class CreativeEntityListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onEntityDeath(EntityDeathEvent e) {        
         if ((e.getEntity().getKiller() instanceof Player)) {
-            Player p = (Player)e.getEntity().getKiller();
+            Player p = e.getEntity().getKiller();
             World world = p.getWorld();
             
             if (p.getGameMode().equals(GameMode.CREATIVE)) {

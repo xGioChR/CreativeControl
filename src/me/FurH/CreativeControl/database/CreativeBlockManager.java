@@ -19,7 +19,6 @@ package me.FurH.CreativeControl.database;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashSet;
-import java.util.List;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.cache.CreativeBlockCache;
 import me.FurH.CreativeControl.configuration.CreativeMainConfig;
@@ -235,7 +234,7 @@ public class CreativeBlockManager {
             return true;
         } else {
             if (allowed != null && !"[]".equals(allowed) && !"".equals(allowed) && !"null".equals(allowed)) {
-                if (CreativeUtil.toStringList(allowed, ", ").contains(p.getName().toLowerCase())) {
+                if (CreativeUtil.toStringHashSet(allowed, ", ").contains(p.getName().toLowerCase())) {
                     return true;
                 } else {
                     return false;

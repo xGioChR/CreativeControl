@@ -19,10 +19,7 @@ package me.FurH.CreativeControl.commands;
 import com.sk89q.worldedit.bukkit.selections.Selection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.cache.CreativeBlockCache;
 import me.FurH.CreativeControl.configuration.CreativeMainConfig;
@@ -191,7 +188,7 @@ public class CreativeCommands implements CommandExecutor {
                                     return true;
                                 } else {
                                     if (friends.getFriends(sender.getName()) == null) {
-                                        HashSet<String> list = CreativeUtil.toStringHashSet(Arrays.asList(args[2]));
+                                        HashSet<String> list = CreativeUtil.toStringHashSet(args[2], ", ");
                                         friends.saveFriends(sender.getName(), list);
                                         msg(sender, messages.commands_fadd_added, args[2]);
                                         return true;
@@ -303,8 +300,8 @@ public class CreativeCommands implements CommandExecutor {
                                                 msg(sender, messages.commands_noperm);
                                                 return false;
                                             } else {
-                                                List<String> locations = new ArrayList<String>();
-                                                List<String> backup = new ArrayList<String>();
+                                                HashSet<String> locations = new HashSet<String>();
+                                                HashSet<String> backup = new HashSet<String>();
                                                 
                                                 long startTimer = System.currentTimeMillis();
                                                 long elapsedTime = 0;
@@ -578,8 +575,8 @@ public class CreativeCommands implements CommandExecutor {
                                     msg(sender, messages.commands_tcleanup_help);
                                     return true;
                                 } else {
-                                    List<String> locations = new ArrayList<String>();
-                                    List<String> backup = new ArrayList<String>();
+                                    HashSet<String> locations = new HashSet<String>();
+                                    HashSet<String> backup = new HashSet<String>();
 
                                     long startTimer = System.currentTimeMillis();
                                     long elapsedTime = 0;
@@ -640,8 +637,8 @@ public class CreativeCommands implements CommandExecutor {
                                     msg(sender, messages.commands_pcleanup_help);
                                     return true;
                                 } else {
-                                    List<String> locations = new ArrayList<String>();
-                                    List<String> backup = new ArrayList<String>();
+                                    HashSet<String> locations = new HashSet<String>();
+                                    HashSet<String> backup = new HashSet<String>();
 
                                     long startTimer = System.currentTimeMillis();
                                     long elapsedTime = 0;
@@ -702,8 +699,8 @@ public class CreativeCommands implements CommandExecutor {
                                     msg(sender, messages.commands_wcleanup_help);
                                     return true;
                                 } else {
-                                    List<String> locations = new ArrayList<String>();
-                                    List<String> backup = new ArrayList<String>();
+                                    HashSet<String> locations = new HashSet<String>();
+                                    HashSet<String> backup = new HashSet<String>();
 
                                     long startTimer = System.currentTimeMillis();
                                     long elapsedTime = 0;

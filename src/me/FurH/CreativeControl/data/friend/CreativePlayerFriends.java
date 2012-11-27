@@ -61,7 +61,7 @@ public class CreativePlayerFriends {
                 ResultSet rs = db.getQuery("SELECT * FROM `"+db.prefix+"friends` WHERE player = '" + player.toLowerCase() + "'");
                 
                 if (rs.next()) {
-                    friends = CreativeUtil.toStringHashSet(CreativeUtil.toStringList(rs.getString("friends"), ", "));
+                    friends = CreativeUtil.toStringHashSet(rs.getString("friends"), ", ");
                 } else {
                     friends = new HashSet<String>();
                     db.executeQuery("INSERT INTO `"+db.prefix+"friends` (player, friends) VALUES ('"+ player.toLowerCase() +"', '"+ friends.toString() +"');", true);

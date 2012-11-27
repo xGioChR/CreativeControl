@@ -17,7 +17,7 @@
 package me.FurH.CreativeControl.listener;
 
 import de.diddiz.LogBlock.Consumer;
-import java.util.List;
+import java.util.HashSet;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.configuration.CreativeMainConfig;
 import me.FurH.CreativeControl.configuration.CreativeMessages;
@@ -315,7 +315,7 @@ public class CreativeBlockListener implements Listener {
 
         CreativeBlockManager    manager    = CreativeControl.getManager();
         if (config.block_ownblock) {
-            List<Block> attach = CreativeBlockMatcher.getAttached(b);
+            HashSet<Block> attach = CreativeBlockMatcher.getAttached(b);
             if (attach != null && attach.size() > 0) {
                 for (Block ba1 : attach) {
                     String[] data = manager.getBlock(ba1);
@@ -362,7 +362,7 @@ public class CreativeBlockListener implements Listener {
             }
         } else
         if (config.block_nodrop) {
-            List<Block> attach = CreativeBlockMatcher.getAttached(b);
+            HashSet<Block> attach = CreativeBlockMatcher.getAttached(b);
             if (attach != null && attach.size() > 0) {
                 for (Block ba1 : attach) {
                     String[] data = manager.getBlock(ba1);

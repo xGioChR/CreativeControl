@@ -16,7 +16,6 @@
 
 package me.FurH.CreativeControl.region;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import me.FurH.CreativeControl.CreativeControl;
 import org.bukkit.Location;

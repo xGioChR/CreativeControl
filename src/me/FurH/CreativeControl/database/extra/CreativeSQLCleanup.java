@@ -19,9 +19,7 @@ package me.FurH.CreativeControl.database.extra;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.configuration.CreativeMessages;
 import me.FurH.CreativeControl.database.CreativeBlockManager;
@@ -58,9 +56,9 @@ public class CreativeSQLCleanup extends Thread {
         CreativeMessages messages = CreativeControl.getMessages();
         
         com.msg(p, messages.updater_loading);
-        List<String[]> blocks = new ArrayList<String[]>();
+        HashSet<String[]> blocks = new HashSet<String[]>();
         
-        /* Backup */ List<String> backup = new ArrayList<String>();
+        /* Backup */ HashSet<String> backup = new HashSet<String>();
 
         CreativeSQLDatabase db = CreativeControl.getDb();
         try {

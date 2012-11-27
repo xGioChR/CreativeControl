@@ -16,8 +16,8 @@
 
 package me.FurH.CreativeControl.database;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -29,8 +29,8 @@ import org.bukkit.block.BlockFace;
  */
 public class CreativeBlockMatcher {
     
-    public static List<Block> getAttached(Block block) {
-        List<Block> blocks = new ArrayList<Block>();
+    public static HashSet<Block> getAttached(Block block) {
+        HashSet<Block> blocks = new HashSet<Block>();
         
         List BLOCKUP = Arrays.asList(new Integer[] { 6, 31, 32, 37, 38, 39, 40, 55, 59, 63, 70, 72, 76, 78, 81, 83, 92, 93, 94, 104, 105, 111, 115, 132, 141, 142 });
         Block relative = block.getRelative(BlockFace.UP);

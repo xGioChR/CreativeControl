@@ -40,25 +40,7 @@ import org.bukkit.plugin.Plugin;
  * @author FurmigaHumana
  */
 public class CreativeUtil {
-    
-    /*
-     * return a HashSet of the List contends
-     */
-    public static HashSet<String> toStringHashSet(List<String> list) {
-        HashSet<String> set = new HashSet<String>();
-        set.addAll(list);
-        return set;
-    }
-    
-    /*
-     * return a HashSet of the List contends
-     */
-    public static HashSet<Integer> toIntegerHashSet(List<Integer> list) {
-        HashSet<Integer> set = new HashSet<Integer>();
-        set.addAll(list);
-        return set;
-    }
-    
+
     /*
      * return true if the first line of the sign is listed as a economy sign
      */
@@ -79,60 +61,58 @@ public class CreativeUtil {
     }
 
     /*
-     * convert and string to a list
+     * return a HashSet of the List contends
      */
-    public static List<Integer> toIntegerList(String string, String split) {
+    public static HashSet<String> toStringHashSet(String string, String split) {
+        HashSet<String> set = new HashSet<String>();
+
         try {
             string = string.replaceAll("\\[", "").replaceAll("\\]", "");
             if (string.contains(split) && !"[]".equals(string)) {
-                List<Integer> ints = new ArrayList<Integer>();
+                set.addAll(Arrays.asList(string.split(split)));
+            } else
+            if (string != null && !"".equals(string) && !"null".equals(string) && !"[]".equals(string)) {
+                set.add(string);
+            }
+        } catch (Exception ex) {
+            CreativeCommunicator com    = CreativeControl.getCommunicator();
+            com.error("[TAG] Failed to parse string to list: {0}, split: {1}, {2}", ex, string, split, ex.getMessage());
+        }
+        
+        return set;
+    }
+    
+    /*
+     * return a HashSet of the List contends
+     */
+    public static HashSet<Integer> toIntegerHashSet(String string, String split) {
+        HashSet<Integer> set = new HashSet<Integer>();
+
+        try {
+            string = string.replaceAll("\\[", "").replaceAll("\\]", "");
+            if (string.contains(split) && !"[]".equals(string)) {
                 String[] splits = string.split(split);
 
                 for (String str : splits) {
                     try {
                         int i = Integer.parseInt(str);
-                        ints.add(i);
+                        set.add(i);
                     } catch (Exception ex) {
                         CreativeCommunicator com    = CreativeControl.getCommunicator();
                         com.error("[TAG] {0} is not a valid number!, {1}", ex, str, ex.getMessage());
                     }
                 }
-                
-                return ints;
             } else {
                 if (string != null && !"".equals(string) && !"null".equals(string) && !"[]".equals(string)) {
-                    return Arrays.asList(new Integer[] { Integer.parseInt(string) });
-                } else {
-                    return new ArrayList<Integer>();
+                    set.add(Integer.parseInt(string));
                 }
             }
         } catch (Exception ex) {
             CreativeCommunicator com    = CreativeControl.getCommunicator();
             com.error("[TAG] Failed to parse string to list: {0}, split: {1}, {2}", ex, string, split, ex.getMessage());
-            return new ArrayList<Integer>();
         }
-    }
-    
-    /*
-     * convert and string to a list
-     */
-    public static List<String> toStringList(String string, String split) {
-        try {
-            string = string.replaceAll("\\[", "").replaceAll("\\]", "");
-            if (string.contains(split) && !"[]".equals(string)) {
-                return Arrays.asList(string.split(split));
-            } else {
-                if (string != null && !"".equals(string) && !"null".equals(string) && !"[]".equals(string)) {
-                    return Arrays.asList(new String[] { string });
-                } else {
-                    return new ArrayList<String>();
-                }
-            }
-        } catch (Exception ex) {
-            CreativeCommunicator com    = CreativeControl.getCommunicator();
-            com.error("[TAG] Failed to parse string to list: {0}, split: {1}, {2}", ex, string, split, ex.getMessage());
-            return new ArrayList<String>();
-        }
+        
+        return set;
     }
     
     /*
@@ -152,6 +132,10 @@ public class CreativeUtil {
     public static void getFloor(Player player) {
         Location loc = player.getLocation();
         Block b1 = loc.getBlock().getRelative(BlockFace.DOWN);
+
+        if (b1.getType() != Material.AIR) {
+            return;
+        }
 
         int limit = 64;
         while (b1.getType() != Material.AIR && limit > 0) {

@@ -19,7 +19,7 @@ package me.FurH.CreativeControl.database.extra;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
-import java.util.List;
+import java.util.HashSet;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.util.CreativeCommunicator;
 import me.FurH.CreativeControl.util.CreativeUtil;
@@ -30,7 +30,7 @@ import me.FurH.CreativeControl.util.CreativeUtil;
  */
 public class CreativeSQLBackup extends Thread {
     
-    public static void backup(List<String> backup) {        
+    public static void backup(HashSet<String> backup) {        
         CreativeCommunicator com = CreativeControl.getCommunicator();
         CreativeControl plugin = CreativeControl.getPlugin();
         

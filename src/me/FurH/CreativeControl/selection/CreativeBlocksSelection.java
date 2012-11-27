@@ -18,9 +18,7 @@ package me.FurH.CreativeControl.selection;
 
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.bukkit.selections.Selection;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.configuration.CreativeMainConfig;
 import me.FurH.CreativeControl.configuration.CreativeMessages;
@@ -169,7 +167,7 @@ public class CreativeBlocksSelection {
                                         HashSet<String> als = new HashSet<String>();
 
                                         if (data.length > 0) {
-                                            als = CreativeUtil.toStringHashSet(CreativeUtil.toStringList(data[1], ", "));
+                                            als = CreativeUtil.toStringHashSet(data[1], ", ");
                                         }
                                         
                                         if (mod.startsWith("-")) {

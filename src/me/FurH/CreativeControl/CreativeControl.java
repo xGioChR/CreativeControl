@@ -33,11 +33,11 @@ import me.FurH.CreativeControl.commands.CreativeCommands;
 import me.FurH.CreativeControl.configuration.CreativeMainConfig;
 import me.FurH.CreativeControl.configuration.CreativeMessages;
 import me.FurH.CreativeControl.configuration.CreativeWorldConfig;
-import me.FurH.CreativeControl.data.conversor.CreativePlayerConversor;
 import me.FurH.CreativeControl.data.CreativePlayerData;
+import me.FurH.CreativeControl.data.conversor.CreativePlayerConversor;
 import me.FurH.CreativeControl.data.friend.CreativePlayerFriends;
-import me.FurH.CreativeControl.database.CreativeBlockMatcher;
 import me.FurH.CreativeControl.database.CreativeBlockManager;
+import me.FurH.CreativeControl.database.CreativeBlockMatcher;
 import me.FurH.CreativeControl.database.CreativeSQLDatabase;
 import me.FurH.CreativeControl.database.extra.CreativeSQLUpdater;
 import me.FurH.CreativeControl.integration.AuthMe;
@@ -53,6 +53,7 @@ import me.FurH.CreativeControl.selection.CreativeBlocksSelection;
 import me.FurH.CreativeControl.util.CreativeCommunicator;
 import me.FurH.CreativeControl.util.CreativeUtil;
 import net.milkbowl.vault.permission.Permission;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.CommandExecutor;
@@ -79,9 +80,7 @@ public class CreativeControl extends JavaPlugin {
     public static String tag = "[CreativeControl]: ";
     public static Permission permission = null;
 
-    /*
-     * Classes
-     */
+    /* classes */
     private static CreativeControl plugin;
     private static CreativeBlockCache cache;
     private static CreativeCommunicator communicator;
@@ -100,18 +99,16 @@ public class CreativeControl extends JavaPlugin {
 
     public WeakHashMap<Player, Location> right = new WeakHashMap<Player, Location>();
     public WeakHashMap<Player, Location> left = new WeakHashMap<Player, Location>();
-    
+
     public WeakHashMap<String, String> mods = new WeakHashMap<String, String>();
-    
+
     public HashSet<UUID> entity = new HashSet<UUID>();
     public Map<String, Integer> limits = new HashMap<String, Integer>();
     public Player player = null;
-    
-    private Runnable update;
-    
+
     public String currentversion;
     public String newversion;
-    
+
     public boolean hasUpdate;
 
     @Override
@@ -368,7 +365,7 @@ public class CreativeControl extends JavaPlugin {
     }
 
     public boolean hasPerm(CommandSender sender, String perm) {
-        if ((perm == null) || (perm.equals(""))) {
+        if ((perm == null) || (perm.isEmpty())) {
             return true;
         } else {
             if (!(sender instanceof Player)) {
@@ -519,23 +516,20 @@ public class CreativeControl extends JavaPlugin {
     }
     
     public void updateThread() {
-        if (update == null) {
-            update = new Runnable() {
-                @Override
-                public void run() {
-                    newversion = getVersion(currentversion);
-                    int nv = CreativeUtil.toInteger(newversion);
-                    int od = CreativeUtil.toInteger(currentversion);
-                    
-                    if (od < nv) {
-                        communicator.log("New Version Found: {0} (You have: {1})", newversion, currentversion);
-                        communicator.log("Visit: http://bit.ly/creativecontrol/");
-                        hasUpdate = true;
-                    }
+        Bukkit.getScheduler().scheduleAsyncRepeatingTask(this, new Runnable() {
+            @Override
+            public void run() {
+                newversion = getVersion(currentversion);
+                int nv = CreativeUtil.toInteger(newversion);
+                int od = CreativeUtil.toInteger(currentversion);
+
+                if (od < nv) {
+                    communicator.log("New Version Found: {0} (You have: {1})", newversion, currentversion);
+                    communicator.log("Visit: http://bit.ly/creativecontrol/");
+                    hasUpdate = true;
                 }
-            };
-        }
-        getServer().getScheduler().scheduleAsyncRepeatingTask(this, update, 100, 21600 * 20);
+            }
+        }, 100, 21600 * 20);
     }
     
     public String getVersion(String current) {
@@ -545,12 +539,14 @@ public class CreativeControl extends JavaPlugin {
             doc.getDocumentElement().normalize();
             NodeList nodes = doc.getElementsByTagName("item");
             Node firstNode = nodes.item(0);
-            if (firstNode.getNodeType() == 1) {
-                Element firstElement = (Element)firstNode;
-                NodeList firstElementTagName = firstElement.getElementsByTagName("title");
-                Element firstNameElement = (Element) firstElementTagName.item(0);
-                NodeList firstNodes = firstNameElement.getChildNodes();
-                return firstNodes.item(0).getNodeValue();
+            if (firstNode != null) {
+                if (firstNode.getNodeType() == 1) {
+                    Element firstElement = (Element)firstNode;
+                    NodeList firstElementTagName = firstElement.getElementsByTagName("title");
+                    Element firstNameElement = (Element) firstElementTagName.item(0);
+                    NodeList firstNodes = firstNameElement.getChildNodes();
+                    return firstNodes.item(0).getNodeValue();
+                }
             }
         } catch (Exception e) {
             return current;
