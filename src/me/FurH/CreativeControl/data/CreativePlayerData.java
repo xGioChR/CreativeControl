@@ -284,13 +284,16 @@ public class CreativePlayerData {
         
         String id = inv[0];
         String data = inv[1];
-        String ammount = inv[2];
+        String amount = inv[2];
         String durability = inv[3];
         String enchantments = inv[4];
         
         if (!string.equals("0:0:0:1:[]")) {
             try {
-                stack = new ItemStack(Integer.parseInt(id), Integer.parseInt(ammount), Short.parseShort(durability), Byte.parseByte(data));
+                stack = new ItemStack(Integer.parseInt(id));
+                stack.setAmount(Integer.parseInt(amount));
+                stack.setDurability(Short.parseShort(durability));
+                stack.getData().setData(Byte.parseByte(data));
             } catch (Exception ex) {
                 com.error("[TAG] Invalid Item String: {0}, {1}", ex, string, ex.getMessage());
                 return new ItemStack(Material.AIR);

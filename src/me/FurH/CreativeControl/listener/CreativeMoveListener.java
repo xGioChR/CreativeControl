@@ -47,72 +47,76 @@ public class CreativeMoveListener implements Listener {
     public void PlayerMoveEvent(PlayerMoveEvent e) {
         if (e.isCancelled()) { return; }
         
-        if (e.getFrom().getBlockX() != e.getTo().getBlockX() || e.getFrom().getBlockY() != e.getTo().getBlockY()
-                || e.getFrom().getBlockZ() != e.getTo().getBlockZ() || !e.getFrom().getWorld().equals(e.getTo().getWorld())) {
-            Player p = e.getPlayer();
-            World world = p.getWorld();
-            Location loc = p.getLocation();
-            
-            CreativeWorldNodes config = CreativeWorldConfig.get(world);
-            
-            if (config.world_exclude) { return; }
-            
-            CreativeCommunicator com        = CreativeControl.getCommunicator();
-            CreativeMessages     messages   = CreativeControl.getMessages();
-            CreativeControl      plugin     = CreativeControl.getPlugin();
-            CreativeRegion region = new CreativeRegion(loc);
-            if (region.getType() != null) {
-                World w = region.getWorld();
-                if (w != world) { return; }
-                gmType type = region.getType();
-                if (type == gmType.CREATIVE) {
-                    if (!plugin.hasPerm(p, "Region.Keep.Survival")) {
-                        if (!p.getGameMode().equals(GameMode.CREATIVE)) {
-                            com.msg(p, messages.region_cwelcome);
+        if (e.getTo().getBlockX() == e.getFrom().getBlockX() &&
+            e.getTo().getBlockY() == e.getFrom().getBlockY() &&
+            e.getTo().getBlockZ() == e.getFrom().getBlockZ()) {
+            return;
+        }
+        
+        Player p = e.getPlayer();
+        World world = p.getWorld();
+        Location loc = p.getLocation();
+
+        CreativeWorldNodes config = CreativeWorldConfig.get(world);
+
+        if (config.world_exclude) { return; }
+
+        CreativeCommunicator com        = CreativeControl.getCommunicator();
+        CreativeMessages     messages   = CreativeControl.getMessages();
+        CreativeControl      plugin     = CreativeControl.getPlugin();
+        
+        CreativeRegion region = new CreativeRegion(loc);
+        if (region != null) {
+            World w = region.getWorld();
+            if (w != world) { return; }
+            gmType type = region.getType();
+            if (type == gmType.CREATIVE) {
+                if (!plugin.hasPerm(p, "Region.Keep.Survival")) {
+                    if (!p.getGameMode().equals(GameMode.CREATIVE)) {
+                        com.msg(p, messages.region_cwelcome);
+                        p.setGameMode(GameMode.CREATIVE);
+                        was = type;
+                    }
+                }
+            } else
+            if (type == CreativeRegion.gmType.SURVIVAL) {
+                if (!p.getGameMode().equals(GameMode.SURVIVAL)) {
+                    if (!plugin.hasPerm(p, "Region.Keep.Creative")) {
+                        CreativeUtil.getFloor(p);
+                        com.msg(p, messages.region_swelcome);
+                        p.setGameMode(GameMode.SURVIVAL);
+                        was = type;
+                    }
+                }
+            }
+        } else {
+            if (!plugin.hasPerm(p, "World.Keep")) {
+                if (config.world_creative) {
+                    if (!p.getGameMode().equals(GameMode.CREATIVE)) {
+                        if (was == gmType.CREATIVE) {
+                            com.msg(p, messages.region_cleave);
                             p.setGameMode(GameMode.CREATIVE);
-                            was = type;
+                        } else
+                        if (was == gmType.SURVIVAL) {
+                            com.msg(p, messages.region_sleave);
+                            p.setGameMode(GameMode.CREATIVE);
+                        } else {
+                            p.setGameMode(GameMode.CREATIVE);
                         }
                     }
                 } else
-                if (type == CreativeRegion.gmType.SURVIVAL) {
+                if (!config.world_creative) {
                     if (!p.getGameMode().equals(GameMode.SURVIVAL)) {
-                        if (!plugin.hasPerm(p, "Region.Keep.Creative")) {
-                            CreativeUtil.getFloor(p);
-                            com.msg(p, messages.region_swelcome);
+                        CreativeUtil.getFloor(p);
+                        if (was == gmType.CREATIVE) {
+                            com.msg(p, messages.region_cleave);
                             p.setGameMode(GameMode.SURVIVAL);
-                            was = type;
-                        }
-                    }
-                }
-            } else {
-                if (!plugin.hasPerm(p, "World.Keep")) {
-                    if (config.world_creative) {
-                        if (!p.getGameMode().equals(GameMode.CREATIVE)) {
-                            if (was == gmType.CREATIVE) {
-                                com.msg(p, messages.region_cleave);
-                                p.setGameMode(GameMode.CREATIVE);
-                            } else
-                            if (was == gmType.SURVIVAL) {
-                                com.msg(p, messages.region_sleave);
-                                p.setGameMode(GameMode.CREATIVE);
-                            } else {
-                                p.setGameMode(GameMode.CREATIVE);
-                            }
-                        }
-                    } else
-                    if (!config.world_creative) {
-                        if (!p.getGameMode().equals(GameMode.SURVIVAL)) {
-                            CreativeUtil.getFloor(p);
-                            if (was == gmType.CREATIVE) {
-                                com.msg(p, messages.region_cleave);
-                                p.setGameMode(GameMode.SURVIVAL);
-                            } else
-                            if (was == gmType.SURVIVAL) {
-                                com.msg(p, messages.region_sleave);
-                                p.setGameMode(GameMode.SURVIVAL);
-                            } else {
-                                p.setGameMode(GameMode.SURVIVAL);
-                            }
+                        } else
+                        if (was == gmType.SURVIVAL) {
+                            com.msg(p, messages.region_sleave);
+                            p.setGameMode(GameMode.SURVIVAL);
+                        } else {
+                            p.setGameMode(GameMode.SURVIVAL);
                         }
                     }
                 }

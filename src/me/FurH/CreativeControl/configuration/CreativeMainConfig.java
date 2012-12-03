@@ -55,7 +55,7 @@ public class CreativeMainConfig {
     public boolean         perm_ophas        = false;
     
     public boolean         selection_usewe   = false;
-    public int             selection_tool    = 378;
+    public int             selection_tool    = 369;
     
     public boolean         events_move       = false;
     public boolean         events_misc       = false;

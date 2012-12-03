@@ -41,7 +41,7 @@ public class CreativeRegionCreator {
 
         try {
             ResultSet rs = db.getQuery("SELECT * FROM `"+db.prefix+"regions`");
-            if (rs.next()) {
+            while (rs.next()) {
                 String name = rs.getString("name");
                 Location start = CreativeUtil.getLocation(rs.getString("start"));
                 Location end = CreativeUtil.getLocation(rs.getString("end"));

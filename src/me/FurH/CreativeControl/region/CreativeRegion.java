@@ -102,16 +102,13 @@ public class CreativeRegion {
     }
 
     public boolean contains(Location loc) {
-        double x = loc.getX();
-        double y = loc.getY();
-        double z = loc.getZ();
-        
-        Location min = start;
-        Location max = end;
-        
-        return x >= min.getBlockX() && x <= max.getBlockX()
-                && y >= min.getBlockY() && y <= max.getBlockY()
-                && z >= min.getBlockZ() && z <= max.getBlockZ();
+        double x = loc.getBlockX();
+        double y = loc.getBlockY();
+        double z = loc.getBlockZ();
+
+        return x >= start.getBlockX() && x <= end.getBlockX()
+                && y >= start.getBlockY() && y <= end.getBlockY()
+                && z >= start.getBlockZ() && z <= end.getBlockZ();
     }
 
     public enum gmType { CREATIVE, SURVIVAL; }

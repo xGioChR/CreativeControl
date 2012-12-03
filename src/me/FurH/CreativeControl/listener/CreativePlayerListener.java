@@ -728,7 +728,7 @@ public class CreativePlayerListener implements Listener {
         
         return true;
     }
- 
+
     private void cleanup(Player p) {
         CreativeControl plugin = CreativeControl.getPlugin();
         plugin.right.remove(p);
