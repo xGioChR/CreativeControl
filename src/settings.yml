@@ -48,7 +48,7 @@ Selection:
   ## UseWorldEdit, if true, worldedit will be used to make selections.
   UseWorldEdit: false
   ## The Item ID used to select regions
-  Tool: 378
+  Tool: 369
 
 Events:
   ## Use Player Move Event? This may take a lot of resources on large servers, but is required to Creative/Survival regions work.
