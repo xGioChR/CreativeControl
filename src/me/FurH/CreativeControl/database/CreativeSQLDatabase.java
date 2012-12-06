@@ -152,10 +152,9 @@ public final class CreativeSQLDatabase {
                 if (query == null) { continue; }
                 
                 process = ((done / total) * 100.0D);
+
+                com.log("[TAG] Processed {0} of {1} querys, {2}%", done, total, process);
                 
-                if (process % 1 == 0) {
-                    com.log("[TAG] Processed {0} of {1} querys, {2}%", done, total, process);
-                }
                 executeQuery(query, true);
             }
         }

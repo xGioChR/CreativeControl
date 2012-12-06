@@ -150,15 +150,15 @@ public class CreativePlayerData {
 
     public void restore(Player p, GameMode gm) {        
         if (gm.equals(GameMode.ADVENTURE)) {
-            CreativePlayerCache cache = adventurer_cache.get(p.getName().toLowerCase());
+            CreativePlayerCache cache = hasAdv(p.getName());
             restore(p, cache);
         } else
         if (gm.equals(GameMode.CREATIVE)) {
-            CreativePlayerCache cache = creative_cache.get(p.getName().toLowerCase());
+            CreativePlayerCache cache = hasCre(p.getName());
             restore(p, cache);
         } else
         if (gm.equals(GameMode.SURVIVAL)) {
-            CreativePlayerCache cache = survival_cache.get(p.getName().toLowerCase());
+            CreativePlayerCache cache = hasSur(p.getName());
             restore(p, cache);
         }
     }

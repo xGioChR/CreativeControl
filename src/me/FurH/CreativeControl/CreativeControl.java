@@ -187,7 +187,7 @@ public class CreativeControl extends JavaPlugin {
     @Override
     public void onDisable() {
         HandlerList.unregisterAll(this);
-
+        
         clear();
         right.clear();
         left.clear();
