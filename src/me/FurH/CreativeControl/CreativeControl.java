@@ -28,7 +28,7 @@ import java.util.UUID;
 import java.util.WeakHashMap;
 import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilderFactory;
-import me.FurH.CreativeControl.cache.CreativeBlockCache;
+import Me.FurH.CreativeControl.cache.CreativeBlockCache;
 import me.FurH.CreativeControl.commands.CreativeCommands;
 import me.FurH.CreativeControl.configuration.CreativeMainConfig;
 import me.FurH.CreativeControl.configuration.CreativeMessages;
