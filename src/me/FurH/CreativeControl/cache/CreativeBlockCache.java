@@ -14,7 +14,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package Me.FurH.CreativeControl.cache;
+package me.FurH.CreativeControl.cache;
 
 import java.util.concurrent.ConcurrentHashMap;
 import me.FurH.CreativeControl.CreativeControl;

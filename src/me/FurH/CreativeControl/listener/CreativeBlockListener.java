@@ -324,7 +324,7 @@ public class CreativeBlockListener implements Listener {
                             com.msg(p, messages.blocks_pertence, data[0]);
                             e.setCancelled(true);
                         } else {
-                            process(e, data, ba1, p);
+                            process(e, ba1, p);
                         }
                     }
                 }
@@ -336,7 +336,7 @@ public class CreativeBlockListener implements Listener {
                         com.msg(p, messages.blocks_pertence, data[0]);
                         e.setCancelled(true);
                     } else {
-                        process(e, data, b, p);
+                        process(e, b, p);
                     }
                 }
             } else {
@@ -346,7 +346,7 @@ public class CreativeBlockListener implements Listener {
                         com.msg(p, messages.blocks_pertence, data[0]);
                         e.setCancelled(true);
                     } else {
-                        process(e, data, b, p);
+                        process(e, b, p);
                     }
                 } else {
                     data = manager.getDoor3(b);
@@ -355,7 +355,7 @@ public class CreativeBlockListener implements Listener {
                             com.msg(p, messages.blocks_pertence, data[0]);
                             e.setCancelled(true);
                         } else {
-                            process(e, data, b, p);
+                            process(e, b, p);
                         }
                     }
                 }
@@ -365,25 +365,27 @@ public class CreativeBlockListener implements Listener {
             HashSet<Block> attach = CreativeBlockMatcher.getAttached(b);
             if (attach != null && attach.size() > 0) {
                 for (Block ba1 : attach) {
-                    String[] data = manager.getBlock(ba1);
-                    if (data != null) {
-                        process(e, data, ba1, p);
+                    if (manager.isFastProtected(ba1)) {
+                        process(e, ba1, p);
                     }
                 }
             }
             if (b.getTypeId() == 64 || b.getTypeId() == 71) {
-                String[] data = manager.getDoor2(b);
+                Block data = manager.getDoor22(b);
                 if (data != null) {
-                    process(e, data, b, p);
+                    if (manager.isFastProtected(data)) {
+                        process(e, b, p);
+                    }
                 }
             } else {
-                String[] data = manager.getBlock(b);
-                if (data != null) {
-                    process(e, data, b, p);
+                if (manager.isFastProtected(b)) {
+                    process(e, b, p);
                 } else {
-                    data = manager.getDoor3(b);
+                    Block data = manager.getDoor33(b);
                     if (data != null) {
-                        process(e, data, b, p);
+                        if (manager.isFastProtected(data)) {
+                            process(e,  b, p);
+                        }
                     }
                 }
             }
@@ -444,7 +446,7 @@ public class CreativeBlockListener implements Listener {
         }
     }
 
-    private void process(BlockBreakEvent e, String[] data, Block b, Player p) {
+    private void process(BlockBreakEvent e, Block b, Player p) {
         if (!e.isCancelled()) {
             CreativeCommunicator    com        = CreativeControl.getCommunicator();
             CreativeMessages        messages   = CreativeControl.getMessages();
@@ -452,7 +454,7 @@ public class CreativeBlockListener implements Listener {
             CreativeWorldNodes config = CreativeWorldConfig.get(b.getWorld());
             if (config.block_creative) {
                 if (p.getGameMode().equals(GameMode.CREATIVE)) {
-                    manager.delBlock(b, data);
+                    manager.delBlock(b);
                     logBlock(p, b);
                     e.setExpToDrop(0);
                     b.setType(Material.AIR);
@@ -461,7 +463,7 @@ public class CreativeBlockListener implements Listener {
                     e.setCancelled(true);
                 }
             } else {
-                manager.delBlock(b, data);
+                manager.delBlock(b);
                 logBlock(p, b);
                 e.setExpToDrop(0);
                 b.setType(Material.AIR);

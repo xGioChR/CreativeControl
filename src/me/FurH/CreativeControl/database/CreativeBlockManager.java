@@ -20,13 +20,15 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashSet;
 import me.FurH.CreativeControl.CreativeControl;
-import Me.FurH.CreativeControl.cache.CreativeBlockCache;
+import me.FurH.CreativeControl.cache.CreativeBlockCache;
+import me.FurH.CreativeControl.cache.CreativeFastCache;
 import me.FurH.CreativeControl.configuration.CreativeMainConfig;
 import me.FurH.CreativeControl.configuration.CreativeWorldConfig;
 import me.FurH.CreativeControl.configuration.CreativeWorldNodes;
 import me.FurH.CreativeControl.data.friend.CreativePlayerFriends;
 import me.FurH.CreativeControl.util.CreativeCommunicator;
 import me.FurH.CreativeControl.util.CreativeUtil;
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -37,6 +39,10 @@ import org.bukkit.entity.Player;
  * @author FurmigaHumana
  */
 public class CreativeBlockManager {
+    
+    public boolean isFastProtected(Block b) {
+        return CreativeControl.getFastCache().contains(CreativeUtil.getLocation(b.getLocation()));
+    }
     
     /*
      * return true if the block is protected
@@ -55,6 +61,21 @@ public class CreativeBlockManager {
     /*
      * return a simple protected door
      */
+    public Block getDoor22(Block b) {
+        Block block = null;
+        
+        if (!isFastProtected(block)) {
+            Block blockdown = b.getRelative(BlockFace.DOWN);
+            if (blockdown.getTypeId() == 64 || blockdown.getTypeId() == 71) {
+                if (isFastProtected(blockdown)) {
+                    return blockdown;
+                }
+            }
+        }
+        
+        return block;
+    }
+    
     public String[] getDoor2(Block b) {
         String[] data = getBlock(b);
         
@@ -71,6 +92,17 @@ public class CreativeBlockManager {
         return data;
     }
     
+    public Block getDoor33(Block b) {
+        Block blockup = b.getRelative(BlockFace.UP);
+        Block data = null;
+                
+        if (blockup.getTypeId() == 64 || blockup.getTypeId() == 71) {
+            data = blockup;
+        }
+        
+        return data;
+    }
+    
     public String[] getDoor3(Block b) {
         Block blockup = b.getRelative(BlockFace.UP);
         String[] data = null;
@@ -82,29 +114,6 @@ public class CreativeBlockManager {
         return data;
     }
 
-    /*
-     * return a expencive protected door
-     */
-    private String[] getDoor(Block b) { //Expensive unrequired check
-        
-        Block blockup = b.getRelative(BlockFace.UP);
-        if (blockup.getTypeId() == 64 || blockup.getTypeId() == 71) {
-            String[] data = getBlock(blockup);
-            if (data != null) {
-                return data;
-            }
-        } else 
-        if (b.getTypeId() == 64 || b.getTypeId() == 71) {
-            Block blockdown = b.getRelative(BlockFace.DOWN);
-            String[] data = getBlock(blockdown);
-            if (data != null) {
-                return data;
-            }
-        }
-        
-        return null;
-    }
-    
     /*
      * return the array representation of the protection
      */
@@ -146,20 +155,33 @@ public class CreativeBlockManager {
         CreativeMainConfig   config     = CreativeControl.getMainConfig();
         CreativeBlockCache   cache      = CreativeControl.getCache();
         CreativeSQLDatabase  db         = CreativeControl.getDb();
+        CreativeFastCache    fast       = CreativeControl.getFastCache();
         int ret = 0;
         try {
             ResultSet rs = db.getQuery("SELECT id, owner, location, allowed FROM `"+db.prefix+"blocks` ORDER BY id DESC LIMIT " + config.cache_precache);
             while (rs.next()) {
                 String location = rs.getString("location");
-                String owner = rs.getString("owner");
-                String allowed = rs.getString("allowed");
-                
-                if (allowed != null || !"[]".equals(allowed) || !"".equals(allowed)) {
-                    cache.add(location, new String[] { owner, allowed });
-                } else {
-                    cache.add(location, new String[] { owner });
+                Location loc = CreativeUtil.getLocation(location);
+                if (loc != null) {
+                    CreativeWorldNodes nodes = CreativeWorldConfig.get(loc.getWorld());
+                    
+                    if (nodes.block_ownblock) {
+                        String owner = rs.getString("owner");
+                        String allowed = rs.getString("allowed");
+
+                        if (allowed != null || !"[]".equals(allowed) || !"".equals(allowed)) {
+                            cache.add(location, new String[] { owner, allowed });
+                        } else {
+                            cache.add(location, new String[] { owner });
+                        }
+                    }
+
+                    if (nodes.block_nodrop) {
+                        fast.add(location);
+                    }
+                    
+                    ret++;
                 }
-                ret++;
             }
         } catch (SQLException ex) {
             CreativeCommunicator com        = CreativeControl.getCommunicator();

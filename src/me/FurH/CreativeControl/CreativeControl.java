@@ -28,7 +28,8 @@ import java.util.UUID;
 import java.util.WeakHashMap;
 import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilderFactory;
-import Me.FurH.CreativeControl.cache.CreativeBlockCache;
+import me.FurH.CreativeControl.cache.CreativeBlockCache;
+import me.FurH.CreativeControl.cache.CreativeFastCache;
 import me.FurH.CreativeControl.commands.CreativeCommands;
 import me.FurH.CreativeControl.configuration.CreativeMainConfig;
 import me.FurH.CreativeControl.configuration.CreativeMessages;
@@ -83,6 +84,7 @@ public class CreativeControl extends JavaPlugin {
     /* classes */
     private static CreativeControl plugin;
     private static CreativeBlockCache cache;
+    private static CreativeFastCache fastcache;
     private static CreativeCommunicator communicator;
     private static CreativeSQLDatabase database;
     private static CreativeBlocksSelection selector;
@@ -134,6 +136,7 @@ public class CreativeControl extends JavaPlugin {
         manager = new CreativeBlockManager();
         friends = new CreativePlayerFriends();
         matcher = new CreativeBlockMatcher();
+        fastcache = new CreativeFastCache();
         data = new CreativePlayerData();
         worldedit = new CreativeWorldEditHook();
         database = new CreativeSQLDatabase(this, true);
@@ -190,6 +193,7 @@ public class CreativeControl extends JavaPlugin {
         mods.clear();
         cache.clear();
         data.clear();
+        fastcache.clear();
         friends.clear();
         database.clear();
         entity.clear();
@@ -210,6 +214,7 @@ public class CreativeControl extends JavaPlugin {
         left.clear();
         mods.clear();
         cache.clear();
+        fastcache.clear();
         data.clear();
         friends.clear();
         database.clear();
@@ -267,6 +272,10 @@ public class CreativeControl extends JavaPlugin {
                 }
             }
         }
+    }
+    
+    public static CreativeFastCache getFastCache() {
+        return fastcache;
     }
     
     public static CreativeControl getPlugin() { 

@@ -235,7 +235,6 @@ public class CreativeUtil {
             if (w != null) {
                 return new Location(w, Double.parseDouble(split[1]), Double.parseDouble(split[2]), Double.parseDouble(split[3]));
             } else {
-                com.log("[TAG] Failed to get the world: {0}!", split[0]);
                 return null;
             }
         } catch (Exception ex) {

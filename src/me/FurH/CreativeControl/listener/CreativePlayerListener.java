@@ -18,7 +18,7 @@ package me.FurH.CreativeControl.listener;
 
 import com.sk89q.worldedit.bukkit.selections.Selection;
 import me.FurH.CreativeControl.CreativeControl;
-import Me.FurH.CreativeControl.cache.CreativeBlockCache;
+import me.FurH.CreativeControl.cache.CreativeBlockCache;
 import me.FurH.CreativeControl.configuration.CreativeMainConfig;
 import me.FurH.CreativeControl.configuration.CreativeMessages;
 import me.FurH.CreativeControl.configuration.CreativeWorldConfig;

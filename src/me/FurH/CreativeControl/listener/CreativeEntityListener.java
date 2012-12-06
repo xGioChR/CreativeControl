@@ -121,7 +121,7 @@ public class CreativeEntityListener implements Listener {
                             }
                         } else
                         if (config.block_nodrop) {
-                            if (manager.isProtected(b)) {
+                            if (manager.isFastProtected(b)) {
                                 manager.delBlock(b);
                                 b.setType(Material.AIR);
                             }

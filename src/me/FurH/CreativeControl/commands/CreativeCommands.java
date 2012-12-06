@@ -21,7 +21,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashSet;
 import me.FurH.CreativeControl.CreativeControl;
-import Me.FurH.CreativeControl.cache.CreativeBlockCache;
+import me.FurH.CreativeControl.cache.CreativeBlockCache;
+import me.FurH.CreativeControl.cache.CreativeFastCache;
 import me.FurH.CreativeControl.configuration.CreativeMainConfig;
 import me.FurH.CreativeControl.configuration.CreativeMessages;
 import me.FurH.CreativeControl.data.friend.CreativePlayerFriends;
@@ -1223,6 +1224,8 @@ public class CreativeCommands implements CommandExecutor {
         CreativeMessages         messages  = CreativeControl.getMessages();
         CreativeControl          plugin    = CreativeControl.getPlugin();
         CreativeBlockCache       cache     = CreativeControl.getCache();
+        CreativeFastCache        fast      = CreativeControl.getFastCache();
+        
         if (!plugin.hasPerm(sender, "Commands.Status")) {
             msg(sender, messages.commands_noperm);
             return false;
@@ -1234,9 +1237,9 @@ public class CreativeCommands implements CommandExecutor {
                 msg(sender, messages.commands_status_queue, db.getQueue());
                 msg(sender, messages.commands_status_sqlreads, db.reads);
                 msg(sender, messages.commands_status_sqlwrites, db.writes);
-                msg(sender, messages.commands_status_cache, cache.getSize(), cache.getMax());
-                msg(sender, messages.commands_status_cachereads, cache.getReads());
-                msg(sender, messages.commands_status_cachewrites, cache.getWrites());
+                msg(sender, messages.commands_status_cache, (cache.getSize() + fast.getSize()), cache.getMax());
+                msg(sender, messages.commands_status_cachereads, (cache.getReads() + fast.getReads()));
+                msg(sender, messages.commands_status_cachewrites, (cache.getWrites() + fast.getWrites()));
                 return true;
             }
         }
