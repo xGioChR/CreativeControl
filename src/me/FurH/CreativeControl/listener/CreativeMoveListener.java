@@ -65,11 +65,15 @@ public class CreativeMoveListener implements Listener {
         CreativeMessages     messages   = CreativeControl.getMessages();
         CreativeControl      plugin     = CreativeControl.getPlugin();
         
-        CreativeRegion region = CreativeControl.getRegions().get(loc);
+        CreativeRegion region = CreativeControl.getRegioner().getRegion(loc);
         if (region != null) {
-            World w = region.getWorld();
-            if (w != world) { return; }
-            gmType type = region.getType();
+            World w = region.world;
+            
+            if (w != world) { 
+                return; 
+            }
+
+            gmType type = region.type;
             if (type == gmType.CREATIVE) {
                 if (!plugin.hasPerm(p, "Region.Keep.Survival")) {
                     if (!p.getGameMode().equals(GameMode.CREATIVE)) {

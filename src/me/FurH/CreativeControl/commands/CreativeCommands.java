@@ -30,7 +30,7 @@ import me.FurH.CreativeControl.database.extra.CreativeSQLBackup;
 import me.FurH.CreativeControl.database.extra.CreativeSQLCleanup;
 import me.FurH.CreativeControl.region.CreativeRegion;
 import me.FurH.CreativeControl.region.CreativeRegion.gmType;
-import me.FurH.CreativeControl.region.CreativeRegionCreator;
+import me.FurH.CreativeControl.region.CreativeRegionManager;
 import me.FurH.CreativeControl.selection.CreativeBlocksSelection;
 import me.FurH.CreativeControl.selection.CreativeBlocksSelection.Type;
 import me.FurH.CreativeControl.selection.CreativeSelection;
@@ -1321,14 +1321,14 @@ public class CreativeCommands implements CommandExecutor {
         return true;
     }
     
-    public void setRegion(CreativeRegion.gmType type, String name, Location start, Location end) {
-        CreativeRegionCreator    region    = CreativeControl.getRegioner();
-        CreativeControl.getRegions().add(name, start, end, type.toString());
+    public void setRegion(gmType type, String name, Location start, Location end) {
+        CreativeRegionManager    region    = CreativeControl.getRegioner();
+        region.addRegion(name, start, end, type.toString());
         region.saveRegion(name, type, start, end);
     }
 
     private void removeRegion(String string) {
-        CreativeRegionCreator    region    = CreativeControl.getRegioner();
+        CreativeRegionManager    region    = CreativeControl.getRegioner();
         region.deleteRegion(string);
     }
     

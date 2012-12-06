@@ -18,6 +18,7 @@ package me.FurH.CreativeControl.region;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashSet;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.database.CreativeSQLDatabase;
 import me.FurH.CreativeControl.region.CreativeRegion.gmType;
@@ -29,16 +30,56 @@ import org.bukkit.Location;
  *
  * @author FurmigaHumana
  */
-public class CreativeRegionCreator {    
+public class CreativeRegionManager {    
+    private HashSet<CreativeRegion> areas = new HashSet<CreativeRegion>();
     
-    /*
-     * Load regions by file
-     */
-    public void loadRegions() {
+    public HashSet<CreativeRegion> getAreas() {
+        return areas;
+    }
+    
+    public CreativeRegion getRegion(Location loc) {
+        
+        for (CreativeRegion region : areas) {
+            if (region.contains(loc)) {
+                return region;
+            }
+        }
+        
+        return null;
+    }
+    
+    public void addRegion(String name, Location start, Location end, String type) {
+        CreativeRegion region = new CreativeRegion();
+        region.start = start;
+        region.end = end;
+        
+        if (type.equals("CREATIVE")) {
+            region.type = gmType.CREATIVE;
+        }
+        if (type.equals("SURVIVAL")) {
+            region.type = gmType.SURVIVAL;
+        }
+
+        region.name = name;
+        region.world = start.getWorld();
+
+        areas.add(region);
+    }
+    
+    public void removeRegion(String name) {
+        for (CreativeRegion region: areas) {
+            if (region.name.equalsIgnoreCase(name)) {
+                areas.remove(region);
+                break;
+            }
+        }
+    }
+
+    public int loadRegions() {
         CreativeCommunicator com    = CreativeControl.getCommunicator();
-        CreativeRegion regions = CreativeControl.getRegions();
         CreativeSQLDatabase db = CreativeControl.getDb();
 
+        int total = 0;
         try {
             ResultSet rs = db.getQuery("SELECT * FROM `"+db.prefix+"regions`");
             while (rs.next()) {
@@ -46,12 +87,14 @@ public class CreativeRegionCreator {
                 Location start = CreativeUtil.getLocation(rs.getString("start"));
                 Location end = CreativeUtil.getLocation(rs.getString("end"));
                 String type = rs.getString("type");
-                regions.add(name, start, end, type);
+                addRegion(name, start, end, type);
+                total++;
             }
         } catch (SQLException ex) {
             com.error("[TAG] Failed to get regions from the database, {0}", ex, ex.getMessage());
             if (!db.isOk()) { db.fix(); }
         }
+        return total;
     }
     
     public boolean getRegion(String name) {
@@ -76,29 +119,23 @@ public class CreativeRegionCreator {
      */
     public void deleteRegion(String name) {
         CreativeSQLDatabase db = CreativeControl.getDb();
-        CreativeRegion regions = CreativeControl.getRegions();
 
-        regions.remove(name);
+        removeRegion(name);
 
         String query = "DELETE FROM `"+db.prefix+"regions` WHERE name = '"+name+"'";
         db.executeQuery(query);
     }
-    
-    /*
-     * Save regions
-     */
-    public void saveRegion(String name, gmType type, Location start, Location end) {          
 
+    public void saveRegion(String name, gmType type, Location start, Location end) {
         CreativeSQLDatabase db = CreativeControl.getDb();
-        CreativeRegion regions = CreativeControl.getRegions();
 
         if (!getRegion(name)) {
-            regions.add(name, start, end, type.toString());
+            addRegion(name, start, end, type.toString());
             String query = "INSERT INTO `"+db.prefix+"regions` (name, start, end, type) VALUES ('"+name+"', '"+CreativeUtil.getLocation(start)+"', '"+CreativeUtil.getLocation(end)+"', '"+type.toString()+"')";
             db.executeQuery(query);
         } else {
-            regions.remove(name);
-            regions.add(name, start, end, type.toString());
+            removeRegion(name);
+            addRegion(name, start, end, type.toString());
             String query = "UPDATE `"+db.prefix+"regions` SET start = '"+CreativeUtil.getLocation(start)+"', end = '"+CreativeUtil.getLocation(end)+"', type = '"+type.toString()+"' WHERE name = '"+name+"'";
             db.executeQuery(query);
         }

@@ -48,7 +48,7 @@ import me.FurH.CreativeControl.metrics.CreativeMetrics;
 import me.FurH.CreativeControl.metrics.CreativeMetrics.Graph;
 import me.FurH.CreativeControl.region.CreativeRegion;
 import me.FurH.CreativeControl.region.CreativeRegion.gmType;
-import me.FurH.CreativeControl.region.CreativeRegionCreator;
+import me.FurH.CreativeControl.region.CreativeRegionManager;
 import me.FurH.CreativeControl.selection.CreativeBlocksSelection;
 import me.FurH.CreativeControl.util.CreativeCommunicator;
 import me.FurH.CreativeControl.util.CreativeUtil;
@@ -86,8 +86,7 @@ public class CreativeControl extends JavaPlugin {
     private static CreativeCommunicator communicator;
     private static CreativeSQLDatabase database;
     private static CreativeBlocksSelection selector;
-    private static CreativeRegionCreator regioner;
-    private static CreativeRegion regions;
+    private static CreativeRegionManager regioner;
     private static CreativeBlockManager manager;
     private static CreativeBlockMatcher matcher;
     private static CreativePlayerData data;
@@ -131,16 +130,13 @@ public class CreativeControl extends JavaPlugin {
         communicator.log("[TAG] Loading Modules...");
         cache = new CreativeBlockCache();
         selector = new CreativeBlocksSelection();
-        regioner = new CreativeRegionCreator();
-        regions = new CreativeRegion(this);
+        regioner = new CreativeRegionManager();
         manager = new CreativeBlockManager();
         friends = new CreativePlayerFriends();
         matcher = new CreativeBlockMatcher();
         data = new CreativePlayerData();
         worldedit = new CreativeWorldEditHook();
         database = new CreativeSQLDatabase(this, true);
-        
-        getRegioner().loadRegions();
 
         communicator.log("[TAG] Registring Events...");
         PluginManager pm = getServer().getPluginManager();
@@ -165,7 +161,7 @@ public class CreativeControl extends JavaPlugin {
         setupLogBlock();
 
         communicator.log("[TAG] Cached {0} protections", manager.preCache());
-        communicator.log("[TAG] Loaded {0} regions", regions.get().size());
+        communicator.log("[TAG] Loaded {0} regions", regioner.loadRegions());
         
         PluginDescriptionFile version = getDescription();
         currentversion = "v"+version.getVersion();
@@ -297,7 +293,7 @@ public class CreativeControl extends JavaPlugin {
         return database; 
     }
     
-    public static CreativeRegionCreator getRegioner() { 
+    public static CreativeRegionManager getRegioner() { 
         return regioner; 
     }
     
@@ -305,10 +301,6 @@ public class CreativeControl extends JavaPlugin {
         return mainconfig;
     }
 
-    public static CreativeRegion getRegions() { 
-        return regions; 
-    }
-    
     public static CreativeBlockManager getManager() { 
         return manager; 
     }
@@ -430,8 +422,8 @@ public class CreativeControl extends JavaPlugin {
                 }
             });
 
-            for (CreativeRegion CR : regions.get()) {
-                if (CR.getType() == gmType.CREATIVE) {
+            for (CreativeRegion CR : regioner.getAreas()) {
+                if (CR.type == gmType.CREATIVE) {
                     creative++;
                 } else {
                     survival++;

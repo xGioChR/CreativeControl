@@ -26,80 +26,11 @@ import org.bukkit.World;
  * @author FurmigaHumana
  */
 public class CreativeRegion {
-    private HashSet<CreativeRegion> areas = new HashSet<CreativeRegion>();
-    private Location start, end;
-    private gmType type;
-    private String name;
-    private World world;
-    
-    public CreativeRegion(CreativeControl plugin) { }
-    
-    public HashSet<CreativeRegion> get() {
-        return areas;
-    }
-    
-    public void add(String name, Location start, Location end, String type) {
-        areas.add(new CreativeRegion(type, name, start, end));
-    }
-
-    public void remove(String name) {
-        for (CreativeRegion region: areas) {
-            if (region.name.equalsIgnoreCase(name)) {
-                areas.remove(region);
-                break;
-            }
-        }
-    }
-
-    public CreativeRegion get(Location loc) {        
-        for (CreativeRegion region : areas) {
-            if (region.contains(loc)) {
-                this.start = region.getStart();
-                this.end = region.getEnd(); 
-                this.type = region.type;
-                this.name = region.name;
-                this.world = region.world;
-                return region;
-            }
-        }
-        
-        return null;
-    }
-
-    public CreativeRegion(String type, String name, Location start, Location end) {
-        this.start = start;
-        this.end = end;
-        
-        if (type.equals("CREATIVE")) {
-            this.type = gmType.CREATIVE;
-        }
-        if (type.equals("SURVIVAL")) {
-            this.type = gmType.SURVIVAL;
-        }
-
-        this.name = name;
-        this.world = start.getWorld();
-    }
-    
-    public Location getStart() {
-        return start;
-    }
-    
-    public Location getEnd() {
-        return end;
-    }
-    
-    public gmType getType() {
-        return type;
-    }
-    
-    public String getName() {
-        return name;
-    }
-    
-    public World getWorld() {
-        return world;
-    }
+    public Location start;
+    public Location end;
+    public gmType type;
+    public String name;
+    public World world;
 
     public boolean contains(Location loc) {
         double x = loc.getBlockX();
