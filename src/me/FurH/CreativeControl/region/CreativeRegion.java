@@ -48,11 +48,10 @@ public class CreativeRegion {
                 areas.remove(region);
                 break;
             }
-            break; //TODO: NEEDED?
         }
     }
 
-    public CreativeRegion(Location loc) {
+    public CreativeRegion get(Location loc) {        
         for (CreativeRegion region : areas) {
             if (region.contains(loc)) {
                 this.start = region.getStart();
@@ -60,10 +59,11 @@ public class CreativeRegion {
                 this.type = region.type;
                 this.name = region.name;
                 this.world = region.world;
-                break;
+                return region;
             }
-            break; //TODO: NEEDED?
         }
+        
+        return null;
     }
 
     public CreativeRegion(String type, String name, Location start, Location end) {

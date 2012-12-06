@@ -65,7 +65,7 @@ public class CreativeMoveListener implements Listener {
         CreativeMessages     messages   = CreativeControl.getMessages();
         CreativeControl      plugin     = CreativeControl.getPlugin();
         
-        CreativeRegion region = new CreativeRegion(loc);
+        CreativeRegion region = CreativeControl.getRegions().get(loc);
         if (region != null) {
             World w = region.getWorld();
             if (w != world) { return; }
