@@ -252,7 +252,18 @@ public class CreativePlayerData {
         
         CreativeMainConfig    config   = CreativeControl.getMainConfig();
         if (config.data_status) {
-            p.setHealth(cache.health);
+
+            int health = 20;
+            if (cache.health == 0) {
+                health = 20;
+            }
+
+            if (cache.health > 20) {
+                health = 20;
+            }
+
+            p.setHealth(health);
+            
             p.setFoodLevel(cache.food);
             p.setExhaustion(cache.ex);
             p.setSaturation(cache.sat);

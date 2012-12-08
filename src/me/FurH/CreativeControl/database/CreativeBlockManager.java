@@ -64,7 +64,7 @@ public class CreativeBlockManager {
     public Block getDoor22(Block b) {
         Block block = null;
         
-        if (!isFastProtected(block)) {
+        if (!isFastProtected(b)) {
             Block blockdown = b.getRelative(BlockFace.DOWN);
             if (blockdown.getTypeId() == 64 || blockdown.getTypeId() == 71) {
                 if (isFastProtected(blockdown)) {
