@@ -227,53 +227,55 @@ public class CreativePlayerListener implements Listener {
                     }
                 }
             }
-            
-            if (!plugin.hasPerm(p, "Preventions.StackLimit")) {
-                int stacklimit = config.prevent_stacklimit;
-                ItemStack current = e.getCurrentItem();
-                if (current != null) {
-                    if (current.getAmount() > stacklimit) {
-                        current.setAmount(stacklimit);
-                    }
-                }
-                
-                ItemStack cursor = e.getCursor();
-                if (cursor != null) {
-                    if (cursor.getAmount() > stacklimit) {
-                        cursor.setAmount(stacklimit);
-                    }
-                }
 
-                for (ItemStack item : p.getInventory().getContents()) {
-                    if (item != null) {
-                        if (item.getAmount() > stacklimit) {
-                            item.setAmount(stacklimit);
+            if (e.getInventory().getType() == InventoryType.PLAYER) {
+                if (!plugin.hasPerm(p, "Preventions.StackLimit")) {
+                    int stacklimit = config.prevent_stacklimit;
+                    ItemStack current = e.getCurrentItem();
+                    if (current != null) {
+                        if (current.getAmount() > stacklimit) {
+                            current.setAmount(stacklimit);
+                        }
+                    }
+
+                    ItemStack cursor = e.getCursor();
+                    if (cursor != null) {
+                        if (cursor.getAmount() > stacklimit) {
+                            cursor.setAmount(stacklimit);
+                        }
+                    }
+
+                    for (ItemStack item : p.getInventory().getContents()) {
+                        if (item != null) {
+                            if (item.getAmount() > stacklimit) {
+                                item.setAmount(stacklimit);
+                            }
                         }
                     }
                 }
-            }
-            
-            if (!plugin.hasPerm(p, "BlackList.Inventory")) {
-                ItemStack current = e.getCurrentItem();
-                if (current != null) {
-                    if (config.black_inventory.contains(current.getTypeId())) {
-                        p.getInventory().remove(current);
-                        e.setCancelled(true);
-                    }
-                }
-                
-                ItemStack cursor = e.getCursor();
-                if (cursor != null) {
-                    if (config.black_inventory.contains(cursor.getTypeId())) {
-                        p.getInventory().remove(cursor);
-                        e.setCancelled(true);
-                    }
-                }
 
-                for (ItemStack item : p.getInventory().getContents()) {
-                    if (item != null) {
-                        if (config.black_inventory.contains(item.getTypeId())) {
-                            p.getInventory().remove(item);
+                if (!plugin.hasPerm(p, "BlackList.Inventory")) {
+                    ItemStack current = e.getCurrentItem();
+                    if (current != null) {
+                        if (config.black_inventory.contains(current.getTypeId())) {
+                            p.getInventory().remove(current);
+                            e.setCancelled(true);
+                        }
+                    }
+
+                    ItemStack cursor = e.getCursor();
+                    if (cursor != null) {
+                        if (config.black_inventory.contains(cursor.getTypeId())) {
+                            p.getInventory().remove(cursor);
+                            e.setCancelled(true);
+                        }
+                    }
+
+                    for (ItemStack item : p.getInventory().getContents()) {
+                        if (item != null) {
+                            if (config.black_inventory.contains(item.getTypeId())) {
+                                p.getInventory().remove(item);
+                            }
                         }
                     }
                 }
