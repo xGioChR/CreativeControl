@@ -29,7 +29,6 @@ import me.FurH.CreativeControl.data.friend.CreativePlayerFriends;
 import me.FurH.CreativeControl.database.CreativeSQLDatabase;
 import me.FurH.CreativeControl.database.extra.CreativeSQLBackup;
 import me.FurH.CreativeControl.database.extra.CreativeSQLCleanup;
-import me.FurH.CreativeControl.region.CreativeRegion;
 import me.FurH.CreativeControl.region.CreativeRegion.gmType;
 import me.FurH.CreativeControl.region.CreativeRegionManager;
 import me.FurH.CreativeControl.selection.CreativeBlocksSelection;
@@ -1276,9 +1275,11 @@ public class CreativeCommands implements CommandExecutor {
                                         if (plugin.mods.containsKey(p.getName())) {
                                             msg(sender, messages.commands_tool_dec);
                                             plugin.mods.remove(p.getName());
+                                            plugin.modsfastup.remove(p.getName());
                                             return true;
                                         } else {
                                             plugin.mods.put(p.getName(), "Block-Add-Tool");
+                                            plugin.modsfastup.add(p.getName());
                                             msg(sender, messages.commands_tool_act);
                                             return true;
                                         }
@@ -1297,9 +1298,11 @@ public class CreativeCommands implements CommandExecutor {
                                         if (plugin.mods.containsKey(p.getName())) {
                                             msg(sender, messages.commands_tool_dec);
                                             plugin.mods.remove(p.getName());
+                                            plugin.modsfastup.remove(p.getName());
                                             return true;
                                         } else {
                                             plugin.mods.put(p.getName(), "Block-Del-Tool");
+                                            plugin.modsfastup.add(p.getName());
                                             msg(sender, messages.commands_tool_act);
                                             return true;
                                         }

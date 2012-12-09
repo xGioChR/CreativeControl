@@ -102,6 +102,7 @@ public class CreativeControl extends JavaPlugin {
     public WeakHashMap<Player, Location> left = new WeakHashMap<Player, Location>();
 
     public WeakHashMap<String, String> mods = new WeakHashMap<String, String>();
+    public HashSet<String> modsfastup = new HashSet<String>();
 
     public HashSet<UUID> entity = new HashSet<UUID>();
     public Map<String, Integer> limits = new HashMap<String, Integer>();
@@ -191,6 +192,7 @@ public class CreativeControl extends JavaPlugin {
         right.clear();
         left.clear();
         mods.clear();
+        modsfastup.clear();
         cache.clear();
         data.clear();
         fastcache.clear();
@@ -213,6 +215,7 @@ public class CreativeControl extends JavaPlugin {
         right.clear();
         left.clear();
         mods.clear();
+        modsfastup.clear();
         cache.clear();
         fastcache.clear();
         data.clear();

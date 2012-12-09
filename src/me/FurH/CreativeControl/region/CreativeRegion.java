@@ -16,8 +16,6 @@
 
 package me.FurH.CreativeControl.region;
 
-import java.util.HashSet;
-import me.FurH.CreativeControl.CreativeControl;
 import org.bukkit.Location;
 import org.bukkit.World;
 

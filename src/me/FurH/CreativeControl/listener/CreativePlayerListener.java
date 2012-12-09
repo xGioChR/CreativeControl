@@ -490,7 +490,7 @@ public class CreativePlayerListener implements Listener {
             }
         }
         
-        if (plugin.mods.containsKey(p.getName())) {
+        if (plugin.modsfastup.contains(p.getName())) {
             String data = plugin.mods.get(p.getName());
             if (data.equals("Block-Add-Tool")) {
                 if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
@@ -605,6 +605,7 @@ public class CreativePlayerListener implements Listener {
         if (!insql && !incache) {
             com.msg(p, messages.blockinfo_notprotected);
             plugin.mods.remove(p.getName());
+            plugin.modsfastup.remove(p.getName());
             return;
         }
 
@@ -635,6 +636,7 @@ public class CreativePlayerListener implements Listener {
         com.msg(p, messages.blockinfo_status, (incache ? messages.blockinfo_incache : ""), (insql ? messages.blockinfo_insql : messages.blockinfo_queue));
         com.msg(p, messages.blockinfo_date, CreativeUtil.getDate(Long.parseLong(date)));
         plugin.mods.remove(p.getName());
+        plugin.modsfastup.remove(p.getName());
     }
     
     /*
@@ -667,6 +669,7 @@ public class CreativePlayerListener implements Listener {
         }
 
         plugin.mods.remove(p.getName());
+        plugin.modsfastup.remove(p.getName());
     }
     
     /*
@@ -707,6 +710,7 @@ public class CreativePlayerListener implements Listener {
         }
 
         plugin.mods.remove(p.getName());
+        plugin.modsfastup.remove(p.getName());
     }
     
     private boolean is(Player p, Block b) {
@@ -719,12 +723,14 @@ public class CreativePlayerListener implements Listener {
         if (config.world_exclude) {
             com.msg(p, messages.blockinfo_world);
             plugin.mods.remove(p.getName());
+            plugin.modsfastup.remove(p.getName());
             return false;
         }
         
         if (!manager.isProtectable(b.getWorld(), b.getTypeId())) {
             com.msg(p, messages.blockinfo_protectable);
             plugin.mods.remove(p.getName());
+            plugin.modsfastup.remove(p.getName());
             return false;
         }
         
