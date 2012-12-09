@@ -14,12 +14,13 @@ Database:
   ## prefix, the prefix used to create the tables in the sql database
   prefix: cc_
 
+## if you have an larger server with tons of creative players placing/breaking blocks, you should increase the "count", decrease the "sleep" and "each"
 Queue:
-  ## each, set here, the time in milliseconds to wait before each execution
+  ## each, set here, the time in milliseconds to wait after each execution.
   each: 100
-  ## count, set here, the number of querys to run after made a bigger pause
+  ## count, set here, the number of queries to run after make a bigger pause
   count: 50
-  ## sleep, set here, the time in milliseconds to wait before the cout being reach
+  ## sleep, set here, the time in milliseconds to wait after the count being reached.
   sleep: 10000
 
 Cache:
