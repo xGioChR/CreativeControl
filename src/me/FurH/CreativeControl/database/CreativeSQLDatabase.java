@@ -23,12 +23,10 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.atomic.AtomicBoolean;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.configuration.CreativeMainConfig;
 import me.FurH.CreativeControl.util.CreativeCommunicator;
-import org.bukkit.Bukkit;
 
 /**
  *
@@ -37,7 +35,7 @@ import org.bukkit.Bukkit;
 public final class CreativeSQLDatabase {
     private Map<String, PreparedStatement> cache = new ConcurrentHashMap<String, PreparedStatement>(15000);
     private final Queue<String> queue = new LinkedBlockingQueue();
-    private final Lock lock = new ReentrantLock();
+    private final AtomicBoolean lock = new AtomicBoolean(false);
     public enum Type { MySQL, SQLite; }
     private CreativeControl plugin;
     private Connection connection;
@@ -140,9 +138,12 @@ public final class CreativeSQLDatabase {
     public void close() {
         CreativeCommunicator com    = CreativeControl.getCommunicator();
         com.log("[TAG] Closing the "+(type == Type.SQLite ? "SQLite" : "MySQL")+" Connection...");
+        
+        lock.set(true);
+
         if (!queue.isEmpty()) {
             com.log("[TAG] Queue isn't empty! Running the remaining queue...");
-            
+
             double process = 0;
             double done = 0;
             double total = queue.size();
@@ -319,21 +320,45 @@ public final class CreativeSQLDatabase {
      */
     private void queue() {
         final CreativeMainConfig   config = CreativeControl.getMainConfig();
-        Bukkit.getServer().getScheduler().scheduleAsyncRepeatingTask(plugin, new Runnable() {
+
+        final long each = config.queue_each;
+        final int limit = config.queue_count;
+        final int sleep = config.queue_sleep;
+
+        Thread t = new Thread() {
             @Override
             public void run() {
-                if (queue.isEmpty() || !lock.tryLock()) { return; }
-                long start = System.currentTimeMillis();
                 int count = 0;
-                while ((!queue.isEmpty()) && ((System.currentTimeMillis() - start < config.queue_time) || (count < config.queue_force))) {
-                    String query = queue.poll();
-                    if (query == null) { continue; }
-                    executeQuery(query, true);
-                    count++;
+                while (!lock.get()) {
+                    try {
+                        if (queue.isEmpty()) {
+                            Thread.sleep(sleep);
+                            continue;
+                        }
+
+                        String query = queue.poll();
+
+                        if (query == null) {
+                            Thread.sleep(sleep);
+                            continue;
+                        }
+                        
+                        if (count >= limit) {
+                            count = 0;
+                            Thread.sleep(sleep);
+                        }
+
+                        count++;
+                        executeQuery(query, true);
+
+                        Thread.sleep(each);
+                    } catch (Exception ex) { }
                 }
-                lock.unlock();
             }
-        }, config.queue_delay * 20, config.queue_delay * 20);
+        };
+        t.setPriority(Thread.MIN_PRIORITY);
+        t.setName("CreativeControl Database Task");
+        t.start();
     }
     
     /*

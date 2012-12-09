@@ -39,9 +39,9 @@ public class CreativeMainConfig {
     public String          database_table    = "minecraft";
     public String          database_prefix   = "cc_";
 
-    public long            queue_time        = 200;
-    public int             queue_force       = 20;
-    public int             queue_delay       = 5;
+    public long            queue_each        = 100;
+    public int             queue_count       = 300;
+    public int             queue_sleep       = 5000;
 
     public int             cache_capacity    = 15000;
     public int             cache_precache    = 10000;
@@ -77,9 +77,9 @@ public class CreativeMainConfig {
         database_table   = getString("Database.database");
         database_prefix  = getString("Database.prefix");
         
-        queue_time       = getLong("Queue.time");
-        queue_force      = getInteger("Queue.force");
-        queue_delay      = getInteger("Queue.delay");
+        queue_each       = getLong("Queue.each");
+        queue_count      = getInteger("Queue.count");
+        queue_sleep      = getInteger("Queue.sleep");
         
         cache_capacity   = getInteger("Cache.MaxCapacity");
         cache_precache   = getInteger("Cache.PreCache");

@@ -15,12 +15,12 @@ Database:
   prefix: cc_
 
 Queue:
-  ## time, time between each execution [miliseconds]
-  time: 200
-  ## force, run at least X entries
-  force: 20
-  ## delay, delay between each execution [seconds]
-  delay: 5
+  ## each, set here, the time in milliseconds to wait before each execution
+  each: 100
+  ## count, set here, the number of querys to run after made a bigger pause
+  count: 50
+  ## sleep, set here, the time in milliseconds to wait before the cout being reach
+  sleep: 10000
 
 Cache:
   ## MaxCapacity, the maximum cache capacity, higher this value is, better will be the performance, but also the memory usage will increase.
