@@ -10,7 +10,7 @@ prefix:
 ingame:
   updater:
     new: "&7New Version Found: &4{0}&7 (You have: &4{1}&7)"
-    visit: "&7Visit:&4 http://bit.ly/creativecontrol/"
+    visit: "&7Visit:&4 http://bit.ly/creativecontrol"
   blocks:
     nocreative: "[SMALL]&7 Creative mode &4isn't&7 allowed in this world"
     nosurvival: "[SMALL]&7 Survival mode &4isn't&7 allowed in this world"
