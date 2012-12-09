@@ -281,7 +281,11 @@ public class CreativePlayerData {
 
     private ItemStack toItemStack(String string) {
         CreativeCommunicator com        = CreativeControl.getCommunicator();
-        
+
+        if (string.equals("0")) {
+            return null;
+        }
+
         ItemStack stack = new ItemStack(Material.AIR);
         if (string.equals("[]")) { return stack; }
         if (!string.contains(":")) { return stack; }
@@ -336,15 +340,21 @@ public class CreativePlayerData {
         List<String> items = new ArrayList<String>();
 
         for (ItemStack item : source) {
-            if ((item != null) && (item.getType() != Material.AIR)) {
-                items.add(toString(item));
-            }
+            items.add(toString(item));
         }
 
         return items.toString();
     }
 
     private String toString(ItemStack item) {
+        if (item == null) { 
+            return "0"; 
+        }
+
+        if (item.getType() == Material.AIR) {
+            return "0";
+        }
+
         int type = item.getTypeId();
         int amount = item.getAmount();
         byte data = item.getData().getData();
