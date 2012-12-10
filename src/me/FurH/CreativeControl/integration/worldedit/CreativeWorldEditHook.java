@@ -18,6 +18,8 @@ package me.FurH.CreativeControl.integration.worldedit;
 
 import com.sk89q.worldedit.bukkit.selections.Selection;
 import me.FurH.CreativeControl.CreativeControl;
+import me.FurH.CreativeControl.configuration.CreativeWorldConfig;
+import me.FurH.CreativeControl.configuration.CreativeWorldNodes;
 import me.FurH.CreativeControl.database.CreativeBlockManager;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -41,6 +43,7 @@ public class CreativeWorldEditHook {
         final Location max = select.getMaximumPoint();
         final Location min = select.getMinimumPoint();
         final World world = max.getWorld();
+        final CreativeWorldNodes nodes = CreativeWorldConfig.get(world);
         Thread t = new Thread() {
             @Override
             public void run() {
@@ -50,10 +53,11 @@ public class CreativeWorldEditHook {
                             Location loc = new Location(world, x, y, z);
                             Block b = world.getBlockAt(loc);
                             CreativeBlockManager manager = CreativeControl.getManager();
-                            manager.addBlock(p.getName(), b);
+                            manager.addBlock(p.getName(), b, nodes.block_nodrop);
                         }
                     }
                 }
+                interrupt();
             }
         };
         t.setPriority(4);
@@ -65,6 +69,7 @@ public class CreativeWorldEditHook {
         final Location max = select.getMaximumPoint();
         final Location min = select.getMinimumPoint();
         final World world = max.getWorld();
+        final CreativeWorldNodes nodes = CreativeWorldConfig.get(world);
         Thread t = new Thread() {
             @Override
             public void run() {
@@ -74,10 +79,11 @@ public class CreativeWorldEditHook {
                             Location loc = new Location(world, x, y, z);
                             Block b = world.getBlockAt(loc);
                             CreativeBlockManager manager = CreativeControl.getManager();
-                            manager.addBlock(p.getName(), b);
+                            manager.addBlock(p.getName(), b, nodes.block_nodrop);
                         }
                     }
                 }
+                interrupt();
             }
         };
         t.setPriority(4);

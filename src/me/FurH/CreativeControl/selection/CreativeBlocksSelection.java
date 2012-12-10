@@ -88,6 +88,8 @@ public class CreativeBlocksSelection {
 
         com.msg(sender, messages.allblocks_selsize, area);
         com.msg(sender, messages.allblocks_while);
+        
+        final CreativeWorldNodes config = CreativeWorldConfig.get(min.getWorld());
 
         long startTimer = System.currentTimeMillis();
         final Player player = (Player) sender;
@@ -156,7 +158,7 @@ public class CreativeBlocksSelection {
                             if (type == Type.ADD) {
                                 String[] data = manager.getBlock(block);
                                 if (data == null) {
-                                    manager.addBlock(args, block);
+                                    manager.addBlock(args, block, config.block_nodrop);
                                 }
                             } else
                             if (type == Type.ALLOW) {
@@ -190,7 +192,7 @@ public class CreativeBlocksSelection {
                                 if (data != null) {
                                     if (manager.isOwner(player, data[0])) {
                                         manager.delBlock(block, data);
-                                        manager.addBlock(args, block);
+                                        manager.addBlock(args, block, config.block_nodrop);
                                     }
                                 }
                             }

@@ -649,6 +649,7 @@ public class CreativePlayerListener implements Listener {
         CreativeBlockManager manager = CreativeControl.getManager();
         CreativeMessages messages = CreativeControl.getMessages();
         CreativeControl plugin = CreativeControl.getPlugin();
+        CreativeWorldNodes config = CreativeWorldConfig.get(b.getWorld());
 
         if (b.getTypeId() == 64 || b.getTypeId() == 71) {
             String[] data = manager.getDoor2(b);
@@ -656,7 +657,7 @@ public class CreativePlayerListener implements Listener {
                 com.msg(p, messages.blockadd_already);
             } else {
                 com.msg(p, messages.blockadd_protected);
-                manager.addBlock(p, b);
+                manager.addBlock(p, b, config.block_nodrop);
             }
         } else {
             String[] data = manager.getBlock(b);
@@ -664,7 +665,7 @@ public class CreativePlayerListener implements Listener {
                 com.msg(p, messages.blockadd_already);
             } else {
                 com.msg(p, messages.blockadd_protected);
-                manager.addBlock(p, b);
+                manager.addBlock(p, b, config.block_nodrop);
             }
         }
 

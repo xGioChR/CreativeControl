@@ -268,7 +268,7 @@ public class CreativeMiscListener implements Listener {
                                 if (bucket == Material.LAVA_BUCKET) {
                                     b.setType(Material.STATIONARY_LAVA);
                                 }
-                                manager.addBlock(p.getName(), b);
+                                manager.addBlock(p.getName(), b, false);
                             } else {
                                 CreativeCommunicator com      = CreativeControl.getCommunicator();
                                 CreativeMessages     messages = CreativeControl.getMessages();
@@ -285,7 +285,7 @@ public class CreativeMiscListener implements Listener {
                         if (bucket == Material.LAVA_BUCKET) {
                             b.setType(Material.STATIONARY_LAVA);
                         }
-                        manager.addBlock(p.getName(), b);
+                        manager.addBlock(p.getName(), b, true);
                     }
                 }
             }

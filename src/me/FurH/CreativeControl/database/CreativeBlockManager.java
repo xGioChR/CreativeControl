@@ -279,22 +279,30 @@ public class CreativeBlockManager {
         }
     }
 
-    public void addBlock(Player p, Block b) {
+    public void addBlock(Player p, Block b, boolean fast) {
         if (isProtectable(b.getWorld(), b.getTypeId())) {
-            addBlock(p.getName().toLowerCase(), CreativeUtil.getLocation(b.getLocation()), b.getTypeId());
+            addBlock(p.getName().toLowerCase(), b.getLocation(), b.getTypeId(), fast);
         }
     }
     
-    public void addBlock(String player, Block b) {
+    public void addBlock(String player, Block b, boolean fast) {
         if (isProtectable(b.getWorld(), b.getTypeId())) {
-            addBlock(player.toLowerCase(), CreativeUtil.getLocation(b.getLocation()), b.getTypeId());
+            addBlock(player.toLowerCase(), b.getLocation(), b.getTypeId(), fast);
         }
     }
     
-    private void addBlock(String player, String location, int type) {
+    private void addBlock(String player, Location loc, int type, boolean fast) {
         CreativeBlockCache   cache      = CreativeControl.getCache();
         CreativeSQLDatabase  db         = CreativeControl.getDb();
-        cache.add(location, new String[] { player });
+        CreativeFastCache fastcache     = CreativeControl.getFastCache();
+        
+        String location = CreativeUtil.getLocation(loc);
+        if (fast) {
+            fastcache.add(location);
+        } else {
+            cache.add(location, new String[] { player });
+        }
+        
         db.executeQuery("INSERT INTO `"+db.prefix+"blocks` (owner, location, type, allowed, time) VALUES ('"+player+"', '"+location+"', '"+type+"', '"+null+"', '"+System.currentTimeMillis()+"');");
     }
 

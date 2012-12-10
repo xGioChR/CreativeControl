@@ -183,7 +183,7 @@ public class CreativeBlockListener implements Listener {
                     }
                 } 
                 if (p.getGameMode().equals(GameMode.CREATIVE)) {
-                    manager.addBlock(p.getName(), b);
+                    manager.addBlock(p.getName(), b, true);
                 }
             }
         } else
@@ -219,7 +219,7 @@ public class CreativeBlockListener implements Listener {
                 }
 
                 if (p.getGameMode().equals(GameMode.CREATIVE)) {
-                    manager.addBlock(p.getName(), b);
+                    manager.addBlock(p.getName(), b, false);
                 }
             }
         }
