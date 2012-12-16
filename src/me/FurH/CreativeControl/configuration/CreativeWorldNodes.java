@@ -47,6 +47,7 @@ public class CreativeWorldNodes {
     public boolean block_creative        = false;
     public boolean block_pistons         = false;
     public boolean block_against         = false;
+    public boolean block_attach          = false;
     public boolean block_invert          = false;
     public HashSet<Integer> block_exclude   = new HashSet<Integer>();//Arrays.asList(new Integer[] { 0, 8, 9, 10, 11 });
     

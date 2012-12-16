@@ -37,14 +37,14 @@ import me.FurH.CreativeControl.configuration.CreativeWorldConfig;
 import me.FurH.CreativeControl.data.CreativePlayerData;
 import me.FurH.CreativeControl.data.conversor.CreativePlayerConversor;
 import me.FurH.CreativeControl.data.friend.CreativePlayerFriends;
-import me.FurH.CreativeControl.database.CreativeBlockManager;
-import me.FurH.CreativeControl.database.CreativeBlockMatcher;
 import me.FurH.CreativeControl.database.CreativeSQLDatabase;
 import me.FurH.CreativeControl.database.extra.CreativeSQLUpdater;
 import me.FurH.CreativeControl.integration.AuthMe;
 import me.FurH.CreativeControl.integration.worldedit.CreativeWorldEditHook;
 import me.FurH.CreativeControl.integration.xAuth;
 import me.FurH.CreativeControl.listener.*;
+import me.FurH.CreativeControl.manager.CreativeBlockManager;
+import me.FurH.CreativeControl.manager.CreativeBlockMatcher;
 import me.FurH.CreativeControl.metrics.CreativeMetrics;
 import me.FurH.CreativeControl.metrics.CreativeMetrics.Graph;
 import me.FurH.CreativeControl.region.CreativeRegion;
@@ -83,7 +83,7 @@ public class CreativeControl extends JavaPlugin {
 
     /* classes */
     private static CreativeControl plugin;
-    private static CreativeBlockCache cache;
+    private static CreativeBlockCache slowcache;
     private static CreativeFastCache fastcache;
     private static CreativeCommunicator communicator;
     private static CreativeSQLDatabase database;
@@ -97,7 +97,7 @@ public class CreativeControl extends JavaPlugin {
     private static CreativeMainConfig mainconfig;
     private static CreativeMessages messages;
     private static Consumer lbconsumer = null;
-
+    
     public WeakHashMap<Player, Location> right = new WeakHashMap<Player, Location>();
     public WeakHashMap<Player, Location> left = new WeakHashMap<Player, Location>();
 
@@ -131,7 +131,7 @@ public class CreativeControl extends JavaPlugin {
         }
 
         communicator.log("[TAG] Loading Modules...");
-        cache = new CreativeBlockCache();
+        slowcache = new CreativeBlockCache();
         selector = new CreativeBlocksSelection();
         regioner = new CreativeRegionManager();
         manager = new CreativeBlockManager();
@@ -193,7 +193,7 @@ public class CreativeControl extends JavaPlugin {
         left.clear();
         mods.clear();
         modsfastup.clear();
-        cache.clear();
+        slowcache.clear();
         data.clear();
         fastcache.clear();
         friends.clear();
@@ -216,7 +216,7 @@ public class CreativeControl extends JavaPlugin {
         left.clear();
         mods.clear();
         modsfastup.clear();
-        cache.clear();
+        slowcache.clear();
         fastcache.clear();
         data.clear();
         friends.clear();
@@ -276,7 +276,7 @@ public class CreativeControl extends JavaPlugin {
             }
         }
     }
-    
+
     public static CreativeFastCache getFastCache() {
         return fastcache;
     }
@@ -285,8 +285,8 @@ public class CreativeControl extends JavaPlugin {
         return plugin; 
     }
     
-    public static CreativeBlockCache getCache() { 
-        return cache; 
+    public static CreativeBlockCache getSlowCache() { 
+        return slowcache; 
     }
     
     public static CreativeCommunicator getCommunicator() { 

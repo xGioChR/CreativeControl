@@ -22,8 +22,8 @@ import java.sql.SQLException;
 import java.util.HashSet;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.configuration.CreativeMessages;
-import me.FurH.CreativeControl.database.CreativeBlockManager;
 import me.FurH.CreativeControl.database.CreativeSQLDatabase;
+import me.FurH.CreativeControl.manager.CreativeBlockManager;
 import me.FurH.CreativeControl.util.CreativeCommunicator;
 import me.FurH.CreativeControl.util.CreativeUtil;
 import org.bukkit.Location;
@@ -118,17 +118,17 @@ public class CreativeSQLCleanup extends Thread {
                 if (type != dbtype) {
                     com.msg(p, messages.cleanup_corrupted, loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), type, dbtype);
                     corrupt++;
-                    manager.delBlock(b);
+                    manager.delBlock(b, false);
                 } else
                 if (!manager.isProtectable(b.getWorld(), type)) {
                     com.msg(p, messages.cleanup_corrupted, loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), type, dbtype);
                     corrupt++;
-                    manager.delBlock(b);
+                    manager.delBlock(b, false);
                 } else
                 if (locations.contains(string[0])) {
                     com.msg(p, messages.cleanup_duplicated, loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
                     corrupt++;
-                    manager.delBlock(b);
+                    manager.delBlock(b, false);
                 } else {
                     locations.add(string[0]);
                 }

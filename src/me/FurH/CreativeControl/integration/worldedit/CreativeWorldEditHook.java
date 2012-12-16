@@ -20,7 +20,7 @@ import com.sk89q.worldedit.bukkit.selections.Selection;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.configuration.CreativeWorldConfig;
 import me.FurH.CreativeControl.configuration.CreativeWorldNodes;
-import me.FurH.CreativeControl.database.CreativeBlockManager;
+import me.FurH.CreativeControl.manager.CreativeBlockManager;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;

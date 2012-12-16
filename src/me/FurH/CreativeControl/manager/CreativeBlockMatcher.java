@@ -14,7 +14,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package me.FurH.CreativeControl.database;
+package me.FurH.CreativeControl.manager;
 
 import java.util.Arrays;
 import java.util.HashSet;

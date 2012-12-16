@@ -23,8 +23,8 @@ import me.FurH.CreativeControl.configuration.CreativeMainConfig;
 import me.FurH.CreativeControl.configuration.CreativeMessages;
 import me.FurH.CreativeControl.configuration.CreativeWorldConfig;
 import me.FurH.CreativeControl.configuration.CreativeWorldNodes;
-import me.FurH.CreativeControl.database.CreativeBlockManager;
-import me.FurH.CreativeControl.database.CreativeBlockMatcher;
+import me.FurH.CreativeControl.manager.CreativeBlockManager;
+import me.FurH.CreativeControl.manager.CreativeBlockMatcher;
 import me.FurH.CreativeControl.util.CreativeCommunicator;
 import me.FurH.CreativeControl.util.CreativeUtil;
 import org.bukkit.GameMode;
@@ -170,20 +170,21 @@ public class CreativeBlockListener implements Listener {
         }
         
         CreativeBlockManager    manager    = CreativeControl.getManager();
+
         Block r = e.getBlockReplacedState().getBlock();
         Block ba = e.getBlockAgainst();
         /*
          * NoDrop Save Section
          */
         if (config.block_nodrop) {
-            if (!plugin.hasPerm(p, "NoDrop.DontSave")) {
-                if (config.misc_liquid) {
-                    if (r.getType() != Material.AIR) {
-                        manager.delBlock(r);
-                    }
-                } 
-                if (p.getGameMode().equals(GameMode.CREATIVE)) {
-                    manager.addBlock(p.getName(), b, true);
+            if (config.misc_liquid) {
+                if (r.getType() != Material.AIR) {
+                    manager.delBlock(r, true);
+                }
+            } 
+            if (p.getGameMode().equals(GameMode.CREATIVE)) {
+                if (!plugin.hasPerm(p, "NoDrop.DontSave")) {
+                    manager.addBlock(p, b, true);
                 }
             }
         } else
@@ -191,34 +192,34 @@ public class CreativeBlockListener implements Listener {
          * OwnBlock Section
          */
         if (config.block_ownblock) {
-            if (!plugin.hasPerm(p, "OwnBlock.DontSave")) {
-                if (config.misc_liquid) {
-                    if (r.getType() != Material.AIR) {
-                        String[] data = manager.getBlock(r);
-                        if (data != null) {
-                            if (manager.isAllowed(p, data)) {
-                                manager.delBlock(b, data);
-                            } else {
-                                com.msg(p, messages.blocks_pertence, data[0]);
-                                e.setCancelled(true);
-                                return;
-                            }
-                        }
-                    }
-                }
-
-                if (config.block_against) {
-                    String[] data = manager.getBlock(ba);
+            if (config.misc_liquid) {
+                if (r.getType() != Material.AIR) {
+                    String[] data = manager.getBlock(b);
                     if (data != null) {
-                        if (!manager.isAllowed(p, data)) {
+                        if (manager.isAllowed(p, data)) {
+                            manager.delBlock(b, false);
+                        } else {
                             com.msg(p, messages.blocks_pertence, data[0]);
                             e.setCancelled(true);
                             return;
                         }
                     }
                 }
+            }
 
-                if (p.getGameMode().equals(GameMode.CREATIVE)) {
+            if (config.block_against) {
+                String[] data = manager.getBlock(ba);
+                if (data != null) {
+                    if (!manager.isAllowed(p, data)) {
+                        com.msg(p, messages.blocks_pertence, data[0]);
+                        e.setCancelled(true);
+                        return;
+                    }
+                }
+            }
+
+            if (p.getGameMode().equals(GameMode.CREATIVE)) {
+                if (!plugin.hasPerm(p, "OwnBlock.DontSave")) {
                     manager.addBlock(p.getName(), b, false);
                 }
             }
@@ -238,7 +239,8 @@ public class CreativeBlockListener implements Listener {
         CreativeControl         plugin     = CreativeControl.getPlugin();
         CreativeCommunicator    com        = CreativeControl.getCommunicator();
         CreativeMessages        messages   = CreativeControl.getMessages();
-        CreativeWorldNodes config = CreativeWorldConfig.get(world);
+        CreativeWorldNodes      config     = CreativeWorldConfig.get(world);
+        CreativeBlockManager    manager    = CreativeControl.getManager();
         
         /*
          * Excluded Worlds
@@ -312,19 +314,20 @@ public class CreativeBlockListener implements Listener {
                 }
             }
         }
-
-        CreativeBlockManager    manager    = CreativeControl.getManager();
+                
         if (config.block_ownblock) {
-            HashSet<Block> attach = CreativeBlockMatcher.getAttached(b);
-            if (attach != null && attach.size() > 0) {
-                for (Block ba1 : attach) {
-                    String[] data = manager.getBlock(ba1);
-                    if (data != null) {
-                        if (!manager.isAllowed(p, data)) {
-                            com.msg(p, messages.blocks_pertence, data[0]);
-                            e.setCancelled(true);
-                        } else {
-                            process(e, ba1, p);
+            if (config.block_attach) {
+                HashSet<Block> attach = CreativeBlockMatcher.getAttached(b);
+                if (attach != null && attach.size() > 0) {
+                    for (Block ba1 : attach) {
+                        String[] data = manager.getBlock(ba1);
+                        if (data != null) {
+                            if (!manager.isAllowed(p, data)) {
+                                com.msg(p, messages.blocks_pertence, data[0]);
+                                e.setCancelled(true);
+                            } else {
+                                process(config, e, ba1, p);
+                            }
                         }
                     }
                 }
@@ -336,7 +339,7 @@ public class CreativeBlockListener implements Listener {
                         com.msg(p, messages.blocks_pertence, data[0]);
                         e.setCancelled(true);
                     } else {
-                        process(e, b, p);
+                        process(config, e, b, p);
                     }
                 }
             } else {
@@ -346,7 +349,7 @@ public class CreativeBlockListener implements Listener {
                         com.msg(p, messages.blocks_pertence, data[0]);
                         e.setCancelled(true);
                     } else {
-                        process(e, b, p);
+                        process(config, e, b, p);
                     }
                 } else {
                     data = manager.getDoor3(b);
@@ -355,39 +358,15 @@ public class CreativeBlockListener implements Listener {
                             com.msg(p, messages.blocks_pertence, data[0]);
                             e.setCancelled(true);
                         } else {
-                            process(e, b, p);
+                            process(config, e, b, p);
                         }
                     }
                 }
             }
         } else
         if (config.block_nodrop) {
-            HashSet<Block> attach = CreativeBlockMatcher.getAttached(b);
-            if (attach != null && attach.size() > 0) {
-                for (Block ba1 : attach) {
-                    if (manager.isFastProtected(ba1)) {
-                        process(e, ba1, p);
-                    }
-                }
-            }
-            if (b.getTypeId() == 64 || b.getTypeId() == 71) {
-                Block data = manager.getDoor22(b);
-                if (data != null) {
-                    if (manager.isFastProtected(data)) {
-                        process(e, b, p);
-                    }
-                }
-            } else {
-                if (manager.isFastProtected(b)) {
-                    process(e, b, p);
-                } else {
-                    Block data = manager.getDoor33(b);
-                    if (data != null) {
-                        if (manager.isFastProtected(data)) {
-                            process(e,  b, p);
-                        }
-                    }
-                }
+            for (Block bls : manager.getBlocks(b, config.block_attach)) {
+                process(config, e, bls, p);
             }
         }
     }
@@ -403,7 +382,7 @@ public class CreativeBlockListener implements Listener {
         if (config.block_pistons) {
             for (Block b : e.getBlocks()) {
                 if (b.getType() == Material.AIR) { return; }
-                if (manager.isProtected(b)) {
+                if (manager.isProtected(b, config.block_nodrop)) {
                     e.setCancelled(true);
                     break;
                 }
@@ -433,7 +412,7 @@ public class CreativeBlockListener implements Listener {
             if (direction == null) { return; }
             Block moved = b.getRelative(direction, 2);
             CreativeBlockManager    manager    = CreativeControl.getManager();
-            if (manager.isProtected(moved)) {
+            if (manager.isProtected(moved, config.block_nodrop)) {
                 e.setCancelled(true);
             }
         }
@@ -446,15 +425,14 @@ public class CreativeBlockListener implements Listener {
         }
     }
 
-    private void process(BlockBreakEvent e, Block b, Player p) {
+    private void process(CreativeWorldNodes config, BlockBreakEvent e, Block b, Player p) {
         if (!e.isCancelled()) {
             CreativeCommunicator    com        = CreativeControl.getCommunicator();
             CreativeMessages        messages   = CreativeControl.getMessages();
             CreativeBlockManager    manager    = CreativeControl.getManager();
-            CreativeWorldNodes config = CreativeWorldConfig.get(b.getWorld());
             if (config.block_creative) {
                 if (p.getGameMode().equals(GameMode.CREATIVE)) {
-                    manager.delBlock(b);
+                    manager.delBlock(b, config.block_nodrop);
                     logBlock(p, b);
                     e.setExpToDrop(0);
                     b.setType(Material.AIR);
@@ -463,7 +441,7 @@ public class CreativeBlockListener implements Listener {
                     e.setCancelled(true);
                 }
             } else {
-                manager.delBlock(b);
+                manager.delBlock(b, config.block_nodrop);
                 logBlock(p, b);
                 e.setExpToDrop(0);
                 b.setType(Material.AIR);

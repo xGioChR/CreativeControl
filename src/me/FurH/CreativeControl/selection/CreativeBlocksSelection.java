@@ -24,7 +24,7 @@ import me.FurH.CreativeControl.configuration.CreativeMainConfig;
 import me.FurH.CreativeControl.configuration.CreativeMessages;
 import me.FurH.CreativeControl.configuration.CreativeWorldConfig;
 import me.FurH.CreativeControl.configuration.CreativeWorldNodes;
-import me.FurH.CreativeControl.database.CreativeBlockManager;
+import me.FurH.CreativeControl.manager.CreativeBlockManager;
 import me.FurH.CreativeControl.util.CreativeCommunicator;
 import me.FurH.CreativeControl.util.CreativeUtil;
 import org.bukkit.Location;
@@ -113,13 +113,13 @@ public class CreativeBlocksSelection {
                                     String[] data = manager.getBlock(block);
                                     if (data != null) {
                                         if (manager.isOwner(player, data[0])) {
-                                            manager.delBlock(block, data);
+                                            manager.delBlock(block, false);
                                         }
                                     }
                                 }
                                 if (wconfig.block_nodrop) {
                                     if (plugin.hasPerm(player, "Command.NoDrop")) {
-                                        manager.delBlock(block);
+                                        manager.delBlock(block, false);
                                     }
                                 }
                             } else
@@ -191,7 +191,7 @@ public class CreativeBlocksSelection {
                                 String[] data = manager.getBlock(block);
                                 if (data != null) {
                                     if (manager.isOwner(player, data[0])) {
-                                        manager.delBlock(block, data);
+                                        manager.delBlock(block, false);
                                         manager.addBlock(args, block, config.block_nodrop);
                                     }
                                 }

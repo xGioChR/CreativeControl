@@ -19,14 +19,15 @@ package me.FurH.CreativeControl.listener;
 import com.sk89q.worldedit.bukkit.selections.Selection;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.cache.CreativeBlockCache;
+import me.FurH.CreativeControl.cache.CreativeFastCache;
 import me.FurH.CreativeControl.configuration.CreativeMainConfig;
 import me.FurH.CreativeControl.configuration.CreativeMessages;
 import me.FurH.CreativeControl.configuration.CreativeWorldConfig;
 import me.FurH.CreativeControl.configuration.CreativeWorldNodes;
 import me.FurH.CreativeControl.data.CreativePlayerData;
 import me.FurH.CreativeControl.data.friend.CreativePlayerFriends;
-import me.FurH.CreativeControl.database.CreativeBlockManager;
 import me.FurH.CreativeControl.integration.worldedit.CreativeWorldEditHook;
+import me.FurH.CreativeControl.manager.CreativeBlockManager;
 import me.FurH.CreativeControl.util.CreativeCommunicator;
 import me.FurH.CreativeControl.util.CreativeUtil;
 import org.bukkit.*;
@@ -589,14 +590,25 @@ public class CreativePlayerListener implements Listener {
     public void info(Player p, Block b) {
         if (!is(p, b)) { return; }
 
+        CreativeWorldNodes nodes = CreativeWorldConfig.get(b.getWorld());
+        
         CreativeBlockManager manager = CreativeControl.getManager();
-        CreativeBlockCache cache = CreativeControl.getCache();
+        
+        CreativeBlockCache slowcache = CreativeControl.getSlowCache();
+        CreativeFastCache fastcache = CreativeControl.getFastCache();
 
         String[] data1 = manager.getFullData(CreativeUtil.getLocation(b.getLocation()));        
-        String[] data2 = cache.get(CreativeUtil.getLocation(b.getLocation()));
+        String[] data2 = null;
+        if (nodes.block_ownblock) {
+            data2 = slowcache.get(CreativeUtil.getLocation(b.getLocation()));
+        }
 
         boolean insql = data1 != null;
         boolean incache = data2 != null;
+        
+        if (nodes.block_nodrop) {
+            incache = fastcache.contains(CreativeUtil.getLocation(b.getLocation()));
+        }
         
         CreativeCommunicator com = CreativeControl.getCommunicator();
         CreativeMessages messages = CreativeControl.getMessages();
@@ -650,18 +662,29 @@ public class CreativePlayerListener implements Listener {
         CreativeMessages messages = CreativeControl.getMessages();
         CreativeControl plugin = CreativeControl.getPlugin();
         CreativeWorldNodes config = CreativeWorldConfig.get(b.getWorld());
+        
 
-        if (b.getTypeId() == 64 || b.getTypeId() == 71) {
-            String[] data = manager.getDoor2(b);
-            if (data != null) {
-                com.msg(p, messages.blockadd_already);
+        if (config.block_ownblock) {
+            if (b.getTypeId() == 64 || b.getTypeId() == 71) {
+                String[] data = manager.getDoor2(b);
+                if (data != null) {
+                    com.msg(p, messages.blockadd_already);
+                } else {
+                    com.msg(p, messages.blockadd_protected);
+                    manager.addBlock(p, b, config.block_nodrop);
+                }
             } else {
-                com.msg(p, messages.blockadd_protected);
-                manager.addBlock(p, b, config.block_nodrop);
+                String[] data = manager.getBlock(b);
+                if (data != null) {
+                    com.msg(p, messages.blockadd_already);
+                } else {
+                    com.msg(p, messages.blockadd_protected);
+                    manager.addBlock(p, b, config.block_nodrop);
+                }
             }
-        } else {
-            String[] data = manager.getBlock(b);
-            if (data != null) {
+        } else
+        if (config.block_nodrop) {
+            if (manager.isProtected(b, true)) {
                 com.msg(p, messages.blockadd_already);
             } else {
                 com.msg(p, messages.blockadd_protected);
@@ -683,30 +706,41 @@ public class CreativePlayerListener implements Listener {
         CreativeBlockManager manager = CreativeControl.getManager();
         CreativeMessages messages = CreativeControl.getMessages();
         CreativeControl plugin = CreativeControl.getPlugin();
+        CreativeWorldNodes config = CreativeWorldConfig.get(b.getWorld());
 
-        if (b.getTypeId() == 64 || b.getTypeId() == 71) {
-            String[] data = manager.getDoor2(b);
-            if (data != null) {
-                if (!manager.isOwner(p, data[0])) {
-                    com.msg(p, messages.blocks_pertence, data[0]);
+        if (config.block_ownblock) {
+            if (b.getTypeId() == 64 || b.getTypeId() == 71) {
+                String[] data = manager.getDoor2(b);
+                if (data != null) {
+                    if (!manager.isOwner(p, data[0])) {
+                        com.msg(p, messages.blocks_pertence, data[0]);
+                    } else {
+                        com.msg(p, messages.blockdel_disprotected);
+                        manager.delBlock(b, false);
+                    }
                 } else {
-                    com.msg(p, messages.blockdel_disprotected);
-                    manager.delBlock(b);
+                    com.msg(p, messages.blockinfo_notprotected);
                 }
             } else {
-                com.msg(p, messages.blockinfo_notprotected);
+                String[] data = manager.getBlock(b);
+                if (data != null) {
+                    if (!manager.isOwner(p, data[0])) {
+                        com.msg(p, messages.blocks_pertence, data[0]);
+                    } else {
+                        com.msg(p, messages.blockdel_disprotected);
+                        manager.delBlock(b, false);
+                    }
+                } else {
+                    com.msg(p, messages.blockinfo_notprotected);
+                }
             }
-        } else {
-            String[] data = manager.getBlock(b);
-            if (data != null) {
-                if (!manager.isOwner(p, data[0])) {
-                    com.msg(p, messages.blocks_pertence, data[0]);
-                } else {
-                    com.msg(p, messages.blockdel_disprotected);
-                    manager.delBlock(b);
-                }
-            } else {
+        } else
+        if (config.block_nodrop) {
+            if (!manager.isProtected(b, true)) {
                 com.msg(p, messages.blockinfo_notprotected);
+            } else {
+                com.msg(p, messages.blockdel_disprotected);
+                manager.delBlock(b, true);
             }
         }
 

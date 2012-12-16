@@ -56,6 +56,8 @@ BlockProtection:
   Pistons: false
   ## BlockAgainst, if true, the OwnBlock protection will check if the block against is protected
   BlockAgainst: false
+  ## CheckAttached, if true, attached blocks like torches will be protected, disable this to save cpu
+  CheckAttached: false
   ## inverted, if true, the exclude list will work as a include list, so, the block will only be protected if he is listed here.
   inverted: false
   ## exclud, Blocks listed here, will be ignored on NoDrop/OwnBlocks protections, more blocks you list here, better will be the performance.

@@ -20,7 +20,7 @@ import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.configuration.CreativeMessages;
 import me.FurH.CreativeControl.configuration.CreativeWorldConfig;
 import me.FurH.CreativeControl.configuration.CreativeWorldNodes;
-import me.FurH.CreativeControl.database.CreativeBlockManager;
+import me.FurH.CreativeControl.manager.CreativeBlockManager;
 import me.FurH.CreativeControl.util.CreativeCommunicator;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -116,13 +116,13 @@ public class CreativeEntityListener implements Listener {
                 for (Block b : e.blockList()) {
                     if (b != null && b.getType() != Material.AIR) {
                         if (config.block_ownblock) {
-                            if (manager.isProtected(b)) {
+                            if (manager.isProtected(b, false)) {
                                 e.blockList().remove(b);
                             }
                         } else
                         if (config.block_nodrop) {
-                            if (manager.isFastProtected(b)) {
-                                manager.delBlock(b);
+                            if (manager.isProtected(b, true)) {
+                                manager.delBlock(b, true);
                                 b.setType(Material.AIR);
                             }
                         }
