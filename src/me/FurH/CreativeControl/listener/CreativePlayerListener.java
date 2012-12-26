@@ -398,18 +398,27 @@ public class CreativePlayerListener implements Listener {
         * Item drop prevent
         */
         CreativeWorldNodes config = CreativeWorldConfig.get(world);
+        CreativeControl plugin = CreativeControl.getPlugin();
         
         if (config.world_exclude) { return; }
         
         if (p.getGameMode().equals(GameMode.CREATIVE)) {
             if (config.prevent_drop) {
-                CreativeControl       plugin   = CreativeControl.getPlugin();
                 if (!plugin.hasPerm(p, "Preventions.ItemDrop")) {
                     String itemName = e.getItemDrop().getType().getName().toLowerCase().replace("_", " ");
                     CreativeCommunicator  com      = CreativeControl.getCommunicator();
                     CreativeMessages      messages = CreativeControl.getMessages();
                     com.msg(p, messages.player_cantdrop, itemName);
                     e.getItemDrop().remove();
+                }
+            }
+            if (!plugin.hasPerm(p, "BlackList.Inventory")) {
+                for (ItemStack item : p.getInventory().getContents()) {
+                    if (item != null) {
+                        if (config.black_inventory.contains(item.getTypeId())) {
+                            p.getInventory().remove(item);
+                        }
+                    }
                 }
             }
         }
@@ -458,6 +467,15 @@ public class CreativePlayerListener implements Listener {
         CreativeMainConfig    main     = CreativeControl.getMainConfig();
 
         if (p.getGameMode().equals(GameMode.CREATIVE)) {
+            if (!plugin.hasPerm(p, "BlackList.Inventory")) {
+                for (ItemStack item : p.getInventory().getContents()) {
+                    if (item != null) {
+                        if (config.black_inventory.contains(item.getTypeId())) {
+                            p.getInventory().remove(item);
+                        }
+                    }
+                }
+            }
             if (i != null) {
                 if (i.getType() == Material.WALL_SIGN || i.getType() == Material.SIGN_POST) {
                     Sign sign = (Sign)i.getState();
