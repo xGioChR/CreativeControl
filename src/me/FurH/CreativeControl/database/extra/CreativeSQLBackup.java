@@ -28,7 +28,7 @@ import me.FurH.CreativeControl.util.CreativeUtil;
  *
  * @author FurmigaHumana
  */
-public class CreativeSQLBackup extends Thread {
+public class CreativeSQLBackup {
     
     public static void backup(HashSet<String> backup) {        
         CreativeCommunicator com = CreativeControl.getCommunicator();

@@ -304,7 +304,13 @@ public class CreativePlayerData {
                 stack = new ItemStack(Integer.parseInt(id));
                 stack.setAmount(Integer.parseInt(amount));
                 stack.setDurability(Short.parseShort(durability));
-                stack.getData().setData(Byte.parseByte(data));
+
+                int i = Integer.parseInt(data);
+                if (i > 128) {
+                    i = 128;
+                }
+
+                stack.getData().setData((byte)i);
             } catch (Exception ex) {
                 com.error("[TAG] Invalid Item String: {0}, {1}", ex, string, ex.getMessage());
                 return new ItemStack(Material.AIR);

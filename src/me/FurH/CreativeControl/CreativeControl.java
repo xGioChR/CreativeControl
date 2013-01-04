@@ -107,6 +107,7 @@ public class CreativeControl extends JavaPlugin {
     public HashSet<UUID> entity = new HashSet<UUID>();
     public Map<String, Integer> limits = new HashMap<String, Integer>();
     public Player player = null;
+    public static long start = 0;
 
     public String currentversion;
     public String newversion;
@@ -115,6 +116,7 @@ public class CreativeControl extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        start = System.currentTimeMillis();
         plugin = this;
         communicator = new CreativeCommunicator();
         messages = new CreativeMessages();
@@ -520,7 +522,7 @@ public class CreativeControl extends JavaPlugin {
     }
     
     public void updateThread() {
-        Bukkit.getScheduler().scheduleAsyncRepeatingTask(this, new Runnable() {
+        Bukkit.getScheduler().runTaskTimerAsynchronously(this, new Runnable() {
             @Override
             public void run() {
                 newversion = getVersion(currentversion);

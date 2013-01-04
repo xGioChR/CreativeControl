@@ -26,6 +26,9 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.configuration.CreativeMainConfig;
+import me.FurH.CreativeControl.monitor.CreativePerformance;
+import me.FurH.CreativeControl.monitor.CreativePerformance;
+import me.FurH.CreativeControl.monitor.CreativePerformance.Event;
 import me.FurH.CreativeControl.util.CreativeCommunicator;
 
 /**
@@ -34,7 +37,7 @@ import me.FurH.CreativeControl.util.CreativeCommunicator;
  */
 public final class CreativeSQLDatabase {
     private Map<String, PreparedStatement> cache = new ConcurrentHashMap<String, PreparedStatement>(15000);
-    private final Queue<String> queue = new LinkedBlockingQueue();
+    private final Queue<String> queue = new LinkedBlockingQueue<String>();
     private final AtomicBoolean lock = new AtomicBoolean(false);
     public enum Type { MySQL, SQLite; }
     private CreativeControl plugin;
@@ -265,6 +268,8 @@ public final class CreativeSQLDatabase {
      */
     public void executeQuery(final String query, boolean b) {
         if (b) {
+            double start = System.currentTimeMillis();
+            
             writes++;
             try {
                 PreparedStatement ps = connection.prepareStatement(query);
@@ -273,6 +278,8 @@ public final class CreativeSQLDatabase {
                 CreativeCommunicator com    = CreativeControl.getCommunicator();
                 com.error("[TAG] Can't write in the "+(type == Type.SQLite ? "SQLite" : "MySQL")+" database, {0}, Query: {1}", ex, ex.getMessage(), query);
             }
+            
+            CreativePerformance.update(Event.SQLWrite, (System.currentTimeMillis() - start));
         } else {
             queue.add(query);
         }
@@ -282,6 +289,8 @@ public final class CreativeSQLDatabase {
      * return a sql object
      */
     public ResultSet getQuery(String query) {
+        double start = System.currentTimeMillis();
+        
         ResultSet ret = null;
         try {
             PreparedStatement ps = prepare(query);
@@ -295,6 +304,8 @@ public final class CreativeSQLDatabase {
             com.error("[TAG] Can't read the "+(type == Type.SQLite ? "SQLite" : "MySQL")+" database, {0}", ex, ex.getMessage());
             if (!isOk()) { fix(); }
         }
+        
+        CreativePerformance.update(Event.SQLRead, (System.currentTimeMillis() - start));
         return ret;
     }
     

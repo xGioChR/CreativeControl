@@ -20,6 +20,8 @@ import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.configuration.CreativeMessages;
 import me.FurH.CreativeControl.configuration.CreativeWorldConfig;
 import me.FurH.CreativeControl.configuration.CreativeWorldNodes;
+import me.FurH.CreativeControl.monitor.CreativePerformance;
+import me.FurH.CreativeControl.monitor.CreativePerformance.Event;
 import me.FurH.CreativeControl.region.CreativeRegion;
 import me.FurH.CreativeControl.region.CreativeRegion.gmType;
 import me.FurH.CreativeControl.util.CreativeCommunicator;
@@ -52,6 +54,8 @@ public class CreativeMoveListener implements Listener {
             e.getTo().getBlockZ() == e.getFrom().getBlockZ()) {
             return;
         }
+        
+        double start = System.currentTimeMillis();
         
         Player p = e.getPlayer();
         World world = p.getWorld();
@@ -126,5 +130,7 @@ public class CreativeMoveListener implements Listener {
                 }
             }
         }
+
+        CreativePerformance.update(Event.PlayerMoveEvent, (System.currentTimeMillis() - start));
     }
 }

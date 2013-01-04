@@ -21,6 +21,8 @@ import me.FurH.CreativeControl.configuration.CreativeMessages;
 import me.FurH.CreativeControl.configuration.CreativeWorldConfig;
 import me.FurH.CreativeControl.configuration.CreativeWorldNodes;
 import me.FurH.CreativeControl.manager.CreativeBlockManager;
+import me.FurH.CreativeControl.monitor.CreativePerformance;
+import me.FurH.CreativeControl.monitor.CreativePerformance.Event;
 import me.FurH.CreativeControl.util.CreativeCommunicator;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -43,6 +45,9 @@ public class CreativeEntityListener implements Listener {
     
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onVehicleCreate(VehicleCreateEvent e) {
+
+        double start = System.currentTimeMillis();
+
         CreativeControl plugin = CreativeControl.getPlugin();
         
         Vehicle vehicle = e.getVehicle();
@@ -74,10 +79,15 @@ public class CreativeEntityListener implements Listener {
                 }
             }
         }
+        
+        CreativePerformance.update(Event.VehicleCreateEvent, (System.currentTimeMillis() - start));
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onVehicleDestroy(VehicleDestroyEvent e) {
+        
+        double start = System.currentTimeMillis();
+        
         Entity entity = e.getAttacker();
         Vehicle vehicle = e.getVehicle();
         
@@ -97,6 +107,8 @@ public class CreativeEntityListener implements Listener {
                 }
             }
         }
+        
+        CreativePerformance.update(Event.VehicleDestroyEvent, (System.currentTimeMillis() - start));
     }
     
     /*
@@ -105,6 +117,8 @@ public class CreativeEntityListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onEntityExplode(EntityExplodeEvent e) {
         if (e.isCancelled()) { return; }
+        
+        double start = System.currentTimeMillis();
 
         CreativeWorldNodes config = CreativeWorldConfig.get(e.getLocation().getWorld());
 
@@ -130,6 +144,8 @@ public class CreativeEntityListener implements Listener {
                 }
             }
         }
+        
+        CreativePerformance.update(Event.EntityExplodeEvent, (System.currentTimeMillis() - start));
     }
 
     /*
@@ -139,6 +155,8 @@ public class CreativeEntityListener implements Listener {
     public void onEntityTarget(EntityTargetEvent e) {
         if (e.isCancelled())  { return; }
         if (!(e.getTarget() instanceof Player)) { return; }
+        
+        double start = System.currentTimeMillis();
 
         Player p = (Player)e.getTarget();
         World world = p.getWorld();
@@ -155,6 +173,8 @@ public class CreativeEntityListener implements Listener {
                 }
             }
         }
+
+        CreativePerformance.update(Event.EntityTargetEvent, (System.currentTimeMillis() - start));
     }
 
     /*
@@ -162,6 +182,9 @@ public class CreativeEntityListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void onPlayerInteractEntity(PlayerInteractEntityEvent e) {
+        
+        double start = System.currentTimeMillis();
+        
         Player p = e.getPlayer();
         World world = p.getWorld();
         Entity entity = e.getRightClicked();
@@ -193,13 +216,17 @@ public class CreativeEntityListener implements Listener {
                 }
             }
         }
+        
+        CreativePerformance.update(Event.PlayerInteractEntityEvent, (System.currentTimeMillis() - start));
     }
     
     /*
      * Anti Mob Drop
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
-    public void onEntityDeath(EntityDeathEvent e) {        
+    public void onEntityDeath(EntityDeathEvent e) {
+        double start = System.currentTimeMillis();
+        
         if ((e.getEntity().getKiller() instanceof Player)) {
             Player p = e.getEntity().getKiller();
             World world = p.getWorld();
@@ -218,6 +245,8 @@ public class CreativeEntityListener implements Listener {
                 }
             }
         }
+        
+        CreativePerformance.update(Event.EntityDeathEvent, (System.currentTimeMillis() - start));
     }
 
     /*
@@ -225,6 +254,8 @@ public class CreativeEntityListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void onEntityDamage(EntityDamageEvent event) {
+        double start = System.currentTimeMillis();
+        
         if ((event instanceof EntityDamageByEntityEvent)) {
             EntityDamageByEntityEvent e = (EntityDamageByEntityEvent)event;
             
@@ -283,5 +314,6 @@ public class CreativeEntityListener implements Listener {
                 }
             }
         }
+        CreativePerformance.update(Event.EntityDamageEvent, (System.currentTimeMillis() - start));
     }
 }

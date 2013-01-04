@@ -29,6 +29,7 @@ import me.FurH.CreativeControl.data.friend.CreativePlayerFriends;
 import me.FurH.CreativeControl.database.CreativeSQLDatabase;
 import me.FurH.CreativeControl.database.extra.CreativeSQLBackup;
 import me.FurH.CreativeControl.database.extra.CreativeSQLCleanup;
+import me.FurH.CreativeControl.monitor.CreativePerformance;
 import me.FurH.CreativeControl.region.CreativeRegion.gmType;
 import me.FurH.CreativeControl.region.CreativeRegionManager;
 import me.FurH.CreativeControl.selection.CreativeBlocksSelection;
@@ -773,7 +774,7 @@ public class CreativeCommands implements CommandExecutor {
                                 msg(sender, messages.cleanup_locked);
                                 return true;
                             } else {
-                                cleanup.start();
+                                Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, cleanup);
                                 return true;
                             }
                         }
@@ -1237,8 +1238,13 @@ public class CreativeCommands implements CommandExecutor {
             return false;
         } else {
             if (args.length > 1) {
-                msg(sender, messages.commands_status_help);
-                return true;
+                if (args[1].equalsIgnoreCase("report")) {
+                    msg(sender, "&7Report saved at: &a/plugins/CreativeControl/report/"+CreativePerformance.report()+".txt");
+                    return true;
+                } else {
+                    msg(sender, messages.commands_status_help);
+                    return true;
+                }
             } else {
                 msg(sender, messages.commands_status_queue, db.getQueue());
                 msg(sender, messages.commands_status_sqlreads, db.reads);

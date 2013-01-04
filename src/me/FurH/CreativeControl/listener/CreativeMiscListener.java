@@ -72,7 +72,7 @@ public class CreativeMiscListener implements Listener {
     }
     
     private void removeIgnition(Block b) {
-        List BLOCKS2 = Arrays.asList(new Integer[]{10, 11, 27, 28, 51, 69, 70, 72, 73, 74, 75, 76, 77, 55, 331, 356});
+        List<Integer> BLOCKS2 = Arrays.asList(new Integer[]{10, 11, 27, 28, 51, 69, 70, 72, 73, 74, 75, 76, 77, 55, 331, 356});
         int x = b.getX(); int y = b.getY(); int z = b.getZ(); int radius = 2;
         int minX = x - radius; int minY = y - radius; int minZ = z - radius;
         int maxX = x + radius; int maxY = y + radius; int maxZ = z + radius;

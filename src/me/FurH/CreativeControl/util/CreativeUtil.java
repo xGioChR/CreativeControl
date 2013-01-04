@@ -17,6 +17,7 @@
 package me.FurH.CreativeControl.util;
 
 import java.io.*;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -146,7 +147,12 @@ public class CreativeUtil {
         Location newloc = new Location(loc.getWorld(), loc.getX(), b1.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
         player.teleport(newloc);
     }
-    
+
+    public static String getUptime() {
+        long time = (System.currentTimeMillis() - CreativeControl.start);
+        return (int)(time / 86400000) + "d " + (int)(time / 3600000 % 24) + "h " + (int)(time / 60000 % 60) + "m " + (int)(time / 1000 % 60) + "s";
+    }
+
     /*
      * Dump the stack to a file
      */
@@ -195,7 +201,25 @@ public class CreativeUtil {
         
         return format1;
     }
-
+    
+    public static String format(double bytes) {
+        DecimalFormat decimal = new DecimalFormat("#.##");
+        
+        if (bytes >= 1099511627776.0D) {
+            return new StringBuilder().append(decimal.format(bytes / 1099511627776.0D)).append(" TB").toString();
+        }
+        if (bytes >= 1073741824.0D) {
+            return new StringBuilder().append(decimal.format(bytes / 1073741824.0D)).append(" GB").toString();
+        }
+        if (bytes >= 1048576.0D) {
+            return new StringBuilder().append(decimal.format(bytes / 1048576.0D)).append(" MB").toString();
+        }
+        if (bytes >= 1024.0D) {
+            return new StringBuilder().append(decimal.format(bytes / 1024.0D)).append(" KB").toString();
+        }
+        return new StringBuilder().append("").append((int)bytes).append(" bytes").toString();
+    }
+    
     /*
      * Copy a file from a location
      */

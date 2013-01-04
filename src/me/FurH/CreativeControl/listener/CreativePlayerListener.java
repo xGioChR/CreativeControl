@@ -28,6 +28,8 @@ import me.FurH.CreativeControl.data.CreativePlayerData;
 import me.FurH.CreativeControl.data.friend.CreativePlayerFriends;
 import me.FurH.CreativeControl.integration.worldedit.CreativeWorldEditHook;
 import me.FurH.CreativeControl.manager.CreativeBlockManager;
+import me.FurH.CreativeControl.monitor.CreativePerformance;
+import me.FurH.CreativeControl.monitor.CreativePerformance.Event;
 import me.FurH.CreativeControl.util.CreativeCommunicator;
 import me.FurH.CreativeControl.util.CreativeUtil;
 import org.bukkit.*;
@@ -54,12 +56,14 @@ import org.bukkit.inventory.ItemStack;
 public class CreativePlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
-    public void onPlayerGameModeChange(final PlayerGameModeChangeEvent e) {
+    public void onPlayerGameModeChange(PlayerGameModeChangeEvent e) {
         if (e.isCancelled()) { return; }
         
-        final Player player = e.getPlayer();
-        final GameMode newgm = e.getNewGameMode();
-        final GameMode oldgm = player.getGameMode();
+        double start = System.currentTimeMillis();
+        
+        Player player = e.getPlayer();
+        GameMode newgm = e.getNewGameMode();
+        GameMode oldgm = player.getGameMode();
 
         CreativeMainConfig    config   = CreativeControl.getMainConfig();
         CreativeControl       plugin   = CreativeControl.getPlugin();
@@ -75,6 +79,8 @@ public class CreativePlayerListener implements Listener {
                 }
             }
         }
+        
+        CreativePerformance.update(Event.PlayerGameModeChangeEvent, (System.currentTimeMillis() - start));
     }
     
     /*
@@ -83,6 +89,9 @@ public class CreativePlayerListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onPlayerCommand(PlayerCommandPreprocessEvent e) {
         if (e.isCancelled()) { return; }
+        
+        double start = System.currentTimeMillis();
+        
         Player p = e.getPlayer();
         String msg = e.getMessage().toLowerCase();
         World world = p.getWorld();
@@ -124,6 +133,8 @@ public class CreativePlayerListener implements Listener {
                 }
             }
         }
+
+        CreativePerformance.update(Event.PlayerCommandPreprocessEvent, (System.currentTimeMillis() - start));
     }
     
     /*
@@ -131,6 +142,9 @@ public class CreativePlayerListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onPlayerDeath(PlayerDeathEvent e) {
+        
+        double start = System.currentTimeMillis();
+        
         Player p = e.getEntity();
         World world = p.getWorld();
         
@@ -147,6 +161,8 @@ public class CreativePlayerListener implements Listener {
                 e.getDrops().clear();
             }
         }
+        
+        CreativePerformance.update(Event.PlayerDeathEvent, (System.currentTimeMillis() - start));
     }
     
     /*
@@ -155,6 +171,9 @@ public class CreativePlayerListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onEnchantItemEvent(EnchantItemEvent e) {
         if (e.isCancelled()) { return; }
+        
+        double start = System.currentTimeMillis();
+        
         Player p = e.getEnchanter();
         World world = p.getWorld();
 
@@ -171,6 +190,8 @@ public class CreativePlayerListener implements Listener {
                 e.setCancelled(true);
             }
         }
+        
+        CreativePerformance.update(Event.EnchantItemEvent, (System.currentTimeMillis() - start));
     }
     
     /*
@@ -179,6 +200,8 @@ public class CreativePlayerListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onInventoryClose(InventoryCloseEvent e) {
         if (!(e.getPlayer() instanceof Player)) { return; }
+        
+        double start = System.currentTimeMillis();
         
         Player p = (Player)e.getPlayer();
         World world = p.getWorld();
@@ -198,6 +221,8 @@ public class CreativePlayerListener implements Listener {
                 }
             }
         }
+        
+        CreativePerformance.update(Event.InventoryCloseEvent, (System.currentTimeMillis() - start));
     }
 
     /*
@@ -207,6 +232,9 @@ public class CreativePlayerListener implements Listener {
     public void onInventoryClick(InventoryClickEvent e) {
         if (e.isCancelled()) { return; }
         if (!(e.getWhoClicked() instanceof Player)) { return; }
+        
+        double start = System.currentTimeMillis();
+        
         Player p = (Player)e.getWhoClicked();
         World world = p.getWorld();
 
@@ -282,6 +310,8 @@ public class CreativePlayerListener implements Listener {
                 }
             }
         }
+        
+        CreativePerformance.update(Event.InventoryClickEvent, (System.currentTimeMillis() - start));
     }
  
     /*
@@ -289,7 +319,11 @@ public class CreativePlayerListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onPlayerKick(PlayerKickEvent e) {
+        double start = System.currentTimeMillis();
+        
         cleanup(e.getPlayer());
+        
+        CreativePerformance.update(Event.PlayerKickEvent, (System.currentTimeMillis() - start));
     }
     
     /*
@@ -297,7 +331,11 @@ public class CreativePlayerListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onPlayerQuit(PlayerQuitEvent e) {
+        double start = System.currentTimeMillis();
+        
         cleanup(e.getPlayer());
+        
+        CreativePerformance.update(Event.PlayerQuitEvent, (System.currentTimeMillis() - start));
     }
     
     /*
@@ -305,8 +343,10 @@ public class CreativePlayerListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onPlayerJoin(PlayerJoinEvent e) {
+        
+        double start = System.currentTimeMillis();
+        
         final Player p = e.getPlayer();
-
         final CreativeControl       plugin   = CreativeControl.getPlugin();
         
         if (CreativeControl.getMainConfig().data_teleport) {
@@ -326,6 +366,8 @@ public class CreativePlayerListener implements Listener {
                 }, 40L);
             }
         }
+        
+        CreativePerformance.update(Event.PlayerJoinEvent, (System.currentTimeMillis() - start));
     }
 
     /*
@@ -333,6 +375,9 @@ public class CreativePlayerListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onPlayerChangedWorld(PlayerChangedWorldEvent e) {
+
+        double start = System.currentTimeMillis();
+
         Player p = e.getPlayer();
         World world = p.getWorld();
 
@@ -357,6 +402,8 @@ public class CreativePlayerListener implements Listener {
                 }
             }
         }
+        
+        CreativePerformance.update(Event.PlayerChangedWorldEvent, (System.currentTimeMillis() - start));
     }
 
     /*
@@ -365,6 +412,9 @@ public class CreativePlayerListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void onPlayerPickupItem(PlayerPickupItemEvent e) {
         if (e.isCancelled()) { return; }
+        
+        double start = System.currentTimeMillis();
+        
         Player p = e.getPlayer();
         World world = p.getWorld();
 
@@ -372,9 +422,9 @@ public class CreativePlayerListener implements Listener {
         * Item Pickup prevent
         */
         CreativeWorldNodes config = CreativeWorldConfig.get(world);
-        
+
         if (config.world_exclude) { return; }
-        
+
         if (p.getGameMode().equals(GameMode.CREATIVE)) {
             if (config.prevent_pickup) {
                 CreativeControl       plugin   = CreativeControl.getPlugin();
@@ -383,6 +433,8 @@ public class CreativePlayerListener implements Listener {
                 }
             }
         }
+        
+        CreativePerformance.update(Event.PlayerPickupItemEvent, (System.currentTimeMillis() - start));
     }
     
     /*
@@ -391,6 +443,9 @@ public class CreativePlayerListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void onPlayerDropItem(PlayerDropItemEvent e) {
         if (e.isCancelled()) { return; }
+        
+        double start = System.currentTimeMillis();
+        
         Player p = e.getPlayer();
         World world = p.getWorld();
         
@@ -422,6 +477,8 @@ public class CreativePlayerListener implements Listener {
                 }
             }
         }
+        
+        CreativePerformance.update(Event.PlayerDropItemEvent, (System.currentTimeMillis() - start));
     }
     
     /*
@@ -429,6 +486,8 @@ public class CreativePlayerListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onPlayerEggThrowEvent(PlayerEggThrowEvent e) {
+        double start = System.currentTimeMillis();
+        
         Player p = e.getPlayer();
         World world = p.getWorld();
         
@@ -448,6 +507,8 @@ public class CreativePlayerListener implements Listener {
                 }
             }
         }
+        
+        CreativePerformance.update(Event.PlayerEggThrowEvent, (System.currentTimeMillis() - start));
     }
     
     /*
@@ -455,6 +516,8 @@ public class CreativePlayerListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void onPlayerInteract(PlayerInteractEvent e) {
+        double start = System.currentTimeMillis();
+        
         Player p = e.getPlayer();
         Block i = e.getClickedBlock();
         World world = p.getWorld();
@@ -597,6 +660,8 @@ public class CreativePlayerListener implements Listener {
                 }
             }
         }
+        
+        CreativePerformance.update(Event.PlayerInteractEvent, (System.currentTimeMillis() - start));
     }
 
     /*

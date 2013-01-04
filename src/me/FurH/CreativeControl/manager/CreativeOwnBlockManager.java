@@ -124,10 +124,23 @@ public class CreativeOwnBlockManager {
         if (isOwner(p, data[0])) {
             return true;
         } else {
-            if (data.length > 0) {
-                if (isAllowed(p, data[1])) {
-                    return true;
-                } else {
+            if (data.length >= 1) {
+                try {
+                    if (isAllowed(p, data[1])) {
+                        return true;
+                    } else {
+                        if (config.config_friend) {
+                            HashSet<String> friend = friends.getFriends(data[0]);
+                            if (friend.contains(p.getName().toLowerCase())) {
+                                return true;
+                            } else {
+                                return false;
+                            }
+                        } else {
+                            return false;
+                        }
+                    }
+                } catch (Exception ex) {
                     if (config.config_friend) {
                         HashSet<String> friend = friends.getFriends(data[0]);
                         if (friend.contains(p.getName().toLowerCase())) {

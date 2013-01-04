@@ -21,6 +21,8 @@ import me.FurH.CreativeControl.configuration.CreativeMainConfig;
 import me.FurH.CreativeControl.configuration.CreativeMessages;
 import me.FurH.CreativeControl.configuration.CreativeWorldConfig;
 import me.FurH.CreativeControl.configuration.CreativeWorldNodes;
+import me.FurH.CreativeControl.monitor.CreativePerformance;
+import me.FurH.CreativeControl.monitor.CreativePerformance.Event;
 import me.FurH.CreativeControl.util.CreativeCommunicator;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -37,19 +39,25 @@ import org.bukkit.event.world.WorldLoadEvent;
  * @author FurmigaHumana
  */
 public class CreativeWorldListener implements Listener {
-    
+
     @EventHandler
     public void onWorldLoad(WorldLoadEvent e) {
+        double start = System.currentTimeMillis();
+
         CreativeMainConfig   main     = CreativeControl.getMainConfig();
         if (!main.config_single) {
             CreativeWorldConfig.load(e.getWorld());
         }
+
+        CreativePerformance.update(Event.WorldLoadEvent, (System.currentTimeMillis() - start));
     }
     
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onStructureGrown(StructureGrowEvent e) {
         if (e.isCancelled()) { return; }
-        
+
+        double start = System.currentTimeMillis();
+
         CreativeWorldNodes config = CreativeWorldConfig.get(e.getWorld());
 
         if (config.world_exclude) { return; }
@@ -72,5 +80,7 @@ public class CreativeWorldListener implements Listener {
                 }
             }
         }
+        
+        CreativePerformance.update(Event.StructureGrowEvent, (System.currentTimeMillis() - start));
     }
 }

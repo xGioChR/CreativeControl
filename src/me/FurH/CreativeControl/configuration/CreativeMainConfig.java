@@ -63,6 +63,8 @@ public class CreativeMainConfig {
     public boolean         data_inventory    = true;
     public boolean         data_status       = true;
     public boolean         data_teleport     = false;
+    
+    public boolean         perfm_monitor     = true;
 
     public boolean         com_quiet         = false;
     public boolean         com_debugcons     = false;
@@ -101,7 +103,9 @@ public class CreativeMainConfig {
         data_inventory   = getBoolean("PlayerData.Inventory");
         data_status      = getBoolean("PlayerData.Status");
         data_teleport    = getBoolean("PlayerData.Teleport");
-        
+
+        perfm_monitor    = getBoolean("Monitor.Enabled");
+
         com_quiet        = getBoolean("Communicator.Quiet");
         com_debugcons    = getBoolean("Communicator.Debug.Console");
         com_debugstack   = getBoolean("Communicator.Debug.Stack");

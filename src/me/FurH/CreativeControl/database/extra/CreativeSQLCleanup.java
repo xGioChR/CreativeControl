@@ -34,7 +34,7 @@ import org.bukkit.entity.Player;
  *
  * @author FurmigaHumana
  */
-public class CreativeSQLCleanup extends Thread {
+public class CreativeSQLCleanup implements Runnable {
     public boolean lock = false;
     private Player p;
 
@@ -45,12 +45,9 @@ public class CreativeSQLCleanup extends Thread {
     @Override
     public void run() {
         lock = true;
-        Thread t = CreativeSQLCleanup.currentThread();
-        t.setName("CreativeControl Cleanup Thread");
 
         long startTimer = System.currentTimeMillis();
         long elapsedTime = 0;
-        t.setPriority(Thread.MAX_PRIORITY);
 
         CreativeCommunicator com = CreativeControl.getCommunicator();
         CreativeMessages messages = CreativeControl.getMessages();
@@ -78,7 +75,7 @@ public class CreativeSQLCleanup extends Thread {
             com.error("[TAG] Failed to load the protections, {0}", ex, ex.getMessage());
             com.msg(p, messages.updater_loadfailed);
             lock = false;
-            t.interrupt();
+            return;
         }
 
         CreativeBlockManager manager = CreativeControl.getManager();
@@ -140,6 +137,5 @@ public class CreativeSQLCleanup extends Thread {
         elapsedTime = (System.currentTimeMillis() - startTimer);
         com.msg(p, messages.cleanup_done, corrupt, blocks.size());
         lock = false;
-        t.interrupt();
     }
 }

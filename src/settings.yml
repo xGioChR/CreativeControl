@@ -65,6 +65,16 @@ PlayerData:
   ## Teleport, if true, the player will be teleported to the floor on login if needed
   Teleport: false
 
+## Performance monitor
+Monitor:
+  ## Enabled the performance monitor
+  Enabled: true
+  Track:
+    ## Track event times
+    Events: true
+    ## Track method times
+    Methods: true
+
 Communicator:
   ## Quiet, if true, any messages will be displayed
   Quiet: false

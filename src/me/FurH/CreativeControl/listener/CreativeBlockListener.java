@@ -25,6 +25,8 @@ import me.FurH.CreativeControl.configuration.CreativeWorldConfig;
 import me.FurH.CreativeControl.configuration.CreativeWorldNodes;
 import me.FurH.CreativeControl.manager.CreativeBlockManager;
 import me.FurH.CreativeControl.manager.CreativeBlockMatcher;
+import me.FurH.CreativeControl.monitor.CreativePerformance;
+import me.FurH.CreativeControl.monitor.CreativePerformance.Event;
 import me.FurH.CreativeControl.util.CreativeCommunicator;
 import me.FurH.CreativeControl.util.CreativeUtil;
 import org.bukkit.GameMode;
@@ -41,7 +43,6 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
 import org.bukkit.material.PistonBaseMaterial;
 
@@ -55,7 +56,9 @@ public class CreativeBlockListener implements Listener {
      * Block Place Module
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void onBlockPlace(BlockPlaceEvent e) {        
+    public void onBlockPlace(BlockPlaceEvent e) {
+        double start = System.currentTimeMillis();
+        
         Player p = e.getPlayer();
         Block b = e.getBlockPlaced();
         World world = p.getWorld();
@@ -225,6 +228,7 @@ public class CreativeBlockListener implements Listener {
                 }
             }
         }
+        CreativePerformance.update(Event.BlockPlaceEvent, (System.currentTimeMillis() - start));
     }
 
     
@@ -232,7 +236,8 @@ public class CreativeBlockListener implements Listener {
      * Block Break Module
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void onBlockBreak(BlockBreakEvent e) {        
+    public void onBlockBreak(BlockBreakEvent e) {
+        double start = System.currentTimeMillis();
         Player p = e.getPlayer();
         Block b = e.getBlock();
         World world = p.getWorld();
@@ -370,11 +375,14 @@ public class CreativeBlockListener implements Listener {
                 process(config, e, bls, p);
             }
         }
+        CreativePerformance.update(Event.BlockBreakEvent, (System.currentTimeMillis() - start));
     }
     
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void onPistonExtend(BlockPistonExtendEvent e) {
         if (e.isCancelled()) { return; }
+        
+        double start = System.currentTimeMillis();
 
         World world = e.getBlock().getWorld();
         CreativeBlockManager    manager    = CreativeControl.getManager();
@@ -389,11 +397,15 @@ public class CreativeBlockListener implements Listener {
                 }
             }
         }
+        CreativePerformance.update(Event.BlockPistonExtendEvent, (System.currentTimeMillis() - start));
     }
     
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void onPistonRetract(BlockPistonRetractEvent e) {
         if (e.isCancelled()) { return; }
+        
+        double start = System.currentTimeMillis();
+        
         Block b = e.getBlock();
         World world = b.getWorld();
 
@@ -417,6 +429,8 @@ public class CreativeBlockListener implements Listener {
                 e.setCancelled(true);
             }
         }
+        
+        CreativePerformance.update(Event.BlockPistonRetractEvent, (System.currentTimeMillis() - start));
     }
     
     public void logBlock(Player p, Block b) {
