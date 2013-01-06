@@ -49,7 +49,7 @@ public class CreativeBlockManager {
             String[] data = cache.get(location);
 
             if (data ==  null) {
-                data = new String[] { "N" };
+                data = new String[] { "0" };
             }
 
             return data;
