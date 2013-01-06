@@ -13,6 +13,7 @@ import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.cache.CreativeBlockCache;
 import me.FurH.CreativeControl.configuration.CreativeMainConfig;
 import me.FurH.CreativeControl.database.CreativeSQLDatabase;
+import me.FurH.CreativeControl.manager.CreativeBlockManager;
 import me.FurH.CreativeControl.util.CreativeCommunicator;
 import me.FurH.CreativeControl.util.CreativeCommunicator.Type;
 import me.FurH.CreativeControl.util.CreativeUtil;
@@ -57,7 +58,8 @@ public class CreativePerformance {
         File data = new File(plugin.getDataFolder() + File.separator + "report");
         if (!data.exists()) { data.mkdirs(); }
         
-        CreativeCommunicator com    = CreativeControl.getCommunicator();
+        CreativeCommunicator com     = CreativeControl.getCommunicator();
+        CreativeBlockManager manager = CreativeControl.getManager();
         data = new File(data.getAbsolutePath(), "report-"+format1+".txt");
         if (!data.exists()) {
             try {
@@ -131,6 +133,7 @@ public class CreativePerformance {
             bw.write("		Reads: " + db.getReads() +l);
             bw.write("		Writes: " + db.getWrites() +l);
             bw.write("		SQL Cache: " + db.getSize() +l);
+            bw.write("		Total Blocks: " + manager.getTotal() +l);
             bw.write("	=============================[ TIMMINGS   REPORT ]============================="+l);
             for (Event event : times.keySet()) {
                 EventData x = times.get(event);
