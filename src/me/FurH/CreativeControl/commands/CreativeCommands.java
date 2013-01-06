@@ -22,7 +22,6 @@ import java.sql.SQLException;
 import java.util.HashSet;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.cache.CreativeBlockCache;
-import me.FurH.CreativeControl.cache.CreativeFastCache;
 import me.FurH.CreativeControl.configuration.CreativeMainConfig;
 import me.FurH.CreativeControl.configuration.CreativeMessages;
 import me.FurH.CreativeControl.data.friend.CreativePlayerFriends;
@@ -129,8 +128,7 @@ public class CreativeCommands implements CommandExecutor {
         CreativeControl          plugin    = CreativeControl.getPlugin();
         CreativePlayerFriends    friends   = CreativeControl.getFriends();
         CreativeBlocksSelection  selection = CreativeControl.getSelector();
-        CreativeBlockCache       slow      = CreativeControl.getSlowCache();
-        CreativeFastCache        fast      = CreativeControl.getFastCache();
+        CreativeBlockCache       cache     = CreativeControl.getCache();
         CreativeSQLDatabase      db        = CreativeControl.getDb();
         CreativeCommunicator     com       = CreativeControl.getCommunicator();
         
@@ -334,8 +332,7 @@ public class CreativeCommands implements CommandExecutor {
                                                 /* Backup End */
                                                 
                                                 for (String location : locations) {
-                                                    slow.remove(location);
-                                                    fast.remove(location);
+                                                    cache.remove(location);
                                                 }
                                                 
                                                 String query = "UPDATE `"+db.prefix+"blocks` SET owner = '"+args[3].toLowerCase()+"' WHERE owner = '"+sender.getName().toLowerCase()+"'";
@@ -538,8 +535,7 @@ public class CreativeCommands implements CommandExecutor {
     public boolean cleanupCmd(CommandSender sender, Command cmd, String string, String[] args) {
         CreativeMessages         messages  = CreativeControl.getMessages();
         CreativeControl          plugin    = CreativeControl.getPlugin();
-        CreativeBlockCache       slow      = CreativeControl.getSlowCache();
-        CreativeFastCache        fast      = CreativeControl.getFastCache();
+        CreativeBlockCache       cache     = CreativeControl.getCache();
         CreativeSQLDatabase      db        = CreativeControl.getDb();
         CreativeCommunicator     com       = CreativeControl.getCommunicator();
         
@@ -558,8 +554,7 @@ public class CreativeCommands implements CommandExecutor {
                             return true;
                         } else {
                             String query = "DELETE FROM `"+db.prefix+"blocks`";
-                            slow.clear();
-                            fast.clear();
+                            cache.clear();
                             db.executeQuery(query);
                             msg(sender, messages.commands_cleanup_processed);
                             return true;
@@ -613,8 +608,7 @@ public class CreativeCommands implements CommandExecutor {
 
                                     for (String location : locations) {
                                         String query = "DELETE FROM `"+db.prefix+"blocks` WHERE location = '"+location+"'";
-                                        slow.remove(location);
-                                        fast.remove(location);
+                                        cache.remove(location);
                                         db.executeQuery(query);
                                     }
                                     
@@ -676,8 +670,7 @@ public class CreativeCommands implements CommandExecutor {
 
                                     for (String location : locations) {
                                         String query = "DELETE FROM `"+db.prefix+"blocks` WHERE location = '"+location+"'";
-                                        slow.remove(location);
-                                        fast.remove(location);
+                                        cache.remove(location);
                                         db.executeQuery(query);
                                     }
                                     
@@ -741,8 +734,7 @@ public class CreativeCommands implements CommandExecutor {
                                         Location loc = CreativeUtil.getLocation(location);
                                         if (loc.getWorld().getName().equalsIgnoreCase(args[2])) {
                                             String query = "DELETE FROM `"+db.prefix+"blocks` WHERE location = '"+location+"'";
-                                            fast.remove(location);
-                                            slow.remove(location);
+                                            cache.remove(location);
                                             db.executeQuery(query);
                                         }
                                     }
@@ -1230,8 +1222,7 @@ public class CreativeCommands implements CommandExecutor {
         CreativeSQLDatabase      db        = CreativeControl.getDb();
         CreativeMessages         messages  = CreativeControl.getMessages();
         CreativeControl          plugin    = CreativeControl.getPlugin();
-        CreativeBlockCache       slow      = CreativeControl.getSlowCache();
-        CreativeFastCache        fast      = CreativeControl.getFastCache();
+        CreativeBlockCache       cache     = CreativeControl.getCache();
         
         if (!plugin.hasPerm(sender, "Commands.Status")) {
             msg(sender, messages.commands_noperm);
@@ -1249,9 +1240,9 @@ public class CreativeCommands implements CommandExecutor {
                 msg(sender, messages.commands_status_queue, db.getQueue());
                 msg(sender, messages.commands_status_sqlreads, db.reads);
                 msg(sender, messages.commands_status_sqlwrites, db.writes);
-                msg(sender, messages.commands_status_cache, (slow.getSize() + fast.getSize()), slow.getMax());
-                msg(sender, messages.commands_status_cachereads, (slow.getReads() + fast.getReads()));
-                msg(sender, messages.commands_status_cachewrites, (slow.getWrites() + fast.getWrites()));
+                msg(sender, messages.commands_status_cache, (cache.getSize()), cache.getMaxSize());
+                msg(sender, messages.commands_status_cachereads, (cache.getReads()));
+                msg(sender, messages.commands_status_cachewrites, (cache.getWrites()));
                 return true;
             }
         }

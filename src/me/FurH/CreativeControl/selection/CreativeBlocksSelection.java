@@ -113,13 +113,13 @@ public class CreativeBlocksSelection {
                                     String[] data = manager.getBlock(block);
                                     if (data != null) {
                                         if (manager.isOwner(player, data[0])) {
-                                            manager.delBlock(block, false);
+                                            manager.delBlock(block);
                                         }
                                     }
                                 }
                                 if (wconfig.block_nodrop) {
                                     if (plugin.hasPerm(player, "Command.NoDrop")) {
-                                        manager.delBlock(block, false);
+                                        manager.delBlock(block);
                                     }
                                 }
                             } else
@@ -158,7 +158,7 @@ public class CreativeBlocksSelection {
                             if (type == Type.ADD) {
                                 String[] data = manager.getBlock(block);
                                 if (data == null) {
-                                    manager.addBlock(args, block, config.block_nodrop);
+                                    manager.addBlock(args, block, wconfig.block_nodrop);
                                 }
                             } else
                             if (type == Type.ALLOW) {
@@ -191,8 +191,8 @@ public class CreativeBlocksSelection {
                                 String[] data = manager.getBlock(block);
                                 if (data != null) {
                                     if (manager.isOwner(player, data[0])) {
-                                        manager.delBlock(block, false);
-                                        manager.addBlock(args, block, config.block_nodrop);
+                                        manager.delBlock(block);
+                                        manager.addBlock(args, block, wconfig.block_nodrop);
                                     }
                                 }
                             }

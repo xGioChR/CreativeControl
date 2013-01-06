@@ -115,17 +115,17 @@ public class CreativeSQLCleanup implements Runnable {
                 if (type != dbtype) {
                     com.msg(p, messages.cleanup_corrupted, loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), type, dbtype);
                     corrupt++;
-                    manager.delBlock(b, false);
+                    manager.delBlock(b);
                 } else
                 if (!manager.isProtectable(b.getWorld(), type)) {
                     com.msg(p, messages.cleanup_corrupted, loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), type, dbtype);
                     corrupt++;
-                    manager.delBlock(b, false);
+                    manager.delBlock(b);
                 } else
                 if (locations.contains(string[0])) {
                     com.msg(p, messages.cleanup_duplicated, loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
                     corrupt++;
-                    manager.delBlock(b, false);
+                    manager.delBlock(b);
                 } else {
                     locations.add(string[0]);
                 }

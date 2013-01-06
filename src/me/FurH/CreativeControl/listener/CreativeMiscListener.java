@@ -62,7 +62,7 @@ public class CreativeMiscListener implements Listener {
             
             CreativeBlockManager manager  = CreativeControl.getManager();
             if (config.misc_tnt) {
-                if (manager.isProtected(b, config.block_nodrop)) {
+                if (manager.isProtected(b)) {
                     removeIgnition(b);
                     b.setType(Material.TNT);
                     e.setCancelled(true);
@@ -83,7 +83,7 @@ public class CreativeMiscListener implements Listener {
                     Block block = b.getWorld().getBlockAt(counterX, counterY, counterZ);
                     if (BLOCKS2.contains(block.getTypeId())) {
                         CreativeBlockManager manager  = CreativeControl.getManager();
-                        manager.delBlock(block, false);
+                        manager.delBlock(block);
                         block.setType(Material.AIR);
                     }
                 }
@@ -105,7 +105,7 @@ public class CreativeMiscListener implements Listener {
         
         if (config.misc_fire) {
             CreativeBlockManager manager  = CreativeControl.getManager();
-            if (manager.isProtected(b, config.block_nodrop)) {
+            if (manager.isProtected(b)) {
                 e.setCancelled(true);
             }
         }
@@ -125,7 +125,7 @@ public class CreativeMiscListener implements Listener {
         
         if (config.misc_fire) {
             CreativeBlockManager manager  = CreativeControl.getManager();
-            if (manager.isProtected(b, config.block_nodrop)) {
+            if (manager.isProtected(b)) {
                 removeFire(b);
                 e.setCancelled(true);
             }
@@ -166,7 +166,7 @@ public class CreativeMiscListener implements Listener {
         if (type == Material.ICE) {
             if (config.misc_ice) {
                 CreativeBlockManager manager  = CreativeControl.getManager();
-                if (manager.isProtected(b, config.block_nodrop)) {
+                if (manager.isProtected(b)) {
                     e.setCancelled(true);
                 }
             }
@@ -188,14 +188,14 @@ public class CreativeMiscListener implements Listener {
         if (config.misc_liquid) {
             CreativeBlockManager manager  = CreativeControl.getManager();
             if ((b.getType() == Material.WATER) || (b.getType() == Material.STATIONARY_WATER)) {
-                if (manager.isProtected(b, config.block_nodrop)) {
+                if (manager.isProtected(b)) {
                     b.setType(Material.STATIONARY_WATER);
                     e.setCancelled(true);
                 }
             }
             
             if ((b.getType() == Material.LAVA) || (b.getType() == Material.STATIONARY_LAVA)) {
-                if (manager.isProtected(b, config.block_nodrop)) {
+                if (manager.isProtected(b)) {
                     b.setType(Material.STATIONARY_LAVA);
                     e.setCancelled(true);
                 }
@@ -223,7 +223,7 @@ public class CreativeMiscListener implements Listener {
                 String[] data = manager.getBlock(b);
                 if (data != null) {
                     if (manager.isAllowed(p, data)) {
-                        manager.delBlock(b, false);
+                        manager.delBlock(b);
                     } else {
                         CreativeCommunicator com      = CreativeControl.getCommunicator();
                         CreativeMessages     messages = CreativeControl.getMessages();
@@ -233,7 +233,7 @@ public class CreativeMiscListener implements Listener {
                 }  
             } else
             if (config.block_nodrop) {
-                manager.delBlock(b, true);
+                manager.delBlock(b);
             }
         }
     }

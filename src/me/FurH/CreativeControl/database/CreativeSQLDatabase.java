@@ -27,7 +27,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.configuration.CreativeMainConfig;
 import me.FurH.CreativeControl.monitor.CreativePerformance;
-import me.FurH.CreativeControl.monitor.CreativePerformance;
 import me.FurH.CreativeControl.monitor.CreativePerformance.Event;
 import me.FurH.CreativeControl.util.CreativeCommunicator;
 
@@ -54,6 +53,18 @@ public final class CreativeSQLDatabase {
         return queue.size();
     }
     
+    public int getReads() {
+        return reads;
+    }
+    
+    public int getWrites() {
+        return writes;
+    }
+
+    public int getSize() {
+        return cache.size();
+    }
+
     public void clear() {
         cache.clear();
     }

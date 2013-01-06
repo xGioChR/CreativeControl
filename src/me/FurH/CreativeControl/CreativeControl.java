@@ -29,7 +29,6 @@ import java.util.WeakHashMap;
 import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilderFactory;
 import me.FurH.CreativeControl.cache.CreativeBlockCache;
-import me.FurH.CreativeControl.cache.CreativeFastCache;
 import me.FurH.CreativeControl.commands.CreativeCommands;
 import me.FurH.CreativeControl.configuration.CreativeMainConfig;
 import me.FurH.CreativeControl.configuration.CreativeMessages;
@@ -83,8 +82,7 @@ public class CreativeControl extends JavaPlugin {
 
     /* classes */
     private static CreativeControl plugin;
-    private static CreativeBlockCache slowcache;
-    private static CreativeFastCache fastcache;
+    private static CreativeBlockCache cache;
     private static CreativeCommunicator communicator;
     private static CreativeSQLDatabase database;
     private static CreativeBlocksSelection selector;
@@ -133,13 +131,12 @@ public class CreativeControl extends JavaPlugin {
         }
 
         communicator.log("[TAG] Loading Modules...");
-        slowcache = new CreativeBlockCache();
+        cache = new CreativeBlockCache();
         selector = new CreativeBlocksSelection();
         regioner = new CreativeRegionManager();
         manager = new CreativeBlockManager();
         friends = new CreativePlayerFriends();
         matcher = new CreativeBlockMatcher();
-        fastcache = new CreativeFastCache();
         data = new CreativePlayerData();
         worldedit = new CreativeWorldEditHook();
         database = new CreativeSQLDatabase(this, true);
@@ -168,7 +165,9 @@ public class CreativeControl extends JavaPlugin {
 
         communicator.log("[TAG] Cached {0} protections", manager.preCache());
         communicator.log("[TAG] Loaded {0} regions", regioner.loadRegions());
-        
+        communicator.log("[TAG] Loaded {0} dynamic block types", manager.loadIds());
+        communicator.log("[TAG] {0} blocks protected", manager.getTotal());
+
         PluginDescriptionFile version = getDescription();
         currentversion = "v"+version.getVersion();
         logger.info("[CreativeControl] CreativeControl " + currentversion + " Enabled");
@@ -195,9 +194,8 @@ public class CreativeControl extends JavaPlugin {
         left.clear();
         mods.clear();
         modsfastup.clear();
-        slowcache.clear();
+        cache.clear();
         data.clear();
-        fastcache.clear();
         friends.clear();
         database.clear();
         entity.clear();
@@ -218,8 +216,7 @@ public class CreativeControl extends JavaPlugin {
         left.clear();
         mods.clear();
         modsfastup.clear();
-        slowcache.clear();
-        fastcache.clear();
+        cache.clear();
         data.clear();
         friends.clear();
         database.clear();
@@ -279,18 +276,14 @@ public class CreativeControl extends JavaPlugin {
         }
     }
 
-    public static CreativeFastCache getFastCache() {
-        return fastcache;
-    }
-    
     public static CreativeControl getPlugin() { 
         return plugin; 
     }
-    
-    public static CreativeBlockCache getSlowCache() { 
-        return slowcache; 
+
+    public static CreativeBlockCache getCache() { 
+        return cache; 
     }
-    
+
     public static CreativeCommunicator getCommunicator() { 
         return communicator; 
     }

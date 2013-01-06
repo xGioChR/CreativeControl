@@ -19,7 +19,6 @@ package me.FurH.CreativeControl.listener;
 import com.sk89q.worldedit.bukkit.selections.Selection;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.cache.CreativeBlockCache;
-import me.FurH.CreativeControl.cache.CreativeFastCache;
 import me.FurH.CreativeControl.configuration.CreativeMainConfig;
 import me.FurH.CreativeControl.configuration.CreativeMessages;
 import me.FurH.CreativeControl.configuration.CreativeWorldConfig;
@@ -677,22 +676,21 @@ public class CreativePlayerListener implements Listener {
         
         CreativeBlockManager manager = CreativeControl.getManager();
         
-        CreativeBlockCache slowcache = CreativeControl.getSlowCache();
-        CreativeFastCache fastcache = CreativeControl.getFastCache();
+        CreativeBlockCache cache = CreativeControl.getCache();
 
         String[] data1 = manager.getFullData(CreativeUtil.getLocation(b.getLocation()));        
         String[] data2 = null;
         if (nodes.block_ownblock) {
-            data2 = slowcache.get(CreativeUtil.getLocation(b.getLocation()));
+            data2 = cache.get(CreativeUtil.getLocation(b.getLocation()));
         }
 
         boolean insql = data1 != null;
         boolean incache = data2 != null;
-        
+
         if (nodes.block_nodrop) {
-            incache = fastcache.contains(CreativeUtil.getLocation(b.getLocation()));
+            incache = cache.contains(CreativeUtil.getLocation(b.getLocation()));
         }
-        
+
         CreativeCommunicator com = CreativeControl.getCommunicator();
         CreativeMessages messages = CreativeControl.getMessages();
         CreativeControl plugin = CreativeControl.getPlugin();
@@ -748,30 +746,20 @@ public class CreativePlayerListener implements Listener {
         
 
         if (config.block_ownblock) {
-            if (b.getTypeId() == 64 || b.getTypeId() == 71) {
-                String[] data = manager.getDoor2(b);
-                if (data != null) {
-                    com.msg(p, messages.blockadd_already);
-                } else {
-                    com.msg(p, messages.blockadd_protected);
-                    manager.addBlock(p, b, config.block_nodrop);
-                }
-            } else {
-                String[] data = manager.getBlock(b);
-                if (data != null) {
-                    com.msg(p, messages.blockadd_already);
-                } else {
-                    com.msg(p, messages.blockadd_protected);
-                    manager.addBlock(p, b, config.block_nodrop);
-                }
-            }
-        } else
-        if (config.block_nodrop) {
-            if (manager.isProtected(b, true)) {
+            String[] data = manager.getBlock(b);
+            if (data != null) {
                 com.msg(p, messages.blockadd_already);
             } else {
                 com.msg(p, messages.blockadd_protected);
-                manager.addBlock(p, b, config.block_nodrop);
+                manager.addBlock(p, b, false);
+            }
+        } else
+        if (config.block_nodrop) {
+            if (manager.isProtected(b)) {
+                com.msg(p, messages.blockadd_already);
+            } else {
+                com.msg(p, messages.blockadd_protected);
+                manager.addBlock(p, b, true);
             }
         }
 
@@ -792,38 +780,24 @@ public class CreativePlayerListener implements Listener {
         CreativeWorldNodes config = CreativeWorldConfig.get(b.getWorld());
 
         if (config.block_ownblock) {
-            if (b.getTypeId() == 64 || b.getTypeId() == 71) {
-                String[] data = manager.getDoor2(b);
-                if (data != null) {
-                    if (!manager.isOwner(p, data[0])) {
-                        com.msg(p, messages.blocks_pertence, data[0]);
-                    } else {
-                        com.msg(p, messages.blockdel_disprotected);
-                        manager.delBlock(b, false);
-                    }
+            String[] data = manager.getBlock(b);
+            if (data != null) {
+                if (!manager.isOwner(p, data[0])) {
+                    com.msg(p, messages.blocks_pertence, data[0]);
                 } else {
-                    com.msg(p, messages.blockinfo_notprotected);
+                    com.msg(p, messages.blockdel_disprotected);
+                    manager.delBlock(b);
                 }
             } else {
-                String[] data = manager.getBlock(b);
-                if (data != null) {
-                    if (!manager.isOwner(p, data[0])) {
-                        com.msg(p, messages.blocks_pertence, data[0]);
-                    } else {
-                        com.msg(p, messages.blockdel_disprotected);
-                        manager.delBlock(b, false);
-                    }
-                } else {
-                    com.msg(p, messages.blockinfo_notprotected);
-                }
+                com.msg(p, messages.blockinfo_notprotected);
             }
         } else
         if (config.block_nodrop) {
-            if (!manager.isProtected(b, true)) {
+            if (!manager.isProtected(b)) {
                 com.msg(p, messages.blockinfo_notprotected);
             } else {
                 com.msg(p, messages.blockdel_disprotected);
-                manager.delBlock(b, true);
+                manager.delBlock(b);
             }
         }
 

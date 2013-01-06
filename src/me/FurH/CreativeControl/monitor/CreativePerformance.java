@@ -11,9 +11,10 @@ import java.util.EnumMap;
 import java.util.List;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.cache.CreativeBlockCache;
-import me.FurH.CreativeControl.cache.CreativeFastCache;
 import me.FurH.CreativeControl.configuration.CreativeMainConfig;
+import me.FurH.CreativeControl.database.CreativeSQLDatabase;
 import me.FurH.CreativeControl.util.CreativeCommunicator;
+import me.FurH.CreativeControl.util.CreativeCommunicator.Type;
 import me.FurH.CreativeControl.util.CreativeUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -43,6 +44,8 @@ public class CreativePerformance {
             if (time > 0) {
                 dt.add(time);
             }
+            
+            CreativeControl.getCommunicator().log("{0}, took {1} ms", Type.DEBUG, event.toString(), time);
 
             times.put(event, data);
         }
@@ -84,9 +87,9 @@ public class CreativePerformance {
                     survival++;
                 }
             }
-            
-            CreativeBlockCache slow = CreativeControl.getSlowCache();
-            CreativeFastCache fast = CreativeControl.getFastCache();
+
+            CreativeBlockCache cache = CreativeControl.getCache();
+            CreativeSQLDatabase db = CreativeControl.getDb();
 
             bw.write(format2 +l);
             bw.write("	=============================[ TEST INFORMATION ]============================="+l);
@@ -118,15 +121,16 @@ public class CreativePerformance {
                 bw.write("			Entity Count: " + w.getEntities().size() +l);
                 bw.write("			Loaded Chunks: " + w.getLoadedChunks().length +l);
             }
-            bw.write("	=============================[ CACHE INFORMATION ]============================="+l);
-            bw.write("	- Fast Cache:"+l);
-            bw.write("		Read: " + slow.getReads() +l);
-            bw.write("		Writes: " + slow.getWrites() +l);
-            bw.write("		Capacity: " + slow.getSize() + "/" + slow.getMax() +l);
-            bw.write("	- Slow Cache:"+l);
-            bw.write("		Read: " + fast.getReads() +l);
-            bw.write("		Writes: " + fast.getWrites() +l);
-            bw.write("		Capacity: " + fast.getSize() + "/" + fast.getMax() +l);
+            bw.write("	=============================[  SQL INFORMATION  ]============================="+l);
+            bw.write("	- Cache Status:"+l);
+            bw.write("		Read: " + cache.getReads() +l);
+            bw.write("		Writes: " + cache.getWrites() +l);
+            bw.write("		Capacity: " + cache.getSize() + "/" + cache.getMaxSize() +l);
+            bw.write("	- SQL Status:"+l);
+            bw.write("		Queue Size: " + db.getQueue() +l);
+            bw.write("		Reads: " + db.getReads() +l);
+            bw.write("		Writes: " + db.getWrites() +l);
+            bw.write("		SQL Cache: " + db.getSize() +l);
             bw.write("	=============================[ TIMMINGS   REPORT ]============================="+l);
             for (Event event : times.keySet()) {
                 EventData x = times.get(event);

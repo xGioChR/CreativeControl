@@ -17,14 +17,13 @@
 package me.FurH.CreativeControl.listener;
 
 import de.diddiz.LogBlock.Consumer;
-import java.util.HashSet;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.configuration.CreativeMainConfig;
 import me.FurH.CreativeControl.configuration.CreativeMessages;
 import me.FurH.CreativeControl.configuration.CreativeWorldConfig;
 import me.FurH.CreativeControl.configuration.CreativeWorldNodes;
+import me.FurH.CreativeControl.manager.CreativeBlockData;
 import me.FurH.CreativeControl.manager.CreativeBlockManager;
-import me.FurH.CreativeControl.manager.CreativeBlockMatcher;
 import me.FurH.CreativeControl.monitor.CreativePerformance;
 import me.FurH.CreativeControl.monitor.CreativePerformance.Event;
 import me.FurH.CreativeControl.util.CreativeCommunicator;
@@ -183,7 +182,7 @@ public class CreativeBlockListener implements Listener {
         if (config.block_nodrop) {
             if (config.misc_liquid) {
                 if (r.getType() != Material.AIR) {
-                    manager.delBlock(r, true);
+                    manager.delBlock(r);
                 }
             } 
             if (p.getGameMode().equals(GameMode.CREATIVE)) {
@@ -201,7 +200,7 @@ public class CreativeBlockListener implements Listener {
                     String[] data = manager.getBlock(b);
                     if (data != null) {
                         if (manager.isAllowed(p, data)) {
-                            manager.delBlock(b, false);
+                            manager.delBlock(b);
                         } else {
                             com.msg(p, messages.blocks_pertence, data[0]);
                             e.setCancelled(true);
@@ -322,57 +321,19 @@ public class CreativeBlockListener implements Listener {
         }
                 
         if (config.block_ownblock) {
-            if (config.block_attach) {
-                HashSet<Block> attach = CreativeBlockMatcher.getAttached(b);
-                if (attach != null && attach.size() > 0) {
-                    for (Block ba1 : attach) {
-                        String[] data = manager.getBlock(ba1);
-                        if (data != null) {
-                            if (!manager.isAllowed(p, data)) {
-                                com.msg(p, messages.blocks_pertence, data[0]);
-                                e.setCancelled(true);
-                            } else {
-                                process(config, e, ba1, p);
-                            }
-                        }
-                    }
-                }
-            }
-            if (b.getTypeId() == 64 || b.getTypeId() == 71) {
-                String[] data = manager.getDoor2(b);
-                if (data != null) {
-                    if (!manager.isAllowed(p, data)) {
-                        com.msg(p, messages.blocks_pertence, data[0]);
-                        e.setCancelled(true);
-                    } else {
-                        process(config, e, b, p);
-                    }
-                }
-            } else {
-                String[] data = manager.getBlock(b);
-                if (data != null) {
-                    if (!manager.isAllowed(p, data)) {
-                        com.msg(p, messages.blocks_pertence, data[0]);
-                        e.setCancelled(true);
-                    } else {
-                        process(config, e, b, p);
-                    }
+            for (CreativeBlockData bls : manager.getBlocks(b, config.block_attach)) {
+                if (!manager.isAllowed(p, bls.getData())) {
+                    com.msg(p, messages.blocks_pertence, bls.getData()[0]);
+                    e.setCancelled(true);
+                    break;
                 } else {
-                    data = manager.getDoor3(b);
-                    if (data != null) {
-                        if (!manager.isAllowed(p, data)) {
-                            com.msg(p, messages.blocks_pertence, data[0]);
-                            e.setCancelled(true);
-                        } else {
-                            process(config, e, b, p);
-                        }
-                    }
+                    process(config, e, bls.getBlock(), p);
                 }
             }
         } else
         if (config.block_nodrop) {
-            for (Block bls : manager.getBlocks(b, config.block_attach)) {
-                process(config, e, bls, p);
+            for (CreativeBlockData bls : manager.getBlocks(b, config.block_attach)) {
+                process(config, e, bls.getBlock(), p);
             }
         }
         CreativePerformance.update(Event.BlockBreakEvent, (System.currentTimeMillis() - start));
@@ -391,7 +352,7 @@ public class CreativeBlockListener implements Listener {
         if (config.block_pistons) {
             for (Block b : e.getBlocks()) {
                 if (b.getType() == Material.AIR) { return; }
-                if (manager.isProtected(b, config.block_nodrop)) {
+                if (manager.isProtected(b)) {
                     e.setCancelled(true);
                     break;
                 }
@@ -425,7 +386,7 @@ public class CreativeBlockListener implements Listener {
             if (direction == null) { return; }
             Block moved = b.getRelative(direction, 2);
             CreativeBlockManager    manager    = CreativeControl.getManager();
-            if (manager.isProtected(moved, config.block_nodrop)) {
+            if (manager.isProtected(moved)) {
                 e.setCancelled(true);
             }
         }
@@ -447,7 +408,7 @@ public class CreativeBlockListener implements Listener {
             CreativeBlockManager    manager    = CreativeControl.getManager();
             if (config.block_creative) {
                 if (p.getGameMode().equals(GameMode.CREATIVE)) {
-                    manager.delBlock(b, config.block_nodrop);
+                    manager.delBlock(b);
                     logBlock(p, b);
                     e.setExpToDrop(0);
                     b.setType(Material.AIR);
@@ -456,7 +417,7 @@ public class CreativeBlockListener implements Listener {
                     e.setCancelled(true);
                 }
             } else {
-                manager.delBlock(b, config.block_nodrop);
+                manager.delBlock(b);
                 logBlock(p, b);
                 e.setExpToDrop(0);
                 b.setType(Material.AIR);
