@@ -80,8 +80,9 @@ public class CreativeRegionManager {
         CreativeSQLDatabase db = CreativeControl.getDb();
 
         int total = 0;
+        ResultSet rs = null;
         try {
-            ResultSet rs = db.getQuery("SELECT * FROM `"+db.prefix+"regions`");
+            rs = db.getQuery("SELECT * FROM `"+db.prefix+"regions`");
             while (rs.next()) {
                 String name = rs.getString("name");
                 Location start = CreativeUtil.getLocation(rs.getString("start"));
@@ -94,6 +95,12 @@ public class CreativeRegionManager {
             com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
                     "[TAG] Failed to get regions from the database, {0}", ex, ex.getMessage());
             if (!db.isOk()) { db.fix(); }
+        } finally {
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException ex) { }
+            }
         }
         return total;
     }
@@ -102,8 +109,9 @@ public class CreativeRegionManager {
         CreativeCommunicator com    = CreativeControl.getCommunicator();
         CreativeSQLDatabase db = CreativeControl.getDb();
 
+        ResultSet rs = null;
         try {
-            ResultSet rs = db.getQuery("SELECT * FROM `"+db.prefix+"regions` WHERE name = '"+name+"'");
+            rs = db.getQuery("SELECT * FROM `"+db.prefix+"regions` WHERE name = '"+name+"'");
             if (rs.next()) {
                 return true;
             }
@@ -111,6 +119,12 @@ public class CreativeRegionManager {
             com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
                     "[TAG] Failed to get region from the database, {0}", ex, ex.getMessage());
             if (!db.isOk()) { db.fix(); }
+        } finally {
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException ex) { }
+            }
         }
         
         return false;

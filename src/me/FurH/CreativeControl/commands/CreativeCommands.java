@@ -382,8 +382,9 @@ public class CreativeCommands implements CommandExecutor {
                                                 long elapsedTime = 0;
                                                 
                                                 msg(sender, messages.updater_loading);
+                                                ResultSet rs = null;
                                                 try {
-                                                    ResultSet rs = db.getQuery("SELECT * FROM `"+db.prefix+"blocks` WHERE owner = '"+sender.getName().toLowerCase()+"'");
+                                                    rs = db.getQuery("SELECT * FROM `"+db.prefix+"blocks` WHERE owner = '"+sender.getName().toLowerCase()+"'");
                                                     while (rs.next()) {
                                                         locations.add(rs.getString("location"));
                                                         backup.add("INSERT INTO `"+db.prefix+"blocks` (id, owner, location, type, allowed, time) VALUES ('"+rs.getInt("id")+"',"
@@ -393,6 +394,12 @@ public class CreativeCommands implements CommandExecutor {
                                                     com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
                                                             "[TAG] Failed to get the block from the database, {0}", ex, ex.getMessage());
                                                     if (!db.isOk()) { db.fix(); }
+                                                } finally {
+                                                    if (rs != null) {
+                                                        try {
+                                                            rs.close();
+                                                        } catch (SQLException ex) { }
+                                                    }
                                                 }
                                                 
                                                 elapsedTime = (System.currentTimeMillis() - startTimer);
@@ -658,8 +665,9 @@ public class CreativeCommands implements CommandExecutor {
                                     long elapsedTime = 0;
 
                                     msg(sender, messages.updater_loading);
+                                    ResultSet rs = null;
                                     try {
-                                        ResultSet rs = db.getQuery("SELECT * FROM `"+db.prefix+"blocks` WHERE type = '"+args[2].toLowerCase()+"'");
+                                        rs = db.getQuery("SELECT * FROM `"+db.prefix+"blocks` WHERE type = '"+args[2].toLowerCase()+"'");
                                         while (rs.next()) {
                                             locations.add(rs.getString("location"));
                                             backup.add("INSERT INTO `"+db.prefix+"blocks` (id, owner, location, type, allowed, time) VALUES ('"+rs.getInt("id")+"',"
@@ -669,6 +677,12 @@ public class CreativeCommands implements CommandExecutor {
                                         com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
                                                 "[TAG] Failed to get the block from the database, {0}", ex, ex.getMessage());
                                         if (!db.isOk()) { db.fix(); }
+                                    } finally {
+                                        if (rs != null) {
+                                            try {
+                                                rs.close();
+                                            } catch (SQLException ex) { }
+                                        }
                                     }
                                     
                                     elapsedTime = (System.currentTimeMillis() - startTimer);
@@ -721,8 +735,9 @@ public class CreativeCommands implements CommandExecutor {
                                     long elapsedTime = 0;
 
                                     msg(sender, messages.updater_loading);
+                                    ResultSet rs = null;
                                     try {
-                                        ResultSet rs = db.getQuery("SELECT * FROM `"+db.prefix+"blocks` WHERE owner = '"+args[2].toLowerCase()+"'");
+                                        rs = db.getQuery("SELECT * FROM `"+db.prefix+"blocks` WHERE owner = '"+args[2].toLowerCase()+"'");
                                         while (rs.next()) {
                                             locations.add(rs.getString("location"));
                                             backup.add("INSERT INTO `"+db.prefix+"blocks` (id, owner, location, type, allowed, time) VALUES ('"+rs.getInt("id")+"',"
@@ -732,6 +747,12 @@ public class CreativeCommands implements CommandExecutor {
                                         com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
                                                 "[TAG] Failed to get the block from the database, {0}", ex, ex.getMessage());
                                         if (!db.isOk()) { db.fix(); }
+                                    } finally {
+                                        if (rs != null) {
+                                            try {
+                                                rs.close();
+                                            } catch (SQLException ex) { }
+                                        }
                                     }
                                     
                                     elapsedTime = (System.currentTimeMillis() - startTimer);
@@ -784,8 +805,9 @@ public class CreativeCommands implements CommandExecutor {
                                     long elapsedTime = 0;
 
                                     msg(sender, messages.updater_loading);
+                                    ResultSet rs = null;
                                     try {
-                                        ResultSet rs = db.getQuery("SELECT * FROM `"+db.prefix+"blocks`");
+                                        rs = db.getQuery("SELECT * FROM `"+db.prefix+"blocks`");
                                         while (rs.next()) {
                                             locations.add(rs.getString("location"));
                                             backup.add("INSERT INTO `"+db.prefix+"blocks` (id, owner, location, type, allowed, time) VALUES ('"+rs.getInt("id")+"',"
@@ -795,6 +817,12 @@ public class CreativeCommands implements CommandExecutor {
                                         com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
                                                 "[TAG] Failed to get the block from the database, {0}", ex, ex.getMessage());
                                         if (!db.isOk()) { db.fix(); }
+                                    } finally {
+                                        if (rs != null) {
+                                            try {
+                                                rs.close();
+                                            } catch (SQLException ex) { }
+                                        }
                                     }
                                     
                                     elapsedTime = (System.currentTimeMillis() - startTimer);

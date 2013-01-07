@@ -20,14 +20,12 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashSet;
+import java.sql.Statement;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.configuration.CreativeMessages;
 import me.FurH.CreativeControl.database.CreativeSQLDatabase;
 import me.FurH.CreativeControl.database.CreativeSQLDatabase.Type;
 import me.FurH.CreativeControl.util.CreativeCommunicator;
-import me.FurH.CreativeControl.util.CreativeUtil;
-import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 /**
@@ -67,8 +65,8 @@ public final class CreativeSQLMigrator implements Runnable {
             sqlite = db.getSQLiteConnection();
         }
 
-        db.loadDatabase("id INTEGER PRIMARY KEY AUTOINCREMENT", sqlite);
-        db.loadDatabase("id INT AUTO_INCREMENT, PRIMARY KEY (id)", mysql);
+        db.loadDatabase("id INTEGER PRIMARY KEY AUTOINCREMENT", sqlite, false);
+        db.loadDatabase("id INT AUTO_INCREMENT, PRIMARY KEY (id)", mysql, false);
     }
 
     @Override
@@ -93,87 +91,76 @@ public final class CreativeSQLMigrator implements Runnable {
         }
         
         CreativeSQLDatabase db = CreativeControl.getDb();
-        
-        HashSet<String[]> inserts = new HashSet<String[]>();
-        HashSet<String> tolocs = new HashSet<String>();
-        
+
         PreparedStatement ps;
-        try {
-            ps = to.prepareStatement("SELECT location FROM `"+db.prefix+"blocks`");
-            ps.execute();
-            
-            ResultSet rs = ps.getResultSet();
-            while (rs.next()) {
-                db.reads++;
-                tolocs.add(rs.getString("location"));
-            }
-            
-            rs.close();
-        } catch (SQLException ex) {
-            com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
-                    "[TAG] Can't read the MySQL database, {0}", ex, ex.getMessage());
-        }
-        
-        try {
-            ps = from.prepareStatement("SELECT * FROM `"+db.prefix+"blocks`");
-            ps.execute();
-
-            ResultSet rs = ps.getResultSet();
-            while (rs.next()) {
-                db.reads++;
-                inserts.add(new String[] { rs.getString("location"), "INSERT INTO `"+db.prefix+"blocks` (owner, location, type, allowed, time) VALUES "
-                        + "('"+rs.getString("owner")+"', '"+rs.getString("location")+"', '"+rs.getInt("type")+"', '"+rs.getString("allowed")+"', '"+rs.getLong("time")+"')" });
-            }
-
-            rs.close();
-        } catch (SQLException ex) {
-            com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
-                    "[TAG] Can't read the MySQL database, {0}", ex, ex.getMessage());
-        }
-
-        elapsedTime = (System.currentTimeMillis() - startTimer);
-        com.msg(p, messages.migrator_loaded, inserts.size(), elapsedTime);
-
-        double done = 0;
-        double process = 0;
         double skip = 0;
         double sucess = 0;
-        
-        double last = 0;
 
         try {
-            to.setAutoCommit(false);
-            to.commit();
-        } catch (SQLException ex) {
-            com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
-                    "[TAG] Failed to set AutoCommit and commit the database, {0}.", ex, ex.getMessage());
-        }
-        
-        for (String[] string : inserts) {
-            done++;
-            db.writes++;
+            System.gc();
+            ps = from.prepareStatement("SELECT * FROM `"+db.prefix+"blocks`");
+            ps.execute();
             
-            process = ((done / inserts.size()) * 100.0D);
-
-            if (process - last > 5) {
-                com.msg(p, messages.migrator_converted, done, inserts.size(), String.format("%d", (int) process));
-                last = process;
+            double total = 0;
+            
+            ResultSet counter = ps.getResultSet();
+            while (counter.next()) {
+                total++;
             }
+            counter.close();
+
+            ps.execute();
+            ResultSet rs = ps.getResultSet();
+
+            elapsedTime = (System.currentTimeMillis() - startTimer);
+            com.msg(p, messages.migrator_loaded, total, elapsedTime);
+
+            double done = 0;
+            double process = 0;
+
+            double last = 0;
 
             try {
-                if (!tolocs.contains(string[0])) {
-                    ps = to.prepareStatement(string[1]);
-                    ps.execute();
-                    sucess++;
-                } else {
-                    skip++;
-                    //Location loc = CreativeUtil.getLocation(string[0]);
-                    //com.msg(p, messages.migrator_duplicated, loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
-                }
+                to.setAutoCommit(false);
+                to.commit();
             } catch (SQLException ex) {
                 com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
-                        "[TAG] Can't write in the database, {0}", ex, ex.getMessage());
+                        "[TAG] Failed to set AutoCommit and commit the database, {0}.", ex, ex.getMessage());
             }
+            
+            while (rs.next()) {
+                done++; db.writes++;
+
+                process = ((done / total) * 100.0D);
+
+                if (process - last > 5) {
+                    System.gc();
+                    com.msg(p, messages.migrator_converted, done, total, String.format("%d", (int) process));
+                    last = process;
+                }
+
+                Statement st = null;
+                try {
+                    st = to.createStatement();
+                    st.execute("INSERT INTO `"+db.prefix+"blocks` (owner, location, type, allowed, time) VALUES "
+                        + "('"+rs.getString("owner")+"', '"+rs.getString("location")+"', '"+rs.getInt("type")+"', '"+rs.getString("allowed")+"', '"+rs.getLong("time")+"')");
+                    sucess++;
+                } catch (SQLException ex) {
+                    com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
+                            "[TAG] Can't write in the database, {0}", ex, ex.getMessage());
+                } finally {
+                    if (st != null) {
+                        try {
+                            st.close();
+                        } catch (Exception ex) { }
+                    }
+                }
+
+            }
+            rs.close();
+        } catch (SQLException ex) {
+            com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
+                    "[TAG] Can't read the MySQL database, {0}", ex, ex.getMessage());
         }
 
         try {
@@ -182,6 +169,8 @@ public final class CreativeSQLMigrator implements Runnable {
             com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
                     "[TAG] Failed to set AutoCommit, {0}.", ex, ex.getMessage());
         }
+        
+        System.gc();
 
         elapsedTime = (System.currentTimeMillis() - startTimer);
         com.msg(p, messages.migrator_done, sucess, skip, elapsedTime);

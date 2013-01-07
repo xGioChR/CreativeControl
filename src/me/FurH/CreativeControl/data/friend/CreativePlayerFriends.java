@@ -57,8 +57,9 @@ public class CreativePlayerFriends {
         CreativeSQLDatabase db = CreativeControl.getDb();
 
         if (friends == null) {
+            ResultSet rs = null;
             try {
-                ResultSet rs = db.getQuery("SELECT * FROM `"+db.prefix+"friends` WHERE player = '" + player.toLowerCase() + "'");
+                rs = db.getQuery("SELECT * FROM `"+db.prefix+"friends` WHERE player = '" + player.toLowerCase() + "'");
                 
                 if (rs.next()) {
                     friends = CreativeUtil.toStringHashSet(rs.getString("friends"), ", ");
@@ -72,6 +73,12 @@ public class CreativePlayerFriends {
                 com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
                         "[TAG] Failed to get the data from the database, {0}", ex, ex.getMessage());
                 if (!db.isOk()) { db.fix(); }
+            } finally {
+                if (rs != null) {
+                    try {
+                        rs.close();
+                    } catch (SQLException ex) { }
+                }
             }
         }
         

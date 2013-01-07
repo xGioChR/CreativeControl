@@ -52,12 +52,14 @@ public class CreativeSQLCleanup implements Runnable {
         CreativeCommunicator com = CreativeControl.getCommunicator();
         CreativeMessages messages = CreativeControl.getMessages();
         
+        System.gc();
         com.msg(p, messages.updater_loading);
         HashSet<String[]> blocks = new HashSet<String[]>();
         
         /* Backup */ HashSet<String> backup = new HashSet<String>();
 
         CreativeSQLDatabase db = CreativeControl.getDb();
+        CreativeBlockManager manager = CreativeControl.getManager();
         try {
             PreparedStatement ps = db.prepare("SELECT * FROM `"+db.prefix+"blocks` ORDER BY `id` DESC");
             ps.execute();
@@ -65,7 +67,8 @@ public class CreativeSQLCleanup implements Runnable {
             ResultSet rs = ps.getResultSet();
             while (rs.next()) {
                 db.reads++;
-                blocks.add(new String[] { rs.getString("location"), Integer.toString(rs.getInt("type")) });
+                manager.delBlock(rs.getString("location"));
+                //blocks.add(new String[] { rs.getString("location"), Integer.toString(rs.getInt("type")) });
                 backup.add("INSERT INTO `"+db.prefix+"blocks` (id, owner, location, type, allowed, time) VALUES ('"+rs.getInt("id")+"',"
                         + " '"+rs.getString("owner")+"', '"+rs.getString("location")+"', '"+rs.getInt("type")+"', '"+rs.getString("allowed")+"', '"+rs.getString("time")+"')");
             }
@@ -78,8 +81,11 @@ public class CreativeSQLCleanup implements Runnable {
             lock = false;
             return;
         }
+        if (true) {
+            return;
+        }
 
-        CreativeBlockManager manager = CreativeControl.getManager();
+        //CreativeBlockManager manager = CreativeControl.getManager();
         elapsedTime = (System.currentTimeMillis() - startTimer);
         com.msg(p, messages.updater_loaded, blocks.size(), elapsedTime);
         
@@ -87,6 +93,7 @@ public class CreativeSQLCleanup implements Runnable {
         com.msg(p, messages.backup_generating);
         
         CreativeSQLBackup.backup(backup);
+        System.gc();
 
         elapsedTime = (System.currentTimeMillis() - startTimer);
         com.msg(p, messages.backup_done, elapsedTime);
@@ -113,24 +120,32 @@ public class CreativeSQLCleanup implements Runnable {
             process = ((done / blocks.size()) * 100.0D);
             
             if (process - last > 5) {
+                System.gc();
                 com.msg(p, messages.cleanup_process, done, blocks.size(), corrupt, String.format("%d", (int) process));
                 last = process;
             }
 
             try {
                 Location loc = CreativeUtil.getLocation(string[0]);
+
+                if (loc == null) {
+                    corrupt++;
+                    manager.delBlock(string[0]);
+                    continue;
+                }
+
                 Block b = loc.getBlock();
                 
                 int type = b.getTypeId();
                 int dbtype = Integer.parseInt(string[1]);
 
                 if (type != dbtype) {
-                    com.msg(p, messages.cleanup_corrupted, loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), type, dbtype);
+                    //com.msg(p, messages.cleanup_corrupted, loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), type, dbtype);
                     corrupt++;
                     manager.delBlock(b);
                 } else
                 if (!manager.isProtectable(b.getWorld(), type)) {
-                    com.msg(p, messages.cleanup_corrupted, loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), type, dbtype);
+                    //com.msg(p, messages.cleanup_corrupted, loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), type, dbtype);
                     corrupt++;
                     manager.delBlock(b);
                 } else

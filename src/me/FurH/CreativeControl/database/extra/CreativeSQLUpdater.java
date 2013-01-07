@@ -18,15 +18,10 @@ package me.FurH.CreativeControl.database.extra;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashSet;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.configuration.CreativeMessages;
 import me.FurH.CreativeControl.database.CreativeSQLDatabase;
 import me.FurH.CreativeControl.util.CreativeCommunicator;
-import me.FurH.CreativeControl.util.CreativeUtil;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 /**
@@ -58,97 +53,78 @@ public class CreativeSQLUpdater {
         CreativeMessages messages = CreativeControl.getMessages();
         
         com.msg(p, messages.updater_loading);
-
-        HashSet<String> locations = new HashSet<String>();
-        HashSet<String[]> blocks = new HashSet<String[]>();
-
-        CreativeSQLDatabase db = CreativeControl.getDb();
-        try {
-            ResultSet rs = db.getQuery("SELECT * FROM `CreativeControl` ORDER BY `id` DESC");
-
-            while (rs.next()) {
-                db.reads++;
-                blocks.add(new String[] { rs.getInt("id")+"" , rs.getString("owner"), rs.getString("world"), rs.getInt("x")+"", rs.getInt("y")+"", rs.getInt("z")+"", rs.getInt("type")+"", rs.getString("allowed"), rs.getString("time")+""});
-            }
-
-            rs.close();
-        } catch (SQLException ex) {
-            com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
-                    "[TAG] Failed to load protections, {0}", ex, ex.getMessage());
-            com.msg(p, messages.updater_loadfailed);
-            lock = false;
-        }
-
-        try {
-            ResultSet rs = db.getQuery("SELECT location, type FROM `"+db.prefix+"blocks` ORDER BY `id` DESC");
-
-            while (rs.next()) {
-                db.reads++;
-                locations.add(rs.getString("location"));
-            }
-            rs.close();
-        } catch (SQLException ex) {
-            com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
-                    "[TAG] Failed to load protections, {0}", ex, ex.getMessage());
-            com.msg(p, messages.updater_loadfailed);
-            lock = false;
-        }
-
-        elapsedTime = (System.currentTimeMillis() - startTimer);
-        com.msg(p, messages.updater_loaded, blocks.size(), elapsedTime);
-
-        double done = 0;
-        double process = 0;
-        int skip = 0;
         int sucess = 0;
         
-        double last = 0;
+        CreativeSQLDatabase db = CreativeControl.getDb();
         
         try {
-            db.connection.setAutoCommit(false);
-            db.connection.commit();
-        } catch (SQLException ex) {
-            com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
-                    "[TAG] Failed to set AutoCommit and commit the database, {0}.", ex, ex.getMessage());
-        }
-
-        for (String[] string : blocks) {
-            done++;
-            process = ((done / blocks.size()) * 100.0D);
-
-            if (process - last >= 5) {
-                com.msg(p, messages.updater_process, done, blocks.size(), skip, String.format("%d", (int) process));
-                last = process;
+            System.gc();
+            double total = 0;
+            
+            ResultSet counter = db.getQuery("SELECT * FROM `CreativeControl` ORDER BY `id` DESC");
+            while (counter.next()) {
+                total++;
             }
+            counter.close();
+            
+            ResultSet rs = db.getQuery("SELECT * FROM `CreativeControl` ORDER BY `id` DESC");
+
+            elapsedTime = (System.currentTimeMillis() - startTimer);
+            com.msg(p, messages.updater_loaded, total, elapsedTime);
+            
+            double done = 0;
+            double process = 0;
+            int skip = 0;
+            double last = 0;
 
             try {
-                String owner = string[1];
-                String world = string[2];
-                int x = Integer.parseInt(string[3]);
-                int y = Integer.parseInt(string[4]);
-                int z = Integer.parseInt(string[5]);
-                int type = Integer.parseInt(string[6]);
-                String allowed = null;
-                if (string[7] != null) {
-                    allowed = string[7];
-                }
-                String time = string[8];
-
-                String StringLoc = world + ":" + x + ":" + y + ":" + z;
-                if (!locations.contains(StringLoc)) {
-                    locations.add(StringLoc);
-                    sucess++;
-                    db.executeQuery("INSERT INTO `"+db.prefix+"blocks` (owner, location, type, allowed, time) VALUES ('"+owner+"', '"+StringLoc+"', '"+type+"', '"+allowed+"', '"+time+"')", true);
-                } else {
-                    //com.msg(p, messages.updater_duplicated, loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
-                    skip++;
-                }
-            } catch (Exception ex) {
+                db.connection.setAutoCommit(false);
+                db.connection.commit();
+            } catch (SQLException ex) {
                 com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
-                        "[TAG] Failed on update the database, {0} .", ex, ex.getMessage());
-                com.msg(p, messages.updater_checkfailed);
-                lock = false;
+                        "[TAG] Failed to set AutoCommit and commit the database, {0}.", ex, ex.getMessage());
             }
+            
+            while (rs.next()) {
+                done++; db.reads++;
+                process = ((done / total) * 100.0D);
+
+                if (process - last >= 5) {
+                    System.gc();
+                    com.msg(p, messages.updater_process, done, total, skip, String.format("%d", (int) process));
+                    last = process;
+                }
+
+                try {
+                    String owner = rs.getString("owner");
+                    String world = rs.getString("world");
+                    int x = rs.getInt("x");
+                    int y = rs.getInt("y");
+                    int z = rs.getInt("z");
+                    int type = rs.getInt("type");
+                    String allowed = null;
+                    if (rs.getString("allowed") != null) {
+                        allowed = rs.getString("allowed");
+                    }
+                    String time = rs.getString("time");
+
+                    String StringLoc = world + ":" + x + ":" + y + ":" + z;
+                    sucess++;
+                    db.executeQuery("INSERT INTO `"+db.prefix+"blocks` (owner, location, type, allowed, time) VALUES ('"+owner+"', '"+StringLoc+"', '"+type+"', '"+allowed+"', '"+time+"')", true, true);
+                } catch (Exception ex) {
+                    com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
+                            "[TAG] Failed on update the database, {0} .", ex, ex.getMessage());
+                    com.msg(p, messages.updater_checkfailed);
+                    lock = false;
+                }
+            }
+
+            rs.close();
+        } catch (SQLException ex) {
+            com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
+                    "[TAG] Failed to load protections, {0}", ex, ex.getMessage());
+            com.msg(p, messages.updater_loadfailed);
+            lock = false;
         }
 
         db.executeQuery("UPDATE `"+db.prefix+"internal` SET version = '"+db.version+"'", true);
@@ -160,6 +136,8 @@ public class CreativeSQLUpdater {
             com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
                     "[TAG] Failed to set AutoCommit, {0}.", ex, ex.getMessage());
         }
+        
+        System.gc();
         
         elapsedTime = (System.currentTimeMillis() - startTimer);
         com.msg(p, messages.updater_done, sucess, elapsedTime);
