@@ -19,10 +19,8 @@ package me.FurH.CreativeControl.util;
 import java.io.*;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.configuration.CreativeWorldConfig;
 import me.FurH.CreativeControl.configuration.CreativeWorldNodes;
@@ -77,7 +75,8 @@ public class CreativeUtil {
             }
         } catch (Exception ex) {
             CreativeCommunicator com    = CreativeControl.getCommunicator();
-            com.error("[TAG] Failed to parse string to list: {0}, split: {1}, {2}", ex, string, split, ex.getMessage());
+            com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
+                    "[TAG] Failed to parse string to list: {0}, split: {1}, {2}", ex, string, split, ex.getMessage());
         }
         
         return set;
@@ -87,6 +86,7 @@ public class CreativeUtil {
      * return a HashSet of the List contends
      */
     public static HashSet<Integer> toIntegerHashSet(String string, String split) {
+        CreativeCommunicator com    = CreativeControl.getCommunicator();
         HashSet<Integer> set = new HashSet<Integer>();
 
         try {
@@ -99,8 +99,8 @@ public class CreativeUtil {
                         int i = Integer.parseInt(str);
                         set.add(i);
                     } catch (Exception ex) {
-                        CreativeCommunicator com    = CreativeControl.getCommunicator();
-                        com.error("[TAG] {0} is not a valid number!, {1}", ex, str, ex.getMessage());
+                        com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
+                                "[TAG] [TAG] {0} is not a valid number!, {1}", ex, str, ex.getMessage());
                     }
                 }
             } else {
@@ -109,8 +109,8 @@ public class CreativeUtil {
                 }
             }
         } catch (Exception ex) {
-            CreativeCommunicator com    = CreativeControl.getCommunicator();
-            com.error("[TAG] Failed to parse string to list: {0}, split: {1}, {2}", ex, string, split, ex.getMessage());
+            com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
+                    "[TAG] Failed to parse string to list: {0}, split: {1}, {2}", ex, string, split, ex.getMessage());
         }
         
         return set;
@@ -125,7 +125,8 @@ public class CreativeUtil {
             ret = Integer.parseInt(str.replaceAll("[^0-9]", ""));
         } catch (Exception ex) {
             CreativeCommunicator com    = CreativeControl.getCommunicator();
-            com.error("[TAG] {0} is not a valid number!, {1}", ex, str, ex.getMessage());
+            com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
+                    "[TAG] {0} is not a valid number!, {1}", ex, str, ex.getMessage());
         }
         return ret;
     }
@@ -156,47 +157,74 @@ public class CreativeUtil {
     /*
      * Dump the stack to a file
      */
-    public static String stack(Throwable ex) {
+    public static String stack(String className, int line, String method, Throwable ex, String message) {
         CreativeControl      plugin = CreativeControl.getPlugin();
         String format1 = new SimpleDateFormat("dd-MM-yyyy-HH-mm-ss").format(System.currentTimeMillis());
         File data = new File(plugin.getDataFolder() + File.separator + "error", "");
         if (!data.exists()) { data.mkdirs(); }
         
+        CreativeCommunicator com    = CreativeControl.getCommunicator();
         data = new File(data.getAbsolutePath(), "error-"+format1+".txt");
         if (!data.exists()) {
             try {
                 data.createNewFile();
             } catch (IOException e) {
-                CreativeCommunicator com    = CreativeControl.getCommunicator();
-                com.error("Failed to create new log file, {0} .", e, e.getMessage());
+                com.log("Failed to create new log file, {0} .", e.getMessage());
             }
         }
         
-        StackTraceElement[] st = ex.getStackTrace();
-        FileWriter Writer;
         try {
+            StackTraceElement[] st = ex.getStackTrace();
+            String l = System.getProperty("line.separator");
+
             String format2 = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(System.currentTimeMillis());
-            Writer = new FileWriter(data, true);
-            BufferedWriter Out = new BufferedWriter(Writer);
-            Out.write(format2 + " - " + "Error Message: " + ex.getMessage() + System.getProperty("line.separator"));
+            FileWriter fw = new FileWriter(data, true);
+            BufferedWriter bw = new BufferedWriter(fw);
+            Runtime runtime = Runtime.getRuntime();
             
-            List<String> pls = new ArrayList<String>();
-            Plugin[] plugins = Bukkit.getServer().getPluginManager().getPlugins();
-            for (Plugin pl1 : plugins) {
-                pls.add(pl1.getDescription().getFullName());
-            }
+            File root = new File("/");
 
-            Out.write(format2 + " - " + "Plugins ("+pls.size()+"): " + pls.toString() + System.getProperty("line.separator"));
-            Out.write(format2 + " - " + "=============================[ ERROR  STACKTRACE ]=============================" + System.getProperty("line.separator"));
-            for (int i = 0; i < st.length; i++) {
-                Out.write(format2 + " - " + st[i].toString() + System.getProperty("line.separator"));
+            bw.write(format2 +l);
+            bw.write("	=============================[ ERROR INFORMATION ]============================="+l);
+            bw.write("	- Plugin: " + plugin.getDescription().getFullName() + " (Latest: " + plugin.getVersion("1.0") + ")" +l);
+            bw.write("	- Error Message: " + ex.getMessage() +l);
+            bw.write("	- Location: " + className + ", Line: " + line + ", Method: " + method +l);
+            bw.write("	- Comment: " + message +l);
+            bw.write("	=============================[ HARDWARE SETTINGS ]============================="+l);
+            bw.write("		Java: " + System.getProperty("java.vendor") + " " + System.getProperty("java.version") + " " + System.getProperty("java.vendor.url") +l);
+            bw.write("		System: " + System.getProperty("os.name") + " " + System.getProperty("os.version") + " " + System.getProperty("os.arch") +l);
+            bw.write("		Processors: " + runtime.availableProcessors() +l);
+            bw.write("		Memory: "+l);
+            bw.write("			Free: " + format(runtime.freeMemory()) +l);
+            bw.write("			Total: " + format(runtime.totalMemory()) +l);
+            bw.write("			Max: " + format(runtime.maxMemory()) +l);
+            bw.write("		Storage: "+l);
+            bw.write("			Total: " + format(root.getTotalSpace()) +l);
+            bw.write("			Free: " + format(root.getTotalSpace()) +l);
+            bw.write("	=============================[ INSTALLED PLUGINS ]============================="+l);
+            bw.write("	Plugins:"+l);
+            for (Plugin x : plugin.getServer().getPluginManager().getPlugins()) {
+                bw.write("		- " + x.getDescription().getFullName() +l);
             }
-
-            Out.write(format2 + " - " + "=============================[ END OF STACKTRACE ]=============================" + System.getProperty("line.separator"));
-            Out.close();
+            bw.write("	=============================[  LOADED   WORLDS  ]============================="+l);
+            bw.write("	Worlds:"+l);
+            for (World w : plugin.getServer().getWorlds()) {
+                bw.write("		" + w.getName() + ":" +l);
+                bw.write("			Envioronment: " + w.getEnvironment().toString() +l);
+                bw.write("			Player Count: " + w.getPlayers().size() +l);
+                bw.write("			Entity Count: " + w.getEntities().size() +l);
+                bw.write("			Loaded Chunks: " + w.getLoadedChunks().length +l);
+            }
+            bw.write("	=============================[ ERROR  STACKTRACE ]============================="+l);
+            for (StackTraceElement element : st) {
+                bw.write("		- " + element.toString()+l);
+            }
+            bw.write("	=============================[ END OF STACKTRACE ]============================="+l);
+            bw.write(format2);
+            bw.close();
+            fw.close();
         } catch (IOException e) {
-            CreativeCommunicator com    = CreativeControl.getCommunicator();
-            com.error("Failed to write in the log file, {0}", e, e.getMessage());
+            com.log("Failed to write in the log file, {0}", e.getMessage());
         }
         
         return format1;
@@ -237,7 +265,8 @@ public class CreativeUtil {
             out.close();
         } catch (IOException ex) {
             CreativeCommunicator com    = CreativeControl.getCommunicator();
-            com.error("Failed to copy the file {0}, {1}", ex, file.getName(), ex.getMessage());
+            com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
+                    "[TAG] Failed to copy the file {0}, {1}", ex, file.getName(), ex.getMessage());
         }
     }
 
@@ -262,7 +291,8 @@ public class CreativeUtil {
                 return null;
             }
         } catch (Exception ex) {
-            com.error("[TAG] Failed to parse the location: {0}, {1}", ex, location, ex.getMessage());
+            com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
+                    "[TAG] Failed to parse the location: {0}, {1}", ex, location, ex.getMessage());
             return null;
         }
     }

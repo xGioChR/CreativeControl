@@ -186,7 +186,8 @@ public class CreativePlayerData {
                     adventurer_cache.put(cache.name, cache);
                 }
             } catch (SQLException ex) {
-                com.error("[TAG] Failed to get the data from the database, {0}", ex, ex.getMessage());
+                com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
+                        "[TAG] Failed to get the data from the database, {0}", ex, ex.getMessage());
                 if (!db.isOk()) { db.fix(); }
             }
         }
@@ -215,7 +216,8 @@ public class CreativePlayerData {
                     survival_cache.put(cache.name, cache);
                 }
             } catch (SQLException ex) {
-                com.error("[TAG] Failed to get the data from the database, {0}", ex, ex.getMessage());
+                com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
+                        "[TAG] Failed to get the data from the database, {0}", ex, ex.getMessage());
                 if (!db.isOk()) { db.fix(); }
             }
         }
@@ -239,7 +241,8 @@ public class CreativePlayerData {
                     creative_cache.put(cache.name, cache);
                 }
             } catch (SQLException ex) {
-                com.error("[TAG] Failed to get the data from the database, {0}", ex, ex.getMessage());
+                com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
+                        "[TAG] Failed to get the data from the database, {0}", ex, ex.getMessage());
                 if (!db.isOk()) { db.fix(); }
             }
         }
@@ -322,7 +325,8 @@ public class CreativePlayerData {
 
                 stack.getData().setData((byte)i);
             } catch (Exception ex) {
-                com.error("[TAG] Invalid Item String: {0}, {1}", ex, string, ex.getMessage());
+                com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
+                        "[TAG] Invalid Item String: {0}, {1}", ex, string, ex.getMessage());
                 return new ItemStack(Material.AIR);
             }
 
@@ -342,7 +346,8 @@ public class CreativePlayerData {
                             Enchantment ext = Enchantment.getByName(name);
                             stack.addEnchantment(ext, Integer.parseInt(lvl));
                         } catch (Exception ex) {
-                            com.error("[TAG] Invalid Enchantment: {0} level {1}, {2}", ex, name, lvl, ex.getMessage());
+                            com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
+                                    "[TAG] Invalid Enchantment: {0} level {1}, {2}", ex, name, lvl, ex.getMessage());
                         }
                     }
                 }

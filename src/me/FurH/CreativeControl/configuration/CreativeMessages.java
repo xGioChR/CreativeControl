@@ -490,13 +490,16 @@ public class CreativeMessages {
                 try {
                     config.save(dir);
                 } catch (IOException ex) {
-                    com.error(CreativeControl.tag + "Can't update the messages file: {0}", ex, ex.getMessage());
+                    com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
+                            CreativeControl.tag + "Can't update the messages file: {0}, node: {1}", ex, ex.getMessage(), node);
                 }
             }
-        } catch (IOException e) {
-            com.error(CreativeControl.tag + "Can't load the messages file: {0}", e, e.getMessage());
+        } catch (IOException ex) {
+            com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
+                    CreativeControl.tag + "Can't load the messages file: {0}, node: {1}", ex, ex.getMessage(), node);
         } catch (InvalidConfigurationException ex) {
-            com.error(CreativeControl.tag + "Can't load the messages file: {0}", ex, ex.getMessage());
+            com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
+                    CreativeControl.tag + "Can't load the messages file: {0}, node: {1}", ex, ex.getMessage(), node);
             com.log(CreativeControl.tag + " You have a broken message node at: {0}", node);
         }
         

@@ -70,7 +70,8 @@ public class CreativeBlockManager {
                 }
             } catch (SQLException ex) {
                 CreativeCommunicator com        = CreativeControl.getCommunicator();
-                com.error("[TAG] Failed to get the block from the database, {0}", ex, ex.getMessage());
+                com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
+                        "[TAG] Failed to get the block from the database, {0}", ex, ex.getMessage());
                 if (!db.isOk()) { db.fix(); }
             }
         }
@@ -210,7 +211,8 @@ public class CreativeBlockManager {
             }
         } catch (SQLException ex) {
             CreativeCommunicator com        = CreativeControl.getCommunicator();
-            com.error("[TAG] Failed to get the block from the database, {0}", ex, ex.getMessage());
+            com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
+                    "[TAG] Failed to get the block from the database, {0}", ex, ex.getMessage());
             if (!db.isOk()) { db.fix(); }
         }
         return ret;
@@ -248,7 +250,8 @@ public class CreativeBlockManager {
             }
         } catch (Exception ex) {
             CreativeCommunicator com        = CreativeControl.getCommunicator();
-            com.error("[TAG] {0} is not a valid number!", ex, args);
+            com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
+                    "[TAG] {0} is not a valid number!", ex, args);
         }
     }
 
@@ -335,7 +338,8 @@ public class CreativeBlockManager {
             }
         } catch (SQLException ex) {
             CreativeCommunicator com        = CreativeControl.getCommunicator();
-            com.error("[TAG] Failed to get the block from the database, {0}", ex, ex.getMessage());
+            com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
+                    "[TAG] Failed to get the block from the database, {0}", ex, ex.getMessage());
             if (!db.isOk()) { db.fix(); }
         }
 
@@ -353,7 +357,8 @@ public class CreativeBlockManager {
             }
         } catch (SQLException ex) {
             CreativeCommunicator com        = CreativeControl.getCommunicator();
-            com.error("[TAG] Failed to get the block from the database, {0}", ex, ex.getMessage());
+            com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
+                    "[TAG] Failed to get the block from the database, {0}", ex, ex.getMessage());
             if (!db.isOk()) { db.fix(); }
         }
 
@@ -391,7 +396,8 @@ public class CreativeBlockManager {
             }
         } catch (SQLException ex) {
             CreativeCommunicator com        = CreativeControl.getCommunicator();
-            com.error("[TAG] Failed to get the block from the database, {0}", ex, ex.getMessage());
+            com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
+                    "[TAG] Failed to get the block from the database, {0}", ex, ex.getMessage());
             if (!db.isOk()) { db.fix(); }
         }
         return ret;

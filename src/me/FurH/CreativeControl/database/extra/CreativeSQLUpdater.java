@@ -73,7 +73,8 @@ public class CreativeSQLUpdater {
 
             rs.close();
         } catch (SQLException ex) {
-            com.error("[TAG] Failed to load protections, {0}", ex, ex.getMessage());
+            com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
+                    "[TAG] Failed to load protections, {0}", ex, ex.getMessage());
             com.msg(p, messages.updater_loadfailed);
             lock = false;
         }
@@ -87,7 +88,8 @@ public class CreativeSQLUpdater {
             }
             rs.close();
         } catch (SQLException ex) {
-            com.error("[TAG] Failed to load protections, {0}", ex, ex.getMessage());
+            com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
+                    "[TAG] Failed to load protections, {0}", ex, ex.getMessage());
             com.msg(p, messages.updater_loadfailed);
             lock = false;
         }
@@ -134,7 +136,8 @@ public class CreativeSQLUpdater {
                     }
                 }
             } catch (Exception ex) {
-                com.error("[TAG] Failed on update the database, {0} .", ex, ex.getMessage());
+                com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
+                        "[TAG] Failed on update the database, {0} .", ex, ex.getMessage());
                 com.msg(p, messages.updater_checkfailed);
                 lock = false;
             }

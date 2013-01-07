@@ -315,7 +315,8 @@ public class CreativeCommands implements CommandExecutor {
                                                                 + " '"+rs.getString("owner")+"', '"+rs.getString("location")+"', '"+rs.getInt("type")+"', '"+rs.getString("allowed")+"', '"+rs.getString("time")+"')");
                                                     }
                                                 } catch (SQLException ex) {
-                                                    com.error("[TAG] Failed to get the block from the database, {0}", ex, ex.getMessage());
+                                                    com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
+                                                            "[TAG] Failed to get the block from the database, {0}", ex, ex.getMessage());
                                                     if (!db.isOk()) { db.fix(); }
                                                 }
                                                 
@@ -590,7 +591,8 @@ public class CreativeCommands implements CommandExecutor {
                                                     + " '"+rs.getString("owner")+"', '"+rs.getString("location")+"', '"+rs.getInt("type")+"', '"+rs.getString("allowed")+"', '"+rs.getString("time")+"')");
                                         }
                                     } catch (SQLException ex) {
-                                        com.error("[TAG] Failed to get the block from the database, {0}", ex, ex.getMessage());
+                                        com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
+                                                "[TAG] Failed to get the block from the database, {0}", ex, ex.getMessage());
                                         if (!db.isOk()) { db.fix(); }
                                     }
                                     
@@ -652,7 +654,8 @@ public class CreativeCommands implements CommandExecutor {
                                                     + " '"+rs.getString("owner")+"', '"+rs.getString("location")+"', '"+rs.getInt("type")+"', '"+rs.getString("allowed")+"', '"+rs.getString("time")+"')");
                                         }
                                     } catch (SQLException ex) {
-                                        com.error("[TAG] Failed to get the block from the database, {0}", ex, ex.getMessage());
+                                        com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
+                                                "[TAG] Failed to get the block from the database, {0}", ex, ex.getMessage());
                                         if (!db.isOk()) { db.fix(); }
                                     }
                                     
@@ -714,7 +717,8 @@ public class CreativeCommands implements CommandExecutor {
                                                     + " '"+rs.getString("owner")+"', '"+rs.getString("location")+"', '"+rs.getInt("type")+"', '"+rs.getString("allowed")+"', '"+rs.getString("time")+"')");
                                         }
                                     } catch (SQLException ex) {
-                                        com.error("[TAG] Failed to get the block from the database, {0}", ex, ex.getMessage());
+                                        com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
+                                                "[TAG] Failed to get the block from the database, {0}", ex, ex.getMessage());
                                         if (!db.isOk()) { db.fix(); }
                                     }
                                     

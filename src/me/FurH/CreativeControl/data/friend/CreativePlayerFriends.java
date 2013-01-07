@@ -69,7 +69,8 @@ public class CreativePlayerFriends {
 
                 hascache.put(player, friends);
             } catch (SQLException ex) {
-                com.error("[TAG] Failed to get the data from the database, {0}", ex, ex.getMessage());
+                com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
+                        "[TAG] Failed to get the data from the database, {0}", ex, ex.getMessage());
                 if (!db.isOk()) { db.fix(); }
             }
         }

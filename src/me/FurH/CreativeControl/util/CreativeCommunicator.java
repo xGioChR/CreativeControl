@@ -61,21 +61,20 @@ public class CreativeCommunicator {
     /*
      * Shortcut, logs and dump a throwable
      */
-    public void error(String message, Throwable ex, Object...objects) {
-        error(message, Type.SEVERE, ex, objects);
+    public void error(String className, int line, String method, Throwable ex, String message, Object...objects) {
+        error(className, line, method, ex, message, Type.SEVERE, objects);
     }
     
     /*
      * Logs and dump a throwable
      */
-    public void error(String message, Type type, Throwable ex, Object...objects) {
+    public void error(String className, int line, String method, Throwable ex, String message, Type type, Object...objects) {
+        message = format(message, false, objects);
+
         log(message, type, objects);
-        CreativeMainConfig config   = CreativeControl.getMainConfig();
-        if (config.com_debugstack) {
-            ex.printStackTrace();
-        }
+
         CreativeControl    plugin   = CreativeControl.getPlugin();
-        log("[TAG] This error is avaliable at: plugins/{0}/error/{1}", type, plugin.getDescription().getName(), CreativeUtil.stack(ex));
+        log("[TAG] This error is avaliable at: plugins/{0}/error/error-{1}.txt", type, plugin.getDescription().getName(), CreativeUtil.stack(className, line, method, ex, message));
     }
     
     /*

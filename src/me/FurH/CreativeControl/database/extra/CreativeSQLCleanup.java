@@ -72,7 +72,8 @@ public class CreativeSQLCleanup implements Runnable {
             
             rs.close();
         } catch (SQLException ex) {
-            com.error("[TAG] Failed to load the protections, {0}", ex, ex.getMessage());
+            com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
+                    "[TAG] Failed to load the protections, {0}", ex, ex.getMessage());
             com.msg(p, messages.updater_loadfailed);
             lock = false;
             return;
@@ -130,7 +131,8 @@ public class CreativeSQLCleanup implements Runnable {
                     locations.add(string[0]);
                 }
             } catch (Exception ex) {
-                com.error("[TAG] Failed to check the protection: {0}, {1}", ex, string[0], ex.getMessage());
+                com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
+                        "[TAG] Failed to check the protection: {0}, {1}", ex, string[0], ex.getMessage());
             }
         }
 
