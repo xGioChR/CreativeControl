@@ -250,6 +250,9 @@ public final class CreativeSQLDatabase {
         }
     }
     
+    /*
+     * load flatfiles with what was left of the queue
+     */
     public void loadFiles() {
         CreativeCommunicator com    = CreativeControl.getCommunicator();
         
@@ -279,6 +282,9 @@ public final class CreativeSQLDatabase {
         }
     }
 
+    /*
+     * writes what is left of DELETE queries to a flatfile, it is too slow.
+     */
     public void writeToFile(List<String> queries) {
         CreativeCommunicator com    = CreativeControl.getCommunicator();
         
