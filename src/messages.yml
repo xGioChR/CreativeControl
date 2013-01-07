@@ -113,7 +113,7 @@ Commands:
     morehelp: "&7Type: &4/cc cleanup [all/type/player/world] ? &7- To see more help"
     processed: "[TAG] &aBlocks successfully processed!"
     cleanup:
-      usage: "&c/cc cleanup corrupt - &7Remove corrupted protections."
+      usage: "&4/cc cleanup corrupt - &7Remove corrupted protections."
       help: "&7cc cleanup corrupt - &7This command will &4remove&7 all protections that the block type in the world isnt compatible with the block type in the database."
     all:
       help: "&4/cc cleanup all - &7This command will &4clean your entire database&7, every block in the database &4will be erased&7, players &4inventory/status will be preserved."
@@ -218,6 +218,16 @@ Commands:
     Duplicated: "&7Duplicated protection W&8:&a{0}&7 X&8:&a{1}&7 Y&8:&a{2}&7 Z&8:&a{3}&7"
     CheckFailed: "&cFailed to check for corrupted protections!"
     Done: "&a{0}&7 protections removed in &a{1}&7 ms!"
+  Migrator:
+    Locked: "&cYou cant ran multiples migrations at the same time!"
+    More1: "&4/cc admin migrator [>sqlite] &8-&7 Convert from MySQL to SQLite"
+    More2: "&4/cc admin migrator [>mysql] &8-&7 Convert from SQLite to MySQL"
+    MySQLTOSQLite: "&7Converting database from &aMySQL&7 to &aSQLite&7..."
+    SQLiteTOMySQL: "&7Converting database from &aSQLite&7 to &aMySQL&7..."
+    Loaded: "&a{0}&7 protections loaded in &a{1}&7 ms"
+    Converted: "&a{0} &7of&a {1}&7 entries converted, &a{2}%"
+    Duplicated: "&7Duplicated protection W&8:&a{0}&7 X&8:&a{1}&7 Y&8:&a{2}&7 Z&8:&a{3}"
+    Done: "&7&a{0}&7 entries converted (&a{1}&7 skipped) in &a{2}&7 ms"
   Help:
     cmd1: "[TAG] /cc add - add blocks from the selection"
     cmd2: "[TAG] /cc del - del blocks from the selection"

@@ -101,14 +101,25 @@ public class CreativeSQLUpdater {
         double process = 0;
         int skip = 0;
         int sucess = 0;
+        
+        double last = 0;
+        
+        try {
+            db.connection.setAutoCommit(false);
+            db.connection.commit();
+        } catch (SQLException ex) {
+            com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
+                    "[TAG] Failed to set AutoCommit and commit the database, {0}.", ex, ex.getMessage());
+        }
 
         for (String[] string : blocks) {
             done++;
             process = ((done / blocks.size()) * 100.0D);
 
-            //if (process % 1 == 0) {
+            if (process - last >= 5) {
                 com.msg(p, messages.updater_process, done, blocks.size(), skip, process);
-            //}
+                last = process;
+            }
 
             try {
                 String owner = string[1];
@@ -146,6 +157,13 @@ public class CreativeSQLUpdater {
         db.executeQuery("UPDATE `"+db.prefix+"internal` SET version = '"+db.version+"'", true);
         db.executeQuery("ALTER TABLE `CreativeControl` RENAME TO `"+db.prefix+"old`", true);
 
+        try {
+            db.connection.setAutoCommit(true);
+        } catch (SQLException ex) {
+            com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
+                    "[TAG] Failed to set AutoCommit, {0}.", ex, ex.getMessage());
+        }
+        
         elapsedTime = (System.currentTimeMillis() - startTimer);
         com.msg(p, messages.updater_done, sucess, elapsedTime);
         lock = false;

@@ -28,6 +28,7 @@ import me.FurH.CreativeControl.data.friend.CreativePlayerFriends;
 import me.FurH.CreativeControl.database.CreativeSQLDatabase;
 import me.FurH.CreativeControl.database.extra.CreativeSQLBackup;
 import me.FurH.CreativeControl.database.extra.CreativeSQLCleanup;
+import me.FurH.CreativeControl.database.extra.CreativeSQLMigrator;
 import me.FurH.CreativeControl.monitor.CreativePerformance;
 import me.FurH.CreativeControl.region.CreativeRegion.gmType;
 import me.FurH.CreativeControl.region.CreativeRegionManager;
@@ -72,6 +73,9 @@ public class CreativeCommands implements CommandExecutor {
             } else
             if (args[0].equalsIgnoreCase("add")) {
                 addCmd(sender, cmd, string, args);
+            } else
+            if (args[0].equalsIgnoreCase("admin")) {
+                onAdminCommand(sender, cmd, string, args);
             } else
             if (args[0].equalsIgnoreCase("check")) {
                 checkCmd(sender, cmd, string, args);
@@ -121,6 +125,77 @@ public class CreativeCommands implements CommandExecutor {
             }
         }
         return true;
+    }
+    
+    /*
+     * //cc admin[0] migrator[1] [>sqlite/>mysql/>lwc][2]
+     */
+    public boolean onAdminCommand(CommandSender sender, Command cmd, String string, String[] args) {
+        CreativeMessages messages = CreativeControl.getMessages();
+        CreativeControl plugin = CreativeControl.getPlugin();
+        if (!plugin.hasPerm(sender, "Commands.Admin")) {
+            msg(sender, messages.commands_noperm);
+            return true;
+        } else {
+            if (args.length > 1) {
+                if (args[1].equalsIgnoreCase("migrator")) {
+                    if (!plugin.hasPerm(sender, "Commands.Admin.Migrator")) {
+                        msg(sender, messages.commands_noperm);
+                        return true;
+                    } else {
+                        if (args.length > 2) {
+                            if (args.length > 3) {
+                                msg(sender, messages.migrator_more1);
+                                msg(sender, messages.migrator_more2);
+                                return true;
+                            } else {
+                                if (args[2].equalsIgnoreCase(">sqlite") || args[2].equalsIgnoreCase(">mysql")) {
+                                    CreativeSQLMigrator migrator = null;
+                                    String type = null;
+
+                                    if (args[2].equalsIgnoreCase(">sqlite")) {
+                                        type = "mysql>sqlite";
+                                    } else
+                                    if (args[2].equalsIgnoreCase(">mysql")) {
+                                        type = "sqlite>mysql";
+                                    }
+
+                                    if (sender instanceof Player) {
+                                        migrator = new CreativeSQLMigrator(plugin, (Player)sender, type);
+                                    } else {
+                                        migrator = new CreativeSQLMigrator(plugin, null, type);
+                                    }
+
+                                    if (migrator.lock) {
+                                        msg(sender, messages.migrator_locked);
+                                        return true;
+                                    } else {
+                                        Bukkit.getScheduler().runTaskAsynchronously(plugin, migrator); //TODO: ensure thread safety
+                                        return true;
+                                    }
+                                } else {
+                                    msg(sender, messages.migrator_more1);
+                                    msg(sender, messages.migrator_more2);
+                                    return true;
+                                }
+                            }
+                        } else {
+                            msg(sender, messages.migrator_more1);
+                            msg(sender, messages.migrator_more2);
+                            return true;
+                        }
+                    }
+                } else {
+                    msg(sender, messages.migrator_more1);
+                    msg(sender, messages.migrator_more2);
+                    return true;
+                }
+            } else {
+                msg(sender, messages.migrator_mysqlsqlite);
+                msg(sender, messages.migrator_sqlitemysql);
+                return true;
+            }
+        }
     }
     
     public boolean friendCmd(CommandSender sender, Command cmd, String string, String[] args) {

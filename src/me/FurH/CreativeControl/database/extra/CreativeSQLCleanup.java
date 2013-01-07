@@ -96,14 +96,25 @@ public class CreativeSQLCleanup implements Runnable {
         double corrupt = 0;
         double done = 0;
         double process = 0;
+        
+        double last = 0;
+        
+        try {
+            db.connection.setAutoCommit(false);
+            db.connection.commit();
+        } catch (SQLException ex) {
+            com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
+                    "[TAG] Failed to set AutoCommit and commit the database, {0}.", ex, ex.getMessage());
+        }
 
         HashSet<String> locations = new HashSet<String>();
         for (String[] string : blocks) {
             done++;
             process = ((done / blocks.size()) * 100.0D);
-
-            if (process % 5 == 0) {
+            
+            if (process - last > 5) {
                 com.msg(p, messages.cleanup_process, done, blocks.size(), corrupt, process);
+                last = process;
             }
 
             try {
@@ -136,6 +147,13 @@ public class CreativeSQLCleanup implements Runnable {
             }
         }
 
+        try {
+            db.connection.setAutoCommit(true);
+        } catch (SQLException ex) {
+            com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
+                    "[TAG] Failed to set AutoCommit, {0}.", ex, ex.getMessage());
+        }
+        
         elapsedTime = (System.currentTimeMillis() - startTimer);
         com.msg(p, messages.cleanup_done, corrupt, blocks.size());
         lock = false;

@@ -200,7 +200,7 @@ public class CreativeUtil {
             bw.write("			Max: " + format(runtime.maxMemory()) +l);
             bw.write("		Storage: "+l);
             bw.write("			Total: " + format(root.getTotalSpace()) +l);
-            bw.write("			Free: " + format(root.getTotalSpace()) +l);
+            bw.write("			Free: " + format(root.getFreeSpace()) +l);
             bw.write("	=============================[ INSTALLED PLUGINS ]============================="+l);
             bw.write("	Plugins:"+l);
             for (Plugin x : plugin.getServer().getPluginManager().getPlugins()) {

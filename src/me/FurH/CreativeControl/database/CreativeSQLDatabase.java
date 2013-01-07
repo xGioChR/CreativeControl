@@ -40,7 +40,7 @@ public final class CreativeSQLDatabase {
     private final AtomicBoolean lock = new AtomicBoolean(false);
     public enum Type { MySQL, SQLite; }
     private CreativeControl plugin;
-    private Connection connection;
+    public Connection connection;
     public String prefix = "cc_";
     private boolean typeBoolean;
     public double version = 1;
@@ -91,49 +91,11 @@ public final class CreativeSQLDatabase {
      */
     public void open() {
         CreativeCommunicator com    = CreativeControl.getCommunicator();
-        com.log("[TAG] Connecting to the "+(type == Type.SQLite ? "SQLite" : "MySQL")+" Database...");
+        
         if (type == Type.SQLite) {
-            try {
-                Class.forName("org.sqlite.JDBC");
-            } catch (ClassNotFoundException ex) {
-                com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
-                        "[TAG] You don't have the required SQLite driver, {0}", ex, ex.getMessage());
-                return;
-            }
-
-            File SQLite = new File(plugin.getDataFolder(), "database.db");
-            try {
-                SQLite.createNewFile();
-            } catch (IOException ex) {
-                com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
-                        "[TAG] Failed to create the SQLite file, {0}", ex, ex.getMessage());
-            }
-            
-            try {
-                connection = DriverManager.getConnection("jdbc:sqlite:" + SQLite.getAbsolutePath());
-            } catch (SQLException ex) {
-                com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
-                        "[TAG] Failed set the SQLite connector, {0}", ex, ex.getMessage());
-                return;
-            }
+            connection = getSQLiteConnection();
         } else {
-            try {
-                Class.forName("com.mysql.jdbc.Driver");
-            } catch (ClassNotFoundException ex) {
-                com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
-                        "[TAG] You don't have the required MySQL driver, {0}", ex, ex.getMessage());
-                return;
-            }
-
-            CreativeMainConfig   config = CreativeControl.getMainConfig();
-            String url = "jdbc:mysql://" + config.database_host + ":" + config.database_port + "/" + config.database_table +"?autoReconnect=true";
-            try {
-                connection = DriverManager.getConnection(url, config.database_user, config.database_pass);
-            } catch (SQLException ex) {
-                com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
-                        "[TAG] Failed set the MySQL connector, {0}", ex, ex.getMessage());
-                return;
-            }
+            connection = getMySQLConnection();
         }
 
         if (connection != null) {
@@ -152,6 +114,58 @@ public final class CreativeSQLDatabase {
         }
     }
     
+    public Connection getSQLiteConnection() {
+        CreativeCommunicator com    = CreativeControl.getCommunicator();
+        com.log("[TAG] Connecting to the SQLite Database...");
+        try {
+            Class.forName("org.sqlite.JDBC");
+        } catch (ClassNotFoundException ex) {
+            com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
+                    "[TAG] You don't have the required SQLite driver, {0}", ex, ex.getMessage());
+            return null;
+        }
+
+        File SQLite = new File(plugin.getDataFolder(), "database.db");
+        try {
+            SQLite.createNewFile();
+        } catch (IOException ex) {
+            com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
+                    "[TAG] Failed to create the SQLite file, {0}", ex, ex.getMessage());
+        }
+
+        try {
+            Connection sqlite = DriverManager.getConnection("jdbc:sqlite:" + SQLite.getAbsolutePath());
+            return sqlite;
+        } catch (SQLException ex) {
+            com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
+                    "[TAG] Failed set the SQLite connector, {0}", ex, ex.getMessage());
+            return null;
+        }
+    }
+    
+    public Connection getMySQLConnection() {
+        CreativeCommunicator com    = CreativeControl.getCommunicator();
+        com.log("[TAG] Connecting to the MySQL Database...");
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+        } catch (ClassNotFoundException ex) {
+            com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
+                    "[TAG] You don't have the required MySQL driver, {0}", ex, ex.getMessage());
+            return null;
+        }
+
+        CreativeMainConfig   config = CreativeControl.getMainConfig();
+        String url = "jdbc:mysql://" + config.database_host + ":" + config.database_port + "/" + config.database_table +"?autoReconnect=true";
+        try {
+            Connection mysql = DriverManager.getConnection(url, config.database_user, config.database_pass);
+            return mysql;
+        } catch (SQLException ex) {
+            com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
+                    "[TAG] Failed set the MySQL connector, {0}", ex, ex.getMessage());
+            return null;
+        }
+    }
+    
     /*
      * Close the connection to the database
      */
@@ -167,16 +181,37 @@ public final class CreativeSQLDatabase {
             double process = 0;
             double done = 0;
             double total = queue.size();
+            
+            double last = 0;
+            
+            try {
+                connection.setAutoCommit(false);
+                connection.commit();
+            } catch (SQLException ex) {
+                com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
+                        "[TAG] Failed to set AutoCommit and commit the database, {0}.", ex, ex.getMessage());
+            }
+            
             while (!queue.isEmpty()) {
                 done++;
                 String query = queue.poll();
                 if (query == null) { continue; }
                 
                 process = ((done / total) * 100.0D);
-
-                com.log("[TAG] Processed {0} of {1} querys, {2}%", done, total, process);
+                
+                if (process - last > 5) {
+                    com.log("[TAG] Processed {0} of {1} querys, {2}%", done, total, process);
+                    last = process;
+                }
                 
                 executeQuery(query, true);
+            }
+            
+            try {
+                connection.setAutoCommit(true);
+            } catch (SQLException ex) {
+                com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
+                        "[TAG] Failed to set AutoCommit, {0}.", ex, ex.getMessage());
             }
         }
 
@@ -245,8 +280,13 @@ public final class CreativeSQLDatabase {
      * Load the database
      */
     private void loadDatabase() {
-        createTables();
-        createIndex();
+        String auto = (type == Type.MySQL ? "id INT AUTO_INCREMENT, PRIMARY KEY (id)" : "id INTEGER PRIMARY KEY AUTOINCREMENT");
+        loadDatabase(auto, connection);
+    }
+
+    public void loadDatabase(String auto, Connection connection) {
+        createTables(auto, connection);
+        createIndex(connection);
 
         if (getVersion() == -1) {
             executeQuery("INSERT INTO `"+prefix+"internal` (version) VALUES ('"+version+"')", true);
@@ -397,10 +437,10 @@ public final class CreativeSQLDatabase {
     /*
      * Create tables in the database
      */
-    private void createTables() {
+    public void createTables(String auto, Connection connection) {
         Statement st = null;
         try {
-            String auto = (type == Type.MySQL ? "id INT AUTO_INCREMENT, PRIMARY KEY (id)" : "id INTEGER PRIMARY KEY AUTOINCREMENT");
+            //String auto = (type == Type.MySQL ? "id INT AUTO_INCREMENT, PRIMARY KEY (id)" : "id INTEGER PRIMARY KEY AUTOINCREMENT");
             st = connection.createStatement();
             st.executeUpdate("CREATE TABLE IF NOT EXISTS `"+prefix+"players_adventurer` ("+auto+", player VARCHAR(255), health INT, foodlevel INT, exhaustion INT, saturation INT, experience INT, armor TEXT, inventory TEXT);");
             st.executeUpdate("CREATE TABLE IF NOT EXISTS `"+prefix+"players_survival` ("+auto+", player VARCHAR(255), health INT, foodlevel INT, exhaustion INT, saturation INT, experience INT, armor TEXT, inventory TEXT);");
@@ -424,7 +464,7 @@ public final class CreativeSQLDatabase {
     /*
      * Create indexes in the database
      */
-    private void createIndex() {
+    public void createIndex(Connection connection) {
         Statement st = null;
         try {
             st = connection.createStatement();

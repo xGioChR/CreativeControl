@@ -246,6 +246,16 @@ public class CreativeMessages {
     public String blockdel_disprotected          = "Manager.BlockDel.Success";
     
     public String mobarena_changegm              = "ingame.integration.mobarena.changegm";
+    
+    public String migrator_locked                = "Commands.Migrator.Locked";
+    public String migrator_more1                 = "Commands.Migrator.More1";
+    public String migrator_more2                 = "Commands.Migrator.More2";
+    public String migrator_mysqlsqlite           = "Commands.Migrator.MySQLTOSQLite";
+    public String migrator_sqlitemysql           = "Commands.Migrator.SQLiteTOMySQL";
+    public String migrator_loaded                = "Commands.Migrator.Loaded";
+    public String migrator_converted             = "Commands.Migrator.Converted";
+    public String migrator_duplicated            = "Commands.Migrator.Duplicated";
+    public String migrator_done                  = "Commands.Migrator.Done";
 
     public void load() {
         prefix_tag                     = getMessage("prefix.tag");
@@ -461,7 +471,17 @@ public class CreativeMessages {
 
         blockdel_disprotected          = getMessage("Manager.BlockDel.Success");
 
-        mobarena_changegm    = getMessage("ingame.integration.mobarena.changegm");
+        mobarena_changegm              = getMessage("ingame.integration.mobarena.changegm");
+        
+        migrator_more1                 = getMessage("Commands.Migrator.More1");
+        migrator_more2                 = getMessage("Commands.Migrator.More2");
+        migrator_locked                = getMessage("Commands.Migrator.Locked");
+        migrator_mysqlsqlite           = getMessage("Commands.Migrator.MySQLTOSQLite");
+        migrator_sqlitemysql           = getMessage("Commands.Migrator.SQLiteTOMySQL");
+        migrator_loaded                = getMessage("Commands.Migrator.Loaded");
+        migrator_converted             = getMessage("Commands.Migrator.Converted");
+        migrator_duplicated            = getMessage("Commands.Migrator.Duplicated");
+        migrator_done                  = getMessage("Commands.Migrator.Done");
     }
     
     private String getMessage(String node) {
