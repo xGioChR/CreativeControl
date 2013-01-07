@@ -113,7 +113,7 @@ public class CreativeSQLCleanup implements Runnable {
             process = ((done / blocks.size()) * 100.0D);
             
             if (process - last > 5) {
-                com.msg(p, messages.cleanup_process, done, blocks.size(), corrupt, process);
+                com.msg(p, messages.cleanup_process, done, blocks.size(), corrupt, String.format("%d", (int) process));
                 last = process;
             }
 
@@ -135,7 +135,7 @@ public class CreativeSQLCleanup implements Runnable {
                     manager.delBlock(b);
                 } else
                 if (locations.contains(string[0])) {
-                    com.msg(p, messages.cleanup_duplicated, loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
+                    //com.msg(p, messages.cleanup_duplicated, loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
                     corrupt++;
                     manager.delBlock(b);
                 } else {

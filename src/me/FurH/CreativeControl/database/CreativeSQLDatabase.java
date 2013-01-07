@@ -200,7 +200,7 @@ public final class CreativeSQLDatabase {
                 process = ((done / total) * 100.0D);
                 
                 if (process - last > 5) {
-                    com.log("[TAG] Processed {0} of {1} querys, {2}%", done, total, process);
+                    com.log("[TAG] Processed {0} of {1} querys, {2}%", done, total, String.format("%d", (int) process));
                     last = process;
                 }
                 
@@ -373,7 +373,7 @@ public final class CreativeSQLDatabase {
     
     public boolean hasTable(String table) {
         try {
-            PreparedStatement ps = connection.prepareStatement("SELECT * FROM `"+table+"` LIMIT '1'");
+            PreparedStatement ps = connection.prepareStatement("SELECT * FROM `"+table+"` LIMIT 1");
             ps.execute();
             
             ResultSet rs = ps.getResultSet();

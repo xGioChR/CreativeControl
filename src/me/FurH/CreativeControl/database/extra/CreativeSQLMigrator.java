@@ -156,7 +156,7 @@ public final class CreativeSQLMigrator implements Runnable {
             process = ((done / inserts.size()) * 100.0D);
 
             if (process - last > 5) {
-                com.msg(p, messages.migrator_converted, done, inserts.size(), String.format("%.2f", process));
+                com.msg(p, messages.migrator_converted, done, inserts.size(), String.format("%d", (int) process));
                 last = process;
             }
 
@@ -167,8 +167,8 @@ public final class CreativeSQLMigrator implements Runnable {
                     sucess++;
                 } else {
                     skip++;
-                    Location loc = CreativeUtil.getLocation(string[0]);
-                    com.msg(p, messages.migrator_duplicated, loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
+                    //Location loc = CreativeUtil.getLocation(string[0]);
+                    //com.msg(p, messages.migrator_duplicated, loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
                 }
             } catch (SQLException ex) {
                 com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 

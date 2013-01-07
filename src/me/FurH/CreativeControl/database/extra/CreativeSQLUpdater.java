@@ -39,7 +39,7 @@ public class CreativeSQLUpdater {
     
     public void loadup() {
         CreativeSQLDatabase db = CreativeControl.getDb();
-        if (db.hasTable("CreativeControl")) {
+        if (db.hasTable("CreativeControl") || db.hasTable("creativecontrol")) {
             start();
         }
     }
@@ -117,7 +117,7 @@ public class CreativeSQLUpdater {
             process = ((done / blocks.size()) * 100.0D);
 
             if (process - last >= 5) {
-                com.msg(p, messages.updater_process, done, blocks.size(), skip, process);
+                com.msg(p, messages.updater_process, done, blocks.size(), skip, String.format("%d", (int) process));
                 last = process;
             }
 
@@ -133,18 +133,15 @@ public class CreativeSQLUpdater {
                     allowed = string[7];
                 }
                 String time = string[8];
-                World w = Bukkit.getWorld(world);
-                if (w != null) {
-                    Location loc = new Location(w, x, y, z);
-                    String StringLoc = CreativeUtil.getLocation(loc);
-                    if (!locations.contains(StringLoc)) {
-                        locations.add(StringLoc);
-                        sucess++;
-                        db.executeQuery("INSERT INTO `"+db.prefix+"blocks` (owner, location, type, allowed, time) VALUES ('"+owner+"', '"+StringLoc+"', '"+type+"', '"+allowed+"', '"+time+"')", true);
-                    } else {
-                        com.msg(p, messages.updater_duplicated, loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
-                        skip++;
-                    }
+
+                String StringLoc = world + ":" + x + ":" + y + ":" + z;
+                if (!locations.contains(StringLoc)) {
+                    locations.add(StringLoc);
+                    sucess++;
+                    db.executeQuery("INSERT INTO `"+db.prefix+"blocks` (owner, location, type, allowed, time) VALUES ('"+owner+"', '"+StringLoc+"', '"+type+"', '"+allowed+"', '"+time+"')", true);
+                } else {
+                    //com.msg(p, messages.updater_duplicated, loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
+                    skip++;
                 }
             } catch (Exception ex) {
                 com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
