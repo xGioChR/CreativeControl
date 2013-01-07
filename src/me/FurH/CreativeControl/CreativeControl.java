@@ -39,6 +39,7 @@ import me.FurH.CreativeControl.data.friend.CreativePlayerFriends;
 import me.FurH.CreativeControl.database.CreativeSQLDatabase;
 import me.FurH.CreativeControl.database.extra.CreativeSQLUpdater;
 import me.FurH.CreativeControl.integration.AuthMe;
+import me.FurH.CreativeControl.integration.MobArena;
 import me.FurH.CreativeControl.integration.worldedit.CreativeWorldEditHook;
 import me.FurH.CreativeControl.integration.xAuth;
 import me.FurH.CreativeControl.listener.*;
@@ -157,6 +158,8 @@ public class CreativeControl extends JavaPlugin {
             pm.registerEvents(new CreativeMiscListener(), this);
         }
 
+        loadIntegrations();
+                
         CommandExecutor cc = new CreativeCommands();
         getCommand("creativecontrol").setExecutor(cc);
         
@@ -233,6 +236,7 @@ public class CreativeControl extends JavaPlugin {
         } else {
             CreativeWorldConfig.load(getServer().getWorlds().get(0));
         }
+        loadIntegrations();
         
         boolean newssql = mainconfig.database_mysql;
         boolean newmove = mainconfig.events_move;
@@ -262,6 +266,30 @@ public class CreativeControl extends JavaPlugin {
             } else {
                 HandlerList.unregisterAll(new CreativeMoveListener());
                 communicator.msg(sender, "[TAG] CreativeMiscListener unregistered, Listener disabled.");
+            }
+        }
+    }
+    
+    public void loadIntegrations() {
+        PluginManager pm = getServer().getPluginManager();
+        Plugin p = pm.getPlugin("MobArena");
+        if (p != null) {
+            if (p.isEnabled()) {
+                communicator.log("[TAG] MobArena support enabled!");
+                pm.registerEvents(new MobArena(), this);
+            }
+        }
+        
+        p = pm.getPlugin("Multiverse-Inventories");
+        if (p != null) {
+            if (p.isEnabled()) {
+                mainconfig.data_inventory = false;
+                mainconfig.data_status = false;
+                communicator.log("[TAG] ***************************************************");
+                communicator.log("[TAG] Multiverse-Inventories Detected!!");
+                communicator.log("[TAG] Per-GameMode inventories will be disabled by this plugin");
+                communicator.log("[TAG] Use the multiverse inventories manager!");
+                communicator.log("[TAG] ***************************************************");                
             }
         }
     }

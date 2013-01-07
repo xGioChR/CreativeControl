@@ -47,7 +47,7 @@ public class CreativeWorldConfig {
             return n;
         }
     }
-    
+
     public static void clear() {
         cache.clear();
     }

@@ -29,6 +29,8 @@ import me.FurH.CreativeControl.integration.worldedit.CreativeWorldEditHook;
 import me.FurH.CreativeControl.manager.CreativeBlockManager;
 import me.FurH.CreativeControl.monitor.CreativePerformance;
 import me.FurH.CreativeControl.monitor.CreativePerformance.Event;
+import me.FurH.CreativeControl.region.CreativeRegion;
+import me.FurH.CreativeControl.region.CreativeRegion.gmType;
 import me.FurH.CreativeControl.util.CreativeCommunicator;
 import me.FurH.CreativeControl.util.CreativeUtil;
 import org.bukkit.*;
@@ -335,6 +337,51 @@ public class CreativePlayerListener implements Listener {
         cleanup(e.getPlayer());
         
         CreativePerformance.update(Event.PlayerQuitEvent, (System.currentTimeMillis() - start));
+    }
+    
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
+    public void onPlayerTeleport(PlayerTeleportEvent e) {
+        if (e.isCancelled()) { return; }
+
+        Player p = e.getPlayer();
+        World world = p.getWorld();
+        Location loc = p.getLocation();
+
+        CreativeWorldNodes config = CreativeWorldConfig.get(world);
+
+        if (config.world_exclude) { return; }
+
+        CreativeCommunicator com        = CreativeControl.getCommunicator();
+        CreativeMessages     messages   = CreativeControl.getMessages();
+        CreativeControl      plugin     = CreativeControl.getPlugin();
+        
+        CreativeRegion region = CreativeControl.getRegioner().getRegion(loc);
+        if (region != null) {
+            World w = region.world;
+            
+            if (w != world) { 
+                return; 
+            }
+
+            gmType type = region.type;
+            if (type == gmType.CREATIVE) {
+                if (!plugin.hasPerm(p, "Region.Keep.Survival")) {
+                    if (!p.getGameMode().equals(GameMode.CREATIVE)) {
+                        com.msg(p, messages.region_cwelcome);
+                        p.setGameMode(GameMode.CREATIVE);
+                    }
+                }
+            } else
+            if (type == CreativeRegion.gmType.SURVIVAL) {
+                if (!p.getGameMode().equals(GameMode.SURVIVAL)) {
+                    if (!plugin.hasPerm(p, "Region.Keep.Creative")) {
+                        CreativeUtil.getFloor(p);
+                        com.msg(p, messages.region_swelcome);
+                        p.setGameMode(GameMode.SURVIVAL);
+                    }
+                }
+            }
+        }
     }
     
     /*

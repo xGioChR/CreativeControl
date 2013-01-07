@@ -244,6 +244,8 @@ public class CreativeMessages {
     public String blockadd_protected             = "Manager.BlockAdd.Success";
     
     public String blockdel_disprotected          = "Manager.BlockDel.Success";
+    
+    public String mobarena_changegm              = "ingame.integration.mobarena.changegm";
 
     public void load() {
         prefix_tag                     = getMessage("prefix.tag");
@@ -458,6 +460,8 @@ public class CreativeMessages {
         blockadd_protected             = getMessage("Manager.BlockAdd.Success");
 
         blockdel_disprotected          = getMessage("Manager.BlockDel.Success");
+
+        mobarena_changegm    = getMessage("ingame.integration.mobarena.changegm");
     }
     
     private String getMessage(String node) {

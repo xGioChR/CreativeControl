@@ -8,6 +8,9 @@ prefix:
   tag: "&4[CreativeControl]:&7"
   small: "&4[CC]:&7"
 ingame:
+  integration:
+    mobarena:
+      changegm: "&4You must be in survival mode to join the arena!"
   updater:
     new: "&7New Version Found: &4{0}&7 (You have: &4{1}&7)"
     visit: "&7Visit:&4 http://bit.ly/creativecontrol"

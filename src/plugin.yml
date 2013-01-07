@@ -3,7 +3,7 @@ version: 5.4.7
 author: FurmigaHumana
 description: Keep yours creatives in the line!
 main: me.FurH.CreativeControl.CreativeControl
-softdepend: ['Vault']
+softdepend: ['Vault', 'WorldEdit', 'LogBlock', 'AuthMe', 'xAuth', 'MobArena', 'Multiverse-Inventories']
 commands:
   creativecontrol:
     aliases: [cc, ccontrol]
