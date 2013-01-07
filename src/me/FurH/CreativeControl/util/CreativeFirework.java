@@ -27,15 +27,19 @@ public class CreativeFirework {
 
         for (FireworkEffect effect : meta.getEffects()) {
 
-            List<Integer> colors = new ArrayList<Integer>();
+            String colors = "[";
             for (Color color : effect.getColors()) {
-                colors.add(getColor(color));
+                colors += getColor(color) + "!";
             }
+            if (!colors.equals("[")) { colors = colors.substring(0, colors.length() - 1); }
+            colors += "]";
 
-            List<Integer> fadecolors = new ArrayList<Integer>();
+            String fadecolors = "[";
             for (Color color : effect.getFadeColors()) {
-                fadecolors.add(getColor(color));
+                fadecolors += getColor(color) + "!";
             }
+            if (!fadecolors.equals("[")) { fadecolors = fadecolors.substring(0, fadecolors.length() - 1); }
+            fadecolors += "]";
 
             String ef = "{"+getType(effect.getType()) +
                     ";" + colors +
@@ -66,12 +70,12 @@ public class CreativeFirework {
             
             builder.with(getType(Integer.parseInt(data[0])));
             
-            for (String color : CreativeUtil.toStringHashSet(data[1], ", ")) {
-                builder.withColor(getColor(Integer.parseInt(color)));
+            for (String color : Arrays.asList(data[1].substring(1, data[1].length() - 1).split("!"))) {
+                if (!color.isEmpty()) { builder.withColor(getColor(Integer.parseInt(color))); }
             }
             
-            for (String color : CreativeUtil.toStringHashSet(data[2], ", ")) {
-                builder.withFade(getColor(Integer.parseInt(color)));
+            for (String color : Arrays.asList(data[2].substring(1, data[2].length() - 1).split("!"))) {
+                if (!color.isEmpty()) { builder.withFade(getColor(Integer.parseInt(color))); }
             }
             
             builder.flicker(Integer.parseInt(data[3]) == 1);
