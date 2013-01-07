@@ -27,6 +27,7 @@ import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.configuration.CreativeMainConfig;
 import me.FurH.CreativeControl.database.CreativeSQLDatabase;
 import me.FurH.CreativeControl.util.CreativeCommunicator;
+import me.FurH.CreativeControl.util.CreativeFirework;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -299,6 +300,15 @@ public class CreativePlayerData {
         String durability = inv[3];
         String enchantments = inv[4];
         
+        boolean firework = false;
+        try {
+            String fire = inv[5];
+            String work = inv[6];
+            firework = true;
+        } catch (Exception ex) {
+            firework = false;
+        }
+        
         if (!string.equals("0:0:0:1:[]")) {
             try {
                 stack = new ItemStack(Integer.parseInt(id));
@@ -337,6 +347,9 @@ public class CreativePlayerData {
                     }
                 }
             }
+            if (firework) {
+                stack = CreativeFirework.getFireWork(stack, string);
+            }
         }
 
         return stack;
@@ -373,6 +386,12 @@ public class CreativePlayerData {
             enchantments.add(key.getName() + "=" + e1.get(key));
         }
         
-        return ("'"+type+":"+data+":"+amount+":"+durability+":"+enchantments+"'").replaceAll("[^a-zA-Z0-9:,_=\\[\\]]", "");
+        String ret = ("'"+type+":"+data+":"+amount+":"+durability+":"+enchantments+"'").replaceAll("[^a-zA-Z0-9:,_=\\[\\]]", "");
+        
+        if (item.getType() == Material.FIREWORK) {
+            ret = CreativeFirework.getFireWork(ret, item);
+        }
+
+        return ret;
     }
 }
