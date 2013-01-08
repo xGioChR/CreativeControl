@@ -448,7 +448,7 @@ public final class CreativeSQLDatabase {
 
                 if (query.startsWith("blocks")) {
                     String location = query.substring(6);
-                    query = "DELETE QUICK FROM `"+prefix+"blocks` WHERE location = '"+location+"'";
+                    query = "DELETE FROM `"+prefix+"blocks` WHERE location = '"+location+"'";
                 }
 
                 if (!agres) {
