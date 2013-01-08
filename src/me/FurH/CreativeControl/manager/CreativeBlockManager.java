@@ -320,7 +320,7 @@ public class CreativeBlockManager {
     public void delBlock(String location) {
         CreativeSQLDatabase  db         = CreativeControl.getDb();
         CreativeControl.getCache().remove(location);
-        db.executeQuery("DELETE FROM `"+db.prefix+"blocks` WHERE location = '" + location + "'");
+        db.executeQuery("blocks" + location);
         total--;
     }
 
@@ -346,9 +346,11 @@ public class CreativeBlockManager {
         total = 0;
 
         try {
-            ResultSet rs = db.getQuery("SELECT type FROM `"+db.prefix+"blocks` ORDER BY type DESC");
+            ResultSet rs = db.getQuery("SELECT location FROM `"+db.prefix+"blocks` ORDER BY type DESC");
             while (rs.next()) {
-                total++;
+                if (!db.locations.contains(rs.getString("location"))) {
+                    total++;
+                }
             }
         } catch (SQLException ex) {
             CreativeCommunicator com        = CreativeControl.getCommunicator();
@@ -364,10 +366,12 @@ public class CreativeBlockManager {
         CreativeSQLDatabase  db         = CreativeControl.getDb();
 
         try {
-            ResultSet rs = db.getQuery("SELECT type FROM `"+db.prefix+"blocks` ORDER BY type DESC");
+            ResultSet rs = db.getQuery("SELECT type, location FROM `"+db.prefix+"blocks` ORDER BY type DESC");
             while (rs.next()) {
-                int id = rs.getInt("type");
-                ids.add(id);
+                if (!db.locations.contains(rs.getString("location"))) {
+                    int id = rs.getInt("type");
+                    ids.add(id);
+                }
             }
         } catch (SQLException ex) {
             CreativeCommunicator com        = CreativeControl.getCommunicator();
@@ -389,23 +393,25 @@ public class CreativeBlockManager {
             ResultSet rs = db.getQuery("SELECT id, owner, location, allowed FROM `"+db.prefix+"blocks` ORDER BY id DESC LIMIT " + config.cache_precache);
             while (rs.next()) {
                 String location = rs.getString("location");
-                Location loc = CreativeUtil.getLocation(location);
-                if (loc != null) {
-                    CreativeWorldNodes nodes = CreativeWorldConfig.get(loc.getWorld());
-                    if (nodes.block_ownblock) {
-                        String owner = rs.getString("owner");
-                        String allowed = rs.getString("allowed");
+                if (!db.locations.contains(location)) {
+                    Location loc = CreativeUtil.getLocation(location);
+                    if (loc != null) {
+                        CreativeWorldNodes nodes = CreativeWorldConfig.get(loc.getWorld());
+                        if (nodes.block_ownblock) {
+                            String owner = rs.getString("owner");
+                            String allowed = rs.getString("allowed");
 
-                        if (allowed != null || !"[]".equals(allowed) || !"".equals(allowed)) {
-                            cache.add(location, new String[] { owner, allowed });
-                        } else {
-                            cache.add(location, new String[] { owner });
+                            if (allowed != null || !"[]".equals(allowed) || !"".equals(allowed)) {
+                                cache.add(location, new String[] { owner, allowed });
+                            } else {
+                                cache.add(location, new String[] { owner });
+                            }
+                        } else
+                        if (nodes.block_nodrop) {
+                            cache.add(location);
                         }
-                    } else
-                    if (nodes.block_nodrop) {
-                        cache.add(location);
+                        ret++;
                     }
-                    ret++;
                 }
             }
         } catch (SQLException ex) {

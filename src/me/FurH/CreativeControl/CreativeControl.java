@@ -186,6 +186,8 @@ public class CreativeControl extends JavaPlugin {
         if (!updater.lock) {
             updater.loadup();
         }
+        
+        database.locations.clear();
     }
     
     @Override

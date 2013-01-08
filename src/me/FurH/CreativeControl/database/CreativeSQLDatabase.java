@@ -24,6 +24,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
@@ -214,10 +215,10 @@ public final class CreativeSQLDatabase {
                     last = process;
                 }
 
-                if (!query.contains("DELETE")) {
+                if (!query.startsWith("blocks")) {
                     executeQuery(query, true, true);
                 } else {
-                    queries.add(query); //DELETE queries are slow
+                    queries.add(query.substring(6)); //DELETE queries are slow
                 }
             }
 
@@ -253,23 +254,23 @@ public final class CreativeSQLDatabase {
     /*
      * load flatfiles with what was left of the queue
      */
+    public HashSet<String> locations = new HashSet<String>();
     public void loadFiles() {
         CreativeCommunicator com    = CreativeControl.getCommunicator();
         
         File data = new File(plugin.getDataFolder() + File.separator + "queue", "");
         if (!data.exists()) { return; }
         
+        com.log("[TAG] Importing queue from file...");
         for (File file : data.listFiles()) {
             if (file.getName().endsWith(".sql")) {
                 try {
-                    com.log("[TAG] Importing queue from the file: {0}", file.getName());
                     BufferedReader reader = new BufferedReader(new FileReader(file));
                     String line = null;
-                    
+
                     while ((line = reader.readLine()) != null) {
-                        if (line.startsWith("DELETE")) {
-                            queue.add(line);
-                        }
+                        queue.add("blocks"+line+"");
+                        locations.add(line);
                     }
 
                     reader.close();
@@ -306,11 +307,7 @@ public final class CreativeSQLDatabase {
             BufferedWriter bw = new BufferedWriter(fw);
             
             for (String s : queries) {
-                if (s.endsWith(";")) {
-                    bw.write(s + l);
-                } else {
-                    bw.write(s + ";" + l);
-                }
+                bw.write(s + l);
             }
             
         } catch (IOException ex) {
@@ -439,7 +436,7 @@ public final class CreativeSQLDatabase {
         executeQuery(query, b, false);
     }
     
-    public void executeQuery(final String query, boolean b, boolean agres) {
+    public void executeQuery(String query, boolean b, boolean agres) {
         if (b) {
             double start = System.currentTimeMillis();
             
@@ -448,6 +445,12 @@ public final class CreativeSQLDatabase {
             
             writes++;
             try {
+
+                if (query.startsWith("blocks")) {
+                    String location = query.substring(6);
+                    query = "DELETE QUICK FROM `"+prefix+"blocks` WHERE location = '"+location+"'";
+                }
+
                 if (!agres) {
                     ps = connection.prepareStatement(query);
                     ps.execute();
