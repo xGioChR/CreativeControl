@@ -68,7 +68,7 @@ PlayerData:
 ## Performance monitor
 Monitor:
   ## Enabled the performance monitor
-  Enabled: true
+  Enabled: false
   Track:
     ## Track event times
     Events: true

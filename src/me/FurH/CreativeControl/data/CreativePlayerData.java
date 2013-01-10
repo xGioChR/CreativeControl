@@ -365,7 +365,7 @@ public class CreativePlayerData {
                         String lvl = split[1];
                         try {
                             Enchantment ext = Enchantment.getByName(name);
-                            stack.addEnchantment(ext, Integer.parseInt(lvl));
+                            stack.addUnsafeEnchantment(ext, Integer.parseInt(lvl));
                         } catch (Exception ex) {
                             com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
                                     "[TAG] Invalid Enchantment: {0} level {1}, {2}", ex, name, lvl, ex.getMessage());

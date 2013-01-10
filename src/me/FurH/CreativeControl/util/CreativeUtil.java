@@ -22,9 +22,13 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.HashSet;
 import me.FurH.CreativeControl.CreativeControl;
+import me.FurH.CreativeControl.cache.CreativeBlockCache;
 import me.FurH.CreativeControl.configuration.CreativeWorldConfig;
 import me.FurH.CreativeControl.configuration.CreativeWorldNodes;
+import me.FurH.CreativeControl.database.CreativeSQLDatabase;
+import me.FurH.CreativeControl.manager.CreativeBlockManager;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -184,9 +188,27 @@ public class CreativeUtil {
             
             File root = new File("/");
 
+            int creative = 0;
+            int survival = 0;
+            int totalp = Bukkit.getOnlinePlayers().length;
+
+            for (Player p : Bukkit.getOnlinePlayers()) {
+                if (p.getGameMode().equals(GameMode.CREATIVE)) {
+                    creative++;
+                } else {
+                    survival++;
+                }
+            }
+            
+            CreativeBlockManager manager = CreativeControl.getManager();
+            CreativeBlockCache cache = CreativeControl.getCache();
+            CreativeSQLDatabase db = CreativeControl.getDb();
+            
             bw.write(format2 +l);
             bw.write("	=============================[ ERROR INFORMATION ]============================="+l);
             bw.write("	- Plugin: " + plugin.getDescription().getFullName() + " (Latest: " + plugin.getVersion("1.0") + ")" +l);
+            bw.write("	- Uptime: " + getUptime()+l);
+            bw.write("	- Players: "+totalp+" ("+creative+" Creative, "+survival+" Survival)"+l);
             bw.write("	- Error Message: " + ex.getMessage() +l);
             bw.write("	- Location: " + className + ", Line: " + line + ", Method: " + method +l);
             bw.write("	- Comment: " + message +l);
@@ -215,6 +237,18 @@ public class CreativeUtil {
                 bw.write("			Entity Count: " + w.getEntities().size() +l);
                 bw.write("			Loaded Chunks: " + w.getLoadedChunks().length +l);
             }
+            bw.write("	=============================[  SQL INFORMATION  ]============================="+l);
+            bw.write("	- Cache Status:"+l);
+            bw.write("		Read: " + cache.getReads() +l);
+            bw.write("		Writes: " + cache.getWrites() +l);
+            bw.write("		Capacity: " + cache.getSize() + "/" + cache.getMaxSize() +l);
+            bw.write("	- SQL Status:"+l);
+            bw.write("		Type: " + db.type +l);
+            bw.write("		Queue Size: " + db.getQueue() +l);
+            bw.write("		Reads: " + db.getReads() +l);
+            bw.write("		Writes: " + db.getWrites() +l);
+            bw.write("		SQL Cache: " + db.getSize() +l);
+            bw.write("		Total Blocks: " + manager.getTotal() +l);
             bw.write("	=============================[ ERROR  STACKTRACE ]============================="+l);
             for (StackTraceElement element : st) {
                 bw.write("		- " + element.toString()+l);

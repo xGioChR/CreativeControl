@@ -129,6 +129,7 @@ public class CreativePerformance {
             bw.write("		Writes: " + cache.getWrites() +l);
             bw.write("		Capacity: " + cache.getSize() + "/" + cache.getMaxSize() +l);
             bw.write("	- SQL Status:"+l);
+            bw.write("		Type: " + db.type +l);
             bw.write("		Queue Size: " + db.getQueue() +l);
             bw.write("		Reads: " + db.getReads() +l);
             bw.write("		Writes: " + db.getWrites() +l);
