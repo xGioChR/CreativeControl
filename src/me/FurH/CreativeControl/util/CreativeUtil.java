@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.cache.CreativeBlockCache;
+import me.FurH.CreativeControl.configuration.CreativeMainConfig;
 import me.FurH.CreativeControl.configuration.CreativeWorldConfig;
 import me.FurH.CreativeControl.configuration.CreativeWorldNodes;
 import me.FurH.CreativeControl.database.CreativeSQLDatabase;
@@ -177,6 +178,22 @@ public class CreativeUtil {
             }
         }
         
+        CreativeMainConfig config = CreativeControl.getMainConfig();
+        boolean local = false;
+        
+        if (!config.database_mysql) {
+            local = true;
+        } else
+        if ("localhost".equals(config.database_host)) {
+            local = true;
+        } else
+        if ("127.0.0.1".equals(config.database_host)) {
+            local = true;
+        } else
+        if (Bukkit.getServer().getIp().equals(config.database_host)) {
+            local = true;
+        }
+
         try {
             StackTraceElement[] st = ex.getStackTrace();
             String l = System.getProperty("line.separator");
@@ -244,6 +261,7 @@ public class CreativeUtil {
             bw.write("		Capacity: " + cache.getSize() + "/" + cache.getMaxSize() +l);
             bw.write("	- SQL Status:"+l);
             bw.write("		Type: " + db.type +l);
+            bw.write("		Local: " + local +l);
             bw.write("		Queue Size: " + db.getQueue() +l);
             bw.write("		Reads: " + db.getReads() +l);
             bw.write("		Writes: " + db.getWrites() +l);
