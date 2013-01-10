@@ -543,7 +543,6 @@ public final class CreativeSQLDatabase {
                 while (!lock.get()) {
                     try {
                         if (queue.isEmpty()) {
-                            System.out.println("COMMIT");
                             connection.commit();
                             Thread.sleep(sleep);
                             continue;
@@ -552,7 +551,6 @@ public final class CreativeSQLDatabase {
                         String query = queue.poll();
 
                         if (query == null) {
-                            System.out.println("COMMIT");
                             connection.commit();
                             Thread.sleep(sleep);
                             continue;
@@ -568,7 +566,6 @@ public final class CreativeSQLDatabase {
                         }
                         
                         if (count >= limit) {
-                            System.out.println("COMMIT");
                             connection.commit();
                             count = 0;
                             Thread.sleep(sleep);
