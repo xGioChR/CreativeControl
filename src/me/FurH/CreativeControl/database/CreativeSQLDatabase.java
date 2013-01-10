@@ -108,7 +108,8 @@ public final class CreativeSQLDatabase {
 
         if (connection != null) {
             try {
-                connection.setAutoCommit(true);
+                connection.setAutoCommit(false);
+                connection.commit();
             } catch (SQLException ex) {
                 com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
                         "[TAG] Failed to commit the "+(type == Type.SQLite ? "SQLite" : "MySQL")+" database, {0}", ex, ex.getMessage());
@@ -193,7 +194,6 @@ public final class CreativeSQLDatabase {
             double last = 0;
 
             try {
-                connection.setAutoCommit(false);
                 connection.commit();
             } catch (SQLException ex) {
                 com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
@@ -227,7 +227,7 @@ public final class CreativeSQLDatabase {
             }
 
             try {
-                connection.setAutoCommit(true);
+                connection.commit();
             } catch (SQLException ex) {
                 com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
                         "[TAG] Failed to set AutoCommit, {0}.", ex, ex.getMessage());
@@ -543,6 +543,8 @@ public final class CreativeSQLDatabase {
                 while (!lock.get()) {
                     try {
                         if (queue.isEmpty()) {
+                            System.out.println("COMMIT");
+                            connection.commit();
                             Thread.sleep(sleep);
                             continue;
                         }
@@ -550,6 +552,8 @@ public final class CreativeSQLDatabase {
                         String query = queue.poll();
 
                         if (query == null) {
+                            System.out.println("COMMIT");
+                            connection.commit();
                             Thread.sleep(sleep);
                             continue;
                         }
@@ -564,6 +568,8 @@ public final class CreativeSQLDatabase {
                         }
                         
                         if (count >= limit) {
+                            System.out.println("COMMIT");
+                            connection.commit();
                             count = 0;
                             Thread.sleep(sleep);
                         }

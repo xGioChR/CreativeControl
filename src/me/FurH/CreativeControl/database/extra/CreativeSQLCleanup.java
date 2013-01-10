@@ -81,9 +81,6 @@ public class CreativeSQLCleanup implements Runnable {
             lock = false;
             return;
         }
-        if (true) {
-            return;
-        }
 
         //CreativeBlockManager manager = CreativeControl.getManager();
         elapsedTime = (System.currentTimeMillis() - startTimer);
@@ -107,7 +104,6 @@ public class CreativeSQLCleanup implements Runnable {
         double last = 0;
         
         try {
-            db.connection.setAutoCommit(false);
             db.connection.commit();
         } catch (SQLException ex) {
             com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
@@ -163,7 +159,7 @@ public class CreativeSQLCleanup implements Runnable {
         }
 
         try {
-            db.connection.setAutoCommit(true);
+            db.connection.commit();
         } catch (SQLException ex) {
             com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
                     "[TAG] Failed to set AutoCommit, {0}.", ex, ex.getMessage());

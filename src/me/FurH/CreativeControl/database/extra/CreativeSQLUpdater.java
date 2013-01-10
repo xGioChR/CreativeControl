@@ -78,13 +78,12 @@ public class CreativeSQLUpdater {
             double last = 0;
 
             try {
-                db.connection.setAutoCommit(false);
                 db.connection.commit();
             } catch (SQLException ex) {
                 com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
                         "[TAG] Failed to set AutoCommit and commit the database, {0}.", ex, ex.getMessage());
             }
-            
+
             while (rs.next()) {
                 done++; db.reads++;
                 process = ((done / total) * 100.0D);
@@ -131,7 +130,7 @@ public class CreativeSQLUpdater {
         db.executeQuery("ALTER TABLE `CreativeControl` RENAME TO `"+db.prefix+"old`", true);
 
         try {
-            db.connection.setAutoCommit(true);
+            db.connection.commit();
         } catch (SQLException ex) {
             com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
                     "[TAG] Failed to set AutoCommit, {0}.", ex, ex.getMessage());

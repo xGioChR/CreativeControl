@@ -164,7 +164,7 @@ public final class CreativeSQLMigrator implements Runnable {
         }
 
         try {
-            to.setAutoCommit(true);
+            to.commit();
         } catch (SQLException ex) {
             com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
                     "[TAG] Failed to set AutoCommit, {0}.", ex, ex.getMessage());
