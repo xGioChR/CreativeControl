@@ -403,23 +403,15 @@ public class CreativeControl extends JavaPlugin {
                 Player p = (Player) sender;
                 if (p.isOp()) {
                     if (mainconfig.perm_ophas) {
-                        return true;
+                        return p.hasPermission("CreativeControl."+perm);
                     } else {
                         return false;
                     }
                 } else {
                     if (permission != null) {
-                        if (permission.has(p, "CreativeControl."+perm)) {
-                            return true;
-                        } else {
-                            return false;
-                        }
+                        return permission.has(p, "CreativeControl."+perm);
                     } else {
-                        if (p.hasPermission("CreativeControl."+perm)) {
-                            return true;
-                        } else {
-                            return false;
-                        }
+                        return p.hasPermission("CreativeControl."+perm);
                     }
                 }
             }
