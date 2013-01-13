@@ -79,6 +79,10 @@ public class CreativeFirework {
             }
             
             builder.flicker(Integer.parseInt(data[3]) == 1);
+            if (data[4].contains("}")) {
+                data[4] = data[4].substring(0, data[4].length() - 1);
+            }
+            
             builder.trail(Integer.parseInt(data[4]) == 1);
             
             meta.addEffect(builder.build());

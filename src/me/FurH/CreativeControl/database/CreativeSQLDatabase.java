@@ -378,7 +378,7 @@ public final class CreativeSQLDatabase {
 
         if (version) {
             if (getVersion() == -1) {
-                executeQuery("INSERT INTO `"+prefix+"internal` (version) VALUES ('"+version+"')", true);
+                executeQuery("INSERT INTO `"+prefix+"internal` (version) VALUES ('"+this.version+"')", true);
             }
         }
     }
