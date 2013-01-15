@@ -67,7 +67,12 @@ public class CreativeBlockCache {
         return cacheSize;
     }
 
-    public void clear() {
+    public int clear() {
+        int total = 0;
+        
+        total += cache.size();
         cache.clear();
+        
+        return total;
     }
 }

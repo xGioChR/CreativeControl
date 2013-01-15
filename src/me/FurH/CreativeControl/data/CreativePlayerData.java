@@ -16,14 +16,15 @@
 
 package me.FurH.CreativeControl.data;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import me.FurH.CreativeControl.CreativeControl;
+import me.FurH.CreativeControl.cache.CreativeLRUCache;
 import me.FurH.CreativeControl.configuration.CreativeMainConfig;
 import me.FurH.CreativeControl.database.CreativeSQLDatabase;
 import me.FurH.CreativeControl.util.CreativeCommunicator;
@@ -39,14 +40,29 @@ import org.bukkit.inventory.ItemStack;
  * @author FurmigaHumana
  */
 public class CreativePlayerData {
-    public ConcurrentHashMap<String, CreativePlayerCache> adventurer_cache = new ConcurrentHashMap<String, CreativePlayerCache>(1000);
-    public ConcurrentHashMap<String, CreativePlayerCache> creative_cache = new ConcurrentHashMap<String, CreativePlayerCache>(1000);
-    public ConcurrentHashMap<String, CreativePlayerCache> survival_cache = new ConcurrentHashMap<String, CreativePlayerCache>(1000);
+    public CreativeLRUCache<String, CreativePlayerCache> adventurer_cache = new CreativeLRUCache<String, CreativePlayerCache>(1000);
+    public CreativeLRUCache<String, CreativePlayerCache> creative_cache = new CreativeLRUCache<String, CreativePlayerCache>(1000);
+    public CreativeLRUCache<String, CreativePlayerCache> survival_cache = new CreativeLRUCache<String, CreativePlayerCache>(1000);
 
     public void clear() {
         adventurer_cache.clear();
         creative_cache.clear();
         survival_cache.clear();
+    }
+    
+    public int saveRam() {
+        int total = 0;
+        
+        total += adventurer_cache.size();
+        adventurer_cache.clear();
+        
+        total += creative_cache.size();
+        creative_cache.clear();
+        
+        total += survival_cache.size();
+        survival_cache.clear();
+        
+        return total;
     }
     
     public void process(Player player, GameMode newgm, GameMode oldgm) {
@@ -65,10 +81,10 @@ public class CreativePlayerData {
                 
                 cache = newCache(p, cache);
                 adventurer_cache.put(cache.name, cache);
-                
+
                 String query = "INSERT INTO `"+db.prefix+"players_adventurer` (player, health, foodlevel, exhaustion, saturation, experience, armor, inventory) VALUES "
                         + "('"+cache.name+"', '"+cache.health+"', '"+cache.food+"', '"+cache.ex+"', '"+cache.sat+"', '" + cache.exp +"', '"+ toListString(cache.armor) +"', '"+ toListString(cache.items) +"');";
-                
+
                 db.executeQuery(query, true);
                 return true;
             } else {
@@ -170,9 +186,12 @@ public class CreativePlayerData {
         CreativeSQLDatabase db = CreativeControl.getDb();
         
         if (cache == null) {
+            PreparedStatement ps = null;
             ResultSet rs = null;
             try {
-                rs = db.getQuery("SELECT * FROM `"+db.prefix+"players_adventurer` WHERE player = '" + player.toLowerCase() + "'");
+                ps = db.getQuery("SELECT * FROM `"+db.prefix+"players_adventurer` WHERE player = '" + player.toLowerCase() + "'");
+                rs = ps.getResultSet();
+                
                 if (rs.next()) {
                     cache = new CreativePlayerCache();
                     cache.id = rs.getInt("id");
@@ -196,6 +215,11 @@ public class CreativePlayerData {
                         rs.close();
                     } catch (SQLException ex) { }
                 }
+                if (ps != null) {
+                    try {
+                        ps.close();
+                    } catch (SQLException ex) { }
+                }
             }
         }
         return cache;
@@ -207,9 +231,12 @@ public class CreativePlayerData {
         CreativeSQLDatabase db = CreativeControl.getDb();
         
         if (cache == null) {
+            PreparedStatement ps = null;
             ResultSet rs = null;
             try {
-                rs = db.getQuery("SELECT * FROM `"+db.prefix+"players_survival` WHERE player = '" + player.toLowerCase() + "'");
+                ps = db.getQuery("SELECT * FROM `"+db.prefix+"players_survival` WHERE player = '" + player.toLowerCase() + "'");
+                rs = ps.getResultSet();
+                
                 if (rs.next()) {
                     cache = new CreativePlayerCache();
                     cache.id = rs.getInt("id");
@@ -223,6 +250,7 @@ public class CreativePlayerData {
                     cache.items = toArrayStack(rs.getString("inventory"));
                     survival_cache.put(cache.name, cache);
                 }
+
             } catch (SQLException ex) {
                 com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
                         "[TAG] Failed to get the data from the database, {0}", ex, ex.getMessage());
@@ -231,6 +259,11 @@ public class CreativePlayerData {
                 if (rs != null) {
                     try {
                         rs.close();
+                    } catch (SQLException ex) { }
+                }
+                if (ps != null) {
+                    try {
+                        ps.close();
                     } catch (SQLException ex) { }
                 }
             }
@@ -244,9 +277,12 @@ public class CreativePlayerData {
         CreativeSQLDatabase db = CreativeControl.getDb();
 
         if (cache == null) {
+            PreparedStatement ps = null;
             ResultSet rs = null;
             try {
-                rs = db.getQuery("SELECT * FROM `"+db.prefix+"players_creative` WHERE player = '" + player.toLowerCase() + "'");
+                ps = db.getQuery("SELECT * FROM `"+db.prefix+"players_creative` WHERE player = '" + player.toLowerCase() + "'");
+                rs = ps.getResultSet();
+
                 if (rs.next()) {
                     cache = new CreativePlayerCache();
                     cache.id = rs.getInt("id");
@@ -255,6 +291,7 @@ public class CreativePlayerData {
                     cache.items = toArrayStack(rs.getString("inventory"));
                     creative_cache.put(cache.name, cache);
                 }
+
             } catch (SQLException ex) {
                 com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
                         "[TAG] Failed to get the data from the database, {0}", ex, ex.getMessage());
@@ -263,6 +300,11 @@ public class CreativePlayerData {
                 if (rs != null) {
                     try {
                         rs.close();
+                    } catch (SQLException ex) { }
+                }
+                if (ps != null) {
+                    try {
+                        ps.close();
                     } catch (SQLException ex) { }
                 }
             }

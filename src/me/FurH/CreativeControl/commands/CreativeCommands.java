@@ -17,9 +17,12 @@
 package me.FurH.CreativeControl.commands;
 
 import com.sk89q.worldedit.bukkit.selections.Selection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.cache.CreativeBlockCache;
 import me.FurH.CreativeControl.configuration.CreativeMainConfig;
@@ -266,18 +269,19 @@ public class CreativeCommands implements CommandExecutor {
                                         HashSet<String> list = CreativeUtil.toStringHashSet(args[2], ", ");
                                         friends.saveFriends(sender.getName(), list);
                                         msg(sender, messages.commands_fadd_added, args[2]);
+                                        list.clear(); list = null;
                                         return true;
                                     } else {
                                         HashSet<String> list = friends.getFriends(sender.getName());
                                         if (list.contains(args[2])) {
                                             msg(sender, messages.commands_fadd_already, args[2]);
-                                            return true;
                                         } else {
                                             list.add(args[2]);
                                             friends.saveFriends(sender.getName(), list);
                                             msg(sender, messages.commands_fadd_added, args[2]);
-                                            return true;
                                         }
+                                        list.clear(); list = null;
+                                        return true;
                                     }
                                 }
                             }
@@ -310,11 +314,10 @@ public class CreativeCommands implements CommandExecutor {
                                             list.remove(args[2]);
                                             friends.saveFriends(sender.getName(), list);
                                             msg(sender, messages.commands_frem_removed, args[2]);
-                                            return true;
                                         } else {
                                             msg(sender, messages.commands_frem_notin, args[2]);
-                                            return true;
                                         }
+                                        list.clear(); list = null;
                                     }
                                 }
                             }
@@ -382,14 +385,19 @@ public class CreativeCommands implements CommandExecutor {
                                                 long elapsedTime = 0;
                                                 
                                                 msg(sender, messages.updater_loading);
+                                                
+                                                PreparedStatement ps = null;
                                                 ResultSet rs = null;
                                                 try {
-                                                    rs = db.getQuery("SELECT * FROM `"+db.prefix+"blocks` WHERE owner = '"+sender.getName().toLowerCase()+"'");
+                                                    ps = db.getQuery("SELECT * FROM `"+db.prefix+"blocks` WHERE owner = '"+sender.getName().toLowerCase()+"'");
+                                                    rs = ps.getResultSet();
+
                                                     while (rs.next()) {
                                                         locations.add(rs.getString("location"));
                                                         backup.add("INSERT INTO `"+db.prefix+"blocks` (id, owner, location, type, allowed, time) VALUES ('"+rs.getInt("id")+"',"
                                                                 + " '"+rs.getString("owner")+"', '"+rs.getString("location")+"', '"+rs.getInt("type")+"', '"+rs.getString("allowed")+"', '"+rs.getString("time")+"')");
                                                     }
+                                                    
                                                 } catch (SQLException ex) {
                                                     com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
                                                             "[TAG] Failed to get the block from the database, {0}", ex, ex.getMessage());
@@ -398,6 +406,11 @@ public class CreativeCommands implements CommandExecutor {
                                                     if (rs != null) {
                                                         try {
                                                             rs.close();
+                                                        } catch (SQLException ex) { }
+                                                    }
+                                                    if (ps != null) {
+                                                        try {
+                                                            ps.close();
                                                         } catch (SQLException ex) { }
                                                     }
                                                 }
@@ -420,7 +433,10 @@ public class CreativeCommands implements CommandExecutor {
                                                 
                                                 String query = "UPDATE `"+db.prefix+"blocks` SET owner = '"+args[3].toLowerCase()+"' WHERE owner = '"+sender.getName().toLowerCase()+"'";
                                                 db.executeQuery(query);
-                                                
+
+                                                locations.clear(); locations = null;
+                                                backup.clear(); backup = null;
+
                                                 msg(sender, messages.commands_cleanup_processed);
                                                 return true;
                                             }
@@ -665,14 +681,20 @@ public class CreativeCommands implements CommandExecutor {
                                     long elapsedTime = 0;
 
                                     msg(sender, messages.updater_loading);
+                                    
+                                    PreparedStatement ps = null;
                                     ResultSet rs = null;
+                                    
                                     try {
-                                        rs = db.getQuery("SELECT * FROM `"+db.prefix+"blocks` WHERE type = '"+args[2].toLowerCase()+"'");
+                                        ps = db.getQuery("SELECT * FROM `"+db.prefix+"blocks` WHERE type = '"+args[2].toLowerCase()+"'");
+                                        rs = ps.getResultSet();
+                                        
                                         while (rs.next()) {
                                             locations.add(rs.getString("location"));
                                             backup.add("INSERT INTO `"+db.prefix+"blocks` (id, owner, location, type, allowed, time) VALUES ('"+rs.getInt("id")+"',"
                                                     + " '"+rs.getString("owner")+"', '"+rs.getString("location")+"', '"+rs.getInt("type")+"', '"+rs.getString("allowed")+"', '"+rs.getString("time")+"')");
                                         }
+
                                     } catch (SQLException ex) {
                                         com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
                                                 "[TAG] Failed to get the block from the database, {0}", ex, ex.getMessage());
@@ -681,6 +703,11 @@ public class CreativeCommands implements CommandExecutor {
                                         if (rs != null) {
                                             try {
                                                 rs.close();
+                                            } catch (SQLException ex) { }
+                                        }
+                                        if (ps != null) {
+                                            try {
+                                                ps.close();
                                             } catch (SQLException ex) { }
                                         }
                                     }
@@ -702,6 +729,9 @@ public class CreativeCommands implements CommandExecutor {
                                         cache.remove(location);
                                         db.executeQuery(query);
                                     }
+                                    
+                                    locations.clear(); locations = null;
+                                    backup.clear(); backup = null;
                                     
                                     msg(sender, messages.commands_cleanup_processed);
                                     return true;
@@ -735,14 +765,20 @@ public class CreativeCommands implements CommandExecutor {
                                     long elapsedTime = 0;
 
                                     msg(sender, messages.updater_loading);
+                                    
+                                    PreparedStatement ps = null;
                                     ResultSet rs = null;
+                                    
                                     try {
-                                        rs = db.getQuery("SELECT * FROM `"+db.prefix+"blocks` WHERE owner = '"+args[2].toLowerCase()+"'");
+                                        ps = db.getQuery("SELECT * FROM `"+db.prefix+"blocks` WHERE owner = '"+args[2].toLowerCase()+"'");
+                                        rs = ps.getResultSet();
+                                        
                                         while (rs.next()) {
                                             locations.add(rs.getString("location"));
                                             backup.add("INSERT INTO `"+db.prefix+"blocks` (id, owner, location, type, allowed, time) VALUES ('"+rs.getInt("id")+"',"
                                                     + " '"+rs.getString("owner")+"', '"+rs.getString("location")+"', '"+rs.getInt("type")+"', '"+rs.getString("allowed")+"', '"+rs.getString("time")+"')");
                                         }
+                                        
                                     } catch (SQLException ex) {
                                         com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
                                                 "[TAG] Failed to get the block from the database, {0}", ex, ex.getMessage());
@@ -751,6 +787,11 @@ public class CreativeCommands implements CommandExecutor {
                                         if (rs != null) {
                                             try {
                                                 rs.close();
+                                            } catch (SQLException ex) { }
+                                        }
+                                        if (ps != null) {
+                                            try {
+                                                ps.close();
                                             } catch (SQLException ex) { }
                                         }
                                     }
@@ -772,6 +813,9 @@ public class CreativeCommands implements CommandExecutor {
                                         cache.remove(location);
                                         db.executeQuery(query);
                                     }
+                                    
+                                    locations.clear(); locations = null;
+                                    backup.clear(); backup = null;
                                     
                                     msg(sender, messages.commands_cleanup_processed);
                                     return true;
@@ -805,9 +849,14 @@ public class CreativeCommands implements CommandExecutor {
                                     long elapsedTime = 0;
 
                                     msg(sender, messages.updater_loading);
+                                    
+                                    PreparedStatement ps = null;
                                     ResultSet rs = null;
+                                    
                                     try {
-                                        rs = db.getQuery("SELECT * FROM `"+db.prefix+"blocks`");
+                                        ps = db.getQuery("SELECT * FROM `"+db.prefix+"blocks`");
+                                        rs = ps.getResultSet();
+                                        
                                         while (rs.next()) {
                                             locations.add(rs.getString("location"));
                                             backup.add("INSERT INTO `"+db.prefix+"blocks` (id, owner, location, type, allowed, time) VALUES ('"+rs.getInt("id")+"',"
@@ -821,6 +870,11 @@ public class CreativeCommands implements CommandExecutor {
                                         if (rs != null) {
                                             try {
                                                 rs.close();
+                                            } catch (SQLException ex) { }
+                                        }
+                                        if (ps != null) {
+                                            try {
+                                                ps.close();
                                             } catch (SQLException ex) { }
                                         }
                                     }
@@ -845,6 +899,10 @@ public class CreativeCommands implements CommandExecutor {
                                             db.executeQuery(query);
                                         }
                                     }
+                                    
+                                    locations.clear(); locations = null;
+                                    backup.clear(); backup = null;
+                                    
                                     msg(sender, messages.commands_cleanup_processed);
                                     return true;
                                 }
@@ -1206,6 +1264,10 @@ public class CreativeCommands implements CommandExecutor {
                                                 }
 
                                                 setRegion(gmType.CREATIVE, args[3], start, end);
+                                                
+                                                start = null;
+                                                end = null;
+                                                
                                                 msg(sender, messages.commands_region_created, args[3]);
                                                 return true;
                                             }
@@ -1242,6 +1304,10 @@ public class CreativeCommands implements CommandExecutor {
                                                 }
 
                                                 setRegion(gmType.SURVIVAL, args[3], start, end);
+                                                
+                                                start = null;
+                                                end = null;
+                                                
                                                 msg(sender, messages.commands_region_created, args[3]);
                                                 return true;
                                             }

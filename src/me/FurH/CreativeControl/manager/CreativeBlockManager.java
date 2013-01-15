@@ -1,5 +1,6 @@
 package me.FurH.CreativeControl.manager;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -57,9 +58,12 @@ public class CreativeBlockManager {
 
         String[] ret = null;
         if (total > CreativeControl.getMainConfig().cache_precache) {
+            PreparedStatement ps = null;
             ResultSet rs = null;
             try {
-                rs = db.getQuery("SELECT owner, allowed FROM `"+db.prefix+"blocks` WHERE location = '" + location + "'");
+                ps = db.getQuery("SELECT owner, allowed FROM `"+db.prefix+"blocks` WHERE location = '" + location + "'");
+                rs = ps.getResultSet();
+                
                 if (rs.next()) {
                     String owner = rs.getString("owner");
                     String allowed = rs.getString("allowed");
@@ -78,6 +82,11 @@ public class CreativeBlockManager {
                 if (rs != null) {
                     try {
                         rs.close();
+                    } catch (SQLException ex) { }
+                }
+                if (ps != null) {
+                    try {
+                        ps.close();
                     } catch (SQLException ex) { }
                 }
             }
@@ -207,9 +216,12 @@ public class CreativeBlockManager {
     public String[] getFullData(String location) {    
         CreativeSQLDatabase  db         = CreativeControl.getDb();
         String[] ret = null;
+        PreparedStatement ps = null;
         ResultSet rs = null;
         try {
-            rs = db.getQuery("SELECT owner, allowed, type, time FROM `"+db.prefix+"blocks` WHERE location = '" + location + "'");
+            ps = db.getQuery("SELECT owner, allowed, type, time FROM `"+db.prefix+"blocks` WHERE location = '" + location + "'");
+            rs = ps.getResultSet();
+            
             if (rs.next()) {
                 String owner = rs.getString("owner");
                 String allowed = rs.getString("allowed");
@@ -226,6 +238,11 @@ public class CreativeBlockManager {
             if (rs != null) {
                 try {
                     rs.close();
+                } catch (SQLException ex) { }
+            }
+            if (ps != null) {
+                try {
+                    ps.close();
                 } catch (SQLException ex) { }
             }
         }
@@ -345,8 +362,12 @@ public class CreativeBlockManager {
         CreativeSQLDatabase  db         = CreativeControl.getDb();
         total = 0;
 
+        PreparedStatement ps = null;
+        ResultSet rs = null;
         try {
-            ResultSet rs = db.getQuery("SELECT location FROM `"+db.prefix+"blocks` ORDER BY type DESC");
+            ps = db.getQuery("SELECT location FROM `"+db.prefix+"blocks` ORDER BY type DESC");
+            rs = ps.getResultSet();
+            
             while (rs.next()) {
                 if (!db.locations.contains(rs.getString("location"))) {
                     total++;
@@ -357,6 +378,17 @@ public class CreativeBlockManager {
             com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
                     "[TAG] Failed to get the block from the database, {0}", ex, ex.getMessage());
             if (!db.isOk()) { db.fix(); }
+        } finally {
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException ex) { }
+            }
+            if (ps != null) {
+                try {
+                    ps.close();
+                } catch (SQLException ex) { }
+            }
         }
 
         return total;
@@ -365,8 +397,12 @@ public class CreativeBlockManager {
     public int loadIds() {
         CreativeSQLDatabase  db         = CreativeControl.getDb();
 
+        PreparedStatement ps = null;
+        ResultSet rs = null;
         try {
-            ResultSet rs = db.getQuery("SELECT type, location FROM `"+db.prefix+"blocks` ORDER BY type DESC");
+            ps = db.getQuery("SELECT type, location FROM `"+db.prefix+"blocks` ORDER BY type DESC");
+            rs = ps.getResultSet();
+            
             while (rs.next()) {
                 if (!db.locations.contains(rs.getString("location"))) {
                     int id = rs.getInt("type");
@@ -378,6 +414,17 @@ public class CreativeBlockManager {
             com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
                     "[TAG] Failed to get the block from the database, {0}", ex, ex.getMessage());
             if (!db.isOk()) { db.fix(); }
+        } finally {
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException ex) { }
+            }
+            if (ps != null) {
+                try {
+                    ps.close();
+                } catch (SQLException ex) { }
+            }
         }
 
         return ids.size();
@@ -389,8 +436,12 @@ public class CreativeBlockManager {
         CreativeBlockCache   cache      = CreativeControl.getCache();
 
         int ret = 0;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
         try {
-            ResultSet rs = db.getQuery("SELECT id, owner, location, allowed FROM `"+db.prefix+"blocks` ORDER BY id DESC LIMIT " + config.cache_precache);
+            ps = db.getQuery("SELECT id, owner, location, allowed FROM `"+db.prefix+"blocks` ORDER BY id DESC LIMIT " + config.cache_precache);
+            rs = ps.getResultSet();
+            
             while (rs.next()) {
                 String location = rs.getString("location");
                 if (!db.locations.contains(location)) {
@@ -419,6 +470,17 @@ public class CreativeBlockManager {
             com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
                     "[TAG] Failed to get the block from the database, {0}", ex, ex.getMessage());
             if (!db.isOk()) { db.fix(); }
+        } finally {
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException ex) { }
+            }
+            if (ps != null) {
+                try {
+                    ps.close();
+                } catch (SQLException ex) { }
+            }
         }
         return ret;
     }

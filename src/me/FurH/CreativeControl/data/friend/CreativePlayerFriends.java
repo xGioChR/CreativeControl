@@ -16,11 +16,12 @@
 
 package me.FurH.CreativeControl.data.friend;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashSet;
-import java.util.concurrent.ConcurrentHashMap;
 import me.FurH.CreativeControl.CreativeControl;
+import me.FurH.CreativeControl.cache.CreativeLRUCache;
 import me.FurH.CreativeControl.database.CreativeSQLDatabase;
 import me.FurH.CreativeControl.util.CreativeCommunicator;
 import me.FurH.CreativeControl.util.CreativeUtil;
@@ -31,7 +32,7 @@ import org.bukkit.entity.Player;
  * @author FurmigaHumana
  */
 public class CreativePlayerFriends {
-    private ConcurrentHashMap<String, HashSet<String>> hascache = new ConcurrentHashMap<String, HashSet<String>>(500);
+    private CreativeLRUCache<String, HashSet<String>> hascache = new CreativeLRUCache<String, HashSet<String>>(500);
     
     public void uncache(Player p) {
         hascache.remove(p.getName().toLowerCase());
@@ -44,7 +45,7 @@ public class CreativePlayerFriends {
     public void saveFriends(String player, HashSet<String> friends) {
         CreativeSQLDatabase db = CreativeControl.getDb();
         
-        hascache.replace(player, friends);
+        hascache.put(player, friends);
 
         String query = "UPDATE `"+db.prefix+"friends` SET friends = '"+friends.toString()+"' WHERE player = '"+player.toLowerCase()+"'";
         db.executeQuery(query);
@@ -57,9 +58,11 @@ public class CreativePlayerFriends {
         CreativeSQLDatabase db = CreativeControl.getDb();
 
         if (friends == null) {
+            PreparedStatement ps = null;
             ResultSet rs = null;
             try {
-                rs = db.getQuery("SELECT * FROM `"+db.prefix+"friends` WHERE player = '" + player.toLowerCase() + "'");
+                ps = db.getQuery("SELECT * FROM `"+db.prefix+"friends` WHERE player = '" + player.toLowerCase() + "'");
+                rs = ps.getResultSet();
                 
                 if (rs.next()) {
                     friends = CreativeUtil.toStringHashSet(rs.getString("friends"), ", ");
@@ -77,6 +80,11 @@ public class CreativePlayerFriends {
                 if (rs != null) {
                     try {
                         rs.close();
+                    } catch (SQLException ex) { }
+                }
+                if (ps != null) {
+                    try {
+                        ps.close();
                     } catch (SQLException ex) { }
                 }
             }

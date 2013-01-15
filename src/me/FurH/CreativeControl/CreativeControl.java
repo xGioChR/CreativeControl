@@ -112,6 +112,30 @@ public class CreativeControl extends JavaPlugin {
     public String newversion;
 
     public boolean hasUpdate;
+    
+    public int saveRam() {
+        int total = 0;
+        
+        total += right.size();
+        right.clear();
+        
+        total += left.size();
+        left.clear();
+        
+        total += mods.size();
+        mods.clear();
+        
+        total += modsfastup.size();
+        modsfastup.clear();
+        
+        total += entity.size();
+        entity.clear();
+        
+        total += limits.size();
+        limits.clear();
+        
+        return total;
+    }
 
     @Override
     public void onEnable() {
@@ -202,7 +226,6 @@ public class CreativeControl extends JavaPlugin {
         cache.clear();
         data.clear();
         friends.clear();
-        database.clear();
         entity.clear();
         limits.clear();
         
@@ -224,7 +247,6 @@ public class CreativeControl extends JavaPlugin {
         cache.clear();
         data.clear();
         friends.clear();
-        database.clear();
         entity.clear();
         limits.clear();
         

@@ -60,11 +60,12 @@ public class CreativeSQLCleanup implements Runnable {
 
         CreativeSQLDatabase db = CreativeControl.getDb();
         CreativeBlockManager manager = CreativeControl.getManager();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
         try {
-            PreparedStatement ps = db.prepare("SELECT * FROM `"+db.prefix+"blocks` ORDER BY `id` DESC");
-            ps.execute();
-
-            ResultSet rs = ps.getResultSet();
+            ps = db.getQuery("SELECT * FROM `"+db.prefix+"blocks` ORDER BY `id` DESC");
+            rs = ps.getResultSet();
+            
             while (rs.next()) {
                 db.reads++;
                 manager.delBlock(rs.getString("location"));
@@ -73,13 +74,23 @@ public class CreativeSQLCleanup implements Runnable {
                         + " '"+rs.getString("owner")+"', '"+rs.getString("location")+"', '"+rs.getInt("type")+"', '"+rs.getString("allowed")+"', '"+rs.getString("time")+"')");
             }
             
-            rs.close();
         } catch (SQLException ex) {
             com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
                     "[TAG] Failed to load the protections, {0}", ex, ex.getMessage());
             com.msg(p, messages.updater_loadfailed);
             lock = false;
             return;
+        } finally {
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException ex) { }
+            }
+            if (ps != null) {
+                try {
+                    ps.close();
+                } catch (SQLException ex) { }
+            }
         }
 
         //CreativeBlockManager manager = CreativeControl.getManager();

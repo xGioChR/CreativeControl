@@ -16,6 +16,7 @@
 
 package me.FurH.CreativeControl.database.extra;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import me.FurH.CreativeControl.CreativeControl;
@@ -56,18 +57,23 @@ public class CreativeSQLUpdater {
         int sucess = 0;
         
         CreativeSQLDatabase db = CreativeControl.getDb();
-        
+        PreparedStatement ps = null;
+        PreparedStatement p1 = null;
+        ResultSet rs = null;
+        ResultSet counter = null;
         try {
             System.gc();
             double total = 0;
             
-            ResultSet counter = db.getQuery("SELECT * FROM `CreativeControl` ORDER BY `id` DESC");
+            p1 = db.getQuery("SELECT * FROM `CreativeControl` ORDER BY `id` DESC");
+            counter = p1.getResultSet();
+            
             while (counter.next()) {
                 total++;
             }
-            counter.close();
-            
-            ResultSet rs = db.getQuery("SELECT * FROM `CreativeControl` ORDER BY `id` DESC");
+
+            ps = db.getQuery("SELECT * FROM `CreativeControl` ORDER BY `id` DESC");
+            rs = ps.getResultSet();
 
             elapsedTime = (System.currentTimeMillis() - startTimer);
             com.msg(p, messages.updater_loaded, total, elapsedTime);
@@ -124,6 +130,27 @@ public class CreativeSQLUpdater {
                     "[TAG] Failed to load protections, {0}", ex, ex.getMessage());
             com.msg(p, messages.updater_loadfailed);
             lock = false;
+        } finally {
+            if (counter != null) {
+                try {
+                    counter.close();
+                } catch (SQLException ex) { }
+            }
+            if (p1 != null) {
+                try {
+                    p1.close();
+                } catch (SQLException ex) { }
+            }
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException ex) { }
+            }
+            if (ps != null) {
+                try {
+                    ps.close();
+                } catch (SQLException ex) { }
+            }
         }
 
         db.executeQuery("UPDATE `"+db.prefix+"internal` SET version = '"+db.version+"'", true);

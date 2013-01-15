@@ -20,9 +20,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashSet;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import me.FurH.CreativeControl.CreativeControl;
+import me.FurH.CreativeControl.cache.CreativeLRUCache;
 import me.FurH.CreativeControl.util.CreativeCommunicator;
 import me.FurH.CreativeControl.util.CreativeUtil;
 import org.bukkit.World;
@@ -34,7 +33,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
  * @author FurmigaHumana
  */
 public class CreativeWorldConfig {
-    private static Map<String, CreativeWorldNodes> cache = new ConcurrentHashMap<String, CreativeWorldNodes>();
+    private static CreativeLRUCache<String, CreativeWorldNodes> cache = new CreativeLRUCache<String, CreativeWorldNodes>(100);
     private static CreativeWorldNodes nodes = new CreativeWorldNodes();
         
     public static CreativeWorldNodes get(World w) {
@@ -48,8 +47,13 @@ public class CreativeWorldConfig {
         }
     }
 
-    public static void clear() {
+    public static int clear() {
+        int total = 0;
+        
+        total += cache.size();
         cache.clear();
+        
+        return total;
     }
 
     public static void load(World w) {

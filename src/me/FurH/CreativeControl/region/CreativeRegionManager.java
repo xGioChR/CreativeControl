@@ -16,6 +16,7 @@
 
 package me.FurH.CreativeControl.region;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashSet;
@@ -80,9 +81,12 @@ public class CreativeRegionManager {
         CreativeSQLDatabase db = CreativeControl.getDb();
 
         int total = 0;
+        PreparedStatement ps = null;
         ResultSet rs = null;
         try {
-            rs = db.getQuery("SELECT * FROM `"+db.prefix+"regions`");
+            ps = db.getQuery("SELECT * FROM `"+db.prefix+"regions`");
+            rs = ps.getResultSet();
+            
             while (rs.next()) {
                 String name = rs.getString("name");
                 Location start = CreativeUtil.getLocation(rs.getString("start"));
@@ -101,6 +105,11 @@ public class CreativeRegionManager {
                     rs.close();
                 } catch (SQLException ex) { }
             }
+            if (ps != null) {
+                try {
+                    ps.close();
+                } catch (SQLException ex) { }
+            }
         }
         return total;
     }
@@ -110,8 +119,11 @@ public class CreativeRegionManager {
         CreativeSQLDatabase db = CreativeControl.getDb();
 
         ResultSet rs = null;
+        PreparedStatement ps = null;
         try {
-            rs = db.getQuery("SELECT * FROM `"+db.prefix+"regions` WHERE name = '"+name+"'");
+            ps = db.getQuery("SELECT * FROM `"+db.prefix+"regions` WHERE name = '"+name+"'");
+            rs = ps.getResultSet();
+            
             if (rs.next()) {
                 return true;
             }
@@ -123,6 +135,11 @@ public class CreativeRegionManager {
             if (rs != null) {
                 try {
                     rs.close();
+                } catch (SQLException ex) { }
+            }
+            if (ps != null) {
+                try {
+                    ps.close();
                 } catch (SQLException ex) { }
             }
         }

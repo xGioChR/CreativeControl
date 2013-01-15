@@ -26,9 +26,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Queue;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import me.FurH.CreativeControl.CreativeControl;
@@ -42,7 +40,6 @@ import me.FurH.CreativeControl.util.CreativeCommunicator;
  * @author FurmigaHumana
  */
 public final class CreativeSQLDatabase {
-    private Map<String, PreparedStatement> cache = new ConcurrentHashMap<String, PreparedStatement>(15000);
     public final Queue<String> queue = new LinkedBlockingQueue<String>();
     public final AtomicBoolean lock = new AtomicBoolean(false);
     public enum Type { MySQL, SQLite; }
@@ -67,14 +64,6 @@ public final class CreativeSQLDatabase {
     
     public int getWrites() {
         return writes;
-    }
-
-    public int getSize() {
-        return cache.size();
-    }
-
-    public void clear() {
-        cache.clear();
     }
 
     public CreativeSQLDatabase(CreativeControl plugin, boolean b) {
@@ -237,7 +226,6 @@ public final class CreativeSQLDatabase {
         }
         
         try {
-            cache.clear();
             if (connection != null) {
                 connection.close();
             }
@@ -310,6 +298,8 @@ public final class CreativeSQLDatabase {
                 bw.write(s + l);
             }
             
+            fw.close();
+            bw.close();
         } catch (IOException ex) {
             com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
                     "[TAG] Failed to dump queue, {0}.", ex, ex.getMessage());
@@ -400,10 +390,9 @@ public final class CreativeSQLDatabase {
         ResultSet rs = null;
         
         try {
-            ps = prepare("SELECT version FROM `"+prefix+"internal`");
-            ps.execute();
-            
+            ps = getQuery("SELECT version FROM `"+prefix+"internal`");            
             rs = ps.getResultSet();
+            
             if (rs.next()) {
                 reads++;
                 ret = rs.getDouble("version");
@@ -484,17 +473,16 @@ public final class CreativeSQLDatabase {
     /*
      * return a sql object
      */
-    public ResultSet getQuery(String query) {
+    public PreparedStatement getQuery(String query) {
         double start = System.currentTimeMillis();
-        
-        ResultSet ret = null;
-        try {
-            PreparedStatement ps = prepare(query);
-            ps.execute();
 
+        try {
+            PreparedStatement ps = connection.prepareStatement(query);
+            ps.execute();
+            
             reads++;
             
-            ret = ps.getResultSet();
+            return ps;
         } catch (Exception ex) {
             CreativeCommunicator com    = CreativeControl.getCommunicator();
             com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
@@ -503,7 +491,7 @@ public final class CreativeSQLDatabase {
         }
         
         CreativePerformance.update(Event.SQLRead, (System.currentTimeMillis() - start));
-        return ret;
+        return null;
     }
     
     public boolean hasTable(String table) {
@@ -637,26 +625,5 @@ public final class CreativeSQLDatabase {
                 }
             } catch (SQLException ex) { }
         }
-    }
-    
-    /*
-     * Prepare and add the statement to the cache
-     */
-    public PreparedStatement prepare(String query) {
-        if (cache.containsKey(query)) { 
-            return cache.get(query); 
-        } else {
-            try {
-                PreparedStatement ps = connection.prepareStatement(query);
-                cache.put(query, ps);
-                return ps;
-            } catch (SQLException ex) {
-                CreativeCommunicator com    = CreativeControl.getCommunicator();
-                com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
-                        "[TAG] Can't read the "+(type == Type.SQLite ? "SQLite" : "MySQL")+" database, {0}, prepare: {1}", ex, ex.getMessage(), query);
-                if (!isOk()) { fix(); }
-            }
-        }
-        return null;
     }
 }

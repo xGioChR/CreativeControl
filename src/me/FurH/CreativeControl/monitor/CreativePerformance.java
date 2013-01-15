@@ -133,7 +133,6 @@ public class CreativePerformance {
             bw.write("		Queue Size: " + db.getQueue() +l);
             bw.write("		Reads: " + db.getReads() +l);
             bw.write("		Writes: " + db.getWrites() +l);
-            bw.write("		SQL Cache: " + db.getSize() +l);
             bw.write("		Total Blocks: " + manager.getTotal() +l);
             bw.write("	=============================[ TIMMINGS   REPORT ]============================="+l);
             for (Event event : times.keySet()) {

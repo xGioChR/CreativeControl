@@ -260,13 +260,16 @@ public class CreativeUtil {
             bw.write("		Writes: " + cache.getWrites() +l);
             bw.write("		Capacity: " + cache.getSize() + "/" + cache.getMaxSize() +l);
             bw.write("	- SQL Status:"+l);
-            bw.write("		Type: " + db.type +l);
-            bw.write("		Local: " + local +l);
-            bw.write("		Queue Size: " + db.getQueue() +l);
-            bw.write("		Reads: " + db.getReads() +l);
-            bw.write("		Writes: " + db.getWrites() +l);
-            bw.write("		SQL Cache: " + db.getSize() +l);
-            bw.write("		Total Blocks: " + manager.getTotal() +l);
+            if (db != null) {
+                bw.write("		Type: " + db.type +l);
+                bw.write("		Local: " + local +l);
+                bw.write("		Queue Size: " + db.getQueue() +l);
+                bw.write("		Reads: " + db.getReads() +l);
+                bw.write("		Writes: " + db.getWrites() +l);
+                bw.write("		Total Blocks: " + manager.getTotal() +l);
+            } else {
+                bw.write("		SQL DOWN!"+l);
+            }
             bw.write("	=============================[ ERROR  STACKTRACE ]============================="+l);
             for (StackTraceElement element : st) {
                 bw.write("		- " + element.toString()+l);
