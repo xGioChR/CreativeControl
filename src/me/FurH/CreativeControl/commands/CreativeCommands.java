@@ -21,8 +21,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashSet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.cache.CreativeBlockCache;
 import me.FurH.CreativeControl.configuration.CreativeMainConfig;
