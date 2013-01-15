@@ -43,7 +43,6 @@ public final class CreativeSQLDatabase {
     public final Queue<String> queue = new LinkedBlockingQueue<String>();
     public final AtomicBoolean lock = new AtomicBoolean(false);
     public enum Type { MySQL, SQLite; }
-    public boolean emergency = false;
     private CreativeControl plugin;
     public Connection connection;
     public String prefix = "cc_";
@@ -543,16 +542,7 @@ public final class CreativeSQLDatabase {
                             Thread.sleep(sleep);
                             continue;
                         }
-                        
-                        if (queue.size() >= 15000) {
-                            if (!emergency) {
-                                emergency = true;
-                                CreativeEmergency emergency = new CreativeEmergency();
-                                emergency.loadup();
-                                com.log("[TAG]: Extra queue thread enabled");
-                            }
-                        }
-                        
+                      
                         if (count >= limit) {
                             connection.commit();
                             count = 0;
