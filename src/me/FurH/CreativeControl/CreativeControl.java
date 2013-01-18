@@ -364,6 +364,10 @@ public class CreativeControl extends JavaPlugin {
         return manager; 
     }
     
+    public static Permission getPermissions() {
+        return permission;
+    }
+    
     public static CreativeBlockMatcher getMatcher() { 
         return matcher; 
     }

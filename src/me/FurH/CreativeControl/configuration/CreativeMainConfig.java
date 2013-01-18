@@ -38,6 +38,9 @@ public class CreativeMainConfig {
     public String          database_pass     = "123";
     public String          database_table    = "minecraft";
     public String          database_prefix   = "cc_";
+    
+    public String          perm_from         = "MemberSurvival";
+    public String          perm_to           = "MemberCreative";
 
     public long            queue_each        = 100;
     public int             queue_count       = 300;
@@ -79,6 +82,9 @@ public class CreativeMainConfig {
         database_table   = getString("Database.database");
         database_prefix  = getString("Database.prefix");
         
+        perm_from        = getString("MemberSurvival");
+        perm_to          = getString("MemberCreative");
+    
         queue_each       = getLong("Queue.each");
         queue_count      = getInteger("Queue.count");
         queue_sleep      = getInteger("Queue.sleep");
