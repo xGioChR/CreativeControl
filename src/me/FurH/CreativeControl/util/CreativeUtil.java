@@ -81,7 +81,7 @@ public class CreativeUtil {
         } catch (Exception ex) {
             CreativeCommunicator com    = CreativeControl.getCommunicator();
             com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
-                    "[TAG] Failed to parse string to list: {0}, split: {1}, {2}", ex, string, split, ex.getMessage());
+                    "[TAG] Failed to parse string to list: {0}, split: {1}, {2}", string, split, ex.getMessage());
         }
         
         return set;
@@ -105,7 +105,7 @@ public class CreativeUtil {
                         set.add(i);
                     } catch (Exception ex) {
                         com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
-                                "[TAG] [TAG] {0} is not a valid number!, {1}", ex, str, ex.getMessage());
+                                "[TAG] [TAG] {0} is not a valid number!, {1}", str, ex.getMessage());
                     }
                 }
             } else {
@@ -115,7 +115,7 @@ public class CreativeUtil {
             }
         } catch (Exception ex) {
             com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
-                    "[TAG] Failed to parse string to list: {0}, split: {1}, {2}", ex, string, split, ex.getMessage());
+                    "[TAG] Failed to parse string to list: {0}, split: {1}, {2}", string, split, ex.getMessage());
         }
         
         return set;
@@ -131,7 +131,7 @@ public class CreativeUtil {
         } catch (Exception ex) {
             CreativeCommunicator com    = CreativeControl.getCommunicator();
             com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
-                    "[TAG] {0} is not a valid number!, {1}", ex, str, ex.getMessage());
+                    "[TAG] {0} is not a valid number!, {1}", str, ex.getMessage());
         }
         return ret;
     }
@@ -321,7 +321,7 @@ public class CreativeUtil {
         } catch (IOException ex) {
             CreativeCommunicator com    = CreativeControl.getCommunicator();
             com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
-                    "[TAG] Failed to copy the file {0}, {1}", ex, file.getName(), ex.getMessage());
+                    "[TAG] Failed to copy the file {0}, {1}", file.getName(), ex.getMessage());
         }
     }
 
@@ -347,7 +347,7 @@ public class CreativeUtil {
             }
         } catch (Exception ex) {
             com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
-                    "[TAG] Failed to parse the location: {0}, {1}", ex, location, ex.getMessage());
+                    "[TAG] Failed to parse the location: {0}, {1}", location, ex.getMessage());
             return null;
         }
     }

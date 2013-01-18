@@ -97,7 +97,7 @@ public class CreativeRegionManager {
             }
         } catch (SQLException ex) {
             com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
-                    "[TAG] Failed to get regions from the database, {0}", ex, ex.getMessage());
+                    "[TAG] Failed to get regions from the database, {0}", ex.getMessage());
             if (!db.isOk()) { db.fix(); }
         } finally {
             if (rs != null) {
@@ -129,7 +129,7 @@ public class CreativeRegionManager {
             }
         } catch (SQLException ex) {
             com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
-                    "[TAG] Failed to get region from the database, {0}", ex, ex.getMessage());
+                    "[TAG] Failed to get region from the database, {0}", ex.getMessage());
             if (!db.isOk()) { db.fix(); }
         } finally {
             if (rs != null) {

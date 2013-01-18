@@ -76,7 +76,7 @@ public class CreativeSQLCleanup implements Runnable {
             
         } catch (SQLException ex) {
             com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
-                    "[TAG] Failed to load the protections, {0}", ex, ex.getMessage());
+                    "[TAG] Failed to load the protections, {0}", ex.getMessage());
             com.msg(p, messages.updater_loadfailed);
             lock = false;
             return;
@@ -118,7 +118,7 @@ public class CreativeSQLCleanup implements Runnable {
             db.connection.commit();
         } catch (SQLException ex) {
             com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
-                    "[TAG] Failed to set AutoCommit and commit the database, {0}.", ex, ex.getMessage());
+                    "[TAG] Failed to set AutoCommit and commit the database, {0}", ex.getMessage());
         }
 
         HashSet<String> locations = new HashSet<String>();
@@ -165,7 +165,7 @@ public class CreativeSQLCleanup implements Runnable {
                 }
             } catch (Exception ex) {
                 com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
-                        "[TAG] Failed to check the protection: {0}, {1}", ex, string[0], ex.getMessage());
+                        "[TAG] Failed to check the protection: {0}, {1}", string[0], ex.getMessage());
             }
         }
 
@@ -173,7 +173,7 @@ public class CreativeSQLCleanup implements Runnable {
             db.connection.commit();
         } catch (SQLException ex) {
             com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
-                    "[TAG] Failed to set AutoCommit, {0}.", ex, ex.getMessage());
+                    "[TAG] Failed to set AutoCommit, {0}", ex.getMessage());
         }
         
         elapsedTime = (System.currentTimeMillis() - startTimer);

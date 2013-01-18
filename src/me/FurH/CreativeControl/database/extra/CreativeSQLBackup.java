@@ -43,7 +43,7 @@ public class CreativeSQLBackup {
             writer = new PrintWriter(new File(dir.getAbsolutePath(), "backup-" + CreativeUtil.getSimpleDate(System.currentTimeMillis()) + ".sql"));
         } catch (FileNotFoundException ex) {
             com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
-                    "[TAG] Failed to backup the protections, {0}", ex, ex.getMessage());
+                    "[TAG] Failed to backup the protections, {0}", ex.getMessage());
         }
 
         for (String query : backup) {

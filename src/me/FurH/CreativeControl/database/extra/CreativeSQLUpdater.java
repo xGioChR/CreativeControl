@@ -87,7 +87,7 @@ public class CreativeSQLUpdater {
                 db.connection.commit();
             } catch (SQLException ex) {
                 com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
-                        "[TAG] Failed to set AutoCommit and commit the database, {0}.", ex, ex.getMessage());
+                        "[TAG] Failed to set AutoCommit and commit the database, {0}", ex.getMessage());
             }
 
             while (rs.next()) {
@@ -118,7 +118,7 @@ public class CreativeSQLUpdater {
                     db.executeQuery("INSERT INTO `"+db.prefix+"blocks` (owner, location, type, allowed, time) VALUES ('"+owner+"', '"+StringLoc+"', '"+type+"', '"+allowed+"', '"+time+"')", true, true);
                 } catch (Exception ex) {
                     com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
-                            "[TAG] Failed on update the database, {0} .", ex, ex.getMessage());
+                            "[TAG] Failed on update the database, {0}", ex.getMessage());
                     com.msg(p, messages.updater_checkfailed);
                     lock = false;
                 }
@@ -127,7 +127,7 @@ public class CreativeSQLUpdater {
             rs.close();
         } catch (SQLException ex) {
             com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
-                    "[TAG] Failed to load protections, {0}", ex, ex.getMessage());
+                    "[TAG] Failed to load protections, {0}", ex.getMessage());
             com.msg(p, messages.updater_loadfailed);
             lock = false;
         } finally {
@@ -160,7 +160,7 @@ public class CreativeSQLUpdater {
             db.connection.commit();
         } catch (SQLException ex) {
             com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
-                    "[TAG] Failed to set AutoCommit, {0}.", ex, ex.getMessage());
+                    "[TAG] Failed to set AutoCommit, {0}", ex.getMessage());
         }
         
         System.gc();

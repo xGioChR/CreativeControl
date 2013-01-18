@@ -136,13 +136,13 @@ public class CreativePlayerConversor {
         } catch (FileNotFoundException ex) {
         } catch (IOException ex) {
             com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
-                    "[TAG] Couldn't restore {0}'s inventory, {1}", ex, player, ex.getMessage());
+                    "[TAG] Couldn't restore {0}'s inventory, {1}", player, ex.getMessage());
         } catch (ClassNotFoundException ex) {
             com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
-                    "[TAG] Couldn't restore {0}'s inventory, {1}", ex, player, ex.getMessage());
+                    "[TAG] Couldn't restore {0}'s inventory, {1}", player, ex.getMessage());
         } catch (ClassCastException ex) {
             com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
-                    "[TAG] Couldn't restore {0}'s inventory, {1}", ex, player, ex.getMessage());
+                    "[TAG] Couldn't restore {0}'s inventory, {1}", player, ex.getMessage());
         }
     }
 }

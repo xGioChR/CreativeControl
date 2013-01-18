@@ -174,15 +174,15 @@ public class CreativeWorldConfig {
                     config.save(dir);
                 } catch (IOException ex) {
                     com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
-                            "[TAG] Can't update the settings file: {0}, node: {1}", ex, ex.getMessage(), node);
+                            "[TAG] Can't update the settings file: {0}, node: {1}", ex.getMessage(), node);
                 }
             }
         } catch (IOException ex) {
             com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
-                    "[TAG] Can't load the settings file: {0}, node: {1}", ex, ex.getMessage(), node);
+                    "[TAG] Can't load the settings file: {0}, node: {1}", ex.getMessage(), node);
         } catch (InvalidConfigurationException ex) {
             com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
-                    "[TAG] Can't load the settings file: {0}, node: {1}", ex, ex.getMessage(), node);
+                    "[TAG] Can't load the settings file: {0}, node: {1}", ex.getMessage(), node);
             com.log("[TAG] You have a broken node in your settings file at: {0}", node);
         }
         

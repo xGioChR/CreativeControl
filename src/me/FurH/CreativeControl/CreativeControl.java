@@ -113,7 +113,7 @@ public class CreativeControl extends JavaPlugin {
 
     public boolean hasUpdate;
     
-    public int saveRam() {
+    public int garbage() {
         int total = 0;
         
         total += right.size();

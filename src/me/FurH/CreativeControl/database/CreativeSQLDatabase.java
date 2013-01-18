@@ -29,17 +29,22 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import me.FurH.CreativeControl.CreativeControl;
+import me.FurH.CreativeControl.cache.CreativeLRUCache;
 import me.FurH.CreativeControl.configuration.CreativeMainConfig;
 import me.FurH.CreativeControl.monitor.CreativePerformance;
 import me.FurH.CreativeControl.monitor.CreativePerformance.Event;
 import me.FurH.CreativeControl.util.CreativeCommunicator;
+import org.bukkit.Bukkit;
 
 /**
  *
  * @author FurmigaHumana
  */
 public final class CreativeSQLDatabase {
+    private CreativeLRUCache<String, PreparedStatement> cache = new CreativeLRUCache<String, PreparedStatement>(15000);
     public final Queue<String> queue = new LinkedBlockingQueue<String>();
     public final AtomicBoolean lock = new AtomicBoolean(false);
     public enum Type { MySQL, SQLite; }
@@ -100,9 +105,12 @@ public final class CreativeSQLDatabase {
                 connection.commit();
             } catch (SQLException ex) {
                 com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
-                        "[TAG] Failed to commit the "+(type == Type.SQLite ? "SQLite" : "MySQL")+" database, {0}", ex, ex.getMessage());
+                        "[TAG] Failed to commit the "+(type == Type.SQLite ? "SQLite" : "MySQL")+" database, {0}", ex.getMessage());
             }
+            
             queue();
+            garbage();
+            
             com.log("[TAG] "+(type == Type.SQLite ? "SQLite" : "MySQL")+" Connected Successfuly!");
 
             loadDatabase();
@@ -118,7 +126,7 @@ public final class CreativeSQLDatabase {
             Class.forName("org.sqlite.JDBC");
         } catch (ClassNotFoundException ex) {
             com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
-                    "[TAG] You don't have the required SQLite driver, {0}", ex, ex.getMessage());
+                    "[TAG] You don't have the required SQLite driver, {0}", ex.getMessage());
             return null;
         }
 
@@ -127,7 +135,7 @@ public final class CreativeSQLDatabase {
             SQLite.createNewFile();
         } catch (IOException ex) {
             com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
-                    "[TAG] Failed to create the SQLite file, {0}", ex, ex.getMessage());
+                    "[TAG] Failed to create the SQLite file, {0}", ex.getMessage());
         }
 
         try {
@@ -135,7 +143,7 @@ public final class CreativeSQLDatabase {
             return sqlite;
         } catch (SQLException ex) {
             com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
-                    "[TAG] Failed set the SQLite connector, {0}", ex, ex.getMessage());
+                    "[TAG] Failed set the SQLite connector, {0}", ex.getMessage());
             return null;
         }
     }
@@ -147,7 +155,7 @@ public final class CreativeSQLDatabase {
             Class.forName("com.mysql.jdbc.Driver");
         } catch (ClassNotFoundException ex) {
             com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
-                    "[TAG] You don't have the required MySQL driver, {0}", ex, ex.getMessage());
+                    "[TAG] You don't have the required MySQL driver, {0}", ex.getMessage());
             return null;
         }
 
@@ -158,7 +166,7 @@ public final class CreativeSQLDatabase {
             return mysql;
         } catch (SQLException ex) {
             com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
-                    "[TAG] Failed set the MySQL connector, {0}", ex, ex.getMessage());
+                    "[TAG] Failed set the MySQL connector, {0}", ex.getMessage());
             return null;
         }
     }
@@ -185,7 +193,7 @@ public final class CreativeSQLDatabase {
                 connection.commit();
             } catch (SQLException ex) {
                 com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
-                        "[TAG] Failed to set AutoCommit and commit the database, {0}.", ex, ex.getMessage());
+                        "[TAG] Failed to set AutoCommit and commit the database, {0}", ex.getMessage());
             }
 
             List<String> queries = new ArrayList<String>();
@@ -218,7 +226,7 @@ public final class CreativeSQLDatabase {
                 connection.commit();
             } catch (SQLException ex) {
                 com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
-                        "[TAG] Failed to set AutoCommit, {0}.", ex, ex.getMessage());
+                        "[TAG] Failed to set AutoCommit, {0}", ex.getMessage());
             }
 
             System.gc();
@@ -230,7 +238,7 @@ public final class CreativeSQLDatabase {
             }
         } catch (SQLException ex) {
             com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
-                    "[TAG] Can't close the "+(type == Type.SQLite ? "SQLite" : "MySQL")+" Connection, {0}", ex, ex.getMessage());
+                    "[TAG] Can't close the "+(type == Type.SQLite ? "SQLite" : "MySQL")+" Connection, {0}", ex.getMessage());
         }
         
         if (connection == null) {
@@ -264,7 +272,7 @@ public final class CreativeSQLDatabase {
                     file.delete();
                 } catch (Exception ex) {
                     com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
-                            "[TAG] Failed to import queue, {0}.", ex, ex.getMessage());
+                            "[TAG] Failed to import queue, {0}", ex.getMessage());
                 }
             }
         }
@@ -301,7 +309,7 @@ public final class CreativeSQLDatabase {
             bw.close();
         } catch (IOException ex) {
             com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
-                    "[TAG] Failed to dump queue, {0}.", ex, ex.getMessage());
+                    "[TAG] Failed to dump queue, {0}", ex.getMessage());
         }
     }
     
@@ -344,7 +352,7 @@ public final class CreativeSQLDatabase {
             } catch (SQLException ex) {
                 CreativeCommunicator com    = CreativeControl.getCommunicator();
                 com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
-                        "[TAG] Failed to check if the "+(type == Type.SQLite ? "SQLite" : "MySQL")+" is up, {0}", ex, ex.getMessage());
+                        "[TAG] Failed to check if the "+(type == Type.SQLite ? "SQLite" : "MySQL")+" is up, {0}", ex.getMessage());
                 return false;
             }
         }
@@ -400,7 +408,7 @@ public final class CreativeSQLDatabase {
         } catch (Exception ex) {
             CreativeCommunicator com    = CreativeControl.getCommunicator();
             com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
-                    "[TAG] Can't read the "+(type == Type.SQLite ? "SQLite" : "MySQL")+" database, {0}", ex, ex.getMessage());
+                    "[TAG] Can't read the "+(type == Type.SQLite ? "SQLite" : "MySQL")+" database, {0}", ex.getMessage());
             if (!isOk()) { fix(); }
         } finally {
             if (ps != null) {
@@ -449,7 +457,7 @@ public final class CreativeSQLDatabase {
             } catch (SQLException ex) {
                 CreativeCommunicator com    = CreativeControl.getCommunicator();
                 com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
-                        "[TAG] Can't write in the "+(type == Type.SQLite ? "SQLite" : "MySQL")+" database, {0}, Query: {1}", ex, ex.getMessage(), query);
+                        "[TAG] Can't write in the "+(type == Type.SQLite ? "SQLite" : "MySQL")+" database, {0}, Query: {1}", ex.getMessage(), query);
             } finally {
                 if (st != null) {
                     try {
@@ -476,7 +484,12 @@ public final class CreativeSQLDatabase {
         double start = System.currentTimeMillis();
 
         try {
-            PreparedStatement ps = connection.prepareStatement(query);
+            PreparedStatement ps = prepare(query);
+            
+            if (ps.isClosed()) {
+                ps = connection.prepareStatement(query);
+            }
+            
             ps.execute();
             
             reads++;
@@ -485,7 +498,7 @@ public final class CreativeSQLDatabase {
         } catch (Exception ex) {
             CreativeCommunicator com    = CreativeControl.getCommunicator();
             com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
-                    "[TAG] Can't read the "+(type == Type.SQLite ? "SQLite" : "MySQL")+" database, {0}, Query: {1}", ex, ex.getMessage(), query);
+                    "[TAG] Can't read the "+(type == Type.SQLite ? "SQLite" : "MySQL")+" database, {0}, Query: {1}", ex.getMessage(), query);
             if (!isOk()) { fix(); }
         }
         
@@ -517,7 +530,6 @@ public final class CreativeSQLDatabase {
      */
     private void queue() {
         final CreativeMainConfig   config = CreativeControl.getMainConfig();
-        final CreativeCommunicator com    = CreativeControl.getCommunicator();
         
         final long each = config.queue_each;
         final int limit = config.queue_count;
@@ -579,7 +591,7 @@ public final class CreativeSQLDatabase {
         } catch (SQLException ex) {
             CreativeCommunicator com    = CreativeControl.getCommunicator();
             com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
-                    "[TAG] Can't create tables in the "+(type == Type.SQLite ? "SQLite" : "MySQL")+" database, {0}", ex, ex.getMessage());
+                    "[TAG] Can't create tables in the "+(type == Type.SQLite ? "SQLite" : "MySQL")+" database, {0}", ex.getMessage());
             if (!isOk()) { fix(); }
         } finally {
             try {
@@ -615,5 +627,47 @@ public final class CreativeSQLDatabase {
                 }
             } catch (SQLException ex) { }
         }
+    }
+    
+    
+    /*
+     * Prepare and add the statement to the cache
+     */
+    public PreparedStatement prepare(String query) {        
+        if (cache.containsKey(query)) { 
+            return cache.get(query); 
+        } else {
+            try {
+                PreparedStatement ps = connection.prepareStatement(query);
+                cache.put(query, ps);
+                return ps;
+            } catch (SQLException ex) {
+                CreativeCommunicator com    = CreativeControl.getCommunicator();
+                com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
+                        "[TAG] Can't read the "+(type == Type.SQLite ? "SQLite" : "MySQL")+" database, {0}, prepare: {1}", ex.getMessage(), query);
+                if (!isOk()) { fix(); }
+            }
+        }
+        return null;
+    }
+    
+    public void garbage() {
+        Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new Runnable() {
+            @Override
+            public void run() {
+                
+                for (String query : cache.keySet()) {
+                    PreparedStatement ps = cache.get(query);
+
+                    try {
+                        ps.close();
+                    } catch (SQLException ex) { }
+                    
+                    ps = null;
+                }
+                
+                cache.clear();
+            }
+        }, 3600 * 20);
     }
 }

@@ -882,5 +882,7 @@ public class CreativePlayerListener implements Listener {
         plugin.left.remove(p);
         CreativePlayerFriends friend = CreativeControl.getFriends();
         friend.uncache(p);
+        CreativePlayerData data = CreativeControl.getPlayerData();
+        data.clear(p.getName());
     }
 }
