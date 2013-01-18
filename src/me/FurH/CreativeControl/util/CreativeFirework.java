@@ -68,6 +68,10 @@ public class CreativeFirework {
             FireworkEffect.Builder builder = FireworkEffect.builder();
             String[] data = effect.split(";");
             
+            if (data[0].contains("{")) {
+                data[0] = data[0].substring(1);
+            }
+            
             builder.with(getType(Integer.parseInt(data[0])));
             
             for (String color : Arrays.asList(data[1].substring(1, data[1].length() - 1).split("!"))) {
