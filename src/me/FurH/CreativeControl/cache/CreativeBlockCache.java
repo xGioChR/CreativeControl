@@ -17,37 +17,34 @@
 package me.FurH.CreativeControl.cache;
 
 import me.FurH.CreativeControl.CreativeControl;
+import me.FurH.CreativeControl.manager.CreativeBlockData;
 
 /**
  *
  * @author FurmigaHumana
  */
 public class CreativeBlockCache {
-    private static CreativeLRUCache<String, String[]> cache;
+    private static CreativeLRUCache<String, CreativeBlockData> cache;
     public int cacheSize = 0;
     
     public CreativeBlockCache() {
         this.cacheSize = CreativeControl.getMainConfig().cache_capacity;
-        cache = new CreativeLRUCache<String, String[]>(cacheSize);
+        cache = new CreativeLRUCache<String, CreativeBlockData>(cacheSize);
     }
 
     public boolean contains(String node) {
         return cache.containsKey(node);
     }
 
-    public void add(String node, String[] value) {
+    public void add(String node, CreativeBlockData value) {
         cache.put(node, value);
-    }
-
-    public void add(String node) {
-        cache.put(node, null);
     }
 
     public void remove(String node) {
         cache.remove(node);
     }
     
-    public String[] get(String node) {
+    public CreativeBlockData get(String node) {
         return cache.get(node);
     }
 

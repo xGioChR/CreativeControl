@@ -17,6 +17,7 @@
 package me.FurH.CreativeControl.listener;
 
 import com.sk89q.worldedit.bukkit.selections.Selection;
+import java.util.ArrayList;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.cache.CreativeBlockCache;
 import me.FurH.CreativeControl.configuration.CreativeMainConfig;
@@ -26,7 +27,9 @@ import me.FurH.CreativeControl.configuration.CreativeWorldNodes;
 import me.FurH.CreativeControl.data.CreativePlayerData;
 import me.FurH.CreativeControl.data.friend.CreativePlayerFriends;
 import me.FurH.CreativeControl.integration.worldedit.CreativeWorldEditHook;
+import me.FurH.CreativeControl.manager.CreativeBlockData;
 import me.FurH.CreativeControl.manager.CreativeBlockManager;
+import me.FurH.CreativeControl.manager.CreativeBlocks;
 import me.FurH.CreativeControl.monitor.CreativePerformance;
 import me.FurH.CreativeControl.monitor.CreativePerformance.Event;
 import me.FurH.CreativeControl.region.CreativeRegion;
@@ -725,8 +728,8 @@ public class CreativePlayerListener implements Listener {
         
         CreativeBlockCache cache = CreativeControl.getCache();
 
-        String[] data1 = manager.getFullData(CreativeUtil.getLocation(b.getLocation()));        
-        String[] data2 = null;
+        CreativeBlockData data1 = manager.getFullData(CreativeUtil.getLocation(b.getLocation()));        
+        CreativeBlockData data2 = null;
         if (nodes.block_ownblock) {
             data2 = cache.get(CreativeUtil.getLocation(b.getLocation()));
         }
@@ -751,19 +754,26 @@ public class CreativePlayerListener implements Listener {
 
         String owner = null;
         String allowed = null;
-        String type = null;
+        int type = 0;
         String date = null;
         
         if (insql) {
-            owner = data1[0];
-            allowed = data1[1];
-            type = data1[2];
-            date = data1[3];
-        } else
+            owner = data1.owner;
+            allowed = new ArrayList<String>(data1.allowed).toString();
+            type = data1.type;
+            date = data1.date;
+        }
+
         if (incache) {
-            owner = data2[0];
-            allowed = data2[1];
-            type = Integer.toString(b.getTypeId());
+            if (data2.owner != null) {
+                owner = data2.owner;
+            }
+            
+            if (data2.allowed != null) {
+                allowed = new ArrayList<String>(data2.allowed).toString();
+            }
+            
+            type = data2.type;
             date = Long.toString(System.currentTimeMillis());
         }
 
@@ -793,7 +803,7 @@ public class CreativePlayerListener implements Listener {
         
 
         if (config.block_ownblock) {
-            String[] data = manager.getBlock(b);
+            CreativeBlockData data = manager.getBlock(b);
             if (data != null) {
                 com.msg(p, messages.blockadd_already);
             } else {
@@ -827,10 +837,10 @@ public class CreativePlayerListener implements Listener {
         CreativeWorldNodes config = CreativeWorldConfig.get(b.getWorld());
 
         if (config.block_ownblock) {
-            String[] data = manager.getBlock(b);
+            CreativeBlockData data = manager.getBlock(b);
             if (data != null) {
-                if (!manager.isOwner(p, data[0])) {
-                    com.msg(p, messages.blocks_pertence, data[0]);
+                if (!manager.isOwner(p, data.owner)) {
+                    com.msg(p, messages.blocks_pertence, data.owner);
                 } else {
                     com.msg(p, messages.blockdel_disprotected);
                     manager.delBlock(b);

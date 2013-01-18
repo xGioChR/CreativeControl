@@ -22,6 +22,7 @@ import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.configuration.CreativeMessages;
 import me.FurH.CreativeControl.configuration.CreativeWorldConfig;
 import me.FurH.CreativeControl.configuration.CreativeWorldNodes;
+import me.FurH.CreativeControl.manager.CreativeBlockData;
 import me.FurH.CreativeControl.manager.CreativeBlockManager;
 import me.FurH.CreativeControl.util.CreativeCommunicator;
 import org.bukkit.GameMode;
@@ -220,14 +221,14 @@ public class CreativeMiscListener implements Listener {
         if (config.misc_liquid) {
             CreativeBlockManager manager  = CreativeControl.getManager();
             if (config.block_ownblock) {
-                String[] data = manager.getBlock(b);
+                CreativeBlockData data = manager.getBlock(b);
                 if (data != null) {
-                    if (manager.isAllowed(p, data)) {
+                    if (manager.isAllowed(p, b, data)) {
                         manager.delBlock(b);
                     } else {
                         CreativeCommunicator com      = CreativeControl.getCommunicator();
                         CreativeMessages     messages = CreativeControl.getMessages();
-                        com.msg(p, messages.blocks_pertence, data[0]);
+                        com.msg(p, messages.blocks_pertence, data.owner);
                         e.setCancelled(true);
                     }
                 }  
@@ -259,9 +260,9 @@ public class CreativeMiscListener implements Listener {
                 if ((bucket == Material.WATER_BUCKET) || (bucket == Material.LAVA_BUCKET) || (bucket == Material.BUCKET) || (bucket == Material.MILK_BUCKET)) {
                     CreativeBlockManager manager  = CreativeControl.getManager();
                     if (config.block_ownblock) {
-                        String[] data = manager.getBlock(bDown);
+                        CreativeBlockData data = manager.getBlock(bDown);
                         if (data != null) {
-                            if (manager.isAllowed(p, data)) {
+                            if (manager.isAllowed(p, bDown, data)) {
                                 if (bucket == Material.WATER_BUCKET) {
                                     b.setType(Material.STATIONARY_WATER);
                                 } else
@@ -272,7 +273,7 @@ public class CreativeMiscListener implements Listener {
                             } else {
                                 CreativeCommunicator com      = CreativeControl.getCommunicator();
                                 CreativeMessages     messages = CreativeControl.getMessages();
-                                com.msg(p, messages.blocks_pertence, data[0]);
+                                com.msg(p, messages.blocks_pertence, data.owner);
                                 e.setCancelled(true);
                             }
                         }

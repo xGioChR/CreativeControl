@@ -29,11 +29,11 @@ public class CreativeBlockManager {
     private static HashSet<Integer> ids = new HashSet<Integer>();
     private int total = 0;
 
-    public String[] getBlock(Block b) {
+    public CreativeBlockData getBlock(Block b) {
         return getBlock(b, false);
     }
 
-    public String[] getBlock(Block b, boolean force) {
+    public CreativeBlockData getBlock(Block b, boolean force) {
         if (!force && !CreativeControl.getManager().isProtectable(b.getWorld(), b.getTypeId())) {
             return null;
         }
@@ -47,31 +47,39 @@ public class CreativeBlockManager {
         CreativeSQLDatabase  db         = CreativeControl.getDb();
 
         if (cache.contains(location)) {
-            String[] data = cache.get(location);
+            CreativeBlockData data = cache.get(location);
 
             if (data ==  null) {
-                data = new String[] { "0" };
+                data = new CreativeBlockData(null, 0, null);
             }
 
             return data;
         }
 
-        String[] ret = null;
+        CreativeBlockData ret = null;
         if (total > CreativeControl.getMainConfig().cache_precache) {
             PreparedStatement ps = null;
             ResultSet rs = null;
             try {
-                ps = db.getQuery("SELECT owner, allowed FROM `"+db.prefix+"blocks` WHERE location = '" + location + "'");
+                ps = db.getQuery("SELECT owner, type, allowed FROM `"+db.prefix+"blocks` WHERE location = '" + location + "';");
                 rs = ps.getResultSet();
                 
                 if (rs.next()) {
+                    
                     String owner = rs.getString("owner");
                     String allowed = rs.getString("allowed");
-                    if (allowed != null || !"[]".equals(allowed) || !"".equals(allowed)) {
-                        ret = new String[] { owner, allowed };
-                    } else {
-                        ret = new String[] { owner };
+                    int type = rs.getInt("type");
+
+                    HashSet<String> allowe = new HashSet<String>();
+                    if (allowed != null && !"[]".equals(allowed) && !"".equals(allowed) && !"null".equals(allowed)) {
+                        allowe = CreativeUtil.toStringHashSet(allowed, ", ");
                     }
+                    
+                    if (allowe.isEmpty()) {
+                        allowe = null; //Dont store useless data
+                    }
+                    
+                    ret = new CreativeBlockData(owner, type, allowe);
                 }
             } catch (SQLException ex) {
                 CreativeCommunicator com        = CreativeControl.getCommunicator();
@@ -95,115 +103,96 @@ public class CreativeBlockManager {
         return ret;
     }
 
-    public boolean isAllowed(Player p, String[] data) {
+    public boolean isAllowed(Player p, Block b, CreativeBlockData data) {
         CreativeMainConfig   config     = CreativeControl.getMainConfig();
         CreativePlayerFriends friends = CreativeControl.getFriends();
         
         if (data == null) {
             return true;
         }
-
-        if (isOwner(p, data[0])) {
-            return true;
-        } else {
-            if (data.length >= 1) {
-                try {
-                    if (isAllowed(p, data[1])) {
-                        return true;
-                    } else {
-                        if (config.config_friend) {
-                            HashSet<String> friend = friends.getFriends(data[0]);
-                            if (friend.contains(p.getName().toLowerCase())) {
-                                return true;
-                            } else {
-                                return false;
-                            }
-                        } else {
-                            return false;
-                        }
-                    }
-                } catch (Exception ex) {
-                    if (config.config_friend) {
-                        HashSet<String> friend = friends.getFriends(data[0]);
-                        if (friend.contains(p.getName().toLowerCase())) {
-                            return true;
-                        } else {
-                            return false;
-                        }
-                    } else {
-                        return false;
-                    }
-                }
-            } else {
-                if (config.config_friend) {
-                    HashSet<String> friend = friends.getFriends(data[0]);
-                    if (friend.contains(p.getName().toLowerCase())) {
-                        return true;
-                    } else {
-                        return false;
-                    }
-                } else {
-                    return false;
-                }
+        
+        if (b != null) {
+            if (data.type != b.getTypeId()) {
+                return true;
             }
         }
+        
+        if (isOwner(p, data.owner)) {
+            return true;
+        }
+        
+        if (data.allowed != null) {
+            if (isAllowed(p, data.allowed)) {
+                return true;
+            }
+        }
+        
+        if (config.config_friend) {
+            HashSet<String> friend = friends.getFriends(data.owner);
+            if (friend.contains(p.getName().toLowerCase())) {
+                return true;
+            }
+        }
+        return false;
     }
-    
-    private boolean isAllowed(Player p, String allowed) {
+
+    private boolean isAllowed(Player p, HashSet<String> allowed) {
         CreativeControl      plugin     = CreativeControl.getPlugin();
-        if (plugin.hasPerm(p, "OwnBlock.Bypass")) {
+
+        if (plugin.hasPerm(p, "OwnBlock.isAllowed")) {
             return true;
-        } else {
-            if (allowed != null && !"[]".equals(allowed) && !"".equals(allowed) && !"null".equals(allowed)) {
-                if (CreativeUtil.toStringHashSet(allowed, ", ").contains(p.getName().toLowerCase())) {
-                    return true;
-                } else {
-                    return false;
-                }
-            } else {
-                return false;
-            }
         }
+
+        if (allowed.contains(p.getName().toLowerCase())) {
+            return true;
+        }
+
+        return false;
     }
 
-    public List<CreativeBlockData> getBlocks(Block b, boolean cattach) {
-        List<CreativeBlockData> blocks = new ArrayList<CreativeBlockData>();
+    public List<CreativeBlocks> getBlocks(Block b, boolean cattach) {
+        List<CreativeBlocks> blocks = new ArrayList<CreativeBlocks>();
 
         if (cattach) {
             HashSet<Block> attached = CreativeBlockMatcher.getAttached(b);
             for (Block attach : attached) {
-                String[] data = getBlock(attach);
+                CreativeBlockData data = getBlock(attach);
                 if (data != null) {
-                    blocks.add(new CreativeBlockData(attach, data));
+                    CreativeBlocks ob = new CreativeBlocks(attach, data);
+                    blocks.add(ob);
                 }
             }
 
             if (b.getTypeId() == 64 || b.getTypeId() == 71) {
                 Block blockdown = b.getRelative(BlockFace.DOWN);
                 if (blockdown.getTypeId() == 64 || blockdown.getTypeId() == 71) {
-                    String[] data = getBlock(blockdown);
+                    CreativeBlockData data = getBlock(blockdown);
                     if (data != null) {
-                        blocks.add(new CreativeBlockData(blockdown, data));
+                        CreativeBlocks ob = new CreativeBlocks(blockdown, data);
+                        blocks.add(ob);
                     }
                 }
             } else {
-                String[] data = getBlock(b);
+                CreativeBlockData data = getBlock(b);
                 if (data != null) {
-                    blocks.add(new CreativeBlockData(b, data));
+                    CreativeBlocks ob = new CreativeBlocks(b, data);
+                    blocks.add(ob);
                 } else {
                     Block blockup = b.getRelative(BlockFace.UP);
                     if (blockup.getTypeId() == 64 || blockup.getTypeId() == 71) {
                         data = getBlock(blockup);
                         if (data != null) {
-                            blocks.add(new CreativeBlockData(blockup, data));
+                            CreativeBlocks ob = new CreativeBlocks(blockup, data);
+                            blocks.add(ob);
                         }
                     }
                 }
             }
         } else {
-            String[] data = getBlock(b);
+            CreativeBlockData data = getBlock(b);
             if (data != null) {
-                blocks.add(new CreativeBlockData(b, data));
+                CreativeBlocks ob = new CreativeBlocks(b, data);
+                blocks.add(ob);
             }
         }
         return blocks;
@@ -213,9 +202,9 @@ public class CreativeBlockManager {
         return getBlock(b) != null;
     }
 
-    public String[] getFullData(String location) {    
+    public CreativeBlockData getFullData(String location) {    
         CreativeSQLDatabase  db         = CreativeControl.getDb();
-        String[] ret = null;
+        CreativeBlockData ret = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
@@ -225,9 +214,19 @@ public class CreativeBlockManager {
             if (rs.next()) {
                 String owner = rs.getString("owner");
                 String allowed = rs.getString("allowed");
-                String type = Integer.toString(rs.getInt("type"));
+                int type = rs.getInt("type");
                 String date = rs.getString("time");
-                ret = new String[] { owner, allowed, type, date };
+                
+                HashSet<String> allowe = new HashSet<String>();
+                if (allowed != null && !"[]".equals(allowed) && !"".equals(allowed) && !"null".equals(allowed)) {
+                    allowe = CreativeUtil.toStringHashSet(allowed, ", ");
+                }
+
+                if (allowe.isEmpty()) {
+                    allowe = null; //Dont store useless data
+                }
+
+                ret = new CreativeBlockData (owner, type, allowe, date);
             }
         } catch (SQLException ex) {
             CreativeCommunicator com        = CreativeControl.getCommunicator();
@@ -251,22 +250,21 @@ public class CreativeBlockManager {
 
     public boolean isOwner(Player p, String owner) {
         CreativeControl      plugin     = CreativeControl.getPlugin();
-        if (plugin.hasPerm(p, "OwnBlock.Bypass")) {
+        if (plugin.hasPerm(p, "OwnBlock.isOwner")) {
             return true;
-        } else {
-            if (owner.equalsIgnoreCase(p.getName())) {
-                return true;
-            } else {
-                return false;
-            }
+        } 
+
+        if (owner.equalsIgnoreCase(p.getName())) {
+            return true;
         }
+        return false;
     }
 
     public void delPlayer(String args, Block block) {
-        String[] data = getFullData(CreativeUtil.getLocation(block.getLocation()));
+        CreativeBlockData data = getFullData(CreativeUtil.getLocation(block.getLocation()));
 
         if (data != null) {
-            if (data[0].equalsIgnoreCase(args)) {
+            if (data.owner.equalsIgnoreCase(args)) {
                 delBlock(block);
             }
         }
@@ -286,14 +284,16 @@ public class CreativeBlockManager {
         }
     }
 
-    public void update(String location, String owner, String allowed) {
+    public void update(String location, String owner, HashSet<String> allowed) {
         CreativeBlockCache   cache      = CreativeControl.getCache();
         CreativeSQLDatabase  db         = CreativeControl.getDb();
-        if (allowed != null && !"".equals(allowed) && !"[]".equals(allowed)) {
-            cache.add(location, new String[] { owner, allowed });
-            db.executeQuery("UPDATE `"+db.prefix+"blocks` SET `allowed` = '"+allowed+"' WHERE `location` = '"+location+"';");
+        
+        Location loc = CreativeUtil.getLocation(location);        
+        cache.add(location, new CreativeBlockData (owner, loc.getBlock().getTypeId(), allowed));
+
+        if (allowed != null) {
+            db.executeQuery("UPDATE `"+db.prefix+"blocks` SET `allowed` = '"+new ArrayList<String>(allowed)+"' WHERE `location` = '"+location+"';");
         } else {
-            cache.add(location, new String[] { owner });
             db.executeQuery("UPDATE `"+db.prefix+"blocks` SET `allowed` = '"+null+"' WHERE `location` = '"+location+"';");
         }
     }
@@ -317,9 +317,9 @@ public class CreativeBlockManager {
         String location = CreativeUtil.getLocation(loc);
 
         if (!nodrop) {
-            cache.add(location, new String[] { player });
+            cache.add(location, new CreativeBlockData (player, type, null));
         } else {
-            cache.add(location);
+            cache.add(location, new CreativeBlockData (null, type, null));
         }
         
         ids.add(type);
@@ -406,7 +406,9 @@ public class CreativeBlockManager {
             while (rs.next()) {
                 if (!db.locations.contains(rs.getString("location"))) {
                     int id = rs.getInt("type");
-                    ids.add(id);
+                    if (!ids.contains(id)) {
+                        ids.add(id);
+                    }
                 }
             }
         } catch (SQLException ex) {
@@ -444,6 +446,7 @@ public class CreativeBlockManager {
             
             while (rs.next()) {
                 String location = rs.getString("location");
+                int type = rs.getInt("type");
                 if (!db.locations.contains(location)) {
                     Location loc = CreativeUtil.getLocation(location);
                     if (loc != null) {
@@ -452,14 +455,21 @@ public class CreativeBlockManager {
                             String owner = rs.getString("owner");
                             String allowed = rs.getString("allowed");
 
-                            if (allowed != null || !"[]".equals(allowed) || !"".equals(allowed)) {
-                                cache.add(location, new String[] { owner, allowed });
-                            } else {
-                                cache.add(location, new String[] { owner });
+                            HashSet<String> allowe = new HashSet<String>();
+                            if (allowed != null && !"[]".equals(allowed) && !"".equals(allowed) && !"null".equals(allowed)) {
+                                allowe = CreativeUtil.toStringHashSet(allowed, ", ");
                             }
+
+                            if (allowe.isEmpty()) {
+                                allowe = null; //Dont store useless data
+                            }
+
+                            CreativeBlockData data = new CreativeBlockData(owner, type, allowe);
+                            cache.add(location, data);
                         } else
                         if (nodes.block_nodrop) {
-                            cache.add(location);
+                            CreativeBlockData data = new CreativeBlockData(null, type, null);
+                            cache.add(location, data);
                         }
                         ret++;
                     }

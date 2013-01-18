@@ -24,6 +24,7 @@ import me.FurH.CreativeControl.configuration.CreativeMainConfig;
 import me.FurH.CreativeControl.configuration.CreativeMessages;
 import me.FurH.CreativeControl.configuration.CreativeWorldConfig;
 import me.FurH.CreativeControl.configuration.CreativeWorldNodes;
+import me.FurH.CreativeControl.manager.CreativeBlockData;
 import me.FurH.CreativeControl.manager.CreativeBlockManager;
 import me.FurH.CreativeControl.util.CreativeCommunicator;
 import me.FurH.CreativeControl.util.CreativeUtil;
@@ -110,9 +111,9 @@ public class CreativeBlocksSelection {
                             
                             if (type == Type.DELALL) {
                                 if (wconfig.block_ownblock) {
-                                    String[] data = manager.getBlock(block);
+                                    CreativeBlockData data = manager.getBlock(block);
                                     if (data != null) {
-                                        if (manager.isOwner(player, data[0])) {
+                                        if (manager.isOwner(player, data.owner)) {
                                             manager.delBlock(block);
                                         }
                                     }
@@ -142,9 +143,9 @@ public class CreativeBlocksSelection {
                             } else
                             if (type == Type.DELTYPE) {
                                 if (wconfig.block_ownblock) {
-                                    String[] data = manager.getBlock(block);
+                                    CreativeBlockData data = manager.getBlock(block);
                                     if (data != null) {
-                                        if (manager.isOwner(player, data[0])) {
+                                        if (manager.isOwner(player, data.owner)) {
                                             manager.delType(args, block);
                                         }
                                     }
@@ -156,41 +157,41 @@ public class CreativeBlocksSelection {
                                 }
                             } else
                             if (type == Type.ADD) {
-                                String[] data = manager.getBlock(block);
+                                CreativeBlockData data = manager.getBlock(block);
                                 if (data == null) {
                                     manager.addBlock(args, block, wconfig.block_nodrop);
                                 }
                             } else
                             if (type == Type.ALLOW) {
-                                String[] data = manager.getBlock(block);
+                                CreativeBlockData data = manager.getBlock(block);
                                 if (data != null) {
-                                    if (manager.isAllowed(player, data)) {
+                                    if (manager.isAllowed(player, block, data)) {
                                         String mod = args.toLowerCase();
                                         HashSet<String> als = new HashSet<String>();
-
-                                        if (data.length > 0) {
-                                            als = CreativeUtil.toStringHashSet(data[1], ", ");
+                                        
+                                        if (data.allowed != null) {
+                                            als = data.allowed;
                                         }
                                         
                                         if (mod.startsWith("-")) {
                                             mod = mod.substring(1);
                                             if (als.contains(mod)) {
                                                 als.remove(mod);
-                                                manager.update(CreativeUtil.getLocation(block.getLocation()), data[0], als.toString());
+                                                manager.update(CreativeUtil.getLocation(block.getLocation()), data.owner, als);
                                             }
                                         } else {
                                             if (!als.contains(mod)) {
                                                 als.add(mod);
-                                                manager.update(CreativeUtil.getLocation(block.getLocation()), data[0], als.toString());
+                                                manager.update(CreativeUtil.getLocation(block.getLocation()), data.owner, als);
                                             }
                                         }
                                     }
                                 }
                             } else
                             if (type == Type.TRANSFER) {
-                                String[] data = manager.getBlock(block);
+                                CreativeBlockData data = manager.getBlock(block);
                                 if (data != null) {
-                                    if (manager.isOwner(player, data[0])) {
+                                    if (manager.isOwner(player, data.owner)) {
                                         manager.delBlock(block);
                                         manager.addBlock(args, block, wconfig.block_nodrop);
                                     }

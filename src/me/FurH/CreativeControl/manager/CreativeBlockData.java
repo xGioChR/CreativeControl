@@ -1,25 +1,27 @@
 package me.FurH.CreativeControl.manager;
 
-import org.bukkit.block.Block;
+import java.util.HashSet;
 
 /**
  *
  * @author FurmigaHumana
  */
 public class CreativeBlockData {
-    private Block block;
-    private String[] data;
-
-    public CreativeBlockData(Block block, String[] data) {
-        this.block = block;
-        this.data = data;
+    public String owner;
+    public int type;
+    public HashSet<String> allowed;
+    public String date;
+    
+    public CreativeBlockData(String owner, int type, HashSet<String> allowed) {
+        this.owner = owner;
+        this.type = type;
+        this.allowed = allowed;
     }
     
-    public Block getBlock() {
-        return block;
-    }
-    
-    public String[] getData() {
-        return data;
+    public CreativeBlockData(String owner, int type, HashSet<String> allowed, String date) {
+        this.owner = owner;
+        this.type = type;
+        this.allowed = allowed;
+        this.date = date;
     }
 }
