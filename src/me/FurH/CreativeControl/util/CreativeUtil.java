@@ -35,7 +35,6 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
@@ -48,11 +47,11 @@ public class CreativeUtil {
     /*
      * return true if the first line of the sign is listed as a economy sign
      */
-    public static boolean isEconomySign(Sign sign) {
+    public static boolean isEconomySign(org.bukkit.block.Sign sign) {
         String line1 = sign.getLine(0).replaceAll(" ", "_");
 
         CreativeWorldNodes config = CreativeWorldConfig.get(sign.getWorld());
-
+        
         if (line1.contains("§")) {
             line1 = line1.replaceAll("§([0-9a-fk-or])", "");
         }

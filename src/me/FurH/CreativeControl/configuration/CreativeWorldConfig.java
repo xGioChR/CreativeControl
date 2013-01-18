@@ -111,6 +111,7 @@ public class CreativeWorldConfig {
         x.prevent_vehicle       = getBoolean(w, "Preventions.VehicleDrop");
         x.prevent_limitvechile  = getInteger(w, "Preventions.VehicleLimit");
         x.prevent_stacklimit    = getInteger(w, "Preventions.StackLimit");
+        x.prevent_open          = getBoolean(w, "Preventions.InventoryOpen");
 
         if (!main.config_single) {
             cache.put(w.getName(), x);

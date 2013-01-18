@@ -108,3 +108,5 @@ Preventions:
   VehicleLimit: -1
   ## StackLimit, set the limit of amount per item that a creative player can have
   StackLimit: 1
+  ## InventoryOpen, if true, Creative players will be unable to open any inventory apart from the creative inventory.
+  InventoryOpen: false

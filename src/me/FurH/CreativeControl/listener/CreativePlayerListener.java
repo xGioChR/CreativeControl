@@ -29,7 +29,6 @@ import me.FurH.CreativeControl.data.friend.CreativePlayerFriends;
 import me.FurH.CreativeControl.integration.worldedit.CreativeWorldEditHook;
 import me.FurH.CreativeControl.manager.CreativeBlockData;
 import me.FurH.CreativeControl.manager.CreativeBlockManager;
-import me.FurH.CreativeControl.manager.CreativeBlocks;
 import me.FurH.CreativeControl.monitor.CreativePerformance;
 import me.FurH.CreativeControl.monitor.CreativePerformance.Event;
 import me.FurH.CreativeControl.region.CreativeRegion;
@@ -39,6 +38,7 @@ import me.FurH.CreativeControl.util.CreativeUtil;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -48,6 +48,7 @@ import org.bukkit.event.enchantment.EnchantItemEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.InventoryView;
@@ -227,6 +228,34 @@ public class CreativePlayerListener implements Listener {
         }
         
         CreativePerformance.update(Event.InventoryCloseEvent, (System.currentTimeMillis() - start));
+    }
+    
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
+    public void onInventoryOpen(InventoryOpenEvent e) {
+        if (e.isCancelled()) { return; }
+        
+        HumanEntity entity = e.getPlayer();
+        if (!(entity instanceof Player)) { return; }
+        
+        Player p = (Player)entity;
+        World world = p.getWorld();
+        
+        CreativeCommunicator com        = CreativeControl.getCommunicator();
+        CreativeMessages     messages   = CreativeControl.getMessages();
+        CreativeWorldNodes config = CreativeWorldConfig.get(world);
+        
+        if (config.world_exclude) { return; }
+
+        if (p.getGameMode().equals(GameMode.CREATIVE)) {
+            CreativeControl       plugin   = CreativeControl.getPlugin();
+            if (config.prevent_invinteract) {
+                if (!plugin.hasPerm(p, "Preventions.InventoryOpen")) {
+                    com.msg(p, messages.player_cantdo);
+                    p.closeInventory();
+                    e.setCancelled(true);
+                }
+            }
+        }
     }
 
     /*
