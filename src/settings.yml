@@ -54,7 +54,7 @@ Permissions:
   
 Selection:
   ## UseWorldEdit, if true, worldedit will be used to make selections.
-  UseWorldEdit: false
+  UseWorldEdit: true
   ## The Item ID used to select regions
   Tool: 369
 
