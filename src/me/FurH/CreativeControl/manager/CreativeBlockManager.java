@@ -208,7 +208,7 @@ public class CreativeBlockManager {
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
-            ps = db.getQuery("SELECT owner, allowed, type, time FROM `"+db.prefix+"blocks` WHERE location = '" + location + "'");
+            ps = db.getQuery("SELECT owner, type, allowed, time FROM `"+db.prefix+"blocks` WHERE location = '" + location + "'");
             rs = ps.getResultSet();
             
             if (rs.next()) {
@@ -441,7 +441,7 @@ public class CreativeBlockManager {
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
-            ps = db.getQuery("SELECT id, owner, location, allowed FROM `"+db.prefix+"blocks` ORDER BY id DESC LIMIT " + config.cache_precache);
+            ps = db.getQuery("SELECT id, owner, location, type, allowed FROM `"+db.prefix+"blocks` ORDER BY id DESC LIMIT " + config.cache_precache);
             rs = ps.getResultSet();
             
             while (rs.next()) {
