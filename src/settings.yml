@@ -71,6 +71,8 @@ PlayerData:
   Status: true
   ## Teleport, if true, the player will be teleported to the floor on login if needed
   Teleport: false
+  ## SetSurvival, if true, the player will be set to survival on login (ATTENTTION: THIS MAY GLITCH WITH AUTH PLUGINS)
+  SetSurvival: false
 
 ## Performance monitor
 Monitor:

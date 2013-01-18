@@ -446,15 +446,15 @@ public class CreativeControl extends JavaPlugin {
 
     public boolean isLoggedIn(Player player) {
         PluginManager pm = getServer().getPluginManager();
-        
-        if (pm.getPlugin("AuthMe") != null && !AuthMe.isLoggedInComplete(player)) {
-            return false;
+
+        if (pm.getPlugin("AuthMe") != null) {
+            return AuthMe.isLoggedInComplete(player);
         }
 
-        if (pm.getPlugin("xAuth") != null && !xAuth.isLoggedIn(player)) {
-            return false;
+        if (pm.getPlugin("xAuth") != null) {
+            return xAuth.isLoggedIn(player);
         }
-        
+
         return true;
     }
 

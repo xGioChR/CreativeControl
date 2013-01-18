@@ -66,6 +66,7 @@ public class CreativeMainConfig {
     public boolean         data_inventory    = true;
     public boolean         data_status       = true;
     public boolean         data_teleport     = false;
+    public boolean         data_survival     = false;
     
     public boolean         perfm_monitor     = true;
 
@@ -109,7 +110,8 @@ public class CreativeMainConfig {
         data_inventory   = getBoolean("PlayerData.Inventory");
         data_status      = getBoolean("PlayerData.Status");
         data_teleport    = getBoolean("PlayerData.Teleport");
-
+        data_survival    = getBoolean("PlayerData.SetSurvival");
+        
         perfm_monitor    = getBoolean("Monitor.Enabled");
 
         com_quiet        = getBoolean("Communicator.Quiet");

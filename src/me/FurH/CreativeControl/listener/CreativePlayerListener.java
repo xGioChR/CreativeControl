@@ -449,6 +449,12 @@ public class CreativePlayerListener implements Listener {
             CreativeUtil.getFloor(p);
         }
         
+        if (CreativeControl.getMainConfig().data_survival) {
+            if (plugin.isLoggedIn(p)) {
+                p.setGameMode(GameMode.SURVIVAL);
+            }
+        }
+        
         if (plugin.hasUpdate) {
             if (plugin.hasPerm(p, "Updater.Broadcast")) {
                 Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
