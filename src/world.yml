@@ -7,6 +7,8 @@ World:
   ## So if you set Creative to true, your gamemode will be Creative, if false will be Survival in that world.
   ## To bypass this, add the permission "CreativeControl.World.Keep"
   ChangeGameMode: false
+  ## GlobalNoDrop, if true, in this world a sql database will not be required to track creative blocks, every block in this world will not drop
+  GlobalNoDrop: false
 
 ## Obs: Use Block ID Only, ID:DATA is not supported yet, [] means the list is empty
 BlackList:

@@ -64,6 +64,7 @@ public class CreativeWorldConfig {
         x.world_creative        = getBoolean(w, "World.Creative");
         x.world_exclude         = getBoolean(w, "World.Exclude");
         x.world_changegm        = getBoolean(w, "World.ChangeGameMode");
+        x.world_nodrop          = getBoolean(w, "World.GlobalNoDrop");
 
         x.black_cmds            = getStringList(w, "BlackList.Commands");
         x.black_place           = getIntegerList(w, "BlackList.BlockPlace");

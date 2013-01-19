@@ -17,6 +17,7 @@
 package me.FurH.CreativeControl.listener;
 
 import de.diddiz.LogBlock.Consumer;
+import java.util.HashSet;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.configuration.CreativeMainConfig;
 import me.FurH.CreativeControl.configuration.CreativeMessages;
@@ -24,6 +25,7 @@ import me.FurH.CreativeControl.configuration.CreativeWorldConfig;
 import me.FurH.CreativeControl.configuration.CreativeWorldNodes;
 import me.FurH.CreativeControl.manager.CreativeBlockData;
 import me.FurH.CreativeControl.manager.CreativeBlockManager;
+import me.FurH.CreativeControl.manager.CreativeBlockMatcher;
 import me.FurH.CreativeControl.manager.CreativeBlocks;
 import me.FurH.CreativeControl.monitor.CreativePerformance;
 import me.FurH.CreativeControl.monitor.CreativePerformance.Event;
@@ -175,6 +177,10 @@ public class CreativeBlockListener implements Listener {
             }
         }
         
+        if (config.world_nodrop) {
+            return;
+        }
+        
         CreativeBlockManager    manager    = CreativeControl.getManager();
 
         Block r = e.getBlockReplacedState().getBlock();
@@ -321,6 +327,20 @@ public class CreativeBlockListener implements Listener {
                     return;
                 }
             }
+        }
+        
+        if (config.world_nodrop) {
+            HashSet<Block> attached = new HashSet<Block>();
+            attached.add(b);
+
+            if (config.block_attach) {
+                attached = CreativeBlockMatcher.getAttached(b);
+            }
+
+            for (Block bx : attached) {
+                process(config, e, bx, p);
+            }
+            return;
         }
                 
         if (config.block_ownblock) {

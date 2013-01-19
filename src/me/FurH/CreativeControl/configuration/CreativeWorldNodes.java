@@ -26,6 +26,7 @@ public class CreativeWorldNodes {
     public boolean world_creative        = false;
     public boolean world_exclude         = false;
     public boolean world_changegm        = false;
+    public boolean world_nodrop          = false;
     
     public HashSet<String> black_cmds       = new HashSet<String>();//Arrays.asList(new String[] { "/buy", "/sell", "/logout" });
     public HashSet<Integer> black_place     = new HashSet<Integer>();//Arrays.asList(new Integer[] { 8, 9, 10, 11, 46, 51, 52, 79 });
