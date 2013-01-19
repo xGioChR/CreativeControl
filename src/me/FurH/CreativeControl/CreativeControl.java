@@ -218,6 +218,8 @@ public class CreativeControl extends JavaPlugin {
     public void onDisable() {
         HandlerList.unregisterAll(this);
         
+        database.close();
+        
         clear();
         right.clear();
         left.clear();
@@ -229,7 +231,6 @@ public class CreativeControl extends JavaPlugin {
         entity.clear();
         limits.clear();
         
-        database.close();
         logger.info("[CreativeControl] CreativeControl " + currentversion + " Disabled");
         getServer().getScheduler().cancelTasks(this);
     }
