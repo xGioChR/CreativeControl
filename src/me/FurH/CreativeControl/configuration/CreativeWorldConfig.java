@@ -73,7 +73,8 @@ public class CreativeWorldConfig {
         x.black_interact        = getIntegerList(w, "BlackList.ItemInteract");
         x.black_inventory       = getIntegerList(w, "BlackList.Inventory");
         x.black_sign            = getStringList(w, "BlackList.EconomySigns");
-
+        x.black_sign_all        = false;
+        
         x.misc_tnt              = getBoolean(w, "MiscProtection.NoTNTExplosion");
         x.misc_ice              = getBoolean(w, "MiscProtection.IceMelt");
         x.misc_liquid           = getBoolean(w, "MiscProtection.LiquidControl");

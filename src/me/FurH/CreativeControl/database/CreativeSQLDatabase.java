@@ -55,7 +55,7 @@ public final class CreativeSQLDatabase {
     public int reads = 0;
     public int fix = 0;
     public Type type;
-        
+    
     public int getQueue() {
         return queue.size();
     }

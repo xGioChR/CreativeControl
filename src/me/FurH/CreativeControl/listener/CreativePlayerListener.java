@@ -87,18 +87,20 @@ public class CreativePlayerListener implements Listener {
             }
         }
         
-        Permission permissions = CreativeControl.getPermissions();
-        if (permissions != null) {
-            if (newgm.equals(GameMode.CREATIVE)) {
-                for (String group : permissions.getPlayerGroups(player)) {
-                    if (group.equalsIgnoreCase(config.perm_from)) {
-                        permissions.playerAddGroup(player, config.perm_to);
-                        break;
+        if (config.perm_enabled) {
+            Permission permissions = CreativeControl.getPermissions();
+            if (permissions != null) {
+                if (newgm.equals(GameMode.CREATIVE)) {
+                    for (String group : permissions.getPlayerGroups(player)) {
+                        if (group.equalsIgnoreCase(config.perm_from)) {
+                            permissions.playerAddGroup(player, config.perm_to);
+                            break;
+                        }
                     }
-                }
-            } else {
-                if (permissions.playerInGroup(player, config.perm_to)) {
-                    permissions.playerRemoveGroup(player, config.perm_to);
+                } else {
+                    if (permissions.playerInGroup(player, config.perm_to)) {
+                        permissions.playerRemoveGroup(player, config.perm_to);
+                    }
                 }
             }
         }

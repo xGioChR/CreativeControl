@@ -16,6 +16,8 @@ Database:
   
 ## this section will define wich group the player will be added when he change his gamemode to creative, the player will not be removed from his original group
 Permissions:
+  ## Enabled, if true, this system will be used
+  Enabled: false
   ## MoveFrom, the group that will be affected when the player change his gamemode
   MoveFrom: MembersSurvival
   ## MoveTo, the group that the player will be added when he change his gamemode to creative

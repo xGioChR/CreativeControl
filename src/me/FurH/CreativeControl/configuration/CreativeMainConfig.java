@@ -39,6 +39,7 @@ public class CreativeMainConfig {
     public String          database_table    = "minecraft";
     public String          database_prefix   = "cc_";
     
+    public boolean         perm_enabled      = false;
     public String          perm_from         = "MemberSurvival";
     public String          perm_to           = "MemberCreative";
 
@@ -83,8 +84,9 @@ public class CreativeMainConfig {
         database_table   = getString("Database.database");
         database_prefix  = getString("Database.prefix");
         
-        perm_from        = getString("MemberSurvival");
-        perm_to          = getString("MemberCreative");
+        perm_enabled     = getBoolean("Permissions.Enabled");
+        perm_from        = getString("Permissions.MemberSurvival");
+        perm_to          = getString("Permissions.MemberCreative");
     
         queue_each       = getLong("Queue.each");
         queue_count      = getInteger("Queue.count");

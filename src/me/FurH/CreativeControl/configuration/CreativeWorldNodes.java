@@ -35,6 +35,7 @@ public class CreativeWorldNodes {
     public HashSet<Integer> black_interact  = new HashSet<Integer>();//Arrays.asList(new Integer[] { 23, 54, 58, 61, 62, 63, 68, 84, 116, 117, 130, 138, 145 });
     public HashSet<Integer> black_inventory = new HashSet<Integer>();//Arrays.asList(new Integer[] { });
     public HashSet<String> black_sign       = new HashSet<String>();//Arrays.asList(new String[] { "buy", "sell", "trade" });
+    public boolean black_sign_all        = false;
     
     public boolean misc_tnt              = false;
     public boolean misc_ice              = false;
