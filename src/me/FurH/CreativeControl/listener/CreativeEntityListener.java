@@ -91,7 +91,7 @@ public class CreativeEntityListener implements Listener {
         Entity entity = e.getAttacker();
         Vehicle vehicle = e.getVehicle();
         
-        if (entity instanceof Player) { return; }
+        if (!(entity instanceof Player)) { return; }
 
         CreativeWorldNodes config = CreativeWorldConfig.get(e.getVehicle().getWorld());
         CreativeControl plugin = CreativeControl.getPlugin();
