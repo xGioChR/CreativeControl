@@ -504,7 +504,7 @@ public class CreativeMessages {
                     com.log(CreativeControl.tag + "Messages file updated, check at: {0}", node);
                 } else {
                     config.set(node, node);
-                    com.log(CreativeControl.tag + "Can't get the message node {0}, contact the developer.", Type.SEVERE, node);
+                    com.log(CreativeControl.tag + "Can't get the message node {0}, contact the developer.", node);
                 }
 
                 try {

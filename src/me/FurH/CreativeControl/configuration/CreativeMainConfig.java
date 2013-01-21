@@ -172,7 +172,7 @@ public class CreativeMainConfig {
                     com.log("[TAG] Settings file updated, check at: {0}", node);
                 } else {
                     config.set(node, node);
-                    com.log("[TAG] Can't get setting node: {0}, contact the developer.", Type.SEVERE, node);
+                    com.log("[TAG] Can't get setting node: {0}, contact the developer.", node);
                 }
 
                 try {

@@ -484,11 +484,15 @@ public final class CreativeSQLDatabase {
         try {
             PreparedStatement ps = prepare(query);
             
-            if (ps.isClosed()) {
+            if (type.equals(Type.MySQL) && ps.isClosed()) {
                 ps = connection.prepareStatement(query);
             }
             
-            ps.execute();
+            try {
+                ps.execute();
+            } catch (SQLException ex) {
+                ps = connection.prepareStatement(query);
+            }
             
             reads++;
             

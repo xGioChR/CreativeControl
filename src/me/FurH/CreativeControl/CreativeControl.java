@@ -216,10 +216,11 @@ public class CreativeControl extends JavaPlugin {
     
     @Override
     public void onDisable() {
+        CreativeSQLDatabase db = CreativeControl.getDb();
+        db.close();
+        
         HandlerList.unregisterAll(this);
-        
-        database.close();
-        
+
         clear();
         right.clear();
         left.clear();
