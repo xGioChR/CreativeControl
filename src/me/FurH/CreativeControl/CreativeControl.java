@@ -424,25 +424,23 @@ public class CreativeControl extends JavaPlugin {
     public boolean hasPerm(CommandSender sender, String perm) {
         if ((perm == null) || (perm.isEmpty())) {
             return true;
-        } else {
-            if (!(sender instanceof Player)) {
-                return true;
-            } else {
-                Player p = (Player) sender;
-                if (p.isOp()) {
-                    if (mainconfig.perm_ophas) {
-                        return p.hasPermission("CreativeControl."+perm);
-                    } else {
-                        return false;
-                    }
-                } else {
-                    if (permission != null) {
-                        return permission.has(p, "CreativeControl."+perm);
-                    } else {
-                        return p.hasPermission("CreativeControl."+perm);
-                    }
-                }
+        }
+        
+        if (!(sender instanceof Player)) {
+            return true;
+        }
+
+        Player p = (Player) sender;
+        if (p.isOp()) {
+            if (!mainconfig.perm_ophas) {
+                return false;
             }
+        }
+
+        if (permission != null) {
+            return permission.has(p, "CreativeControl."+perm);
+        } else {
+            return p.hasPermission("CreativeControl."+perm);
         }
     }
 
