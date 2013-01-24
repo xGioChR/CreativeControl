@@ -22,6 +22,8 @@ Permissions:
   MoveFrom: MembersSurvival
   ## MoveTo, the group that the player will be added when he change his gamemode to creative
   MoveTo: MembersCreative
+  ## Op have all permissions?
+  OpHasPerm: true
 
 ## if you have an larger server with tons of creative players placing/breaking blocks, you should increase the "count", decrease the "sleep" and "each"
 Queue:
@@ -50,10 +52,6 @@ Updater:
   ## Check for updates?
   Enabled: true
 
-Permissions:
-  ## Op have all permissions?
-  OpHasPerm: true
-  
 Selection:
   ## UseWorldEdit, if true, worldedit will be used to make selections.
   UseWorldEdit: true
