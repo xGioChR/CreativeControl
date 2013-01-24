@@ -85,8 +85,8 @@ public class CreativeMainConfig {
         database_prefix  = getString("Database.prefix");
         
         perm_enabled     = getBoolean("Permissions.Enabled");
-        perm_from        = getString("Permissions.MemberSurvival");
-        perm_to          = getString("Permissions.MemberCreative");
+        perm_from        = getString("Permissions.MoveFrom");
+        perm_to          = getString("Permissions.MoveTo");
     
         queue_each       = getLong("Queue.each");
         queue_count      = getInteger("Queue.count");
