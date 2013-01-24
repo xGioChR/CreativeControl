@@ -654,11 +654,13 @@ public final class CreativeSQLDatabase {
     }
     
     public void garbage() {
+        final List<String> keys = new ArrayList<String>(cache.keySet());
+        
         Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new Runnable() {
             @Override
             public void run() {
-                
-                for (String query : cache.keySet()) {
+
+                for (String query : keys) {
                     PreparedStatement ps = cache.get(query);
 
                     try {
@@ -667,7 +669,7 @@ public final class CreativeSQLDatabase {
                     
                     ps = null;
                 }
-                
+
                 cache.clear();
             }
         }, 3600 * 20);
