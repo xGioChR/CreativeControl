@@ -35,7 +35,6 @@ import me.FurH.CreativeControl.configuration.CreativeMainConfig;
 import me.FurH.CreativeControl.monitor.CreativePerformance;
 import me.FurH.CreativeControl.monitor.CreativePerformance.Event;
 import me.FurH.CreativeControl.util.CreativeCommunicator;
-import org.bukkit.Bukkit;
 
 /**
  *
@@ -654,24 +653,6 @@ public final class CreativeSQLDatabase {
     }
     
     public void garbage() {
-        final List<String> keys = new ArrayList<String>(cache.keySet());
         
-        Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new Runnable() {
-            @Override
-            public void run() {
-
-                for (String query : keys) {
-                    PreparedStatement ps = cache.get(query);
-
-                    try {
-                        ps.close();
-                    } catch (SQLException ex) { }
-                    
-                    ps = null;
-                }
-
-                cache.clear();
-            }
-        }, 3600 * 20);
     }
 }
