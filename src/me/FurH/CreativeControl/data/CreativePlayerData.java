@@ -27,13 +27,18 @@ import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.cache.CreativeLRUCache;
 import me.FurH.CreativeControl.configuration.CreativeMainConfig;
 import me.FurH.CreativeControl.database.CreativeSQLDatabase;
+import me.FurH.CreativeControl.util.CreativeArmorMeta;
+import me.FurH.CreativeControl.util.CreativeBookMeta;
 import me.FurH.CreativeControl.util.CreativeCommunicator;
-import me.FurH.CreativeControl.util.CreativeFirework;
+import me.FurH.CreativeControl.util.CreativeFireworkMeta;
+import me.FurH.CreativeControl.util.CreativeItemMeta;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BookMeta;
+import org.bukkit.inventory.meta.LeatherArmorMeta;
 
 /**
  *
@@ -372,13 +377,12 @@ public class CreativePlayerData {
         String durability = inv[3];
         String enchantments = inv[4];
         
-        boolean firework = false;
+        boolean meta = false;
         try {
             String fire = inv[5];
-            String work = inv[6];
-            firework = true;
+            meta = true;
         } catch (Exception ex) {
-            firework = false;
+            meta = false;
         }
         
         if (!string.equals("0:0:0:1:[]")) {
@@ -421,8 +425,18 @@ public class CreativePlayerData {
                     }
                 }
             }
-            if (firework) {
-                stack = CreativeFirework.getFireWork(stack, string);
+            if (meta) {
+                stack = CreativeItemMeta.setItemMeta(stack, inv[5]);
+                
+                if (stack.getType() == Material.FIREWORK) {
+                    stack = CreativeFireworkMeta.getFireWork(stack, string);
+                }
+                if (stack.getType() == Material.BOOK || stack.getType() == Material.BOOK_AND_QUILL || stack.getType() == Material.WRITTEN_BOOK) {
+                    stack = CreativeBookMeta.setBookMeta(stack, inv[5]);
+                }
+                if (stack.getType() == Material.LEATHER_HELMET || stack.getType() == Material.LEATHER_CHESTPLATE || stack.getType() == Material.LEATHER_LEGGINGS || stack.getType() == Material.LEATHER_BOOTS) {
+                    stack = CreativeArmorMeta.setArmorMeta(stack, inv[5]);
+                }
             }
         }
 
@@ -462,8 +476,17 @@ public class CreativePlayerData {
         
         String ret = ("'"+type+":"+data+":"+amount+":"+durability+":"+enchantments+"'").replaceAll("[^a-zA-Z0-9:,_=\\[\\]]", "");
         
+        if (item.hasItemMeta()) {
+            ret += CreativeItemMeta.getItemMeta(item);
+        }
         if (item.getType() == Material.FIREWORK) {
-            ret = CreativeFirework.getFireWork(ret, item);
+            ret = CreativeFireworkMeta.getFireWork(ret, item);
+        }
+        if (item.getItemMeta() instanceof BookMeta) {
+            ret += CreativeBookMeta.getBookMeta(item);
+        }
+        if (item.getItemMeta() instanceof LeatherArmorMeta) {
+            ret += CreativeArmorMeta.getArmorMeta(item);
         }
 
         return ret;

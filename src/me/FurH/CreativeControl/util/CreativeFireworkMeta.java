@@ -13,7 +13,7 @@ import org.bukkit.inventory.meta.FireworkMeta;
  *
  * @author FurmigaHumana
  */
-public class CreativeFirework {
+public class CreativeFireworkMeta {
 
     public static String getFireWork(String ret, ItemStack item) {
         FireworkMeta meta = (FireworkMeta) item.getItemMeta();

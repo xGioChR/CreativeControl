@@ -37,12 +37,27 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
 /**
  *
  * @author FurmigaHumana
  */
 public class CreativeUtil {
+    
+    public static String encode(String string) {
+        if (string == null) {
+            return "MA==";
+        }
+        return Base64Coder.encodeString(string);
+    }
+    
+    public static String decode(String string) {
+        if (string == null) {
+            return "MA==";
+        }
+        return Base64Coder.decodeString(string);
+    }
 
     /*
      * return true if the first line of the sign is listed as a economy sign
