@@ -28,19 +28,17 @@ Permissions:
 ## if you have an larger server with tons of creative players placing/breaking blocks, you should increase the "count", decrease the "sleep" and "each"
 Queue:
   ## each, set here, the time in milliseconds to wait after each execution.
-  each: 100
+  each: 50
   ## count, set here, the number of queries to run after make a bigger pause
   count: 50
   ## sleep, set here, the time in milliseconds to wait after the count being reached.
-  sleep: 10000
+  sleep: 5000
 
 Cache:
   ## MaxCapacity, the maximum cache capacity, higher this value is, better will be the performance, but also the memory usage will increase.
   MaxCapacity: 15000
   ## PreCache, the amount of items to be cached on startup
   PreCache: 10000
-  ## DynamicBlockType, if true, a dinamyc block type list will be used, it will help on performance but will increase load time, if your database is too big, I recomend leave it false or the plugin will take forever to load.
-  DynamicBlockType: true
 
 Configurations:
   ## Single, if true, only the world.yml file will be used, other ones will be ignored.
@@ -77,11 +75,6 @@ PlayerData:
   Teleport: false
   ## SetSurvival, if true, the player will be set to survival on login (ATTENTTION: THIS MAY GLITCH WITH AUTH PLUGINS)
   SetSurvival: false
-
-## Performance monitor
-Monitor:
-  ## Enabled the performance monitor
-  Enabled: false
 
 Communicator:
   ## Quiet, if true, any messages will be displayed

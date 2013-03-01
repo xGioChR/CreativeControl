@@ -47,7 +47,7 @@ public class CreativePlayerFriends {
         
         hascache.put(player, friends);
 
-        String query = "UPDATE `"+db.prefix+"friends` SET friends = '"+friends.toString()+"' WHERE player = '"+player.toLowerCase()+"'";
+        String query = "UPDATE `"+db.prefix+"friends` SET friends = '"+friends.toString()+"' WHERE player = '"+db.getPlayerId(player.toLowerCase())+"'";
         
         try {
             db.execute(query);
@@ -65,14 +65,14 @@ public class CreativePlayerFriends {
             PreparedStatement ps = null;
             ResultSet rs = null;
             try {
-                ps = db.getQuery("SELECT * FROM `"+db.prefix+"friends` WHERE player = '" + player.toLowerCase() + "'");
+                ps = db.getQuery("SELECT * FROM `"+db.prefix+"friends` WHERE player = '" + db.getPlayerId(player.toLowerCase()) + "'");
                 rs = ps.getResultSet();
                 
                 if (rs.next()) {
                     friends = CreativeUtil.toStringHashSet(rs.getString("friends"), ", ");
                 } else {
                     friends = new HashSet<String>();
-                    db.execute("INSERT INTO `"+db.prefix+"friends` (player, friends) VALUES ('"+ player.toLowerCase() +"', '"+ friends.toString() +"');");
+                    db.execute("INSERT INTO `"+db.prefix+"friends` (player, friends) VALUES ('"+ db.getPlayerId(player.toLowerCase()) +"', '"+ friends.toString() +"');");
                 }
 
                 hascache.put(player, friends);

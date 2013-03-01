@@ -69,8 +69,6 @@ public class CreativeMainConfig extends Configuration {
     public boolean         data_teleport     = false;
     public boolean         data_survival     = false;
     
-    public boolean         perfm_monitor     = true;
-
     public boolean         com_quiet         = false;
     public boolean         com_debugcons     = false;
     public boolean         com_debugstack    = true;
@@ -116,8 +114,6 @@ public class CreativeMainConfig extends Configuration {
         data_teleport    = getBoolean("PlayerData.Teleport");
         data_survival    = getBoolean("PlayerData.SetSurvival");
         
-        perfm_monitor    = getBoolean("Monitor.Enabled");
-
         com_quiet        = getBoolean("Communicator.Quiet");
         com_debugcons    = getBoolean("Debug.Console");
         com_debugstack   = getBoolean("Debug.Stack");

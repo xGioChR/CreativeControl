@@ -18,11 +18,12 @@ package me.FurH.CreativeControl.listener;
 
 import com.sk89q.worldedit.bukkit.selections.Selection;
 import java.util.ArrayList;
+import me.FurH.Core.cache.CoreLRUCache;
+import me.FurH.Core.location.LocationUtils;
 import me.FurH.Core.util.Communicator;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.configuration.CreativeMainConfig;
 import me.FurH.CreativeControl.configuration.CreativeMessages;
-import me.FurH.CreativeControl.configuration.CreativeWorldConfig;
 import me.FurH.CreativeControl.configuration.CreativeWorldNodes;
 import me.FurH.CreativeControl.data.CreativePlayerData;
 import me.FurH.CreativeControl.data.friend.CreativePlayerFriends;
@@ -83,7 +84,9 @@ public class CreativePlayerListener implements Listener {
         }
         
         if (config.perm_enabled) {
-            /*if (permissions != null) {
+            Permission permissions = CreativeControl.getPermissions();
+
+            if (permissions != null) {
                 if (newgm.equals(GameMode.CREATIVE)) {
                     for (String group : permissions.getPlayerGroups(player)) {
                         if (group.equalsIgnoreCase(config.perm_from)) {
@@ -96,7 +99,7 @@ public class CreativePlayerListener implements Listener {
                         permissions.playerRemoveGroup(player, config.perm_to);
                     }
                 }
-            }*/
+            }
         }
     }
     
@@ -406,9 +409,7 @@ public class CreativePlayerListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onPlayerJoin(PlayerJoinEvent e) {
-        
-        double start = System.currentTimeMillis();
-        
+                
         final Player p = e.getPlayer();
         final CreativeControl       plugin   = CreativeControl.getPlugin();
         
@@ -443,8 +444,6 @@ public class CreativePlayerListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onPlayerChangedWorld(PlayerChangedWorldEvent e) {
-
-        double start = System.currentTimeMillis();
 
         Player p = e.getPlayer();
         World world = p.getWorld();
@@ -544,8 +543,7 @@ public class CreativePlayerListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onPlayerEggThrowEvent(PlayerEggThrowEvent e) {
-        double start = System.currentTimeMillis();
-        
+
         Player p = e.getPlayer();
         World world = p.getWorld();
         
@@ -572,7 +570,6 @@ public class CreativePlayerListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void onPlayerInteract(PlayerInteractEvent e) {
-        double start = System.currentTimeMillis();
         
         Player p = e.getPlayer();
         Block i = e.getClickedBlock();
@@ -725,30 +722,31 @@ public class CreativePlayerListener implements Listener {
      * Print informations about the block
      */
     public void info(Player p, Block b) {
-        /*if (!is(p, b)) { return; }
+        if (!is(p, b)) { return; }
 
-        CreativeWorldNodes nodes = CreativeWorldConfig.get(b.getWorld());
+        CreativeWorldNodes nodes = CreativeControl.getWorldNodes(b.getWorld());
         
         CreativeBlockManager manager = CreativeControl.getManager();
         
-        CreativeBlockCache cache = CreativeControl.getCache();
+        CoreLRUCache<String, CreativeBlockData> cache = manager.getCache();
 
         CreativeBlockData data1 = manager.getFullData(b.getLocation());        
         CreativeBlockData data2 = null;
+        
         if (nodes.block_ownblock) {
-            data2 = cache.get(CreativeUtil.getLocation(b.getLocation()));
+            data2 = cache.get(LocationUtils.locationToString(b.getLocation()));
         }
 
         boolean insql = data1 != null;
         boolean incache = data2 != null;
 
         if (nodes.block_nodrop) {
-            incache = cache.contains(CreativeUtil.getLocation(b.getLocation()));
+            incache = cache.containsKey(LocationUtils.locationToString(b.getLocation()));
         }
 
-        CreativeCommunicator com = CreativeControl.getCommunicator2();
         CreativeMessages messages = CreativeControl.getMessages();
         CreativeControl plugin = CreativeControl.getPlugin();
+        Communicator com = plugin.getCommunicator();
         
         if (!insql && !incache) {
             com.msg(p, messages.blockinfo_notprotected);
@@ -790,89 +788,90 @@ public class CreativePlayerListener implements Listener {
         }
         com.msg(p, messages.blockinfo_status, (incache ? messages.blockinfo_incache : ""), (insql ? messages.blockinfo_insql : messages.blockinfo_queue));
         com.msg(p, messages.blockinfo_date, CreativeUtil.getDate(Long.parseLong(date)));
+        
         plugin.mods.remove(p.getName());
-        plugin.modsfastup.remove(p.getName());*/
+        plugin.modsfastup.remove(p.getName());
     }
     
     /*
      * Add a block to the database
      */
     public void add(Player p, Block b) {
-        /*if (!is(p, b)) { return; }
+        if (!is(p, b)) { return; }
         
-        CreativeCommunicator com = CreativeControl.getCommunicator2();
         CreativeBlockManager manager = CreativeControl.getManager();
         CreativeMessages messages = CreativeControl.getMessages();
         CreativeControl plugin = CreativeControl.getPlugin();
-        CreativeWorldNodes config = CreativeWorldConfig.get(b.getWorld());
-        
+        CreativeWorldNodes config = CreativeControl.getWorldNodes(b.getWorld());
+        Communicator com = plugin.getCommunicator();
 
         if (config.block_ownblock) {
-            CreativeBlockData data = manager.getBlock(b);
+            CreativeBlockData data = manager.isprotected(b, false);
             if (data != null) {
                 com.msg(p, messages.blockadd_already);
             } else {
                 com.msg(p, messages.blockadd_protected);
-                manager.addBlock(p, b, false);
+                manager.protect(p, b);
             }
         } else
         if (config.block_nodrop) {
-            if (manager.isProtected(b)) {
+            if (manager.isprotected(b, false) != null) {
                 com.msg(p, messages.blockadd_already);
             } else {
                 com.msg(p, messages.blockadd_protected);
-                manager.addBlock(p, b, true);
+                manager.protect(p, b);
             }
         }
 
         plugin.mods.remove(p.getName());
-        plugin.modsfastup.remove(p.getName());*/
+        plugin.modsfastup.remove(p.getName());
     }
     
     /*
      * Remove a protection from the block
      */
     public void del(Player p, Block b) {
-        /*if (!is(p, b)) { return; }
+        if (!is(p, b)) { return; }
         
-        CreativeCommunicator com = CreativeControl.getCommunicator2();
         CreativeBlockManager manager = CreativeControl.getManager();
         CreativeMessages messages = CreativeControl.getMessages();
         CreativeControl plugin = CreativeControl.getPlugin();
-        CreativeWorldNodes config = CreativeWorldConfig.get(b.getWorld());
+        CreativeWorldNodes config = CreativeControl.getWorldNodes(b.getWorld());
+        Communicator com = plugin.getCommunicator();
 
         if (config.block_ownblock) {
-            CreativeBlockData data = manager.getBlock(b);
+            CreativeBlockData data = manager.isprotected(b, false);
             if (data != null) {
-                if (!manager.isOwner(p, data.owner)) {
+                if (!data.owner.equalsIgnoreCase(p.getName())) {
                     com.msg(p, messages.blocks_pertence, data.owner);
                 } else {
                     com.msg(p, messages.blockdel_disprotected);
-                    manager.delBlock(b);
+                    manager.unprotect(b);
                 }
             } else {
                 com.msg(p, messages.blockinfo_notprotected);
             }
         } else
         if (config.block_nodrop) {
-            if (!manager.isProtected(b)) {
+            if (manager.isprotected(b, true) != null) {
                 com.msg(p, messages.blockinfo_notprotected);
             } else {
                 com.msg(p, messages.blockdel_disprotected);
-                manager.delBlock(b);
+                manager.unprotect(b);
             }
         }
 
         plugin.mods.remove(p.getName());
-        plugin.modsfastup.remove(p.getName());*/
+        plugin.modsfastup.remove(p.getName());
     }
     
     private boolean is(Player p, Block b) {
-        /*CreativeCommunicator com = CreativeControl.getCommunicator2();
         CreativeBlockManager manager = CreativeControl.getManager();
         CreativeMessages messages = CreativeControl.getMessages();
         CreativeControl plugin = CreativeControl.getPlugin();
-        CreativeWorldNodes config = CreativeWorldConfig.get(b.getWorld());
+        CreativeWorldNodes config = CreativeControl.getWorldNodes(b.getWorld());
+        
+        Communicator com = plugin.getCommunicator();
         
         if (config.world_exclude) {
             com.msg(p, messages.blockinfo_world);
@@ -881,12 +880,12 @@ public class CreativePlayerListener implements Listener {
             return false;
         }
         
-        if (!manager.isProtectable(b.getWorld(), b.getTypeId())) {
+        if (!manager.isprotectable(b.getWorld(), b.getTypeId())) {
             com.msg(p, messages.blockinfo_protectable);
             plugin.mods.remove(p.getName());
             plugin.modsfastup.remove(p.getName());
             return false;
-        }*/
+        }
         
         return true;
     }

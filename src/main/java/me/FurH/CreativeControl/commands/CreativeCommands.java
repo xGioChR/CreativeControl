@@ -17,9 +17,6 @@
 package me.FurH.CreativeControl.commands;
 
 import com.sk89q.worldedit.bukkit.selections.Selection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.HashSet;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.configuration.CreativeMainConfig;
@@ -157,7 +154,7 @@ public class CreativeCommands implements CommandExecutor {
                                         migrator = new CreativeSQLMigrator(plugin, null, args[2]);
                                     }
 
-                                    if (migrator.lock) {
+                                    if (CreativeSQLMigrator.lock) {
                                         msg(sender, messages.migrator_locked);
                                         return true;
                                     } else {
@@ -364,64 +361,17 @@ public class CreativeCommands implements CommandExecutor {
                                                 msg(sender, messages.commands_noperm);
                                                 return false;
                                             } else {
-                                                /*HashSet<String> locations = new HashSet<String>();
-                                                HashSet<String> backup = new HashSet<String>();
-                                                
-                                                long startTimer = System.currentTimeMillis();
-                                                long elapsedTime = 0;
-                                                
                                                 msg(sender, messages.updater_loading);
-                                                
-                                                PreparedStatement ps = null;
-                                                ResultSet rs = null;
-                                                try {
-                                                    ps = db.getQuery("SELECT * FROM `"+db.prefix+"blocks` WHERE owner = '"+sender.getName().toLowerCase()+"'");
-                                                    rs = ps.getResultSet();
 
-                                                    while (rs.next()) {
-                                                        locations.add(rs.getString("location"));
-                                                        backup.add("INSERT INTO `"+db.prefix+"blocks` (id, owner, location, type, allowed, time) VALUES ('"+rs.getInt("id")+"',"
-                                                                + " '"+rs.getString("owner")+"', '"+rs.getString("location")+"', '"+rs.getInt("type")+"', '"+rs.getString("allowed")+"', '"+rs.getString("time")+"')");
-                                                    }
-                                                    
-                                                } catch (SQLException ex) {
-                                                    CreativeControl.plugin.getCommunicator().error(Thread.currentThread(), ex, "[TAG] Failed to get the block from the database, " + ex.getMessage());
-                                                    if (!db.isOk()) { db.fix(); }
-                                                } finally {
-                                                    if (rs != null) {
-                                                        try {
-                                                            rs.close();
-                                                        } catch (SQLException ex) { }
-                                                    }
-                                                    if (ps != null) {
-                                                        try {
-                                                            ps.close();
-                                                        } catch (SQLException ex) { }
-                                                    }
-                                                }
-                                                
-                                                elapsedTime = (System.currentTimeMillis() - startTimer);
-                                                msg(sender, messages.updater_loaded, locations.size(), elapsedTime);
-
-                                                msg(sender, messages.backup_generating);
-
-                                                CreativeSQLBackup.backup(backup);
-
-                                                elapsedTime = (System.currentTimeMillis() - startTimer);
-                                                msg(sender, messages.backup_done, elapsedTime);
-                                                
-                                                for (String location : locations) {
-                                                    //cache.remove(location);
-                                                }
-                                                
                                                 CreativeBlockManager manager = CreativeControl.getManager();
-                                                int newOwner = manager.getPlayerId(args[3].toLowerCase());
-                                                int oldOwner = manager.getPlayerId(sender.getName().toLowerCase());
-                                                
-                                                db.queue("UPDATE `"+db.prefix+"blocks` SET owner = '"+newOwner+"' WHERE owner = '"+oldOwner+"'");
+                                                int newOwner = db.getPlayerId(args[3].toLowerCase());
+                                                int oldOwner = db.getPlayerId(sender.getName().toLowerCase());
 
-                                                locations.clear(); locations = null;
-                                                backup.clear(); backup = null;*/
+                                                for (World world : Bukkit.getWorlds()) {
+                                                    db.queue("UPDATE `"+db.prefix+"blocks_"+world.getName()+"` SET owner = '"+newOwner+"' WHERE owner = '"+oldOwner+"'");
+                                                }
+
+                                                manager.clear();
 
                                                 msg(sender, messages.commands_cleanup_processed);
                                                 return true;
@@ -615,6 +565,7 @@ public class CreativeCommands implements CommandExecutor {
         CreativeMessages         messages  = CreativeControl.getMessages();
         CreativeControl          plugin    = CreativeControl.getPlugin();
         CreativeSQLDatabase      db        = CreativeControl.getDb();
+        CreativeBlockManager     manager   = CreativeControl.getManager();
         
         if (!plugin.hasPerm(sender, "Commands.Cleanup")) {
             msg(sender, messages.commands_noperm);
@@ -630,12 +581,12 @@ public class CreativeCommands implements CommandExecutor {
                             msg(sender, messages.commands_acleanup_help);
                             return true;
                         } else {
-                            /*for (World world : Bukkit.getWorlds()) {
-                                String query = "DELETE FROM `"+db.prefix+"blocks_"+world.getName()+"`";
-                                db.execute(query);
-                            }*/
 
-                            //cache.clear();
+                            for (World world : Bukkit.getWorlds()) {
+                                db.queue("DELETE FROM `"+db.prefix+"blocks_"+world.getName()+"`");
+                            }
+
+                            manager.clear();
                             msg(sender, messages.commands_cleanup_processed);
                             return true;
                         }
@@ -655,61 +606,11 @@ public class CreativeCommands implements CommandExecutor {
                                     msg(sender, messages.commands_tcleanup_help);
                                     return true;
                                 } else {
-                                    /*HashSet<String> locations = new HashSet<String>();
-                                    HashSet<String> backup = new HashSet<String>();
 
-                                    long startTimer = System.currentTimeMillis();
-                                    long elapsedTime = 0;
-
-                                    msg(sender, messages.updater_loading);
-                                    
-                                    PreparedStatement ps = null;
-                                    ResultSet rs = null;
-                                    
-                                    try {
-                                        ps = db.getQuery("SELECT * FROM `"+db.prefix+"blocks` WHERE type = '"+args[2].toLowerCase()+"'");
-                                        rs = ps.getResultSet();
-                                        
-                                        while (rs.next()) {
-                                            locations.add(rs.getString("location"));
-                                            backup.add("INSERT INTO `"+db.prefix+"blocks` (id, owner, location, type, allowed, time) VALUES ('"+rs.getInt("id")+"',"
-                                                    + " '"+rs.getString("owner")+"', '"+rs.getString("location")+"', '"+rs.getInt("type")+"', '"+rs.getString("allowed")+"', '"+rs.getString("time")+"')");
-                                        }
-
-                                    } catch (SQLException ex) {
-  
-                                    } finally {
-                                        if (rs != null) {
-                                            try {
-                                                rs.close();
-                                            } catch (SQLException ex) { }
-                                        }
-                                        if (ps != null) {
-                                            try {
-                                                ps.close();
-                                            } catch (SQLException ex) { }
-                                        }
+                                    for (World world : Bukkit.getWorlds()) {
+                                        db.queue("DELETE FROM `"+db.prefix+"blocks_"+world.getName()+"` WHERE type = '"+args[2]+"'");
                                     }
-                                    
-                                    elapsedTime = (System.currentTimeMillis() - startTimer);
-                                    msg(sender, messages.updater_loaded, locations.size(), elapsedTime);
 
-                                    msg(sender, messages.backup_generating);
-
-                                    CreativeSQLBackup.backup(backup);
-
-                                    elapsedTime = (System.currentTimeMillis() - startTimer);
-                                    msg(sender, messages.backup_done, elapsedTime);
-
-                                    for (String location : locations) {
-                                        String query = "DELETE FROM `"+db.prefix+"blocks` WHERE location = '"+location+"'";
-                                        //cache.remove(location);
-                                        db.execute(query);
-                                    }
-                                    
-                                    locations.clear(); locations = null;
-                                    backup.clear(); backup = null;*/
-                                    
                                     msg(sender, messages.commands_cleanup_processed);
                                     return true;
                                 }
@@ -735,59 +636,10 @@ public class CreativeCommands implements CommandExecutor {
                                     msg(sender, messages.commands_pcleanup_help);
                                     return true;
                                 } else {
-                                    /*HashSet<String> locations = new HashSet<String>();
-                                    HashSet<String> backup = new HashSet<String>();
 
-                                    long startTimer = System.currentTimeMillis();
-                                    long elapsedTime = 0;
-
-                                    msg(sender, messages.updater_loading);
-                                    
-                                    PreparedStatement ps = null;
-                                    ResultSet rs = null;
-                                    
-                                    try {
-                                        ps = db.getQuery("SELECT * FROM `"+db.prefix+"blocks` WHERE owner = '"+args[2].toLowerCase()+"'");
-                                        rs = ps.getResultSet();
-                                        
-                                        while (rs.next()) {
-                                            locations.add(rs.getString("location"));
-                                            backup.add("INSERT INTO `"+db.prefix+"blocks` (id, owner, location, type, allowed, time) VALUES ('"+rs.getInt("id")+"',"
-                                                    + " '"+rs.getString("owner")+"', '"+rs.getString("location")+"', '"+rs.getInt("type")+"', '"+rs.getString("allowed")+"', '"+rs.getString("time")+"')");
-                                        }
-                                        
-                                    } catch (SQLException ex) {
-                                    } finally {
-                                        if (rs != null) {
-                                            try {
-                                                rs.close();
-                                            } catch (SQLException ex) { }
-                                        }
-                                        if (ps != null) {
-                                            try {
-                                                ps.close();
-                                            } catch (SQLException ex) { }
-                                        }
+                                    for (World world : Bukkit.getWorlds()) {
+                                        db.queue("DELETE FROM `"+db.prefix+"blocks_"+world.getName()+"` WHERE owner = '"+db.getPlayerId(args[2])+"'");
                                     }
-                                    
-                                    elapsedTime = (System.currentTimeMillis() - startTimer);
-                                    msg(sender, messages.updater_loaded, locations.size(), elapsedTime);
-
-                                    msg(sender, messages.backup_generating);
-
-                                    CreativeSQLBackup.backup(backup);
-
-                                    elapsedTime = (System.currentTimeMillis() - startTimer);
-                                    msg(sender, messages.backup_done, elapsedTime);
-
-                                    for (String location : locations) {
-                                        String query = "DELETE FROM `"+db.prefix+"blocks` WHERE location = '"+location+"'";
-                                        //cache.remove(location);
-                                        db.execute(query);
-                                    }
-                                    
-                                    locations.clear(); locations = null;
-                                    backup.clear(); backup = null;*/
                                     
                                     msg(sender, messages.commands_cleanup_processed);
                                     return true;
@@ -814,62 +666,13 @@ public class CreativeCommands implements CommandExecutor {
                                     msg(sender, messages.commands_wcleanup_help);
                                     return true;
                                 } else {
-                                    /*HashSet<String> locations = new HashSet<String>();
-                                    HashSet<String> backup = new HashSet<String>();
 
-                                    long startTimer = System.currentTimeMillis();
-                                    long elapsedTime = 0;
-
-                                    msg(sender, messages.updater_loading);
-                                    
-                                    PreparedStatement ps = null;
-                                    ResultSet rs = null;
-                                    
-                                    try {
-                                        ps = db.getQuery("SELECT * FROM `"+db.prefix+"blocks`");
-                                        rs = ps.getResultSet();
-                                        
-                                        while (rs.next()) {
-                                            locations.add(rs.getString("location"));
-                                            backup.add("INSERT INTO `"+db.prefix+"blocks` (id, owner, location, type, allowed, time) VALUES ('"+rs.getInt("id")+"',"
-                                                    + " '"+rs.getString("owner")+"', '"+rs.getString("location")+"', '"+rs.getInt("type")+"', '"+rs.getString("allowed")+"', '"+rs.getString("time")+"')");
-                                        }
-                                    } catch (SQLException ex) {
-                                    } finally {
-                                        if (rs != null) {
-                                            try {
-                                                rs.close();
-                                            } catch (SQLException ex) { }
-                                        }
-                                        if (ps != null) {
-                                            try {
-                                                ps.close();
-                                            } catch (SQLException ex) { }
-                                        }
+                                    if (db.hasTable(db.prefix+"blocks_"+args[2])) {
+                                        msg(sender, "&4There is no world called {0}", args[2]);
+                                    } else {
+                                        db.queue("DELETE FROM `"+db.prefix+"blocks_"+args[2]+"`;");
                                     }
-                                    
-                                    elapsedTime = (System.currentTimeMillis() - startTimer);
-                                    msg(sender, messages.updater_loaded, locations.size(), elapsedTime);
 
-                                    msg(sender, messages.backup_generating);
-
-                                    CreativeSQLBackup.backup(backup);
-
-                                    elapsedTime = (System.currentTimeMillis() - startTimer);
-                                    msg(sender, messages.backup_done, elapsedTime);
-
-                                    for (String location : locations) {
-                                        Location loc = CreativeUtil.getLocation(location);
-                                        if (loc.getWorld().getName().equalsIgnoreCase(args[2])) {
-                                            String query = "DELETE FROM `"+db.prefix+"blocks` WHERE location = '"+location+"'";
-                                            //cache.remove(location);
-                                            db.execute(query);
-                                        }
-                                    }
-                                    
-                                    locations.clear(); locations = null;
-                                    backup.clear(); backup = null;*/
-                                    
                                     msg(sender, messages.commands_cleanup_processed);
                                     return true;
                                 }
@@ -1350,8 +1153,8 @@ public class CreativeCommands implements CommandExecutor {
         CreativeSQLDatabase      db        = CreativeControl.getDb();
         CreativeMessages         messages  = CreativeControl.getMessages();
         CreativeControl          plugin    = CreativeControl.getPlugin();
-        //CreativeBlockCache       cache     = CreativeControl.getCache();
-        
+        CreativeBlockManager     manager   = CreativeControl.getManager();
+
         if (!plugin.hasPerm(sender, "Commands.Status")) {
             msg(sender, messages.commands_noperm);
             return false;
@@ -1360,12 +1163,12 @@ public class CreativeCommands implements CommandExecutor {
                 msg(sender, messages.commands_status_help);
                 return true;
             } else {
-                //msg(sender, messages.commands_status_queue, db.getQueue());
+                msg(sender, messages.commands_status_queue, db.getQueueSize());
                 msg(sender, messages.commands_status_sqlreads, db.getReads());
                 msg(sender, messages.commands_status_sqlwrites, db.getWrites());
-                //msg(sender, messages.commands_status_cache, (cache.getSize()), cache.getMaxSize());
-                //msg(sender, messages.commands_status_cachereads, (cache.getReads()));
-                //msg(sender, messages.commands_status_cachewrites, (cache.getWrites()));
+                msg(sender, messages.commands_status_cache, (manager.getCache().size()), manager.getCache().getMaxSize());
+                msg(sender, messages.commands_status_cachereads, (manager.getCache().getReads()));
+                msg(sender, messages.commands_status_cachewrites, (manager.getCache().getWrites()));
                 return true;
             }
         }

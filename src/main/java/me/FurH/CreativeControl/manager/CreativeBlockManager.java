@@ -15,8 +15,10 @@ import me.FurH.Core.util.Communicator;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.configuration.CreativeMainConfig;
 import me.FurH.CreativeControl.configuration.CreativeWorldNodes;
+import me.FurH.CreativeControl.data.friend.CreativePlayerFriends;
 import me.FurH.CreativeControl.database.CreativeSQLDatabase;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -31,9 +33,33 @@ public class CreativeBlockManager {
     public CreativeBlockManager() {
         cache = new CoreLRUCache<String, CreativeBlockData>(CreativeControl.getMainConfig().cache_capacity);
     }
+    
+    public CoreLRUCache<String, CreativeBlockData> getCache() {
+        return cache;
+    }
 
     public boolean isAllowed(Player p, CreativeBlockData data) {
-        return data.owner.equals(p.getName()) && CreativeControl.plugin.hasPerm(p, "OwnBlock.Bypass") && data != null && data.allowed.contains(p.getName());
+        
+        if (data.owner.equalsIgnoreCase(p.getName())) {
+            return true;
+        }
+        
+        if (CreativeControl.plugin.hasPerm(p, "OwnBlock.Bypass")) {
+            return true;
+        }
+        
+        if (data != null && data.allowed.contains(p.getName())) {
+            return true;
+        }
+        
+        CreativeMainConfig config = CreativeControl.getMainConfig();
+
+        if (config.config_friend) {
+            CreativePlayerFriends friends = CreativeControl.getFriends();
+            return friends.getFriends(data.owner).contains(p.getName());
+        }
+
+        return false;
     }
     
     public void unprotect(Block b) {
@@ -157,6 +183,10 @@ public class CreativeBlockManager {
         return data;
     }
     
+    public CreativeBlockData getFullData(Location location) {
+        return CreativeControl.getDb().getFullData(location);
+    }
+    
     public boolean isprotectable(World world, int typeId) {
         CreativeWorldNodes nodes = CreativeControl.getWorldNodes(world);
 
@@ -165,5 +195,9 @@ public class CreativeBlockManager {
         } else {
             return !nodes.block_exclude.contains(typeId);
         }
+    }
+
+    public void clear() {
+        cache.clear();
     }
 }

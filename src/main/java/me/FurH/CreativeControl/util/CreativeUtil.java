@@ -16,6 +16,7 @@
 
 package me.FurH.CreativeControl.util;
 
+import java.text.SimpleDateFormat;
 import java.util.HashSet;
 import me.FurH.Core.exceptions.CoreMsgException;
 import me.FurH.Core.list.CollectionUtils;
@@ -121,5 +122,16 @@ public class CreativeUtil {
 
         Location newloc = new Location(loc.getWorld(), loc.getX(), b1.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
         player.teleport(newloc);
+    }
+    
+    public static String getSimpleDate(long date) {
+        return new SimpleDateFormat("dd-MM-yyyy-HH-mm-ss").format(date);
+    }
+
+    /*
+     * return the date in the defined miliseconds
+     */
+    public static String getDate(long date) {
+        return new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(date);
     }
 }

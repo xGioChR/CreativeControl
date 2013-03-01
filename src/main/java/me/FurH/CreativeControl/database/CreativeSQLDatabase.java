@@ -32,6 +32,7 @@ import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.database.extra.CreativeSQLUpdater;
 import me.FurH.CreativeControl.manager.CreativeBlockData;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -54,6 +55,46 @@ public final class CreativeSQLDatabase extends CoreSQLDatabase {
     
     public void unprotect(Block block) {
         queue("DELETE FROM `"+prefix+"blocks_"+block.getWorld().getName()+"` WHERE x = '" + block.getX() + "' AND z = '" + block.getZ() + "' AND y = '" + block.getY() + "';");
+    }
+    
+    public CreativeBlockData getFullData(Location block) {
+        
+        Communicator com = CreativeControl.plugin.getCommunicator();
+        CreativeBlockData data = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+        try {
+            ps = getQuery("SELECT * FROM `"+prefix+"blocks_"+block.getWorld().getName()+"` WHERE x = '" + block.getX() + "' AND z = '" + block.getZ() + "' AND y = '" + block.getY() + "';");
+
+            rs = ps.getResultSet();
+
+            if (rs.next()) {
+                data = new CreativeBlockData(getPlayerName(rs.getInt("owner")), rs.getInt("type"), CollectionUtils.toStringHashSet(rs.getString("allowed"), ", "), Long.toString(rs.getLong("time")));
+            } else if (CreativeSQLUpdater.lock) {
+                ps = getQuery("SELECT * FROM `"+prefix+"blocks` WHERE location = "+LocationUtils.locationToString2(block)+"';");
+                rs = ps.getResultSet();
+
+                if (rs.next()) {
+                    data = new CreativeBlockData(getPlayerName(rs.getInt("owner")), rs.getInt("type"), CollectionUtils.toStringHashSet(rs.getString("allowed"), ", "), rs.getString("time"));
+                }
+            }
+
+        } catch (CoreDbException ex) {
+            com.error(Thread.currentThread(), ex, ex.getMessage());
+        } catch (SQLException ex) {
+            com.error(Thread.currentThread(), ex, "[TAG] Failed to get block from database, " + ex.getMessage());
+        } catch (CoreMsgException ex) {
+            com.error(Thread.currentThread(), ex, ex.getMessage());
+        } finally {
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (Exception ex) { }
+            }
+        }
+        
+        return data;
     }
     
     public CreativeBlockData isprotected(Block block, boolean nodrop) {
@@ -99,6 +140,10 @@ public final class CreativeSQLDatabase extends CoreSQLDatabase {
                     rs.close();
                 } catch (Exception ex) { }
             }
+        }
+
+        if (data != null && data.type != block.getTypeId()) {
+            data = null;
         }
         
         return data;

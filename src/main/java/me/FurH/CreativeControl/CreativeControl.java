@@ -51,6 +51,7 @@ import me.FurH.CreativeControl.region.CreativeRegion.gmType;
 import me.FurH.CreativeControl.region.CreativeRegionManager;
 import me.FurH.CreativeControl.selection.CreativeBlocksSelection;
 import me.FurH.CreativeControl.util.CreativeUtil;
+import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -90,6 +91,8 @@ public class CreativeControl extends CorePlugin {
     private static CreativeMessages messages;
     private static Consumer lbconsumer = null;
     private static CreativeWorldConfig worldconfig;
+    
+    private static Permission permissions;
 
     public WeakHashMap<Player, Location> right = new WeakHashMap<Player, Location>();
     public WeakHashMap<Player, Location> left = new WeakHashMap<Player, Location>();
@@ -129,7 +132,7 @@ public class CreativeControl extends CorePlugin {
             worldconfig.load(getServer().getWorlds().get(0));
         }
 
-        mainconfig.updateConfig();
+        //mainconfig.updateConfig();
 
         getCommunicator().setDebug(mainconfig.com_debugcons);
         getCommunicator().setQuiet(mainconfig.com_quiet);
@@ -309,13 +312,21 @@ public class CreativeControl extends CorePlugin {
         p = pm.getPlugin("Multiverse-Inventories");
         if (p != null) {
             if (p.isEnabled()) {
-                mainconfig.data_inventory = false;
-                mainconfig.data_status = false;
-                log("[TAG] ***************************************************");
-                log("[TAG] Multiverse-Inventories Detected!!");
-                log("[TAG] Per-GameMode inventories will be disabled by this plugin");
-                log("[TAG] Use the multiverse inventories manager!");
-                log("[TAG] ***************************************************");                
+                if (mainconfig.config_conflict) {
+                    mainconfig.data_inventory = false;
+                    mainconfig.data_status = false;
+                    log("[TAG] ***************************************************");
+                    log("[TAG] Multiverse-Inventories Detected!!");
+                    log("[TAG] Per-GameMode inventories will be disabled by this plugin");
+                    log("[TAG] Use the multiverse inventories manager!");
+                    log("[TAG] ***************************************************");   
+                } else {
+                    log("[TAG] ***************************************************");
+                    log("[TAG] Multiverse-Inventories Detected!!");
+                    log("[TAG] Per-GameMode inventories may be buggy!");
+                    log("[TAG] Use the multiverse inventories manager!");
+                    log("[TAG] ***************************************************");   
+                }
             }
         }
     }
@@ -333,6 +344,10 @@ public class CreativeControl extends CorePlugin {
                 }
             }
         }
+    }
+    
+    public static Permission getPermissions() {
+        return permissions;
     }
     
     public static CreativeWorldConfig getWorldConfig() {
