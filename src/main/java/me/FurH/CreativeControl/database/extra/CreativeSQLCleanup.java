@@ -16,159 +16,164 @@
 
 package me.FurH.CreativeControl.database.extra;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import me.FurH.Core.exceptions.CoreDbException;
+import me.FurH.Core.exceptions.CoreMsgException;
+import me.FurH.Core.location.LocationUtils;
+import me.FurH.Core.util.Communicator;
+import me.FurH.CreativeControl.CreativeControl;
+import me.FurH.CreativeControl.database.CreativeSQLDatabase;
+import net.minecraft.server.v1_4_R1.WorldServer;
+import org.bukkit.Bukkit;
+import org.bukkit.World;
+import org.bukkit.craftbukkit.v1_4_R1.CraftWorld;
+import org.bukkit.entity.Player;
+
 /**
  *
  * @author FurmigaHumana
  */
 public class CreativeSQLCleanup implements Runnable {
-
-    @Override
-    public void run() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-    /*public boolean lock = false;
+    
+    private CreativeControl plugin;
+    public static boolean lock = false;
     private Player p;
-
-    public CreativeSQLCleanup(Player p) {
-        this.p = p;
+    
+    public CreativeSQLCleanup(CreativeControl plugin, Player player) {
+        this.plugin = plugin;
+        this.p = player;
     }
     
     @Override
     public void run() {
+        if (lock) {
+            System.out.println("Cleanup Locked");
+            return;
+        }
+        
         lock = true;
-
-        long startTimer = System.currentTimeMillis();
-        long elapsedTime = 0;
-
-        CreativeCommunicator com = CreativeControl.getCommunicator2();
-        CreativeMessages messages = CreativeControl.getMessages();
-        
-        System.gc();
-        com.msg(p, messages.updater_loading);
-        HashSet<String[]> blocks = new HashSet<String[]>();
-        
-        /* Backup  HashSet<String> backup = new HashSet<String>();
+        long start = System.currentTimeMillis();
 
         CreativeSQLDatabase db = CreativeControl.getDb();
-        CreativeBlockManager manager = CreativeControl.getManager();
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-        try {
-            ps = db.getQuery("SELECT * FROM `"+db.prefix+"blocks` ORDER BY `id` DESC");
-            rs = ps.getResultSet();
-            
-            while (rs.next()) {
-                //db.reads++;
-                //manager.delBlock(rs.getString("location"));
-                //blocks.add(new String[] { rs.getString("location"), Integer.toString(rs.getInt("type")) });
-                backup.add("INSERT INTO `"+db.prefix+"blocks` (id, owner, location, type, allowed, time) VALUES ('"+rs.getInt("id")+"',"
-                        + " '"+rs.getString("owner")+"', '"+rs.getString("location")+"', '"+rs.getInt("type")+"', '"+rs.getString("allowed")+"', '"+rs.getString("time")+"')");
-            }
-            
-        } catch (SQLException ex) {
-            com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
-                    "[TAG] Failed to load the protections, {0}", ex.getMessage());
-            com.msg(p, messages.updater_loadfailed);
-            lock = false;
-            return;
-        } finally {
-            if (rs != null) {
-                try {
-                    rs.close();
-                } catch (SQLException ex) { }
-            }
-            if (ps != null) {
-                try {
-                    ps.close();
-                } catch (SQLException ex) { }
-            }
+        
+        Communicator com = plugin.getCommunicator();
+        com.msg(p, "Initializing... ");
+
+        /* move blocks */
+        List<String> tables = new ArrayList<String>();
+
+        for (World world : Bukkit.getWorlds()) {
+            tables.add(db.prefix+"blocks_" + world.getName());
         }
+        
+        for (String table : tables) {
+             cleanup_blocks(table);
+        }
+        
+        /* done */
+        com.msg(p, "All tables cleaned in {0} ms", (System.currentTimeMillis() - start));
 
-        //CreativeBlockManager manager = CreativeControl.getManager();
-        /*elapsedTime = (System.currentTimeMillis() - startTimer);
-        com.msg(p, messages.updater_loaded, blocks.size(), elapsedTime);*/
-        
-        /* Backup Start */
-        /*com.msg(p, messages.backup_generating);
-        
-        CreativeSQLBackup.backup(backup);
-        System.gc();
+        lock = false;
+    }
+    
+    public void cleanup_blocks(String world) {
+        Communicator com = plugin.getCommunicator();
+        CreativeSQLDatabase db = CreativeControl.getDb();
+        long blocks_start = System.currentTimeMillis();
 
-        elapsedTime = (System.currentTimeMillis() - startTimer);
-        com.msg(p, messages.backup_done, elapsedTime);*/
-        /* Backup End */
-        
-        /*com.msg(p, messages.cleanup_searching);
-        double corrupt = 0;
-        double done = 0;
-        double process = 0;
-        
-        double last = 0;*/
-        
-        /*try {
-            //db.connection.commit();
-        } catch (SQLException ex) {
-            com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
-                    "[TAG] Failed to set AutoCommit and commit the database, {0}", ex.getMessage());
-        }*/
+        String table = db.prefix+"blocks_" + world;
 
-        /*HashSet<String> locations = new HashSet<String>();
-        for (String[] string : blocks) {
-            done++;
-            process = ((done / blocks.size()) * 100.0D);
-            
-            if (process - last > 5) {
+        /* move regions table */
+        com.msg(p, "Cleaning table '"+table+"' ...");
+        
+        WorldServer worldServer = ((CraftWorld)Bukkit.getWorld(world)).getHandle();
+
+        double blocks_size = 0;
+        try {
+            blocks_size = db.getTableCount(table);
+        } catch (CoreMsgException ex) { } catch (CoreDbException ex) { }
+
+        com.msg(p, "Table size: " + blocks_size);
+
+        double blocks_process = 0;
+        double blocks_done = 0;
+        double blocks_last = 0;
+        double blocks_removed = 0;
+
+        HashSet<String> locations = new HashSet<String>();
+        
+        while (true) {
+
+            blocks_process = ((blocks_done / blocks_size) * 100.0D);
+
+            int row = 0;
+
+            if (blocks_process - blocks_last >= 5) {
                 System.gc();
-                com.msg(p, messages.cleanup_process, done, blocks.size(), corrupt, String.format("%d", (int) process));
-                last = process;
+                com.msg(p, "{0} of ~{1} queries processed, {2}%", blocks_done, blocks_size, String.format("%d", (int) blocks_process));
+                blocks_last = blocks_process;
             }
 
             try {
-                Location loc = CreativeUtil.getLocation(string[0]);
+                PreparedStatement ps = db.getQuery("SELECT * FROM `"+table+"` LIMIT " + (int) blocks_done + ", " + 10000 + ";");
+                ResultSet rs = ps.getResultSet();
 
-                if (loc == null) {
-                    corrupt++;
-                    //manager.delBlock(string[0]);
-                    continue;
+                while (rs.next()) {
+                    
+                    boolean delete = false;
+                    int x = rs.getInt("x");
+                    int y = rs.getInt("y");
+                    int z = rs.getInt("z");
+                    int type = rs.getInt("type");
+                    int id = worldServer.getTypeId(x, y, z);
+
+                    if (type != id) {
+                        com.msg(p, "Invalid block at X: " + x + ", Y: " + y + ", Z: " + z + ", I1: " + type + ", I2: " + id);
+                        delete = true;
+                    }
+                    
+                    String loc = LocationUtils.locationToString(x, y, z, world);
+                    
+                    if (!locations.contains(loc)) {
+                        locations.add(loc);
+                    } else {
+                        com.msg(p, "Duplicated block at X: " + x + ", Y: " + y + ", Z: " + z);
+                        delete = true;
+                    }
+
+                    if (delete) {
+                        db.execute("DELETE FROM `"+table+"` WHERE x = '" + x + "' AND z = '" + z + "' AND y = '" + y + "' AND time = '"+rs.getInt("time")+"';");
+                        blocks_removed++;
+                    }
+
+                    blocks_done++;
+                    row++;
                 }
 
-                Block b = loc.getBlock();
+                db.commit();
+
+                rs.close();
+                ps.close();
+
+                if (row < 10000) {
+                    break;
+                }
                 
-                int type = b.getTypeId();
-                int dbtype = Integer.parseInt(string[1]);
-
-                if (type != dbtype) {
-                    //com.msg(p, messages.cleanup_corrupted, loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), type, dbtype);
-                    corrupt++;
-                    manager.delBlock(b);
-                } else
-                if (!manager.isProtectable(b.getWorld(), type)) {
-                    //com.msg(p, messages.cleanup_corrupted, loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), type, dbtype);
-                    corrupt++;
-                    manager.delBlock(b);
-                } else
-                if (locations.contains(string[0])) {
-                    //com.msg(p, messages.cleanup_duplicated, loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
-                    corrupt++;
-                    manager.delBlock(b);
-                } else {
-                    locations.add(string[0]);
-                }
-            } catch (Exception ex) {
-                com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
-                        "[TAG] Failed to check the protection: {0}, {1}", string[0], ex.getMessage());
+            } catch (CoreDbException ex) {
+                com.error(Thread.currentThread(), ex, ex.getMessage());
+                break;
+            } catch (SQLException ex) {
+                com.error(Thread.currentThread(), ex, "[TAG] Failed to get statement result set, " + ex.getMessage());
+                break;
             }
-        }*/
+        }
 
-        /*try {
-            //db.connection.commit();
-        } catch (SQLException ex) {
-            com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
-                    "[TAG] Failed to set AutoCommit, {0}", ex.getMessage());
-        }]*/
-        
-        /*elapsedTime = (System.currentTimeMillis() - startTimer);
-        com.msg(p, messages.cleanup_done, corrupt, blocks.size());
-        lock = false;
-    }*/
+        long survival_time = (System.currentTimeMillis() - blocks_start);
+        com.msg(p, "Table '" + table + "' cleaned in {0} ms", survival_time);
+    }
 }

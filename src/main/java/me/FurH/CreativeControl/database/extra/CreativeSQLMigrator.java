@@ -212,8 +212,8 @@ public class CreativeSQLMigrator implements Runnable {
             }
         }
 
-        long survival_time = (System.currentTimeMillis() - blocks_start);
-        com.msg(p, "Table '" + table + "' moved in {0} ms", survival_time);
+        long blocks_time = (System.currentTimeMillis() - blocks_start);
+        com.msg(p, "Table '" + table + "' moved in {0} ms", blocks_time);
     }
     
     public void move_regions() {

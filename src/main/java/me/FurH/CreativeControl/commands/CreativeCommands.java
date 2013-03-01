@@ -889,19 +889,21 @@ public class CreativeCommands implements CommandExecutor {
                             msg(sender, messages.commands_ccleanup_help);
                             return true;
                         } else {
-                           /* CreativeSQLCleanup cleanup = new CreativeSQLCleanup(null);
-                            if (sender instanceof Player) {
-                                cleanup = new CreativeSQLCleanup((Player)sender);
-                            }
+                            CreativeSQLCleanup cleanup = null;
                             
-                            if (cleanup.lock) {
+                            if (sender instanceof Player) {
+                                cleanup = new CreativeSQLCleanup(CreativeControl.plugin, (Player)sender);
+                            } else {
+                                cleanup = new CreativeSQLCleanup(CreativeControl.plugin, null);
+                            }
+
+                            if (CreativeSQLCleanup.lock) {
                                 msg(sender, messages.cleanup_locked);
                                 return true;
                             } else {
-                                Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, cleanup);
+                                Bukkit.getScheduler().runTaskAsynchronously(plugin, cleanup);
                                 return true;
-                            }*/
-                            return true;
+                            }
                         }
                     }
                 } else {
