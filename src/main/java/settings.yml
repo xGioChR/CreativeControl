@@ -1,0 +1,94 @@
+Database:
+  ## MySQL, if false, SQLite will be used, SQLite is recomended to a maximum of 20 players.
+  MySQL: false
+  ## host, the MySQL host name
+  host: localhost
+  ## port, the MySQL port
+  port: 3306
+  ## user, the MySQL user name
+  user: root
+  ## pass, the MySQL password
+  pass: 123
+  ## database, the MySQL database to be used by this plugin
+  database: minecraft
+  ## prefix, the prefix used to create the tables in the sql database
+  prefix: cc_
+
+## this section will define wich group the player will be added when he change his gamemode to creative, the player will not be removed from his original group
+Permissions:
+  ## Enabled, if true, this system will be used
+  Enabled: false
+  ## MoveFrom, the group that will be affected when the player change his gamemode
+  MoveFrom: MembersSurvival
+  ## MoveTo, the group that the player will be added when he change his gamemode to creative
+  MoveTo: MembersCreative
+  ## Op have all permissions?
+  OpHasPerm: true
+
+## if you have an larger server with tons of creative players placing/breaking blocks, you should increase the "count", decrease the "sleep" and "each"
+Queue:
+  ## each, set here, the time in milliseconds to wait after each execution.
+  each: 100
+  ## count, set here, the number of queries to run after make a bigger pause
+  count: 50
+  ## sleep, set here, the time in milliseconds to wait after the count being reached.
+  sleep: 10000
+
+Cache:
+  ## MaxCapacity, the maximum cache capacity, higher this value is, better will be the performance, but also the memory usage will increase.
+  MaxCapacity: 15000
+  ## PreCache, the amount of items to be cached on startup
+  PreCache: 10000
+  ## DynamicBlockType, if true, a dinamyc block type list will be used, it will help on performance but will increase load time, if your database is too big, I recomend leave it false or the plugin will take forever to load.
+  DynamicBlockType: true
+
+Configurations:
+  ## Single, if true, only the world.yml file will be used, other ones will be ignored.
+  Single: false
+  ## Conflict, if true, if required, some functions of this plugin will be automatically disabled to avoid conflict.
+  Conflict: true
+  ## FriendSystem, if true, the friend system will be enabled, this may take a bit of resources, just a bit.
+  FriendSystem: false
+  ## AutoWrite, if true, config updates will be automactialy written to this file
+  AutoWrite: true
+
+Updater:
+  ## Check for updates?
+  Enabled: true
+
+Selection:
+  ## UseWorldEdit, if true, worldedit will be used to make selections.
+  UseWorldEdit: true
+  ## The Item ID used to select regions
+  Tool: 369
+
+Events:
+  ## Use Player Move Event? This may take a lot of resources on large servers, but is required to Creative/Survival regions work.
+  PlayerMove: false
+  ## Enable MiscProtections? This may take some extra resource, but will be much more comfortable to play with creative mode.
+  MiscProtection: false
+
+PlayerData:
+  ## Inventory, if true, will have an inventory to survival and other to creative
+  Inventory: true
+  ## Status, if true, will save the player survival status [e.g Health, Food, etc]
+  Status: true
+  ## Teleport, if true, the player will be teleported to the floor on login if needed
+  Teleport: false
+  ## SetSurvival, if true, the player will be set to survival on login (ATTENTTION: THIS MAY GLITCH WITH AUTH PLUGINS)
+  SetSurvival: false
+
+## Performance monitor
+Monitor:
+  ## Enabled the performance monitor
+  Enabled: false
+
+Communicator:
+  ## Quiet, if true, any messages will be displayed
+  Quiet: false
+
+Debug:
+  ## Console, if true, debug messages will be displayed in the console
+  Console: false
+  ## Stack, if true, common errors will be printed by full [leave it true C:]
+  Stack: true
