@@ -39,7 +39,7 @@ import org.bukkit.entity.Player;
 public class CreativeSQLMigrator implements Runnable {
 
     private CreativeControl plugin;
-    public boolean lock = false;
+    public static boolean lock = false;
     private String data;
     private Player p;
     private type type;

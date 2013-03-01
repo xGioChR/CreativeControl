@@ -26,8 +26,10 @@ import me.FurH.Core.database.CoreSQLDatabase;
 import me.FurH.Core.exceptions.CoreDbException;
 import me.FurH.Core.exceptions.CoreMsgException;
 import me.FurH.Core.list.CollectionUtils;
+import me.FurH.Core.location.LocationUtils;
 import me.FurH.Core.util.Communicator;
 import me.FurH.CreativeControl.CreativeControl;
+import me.FurH.CreativeControl.database.extra.CreativeSQLUpdater;
 import me.FurH.CreativeControl.manager.CreativeBlockData;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -63,9 +65,9 @@ public final class CreativeSQLDatabase extends CoreSQLDatabase {
         
         try {
             if (nodrop) {
-                ps = getQuery("SELECT owner, x, y, z, type, allowed FROM `"+prefix+"blocks_"+block.getWorld().getName()+"` WHERE x = '" + block.getX() + "' AND z = '" + block.getZ() + "' AND y = '" + block.getY() + "';");
+                ps = getQuery("SELECT owner, type, allowed FROM `"+prefix+"blocks_"+block.getWorld().getName()+"` WHERE x = '" + block.getX() + "' AND z = '" + block.getZ() + "' AND y = '" + block.getY() + "';");
             } else {
-                ps = getQuery("SELECT x, y, z, type FROM `"+prefix+"blocks_"+block.getWorld().getName()+"` WHERE x = '" + block.getX() + "' AND z = '" + block.getZ() + "' AND y = '" + block.getY() + "';");
+                ps = getQuery("SELECT type FROM `"+prefix+"blocks_"+block.getWorld().getName()+"` WHERE x = '" + block.getX() + "' AND z = '" + block.getZ() + "' AND y = '" + block.getY() + "';");
             }
 
             rs = ps.getResultSet();
@@ -75,6 +77,13 @@ public final class CreativeSQLDatabase extends CoreSQLDatabase {
                     data = new CreativeBlockData(getPlayerName(rs.getInt("owner")), rs.getInt("type"), CollectionUtils.toStringHashSet(rs.getString("allowed"), ", "));
                 } else {
                     data = new CreativeBlockData(rs.getInt("type"));
+                }
+            } else if (CreativeSQLUpdater.lock) {
+                ps = getQuery("SELECT owner, type, allowed FROM `"+prefix+"blocks` WHERE location = "+LocationUtils.locationToString2(block.getLocation())+"';");
+                rs = ps.getResultSet();
+
+                if (rs.next()) {
+                    data = new CreativeBlockData(getPlayerName(rs.getInt("owner")), rs.getInt("type"), CollectionUtils.toStringHashSet(rs.getString("allowed"), ", "));
                 }
             }
 

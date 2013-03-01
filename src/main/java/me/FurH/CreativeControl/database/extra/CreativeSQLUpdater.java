@@ -38,7 +38,7 @@ public class CreativeSQLUpdater implements Runnable {
     private HashSet<String> convert = new HashSet<String>();
     private HashSet<String> tables = new HashSet<String>();
     private CreativeControl plugin;
-    public boolean lock = false;
+    public static boolean lock = false;
     private Player p;
     
     public CreativeSQLUpdater(CreativeControl plugin) {
@@ -59,15 +59,15 @@ public class CreativeSQLUpdater implements Runnable {
         com.msg(p, "Initializing... ");
         
         CreativeSQLDatabase db = CreativeControl.getDb();
-                
-        List<String> tables = new ArrayList<String>();
-        tables.add(db.prefix + "players_survival");
-        tables.add(db.prefix + "players_creative");
-        tables.add(db.prefix + "players_adventurer");
-        tables.add(db.prefix + "friends");
+
+        List<String> thistables = new ArrayList<String>();
+        thistables.add(db.prefix + "players_survival");
+        thistables.add(db.prefix + "players_creative");
+        thistables.add(db.prefix + "players_adventurer");
+        thistables.add(db.prefix + "friends");
 
         try {
-            for (String table : tables) {
+            for (String table : thistables) {
                 try {
                     PreparedStatement ps = db.getQuery("SELECT * FROM `"+table+"` LIMIT 1;");
                     ResultSet rs = ps.getResultSet();
