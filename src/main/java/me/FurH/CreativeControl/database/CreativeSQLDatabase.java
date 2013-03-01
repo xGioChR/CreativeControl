@@ -114,7 +114,7 @@ public final class CreativeSQLDatabase extends CoreSQLDatabase {
             rs = ps.getResultSet();
         
             if (rs.next()) {
-                if (!nodrop) {
+                if (nodrop) {
                     data = new CreativeBlockData(getPlayerName(rs.getInt("owner")), rs.getInt("type"), CollectionUtils.toStringHashSet(rs.getString("allowed"), ", "));
                 } else {
                     data = new CreativeBlockData(rs.getInt("type"));
