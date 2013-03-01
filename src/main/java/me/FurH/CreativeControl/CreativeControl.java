@@ -24,7 +24,6 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Random;
 import java.util.UUID;
 import java.util.WeakHashMap;
 import java.util.logging.Level;
@@ -40,6 +39,7 @@ import me.FurH.CreativeControl.configuration.CreativeWorldNodes;
 import me.FurH.CreativeControl.data.CreativePlayerData;
 import me.FurH.CreativeControl.data.friend.CreativePlayerFriends;
 import me.FurH.CreativeControl.database.CreativeSQLDatabase;
+import me.FurH.CreativeControl.database.extra.CreativeSQLUpdater;
 import me.FurH.CreativeControl.integration.AuthMe;
 import me.FurH.CreativeControl.integration.MobArena;
 import me.FurH.CreativeControl.integration.worldedit.CreativeWorldEditHook;
@@ -190,69 +190,15 @@ public class CreativeControl extends CorePlugin {
         }
 
         startMetrics();
-
-        /*Random rnd = new Random();
-
-        int j = 0;
-        for (int i = 0; i < 100; i++) {
-            
-            try {
-                database.execute("INSERT INTO `"+database.prefix+"regions` (name, start, end, type) VALUES ('name " + rnd.nextInt(256) + "', 'world:"+i + rnd.nextInt(256)+":"+rnd.nextInt(256)+":"+i + rnd.nextInt(256) + "', 'world:"+i + rnd.nextInt(256)+":"+rnd.nextInt(256)+":"+i + rnd.nextInt(256) + "', 'CREATIVE');");
-            } catch (CoreDbException ex) {
-                ex.printStackTrace();
-            }
-
-            if (j == 10000) {
-                System.out.println("i: " + i + ", " + (100000 - i) + " left");
-                try {
-                    database.commit();
-                } catch (CoreDbException ex) {
-                    ex.printStackTrace();
-                }
-                j = 0;
-            }
-            j++;
-        }
         
-        for (int i = 0; i < 100000; i++) {
-            
-            try {
-                database.execute("INSERT INTO `"+database.prefix+"blocks_world` (owner, x, y, z, type, allowed, time) VALUES ('1', '" + (i + rnd.nextInt(256)) + "', '" + rnd.nextInt(256) + "', '" + (i + rnd.nextInt(256)) + "', '" + rnd.nextInt(256) + "', '" + null + "', '" + System.currentTimeMillis() + "');");
-            } catch (CoreDbException ex) {
-                ex.printStackTrace();
+        try {
+            if (database.isUpdateAvailable()) {
+                log("[TAG] Database update required!");
+                Bukkit.getScheduler().runTaskAsynchronously(this, new CreativeSQLUpdater(this));
             }
-
-            if (j == 10000) {
-                System.out.println("i: " + i + ", " + (100000 - i) + " left");
-                try {
-                    database.commit();
-                } catch (CoreDbException ex) {
-                    ex.printStackTrace();
-                }
-                j = 0;
-            }
-            j++;
+        } catch (CoreDbException ex) {
+            getCommunicator().error(Thread.currentThread(), ex, ex.getMessage());
         }
-        
-        for (int i = 0; i < 100000; i++) {
-            
-            try {
-                database.execute("INSERT INTO `"+database.prefix+"blocks_world_nether` (owner, x, y, z, type, allowed, time) VALUES ('1', '" + (i + rnd.nextInt(256)) + "', '" + rnd.nextInt(256) + "', '" + (i + rnd.nextInt(256)) + "', '" + rnd.nextInt(256) + "', '" + null + "', '" + System.currentTimeMillis() + "');");
-            } catch (CoreDbException ex) {
-                ex.printStackTrace();
-            }
-
-            if (j == 10000) {
-                System.out.println("i: " + i + ", " + (100000 - i) + " left");
-                try {
-                    database.commit();
-                } catch (CoreDbException ex) {
-                    ex.printStackTrace();
-                }
-                j = 0;
-            }
-            j++;
-        }*/
     }
     
     @Override

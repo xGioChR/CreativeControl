@@ -16,148 +16,503 @@
 
 package me.FurH.CreativeControl.database.extra;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import me.FurH.Core.exceptions.CoreDbException;
+import me.FurH.Core.exceptions.CoreMsgException;
+import me.FurH.Core.util.Communicator;
+import me.FurH.CreativeControl.CreativeControl;
+import me.FurH.CreativeControl.database.CreativeSQLDatabase;
+import org.bukkit.entity.Player;
+
 /**
  *
  * @author FurmigaHumana
  */
-public class CreativeSQLUpdater {
-    /*public boolean lock = false;
+public class CreativeSQLUpdater implements Runnable {
+    
+    private HashSet<String> convert = new HashSet<String>();
+    private HashSet<String> tables = new HashSet<String>();
+    private CreativeControl plugin;
+    public boolean lock = false;
     private Player p;
     
-    public void loadup() {
-        CreativeSQLDatabase db = CreativeControl.getDb();
-        if (db.hasTable("CreativeControl") || db.hasTable("creativecontrol")) {
-            start();
+    public CreativeSQLUpdater(CreativeControl plugin) {
+        this.plugin = plugin;
+    }
+
+    @Override
+    public void run() {
+        if (lock) {
+            System.out.println("Updater Locked");
+            return;
         }
+        
+        lock = true;
+        long start = System.currentTimeMillis();
+
+        Communicator com = plugin.getCommunicator();
+        com.msg(p, "Initializing... ");
+        
+        CreativeSQLDatabase db = CreativeControl.getDb();
+                
+        List<String> tables = new ArrayList<String>();
+        tables.add(db.prefix + "players_survival");
+        tables.add(db.prefix + "players_creative");
+        tables.add(db.prefix + "players_adventurer");
+        tables.add(db.prefix + "friends");
+
+        try {
+            for (String table : tables) {
+                try {
+                    PreparedStatement ps = db.getQuery("SELECT * FROM `"+table+"` LIMIT 1;");
+                    ResultSet rs = ps.getResultSet();
+                    
+                    if (rs.next()) {
+                        String player = rs.getString("player");
+                    }
+                } catch (Exception ex) {
+                    db.execute("ALTER TABLE `"+table+"` RENAME TO `old_"+table+"`;");
+                    convert.add(table);
+                }
+            }
+        } catch (CoreDbException ex) {
+            com.error(Thread.currentThread(), ex, ex.getMessage());
+        }
+
+        try {
+            db.commit();
+        } catch (CoreDbException ex) {
+            com.error(Thread.currentThread(), ex, ex.getMessage());
+        }
+        
+        db.load();
+        
+        try {
+            db.commit();
+        } catch (CoreDbException ex) {
+            com.error(Thread.currentThread(), ex, ex.getMessage());
+        }
+        
+        /* update the players creative inventories table */
+        update_players_creative_2();
+        
+        /* update the players survival inventories table */
+        update_players_survival_2();
+        
+        /* update the players adventurer inventories table */
+        update_players_adventurer_2();
+        
+        /* update the players friends list table */
+        update_friends_2();
+        
+        /* update all blocks */
+        update_blocks_2();
+        
+        try {
+            db.incrementVersion(2);
+        } catch (CoreDbException ex) {
+            com.error(Thread.currentThread(), ex, ex.getMessage());
+        }
+        
+        com.msg(p, "All data updated in {0} ms", (System.currentTimeMillis() - start));
+
+        lock = false;
     }
     
-    public CreativeSQLUpdater(Player p) {
-        this.p = p;
-    }
-
-    public void start() {
-        lock = true;
-
-        long startTimer = System.currentTimeMillis();
-        long elapsedTime = 0;
-
-        CreativeCommunicator com = CreativeControl.getCommunicator2();
-        CreativeMessages messages = CreativeControl.getMessages();
-        
-        com.msg(p, messages.updater_loading);
-        int sucess = 0;
-        
+    public void update_blocks_2() {
+        Communicator com = plugin.getCommunicator();
         CreativeSQLDatabase db = CreativeControl.getDb();
-        PreparedStatement ps = null;
-        PreparedStatement p1 = null;
-        ResultSet rs = null;
-        ResultSet counter = null;
+        long blocks_start = System.currentTimeMillis();
+        
+        String table = db.prefix + "blocks";
+        
+        /* move regions table */
+        com.msg(p, "Updating table '"+table+"' ...");
+
+        double blocks_size = 0;
         try {
-            System.gc();
-            double total = 0;
-            
-            p1 = db.getQuery("SELECT * FROM `CreativeControl` ORDER BY `id` DESC");
-            counter = p1.getResultSet();
-            
-            while (counter.next()) {
-                total++;
+            blocks_size = db.getTableCount(table);
+        } catch (CoreMsgException ex) { } catch (CoreDbException ex) { }
+
+        com.msg(p, "Table size: " + blocks_size);
+
+        double blocks_process = 0;
+        double blocks_done = 0;
+        double blocks_last = 0;
+
+        while (true) {
+
+            blocks_process = ((blocks_done / blocks_size) * 100.0D);
+
+            int row = 0;
+
+            if (blocks_process - blocks_last >= 5) {
+                System.gc();
+                com.msg(p, "{0} of ~{1} queries processed, {2}%", blocks_done, blocks_size, String.format("%d", (int) blocks_process));
+                blocks_last = blocks_process;
             }
-
-            ps = db.getQuery("SELECT * FROM `CreativeControl` ORDER BY `id` DESC");
-            rs = ps.getResultSet();
-
-            elapsedTime = (System.currentTimeMillis() - startTimer);
-            com.msg(p, messages.updater_loaded, total, elapsedTime);
-            
-            double done = 0;
-            double process = 0;
-            int skip = 0;
-            double last = 0;
 
             try {
-                db.connection.commit();
-            } catch (SQLException ex) {
-                com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
-                        "[TAG] Failed to set AutoCommit and commit the database, {0}", ex.getMessage());
-            }
+                PreparedStatement ps = db.getQuery("SELECT * FROM `"+table+"` LIMIT " + (int) blocks_done + ", " + 10000 + ";");
+                ResultSet rs = ps.getResultSet();
 
-            while (rs.next()) {
-                done++; //db.reads++;
-                process = ((done / total) * 100.0D);
-
-                if (process - last >= 5) {
-                    System.gc();
-                    com.msg(p, messages.updater_process, done, total, skip, String.format("%d", (int) process));
-                    last = process;
-                }
-
-                try {
-                    String owner = rs.getString("owner");
-                    String world = rs.getString("world");
-                    int x = rs.getInt("x");
-                    int y = rs.getInt("y");
-                    int z = rs.getInt("z");
-                    int type = rs.getInt("type");
-                    String allowed = null;
-                    if (rs.getString("allowed") != null) {
-                        allowed = rs.getString("allowed");
+                while (rs.next()) {
+                    String[] location = rs.getString("location").split(":");
+                    
+                    String table1 = db.prefix+"blocks_"+location[0];
+                    if (!tables.contains(table1)) {
+                        if (!db.hasTable(table1)) {
+                            db.load(db.connection, location[0], db.type);
+                            db.commit();
+                        }
+                        tables.add(table1);
                     }
-                    String time = rs.getString("time");
+                    
+                    PreparedStatement ps2 = db.prepare("INSERT INTO `"+db.prefix+"blocks_"+location[0]+"` (owner, x, y, z, type, allowed, time) VALUES (?, ?, ?, ?, ?, ?, ?);");
 
-                    String StringLoc = world + ":" + x + ":" + y + ":" + z;
-                    sucess++;
-                    db.execute("INSERT INTO `"+db.prefix+"blocks` (owner, location, type, allowed, time) VALUES ('"+owner+"', '"+StringLoc+"', '"+type+"', '"+allowed+"', '"+time+"')");
-                } catch (Exception ex) {
-                    com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
-                            "[TAG] Failed on update the database, {0}", ex.getMessage());
-                    com.msg(p, messages.updater_checkfailed);
-                    lock = false;
+                    ps2.setInt(1, db.getPlayerId(rs.getString("owner")));                    
+                    ps2.setInt(2, Integer.parseInt(location[1]));
+                    ps2.setInt(3, Integer.parseInt(location[2]));
+                    ps2.setInt(4, Integer.parseInt(location[3]));
+                    ps2.setInt(5, rs.getInt("type"));
+                    ps2.setString(6, rs.getString("allowed"));
+                    ps2.setLong(7, rs.getLong("time"));
+                    
+                    ps2.execute();
+
+                    blocks_done++;
+                    row++;
                 }
-            }
 
-            rs.close();
-        } catch (SQLException ex) {
-            com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
-                    "[TAG] Failed to load protections, {0}", ex.getMessage());
-            com.msg(p, messages.updater_loadfailed);
-            lock = false;
-        } finally {
-            if (counter != null) {
-                try {
-                    counter.close();
-                } catch (SQLException ex) { }
-            }
-            if (p1 != null) {
-                try {
-                    p1.close();
-                } catch (SQLException ex) { }
-            }
-            if (rs != null) {
-                try {
-                    rs.close();
-                } catch (SQLException ex) { }
-            }
-            if (ps != null) {
-                try {
-                    ps.close();
-                } catch (SQLException ex) { }
+                db.commit();
+
+                rs.close();
+                ps.close();
+
+                if (row < 10000) {
+                    break;
+                }
+            } catch (CoreDbException ex) {
+                com.error(Thread.currentThread(), ex, ex.getMessage());
+                break;
+            } catch (SQLException ex) {
+                com.error(Thread.currentThread(), ex, "[TAG] Failed to get statement result set, " + ex.getMessage());
+                break;
             }
         }
+        
+        long blocks_time = (System.currentTimeMillis() - blocks_start);
+        com.msg(p, "Table '" + table + "' updated in {0} ms", blocks_time);
+    }
+ 
+    
+    public void update_players_creative_2() {
+        Communicator com = plugin.getCommunicator();
+        CreativeSQLDatabase db = CreativeControl.getDb();
+        long creative_start = System.currentTimeMillis();
+        
+        String table = db.prefix + "players_creative";
+        if (!convert.contains(table)) {
+            return;
+        }
+        
+        /* move regions table */
+        com.msg(p, "Updating table '"+table+"' ...");
 
-        db.execute("UPDATE `"+db.prefix+"internal` SET version = '"+db.version+"'");
-        db.execute("ALTER TABLE `CreativeControl` RENAME TO `"+db.prefix+"old`");
-
+        double creative_size = 0;
         try {
-            db.connection.commit();
-        } catch (SQLException ex) {
-            com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
-                    "[TAG] Failed to set AutoCommit, {0}", ex.getMessage());
+            creative_size = db.getTableCount(table);
+        } catch (CoreMsgException ex) { } catch (CoreDbException ex) { }
+
+        com.msg(p, "Table size: " + creative_size);
+
+        double creative_process = 0;
+        double creative_done = 0;
+        double creative_last = 0;
+
+        while (true) {
+
+            creative_process = ((creative_done / creative_size) * 100.0D);
+
+            int row = 0;
+
+            if (creative_process - creative_last >= 5) {
+                System.gc();
+                com.msg(p, "{0} of ~{1} queries processed, {2}%", creative_done, creative_size, String.format("%d", (int) creative_process));
+                creative_last = creative_process;
+            }
+
+            try {
+                PreparedStatement ps = db.getQuery("SELECT * FROM `old_"+table+"` LIMIT " + (int) creative_done + ", " + 10000 + ";");
+                ResultSet rs = ps.getResultSet();
+
+                while (rs.next()) {
+                    PreparedStatement ps2 = db.prepare("INSERT INTO `"+table+"` (player, armor, inventory) VALUES (?, ?, ?);");
+
+                    ps2.setInt(1, db.getPlayerId(rs.getString("player")));
+                    ps2.setString(2, rs.getString("armor"));
+                    ps2.setString(3, rs.getString("inventory"));
+                    
+                    ps2.execute();
+
+                    creative_done++;
+                    row++;
+                }
+
+                db.commit();
+
+                rs.close();
+                ps.close();
+
+                if (row < 10000) {
+                    break;
+                }
+            } catch (CoreDbException ex) {
+                com.error(Thread.currentThread(), ex, ex.getMessage());
+                break;
+            } catch (SQLException ex) {
+                com.error(Thread.currentThread(), ex, "[TAG] Failed to get statement result set, " + ex.getMessage());
+                break;
+            }
         }
         
-        System.gc();
+        long creative_time = (System.currentTimeMillis() - creative_start);
+        com.msg(p, "Table '" + table + "' updated in {0} ms", creative_time);
+    }
+ 
+    public void update_players_survival_2() {
+        Communicator com = plugin.getCommunicator();
+        CreativeSQLDatabase db = CreativeControl.getDb();
+        long survival_start = System.currentTimeMillis();
         
-        elapsedTime = (System.currentTimeMillis() - startTimer);
-        com.msg(p, messages.updater_done, sucess, elapsedTime);
-        lock = false;
-    }*/
+        String table = db.prefix + "players_survival";
+        if (!convert.contains(table)) {
+            return;
+        }
+        
+        /* move regions table */
+        com.msg(p, "Updating table '"+table+"' ...");
+
+        double survival_size = 0;
+        try {
+            survival_size = db.getTableCount(table);
+        } catch (CoreMsgException ex) { } catch (CoreDbException ex) { }
+
+        com.msg(p, "Table size: " + survival_size);
+
+        double survival_process = 0;
+        double survival_done = 0;
+        double survival_last = 0;
+
+        while (true) {
+
+            survival_process = ((survival_done / survival_size) * 100.0D);
+
+            int row = 0;
+
+            if (survival_process - survival_last >= 5) {
+                System.gc();
+                com.msg(p, "{0} of ~{1} queries processed, {2}%", survival_done, survival_size, String.format("%d", (int) survival_process));
+                survival_last = survival_process;
+            }
+
+            try {
+                PreparedStatement ps = db.getQuery("SELECT * FROM `old_"+table+"` LIMIT " + (int) survival_done + ", " + 10000 + ";");
+                ResultSet rs = ps.getResultSet();
+
+                while (rs.next()) {
+                    PreparedStatement ps2 = db.prepare("INSERT INTO `"+table+"` (player, health, foodlevel, exhaustion, saturation, experience, armor, inventory) VALUES (?, ?, ?, ?, ?, ?, ?, ?);");
+
+                    ps2.setInt(1, db.getPlayerId(rs.getString("player")));
+                    ps2.setInt(2, rs.getInt("health"));
+                    ps2.setInt(3, rs.getInt("foodlevel"));
+                    ps2.setInt(4, rs.getInt("exhaustion"));
+                    ps2.setInt(5, rs.getInt("saturation"));
+                    ps2.setInt(6, rs.getInt("experience"));
+                    ps2.setString(7, rs.getString("armor"));
+                    ps2.setString(8, rs.getString("inventory"));
+                    
+                    ps2.execute();
+
+                    survival_done++;
+                    row++;
+                }
+
+                db.commit();
+
+                rs.close();
+                ps.close();
+
+                if (row < 10000) {
+                    break;
+                }
+            } catch (CoreDbException ex) {
+                com.error(Thread.currentThread(), ex, ex.getMessage());
+                break;
+            } catch (SQLException ex) {
+                com.error(Thread.currentThread(), ex, "[TAG] Failed to get statement result set, " + ex.getMessage());
+                break;
+            }
+        }
+        
+        long survival_time = (System.currentTimeMillis() - survival_start);
+        com.msg(p, "Table '" + table + "' updated in {0} ms", survival_time);
+    }
+
+    public void update_players_adventurer_2() {
+        Communicator com = plugin.getCommunicator();
+        CreativeSQLDatabase db = CreativeControl.getDb();
+        long adventurer_start = System.currentTimeMillis();
+        
+        String table = db.prefix + "players_adventurer";
+        if (!convert.contains(table)) {
+            return;
+        }
+        
+        /* move regions table */
+        com.msg(p, "Updating table '"+table+"' ...");
+
+        double adventurer_size = 0;
+        try {
+            adventurer_size = db.getTableCount(table);
+        } catch (CoreMsgException ex) { } catch (CoreDbException ex) { }
+
+        com.msg(p, "Table size: " + adventurer_size);
+
+        double adventurer_process = 0;
+        double adventurer_done = 0;
+        double adventurer_last = 0;
+
+        while (true) {
+
+            adventurer_process = ((adventurer_done / adventurer_size) * 100.0D);
+
+            int row = 0;
+
+            if (adventurer_process - adventurer_last >= 5) {
+                System.gc();
+                com.msg(p, "{0} of ~{1} queries processed, {2}%", adventurer_done, adventurer_size, String.format("%d", (int) adventurer_process));
+                adventurer_last = adventurer_process;
+            }
+
+            try {
+                PreparedStatement ps = db.getQuery("SELECT * FROM `old_"+table+"` LIMIT " + (int) adventurer_done + ", " + 10000 + ";");
+                ResultSet rs = ps.getResultSet();
+
+                while (rs.next()) {
+                    PreparedStatement ps2 = db.prepare("INSERT INTO `"+table+"` (player, health, foodlevel, exhaustion, saturation, experience, armor, inventory) VALUES (?, ?, ?, ?, ?, ?, ?, ?);");
+
+                    ps2.setInt(1, db.getPlayerId(rs.getString("player")));
+                    ps2.setInt(2, rs.getInt("health"));
+                    ps2.setInt(3, rs.getInt("foodlevel"));
+                    ps2.setInt(4, rs.getInt("exhaustion"));
+                    ps2.setInt(5, rs.getInt("saturation"));
+                    ps2.setInt(6, rs.getInt("experience"));
+                    ps2.setString(7, rs.getString("armor"));
+                    ps2.setString(8, rs.getString("inventory"));
+                    
+                    ps2.execute();
+
+                    adventurer_done++;
+                    row++;
+                }
+
+                db.commit();
+
+                rs.close();
+                ps.close();
+
+                if (row < 10000) {
+                    break;
+                }
+            } catch (CoreDbException ex) {
+                com.error(Thread.currentThread(), ex, ex.getMessage());
+                break;
+            } catch (SQLException ex) {
+                com.error(Thread.currentThread(), ex, "[TAG] Failed to get statement result set, " + ex.getMessage());
+                break;
+            }
+        }
+        
+        long adventurer_time = (System.currentTimeMillis() - adventurer_start);
+        com.msg(p, "Table '" + table + "' updated in {0} ms", adventurer_time);
+    }
+    
+    public void update_friends_2() {
+        Communicator com = plugin.getCommunicator();
+        CreativeSQLDatabase db = CreativeControl.getDb();
+        long friends_start = System.currentTimeMillis();
+        
+        String table = db.prefix + "friends";
+        if (!convert.contains(table)) {
+            return;
+        }
+        
+        /* move regions table */
+        com.msg(p, "Updating table '"+table+"' ...");
+
+        double friends_size = 0;
+        try {
+            friends_size = db.getTableCount(table);
+        } catch (CoreMsgException ex) { } catch (CoreDbException ex) { }
+
+        com.msg(p, "Table size: " + friends_size);
+
+        double friends_process = 0;
+        double friends_done = 0;
+        double friends_last = 0;
+
+        while (true) {
+
+            friends_process = ((friends_done / friends_size) * 100.0D);
+
+            int row = 0;
+
+            if (friends_process - friends_last >= 5) {
+                System.gc();
+                com.msg(p, "{0} of ~{1} queries processed, {2}%", friends_done, friends_size, String.format("%d", (int) friends_process));
+                friends_last = friends_process;
+            }
+
+            try {
+                PreparedStatement ps = db.getQuery("SELECT * FROM `old_"+table+"` LIMIT " + (int) friends_done + ", " + 10000 + ";");
+                ResultSet rs = ps.getResultSet();
+
+                while (rs.next()) {
+                    PreparedStatement ps2 = db.prepare("INSERT INTO `"+table+"` (player, friends) VALUES (?, ?);");
+
+                    ps2.setInt(1, db.getPlayerId(rs.getString("player")));
+                    ps2.setString(2, rs.getString("friends"));
+                    
+                    ps2.execute();
+
+                    friends_done++;
+                    row++;
+                }
+
+                db.commit();
+
+                rs.close();
+                ps.close();
+
+                if (row < 10000) {
+                    break;
+                }
+            } catch (CoreDbException ex) {
+                com.error(Thread.currentThread(), ex, ex.getMessage());
+                break;
+            } catch (SQLException ex) {
+                com.error(Thread.currentThread(), ex, "[TAG] Failed to get statement result set, " + ex.getMessage());
+                break;
+            }
+        }
+        
+        long friends_time = (System.currentTimeMillis() - friends_start);
+        com.msg(p, "Table '" + table + "' updated in {0} ms", friends_time);
+    }
 }

@@ -26,7 +26,6 @@ import me.FurH.CreativeControl.configuration.CreativeMainConfig;
 import me.FurH.CreativeControl.configuration.CreativeMessages;
 import me.FurH.CreativeControl.data.friend.CreativePlayerFriends;
 import me.FurH.CreativeControl.database.CreativeSQLDatabase;
-import me.FurH.CreativeControl.database.extra.CreativeSQLBackup;
 import me.FurH.CreativeControl.database.extra.CreativeSQLCleanup;
 import me.FurH.CreativeControl.database.extra.CreativeSQLMigrator;
 import me.FurH.CreativeControl.manager.CreativeBlockManager;

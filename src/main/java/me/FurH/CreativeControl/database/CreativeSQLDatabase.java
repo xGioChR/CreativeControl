@@ -20,8 +20,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import me.FurH.Core.CorePlugin;
 import me.FurH.Core.cache.CoreLRUCache;
 import me.FurH.Core.database.CoreSQLDatabase;
@@ -45,6 +43,7 @@ public final class CreativeSQLDatabase extends CoreSQLDatabase {
 
     public CreativeSQLDatabase(CorePlugin plugin, String prefix, String engine, String database_host, String database_port, String database_table, String database_user, String database_pass) {
         super(plugin, prefix, engine, database_host, database_port, database_table, database_user, database_pass);
+        this.version = 2;
     }
     
     public void protect(Player player, Block block) {

@@ -54,6 +54,11 @@ public class CreativeSQLMigrator implements Runnable {
   
     @Override
     public void run() {
+        if (lock) {
+            System.out.println("Migrator Locked");
+            return;
+        }
+        
         lock = true;
         long start = System.currentTimeMillis();
 
@@ -206,7 +211,7 @@ public class CreativeSQLMigrator implements Runnable {
                 break;
             }
         }
-        
+
         long survival_time = (System.currentTimeMillis() - blocks_start);
         com.msg(p, "Table '" + table + "' moved in {0} ms", survival_time);
     }
@@ -652,77 +657,6 @@ public class CreativeSQLMigrator implements Runnable {
     }
     
     public void move_friends() {
-        Communicator com = plugin.getCommunicator();
-        CreativeSQLDatabase db = CreativeControl.getDb();
-        long friends_start = System.currentTimeMillis();
-        
-        String table = db.prefix + "friends";
-        
-        /* move regions table */
-        com.msg(p, "Moving table '"+table+"' ...");
-
-        double friends_size = 0;
-        try {
-            friends_size = db.getTableCount(table);
-        } catch (CoreMsgException ex) { } catch (CoreDbException ex) { }
-
-        com.msg(p, "Table size: " + friends_size);
-
-        double friends_process = 0;
-        double friends_done = 0;
-        double friends_last = 0;
-
-        while (true) {
-
-            friends_process = ((friends_done / friends_size) * 100.0D);
-
-            int row = 0;
-
-            if (friends_process - friends_last >= 5) {
-                System.gc();
-                com.msg(p, "{0} of ~{1} queries processed, {2}%", friends_done, friends_size, String.format("%d", (int) friends_process));
-                friends_last = friends_process;
-            }
-
-            try {
-                PreparedStatement ps = db.getQuery("SELECT * FROM `"+table+"` LIMIT " + (int) friends_done + ", " + 10000 + ";");
-                ResultSet rs = ps.getResultSet();
-
-                while (rs.next()) {
-                    PreparedStatement ps2 = to.prepareStatement("INSERT INTO `"+table+"` (player, friends) VALUES (?, ?);");
-
-                    ps2.setInt(1, rs.getInt("player"));
-                    ps2.setString(2, rs.getString("friends"));
-                    
-                    ps2.execute();
-                    ps2.close();
-
-                    friends_done++;
-                    row++;
-                }
-
-                to.commit();
-
-                rs.close();
-                ps.close();
-
-                if (row < 10000) {
-                    break;
-                }
-            } catch (CoreDbException ex) {
-                com.error(Thread.currentThread(), ex, ex.getMessage());
-                break;
-            } catch (SQLException ex) {
-                com.error(Thread.currentThread(), ex, "[TAG] Failed to get statement result set, " + ex.getMessage());
-                break;
-            }
-        }
-        
-        long friends_time = (System.currentTimeMillis() - friends_start);
-        com.msg(p, "Table '" + table + "' moved in {0} ms", friends_time);
-    }
-    
-    public void move_blocks() {
         Communicator com = plugin.getCommunicator();
         CreativeSQLDatabase db = CreativeControl.getDb();
         long friends_start = System.currentTimeMillis();
