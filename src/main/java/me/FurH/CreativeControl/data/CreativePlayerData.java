@@ -70,7 +70,7 @@ public class CreativePlayerData {
                 adventurer_cache.put(cache.name, cache);
 
                 String query = "INSERT INTO `"+db.prefix+"players_adventurer` (player, health, foodlevel, exhaustion, saturation, experience, armor, inventory) VALUES "
-                        + "('"+cache.name+"', '"+cache.health+"', '"+cache.food+"', '"+cache.ex+"', '"+cache.sat+"', '" + cache.exp +"', '"+ toListString(cache.armor) +"', '"+ toListString(cache.items) +"');";
+                        + "('"+db.getPlayerId(cache.name)+"', '"+cache.health+"', '"+cache.food+"', '"+cache.ex+"', '"+cache.sat+"', '" + cache.exp +"', '"+ toListString(cache.armor) +"', '"+ toListString(cache.items) +"');";
                 
                 try {
                     db.execute(query);
@@ -107,7 +107,7 @@ public class CreativePlayerData {
                 creative_cache.put(cache.name, cache);
                 
                 String query = "INSERT INTO `"+db.prefix+"players_creative` (player, armor, inventory) VALUES "
-                        + "('"+cache.name+"', '"+ toListString(cache.armor) +"', '"+ toListString(cache.items) +"');";
+                        + "('"+db.getPlayerId(cache.name)+"', '"+ toListString(cache.armor) +"', '"+ toListString(cache.items) +"');";
 
                 try {
                     db.execute(query);
@@ -143,7 +143,7 @@ public class CreativePlayerData {
                 survival_cache.put(cache.name, cache);
                 
                 String query = "INSERT INTO `"+db.prefix+"players_survival` (player, health, foodlevel, exhaustion, saturation, experience, armor, inventory) VALUES "
-                        + "('"+cache.name+"', '"+cache.health+"', '"+cache.food+"', '"+cache.ex+"', '"+cache.sat+"', '" + cache.exp +"', '"+ toListString(cache.armor) +"', '"+ toListString(cache.items) +"');";
+                        + "('"+db.getPlayerId(cache.name)+"', '"+cache.health+"', '"+cache.food+"', '"+cache.ex+"', '"+cache.sat+"', '" + cache.exp +"', '"+ toListString(cache.armor) +"', '"+ toListString(cache.items) +"');";
 
                 try {
                     db.execute(query);
@@ -209,7 +209,7 @@ public class CreativePlayerData {
             PreparedStatement ps = null;
             ResultSet rs = null;
             try {
-                ps = db.getQuery("SELECT * FROM `"+db.prefix+"players_adventurer` WHERE player = '" + player.toLowerCase() + "'");
+                ps = db.getQuery("SELECT * FROM `"+db.prefix+"players_adventurer` WHERE player = '" + db.getPlayerId(player.toLowerCase()) + "'");
                 rs = ps.getResultSet();
                 
                 if (rs.next()) {
@@ -249,7 +249,7 @@ public class CreativePlayerData {
             PreparedStatement ps = null;
             ResultSet rs = null;
             try {
-                ps = db.getQuery("SELECT * FROM `"+db.prefix+"players_survival` WHERE player = '" + player.toLowerCase() + "'");
+                ps = db.getQuery("SELECT * FROM `"+db.prefix+"players_survival` WHERE player = '" + db.getPlayerId(player.toLowerCase()) + "'");
                 rs = ps.getResultSet();
                 
                 if (rs.next()) {
@@ -290,7 +290,7 @@ public class CreativePlayerData {
             PreparedStatement ps = null;
             ResultSet rs = null;
             try {
-                ps = db.getQuery("SELECT * FROM `"+db.prefix+"players_creative` WHERE player = '" + player.toLowerCase() + "'");
+                ps = db.getQuery("SELECT * FROM `"+db.prefix+"players_creative` WHERE player = '" + db.getPlayerId(player.toLowerCase()) + "'");
                 rs = ps.getResultSet();
 
                 if (rs.next()) {
