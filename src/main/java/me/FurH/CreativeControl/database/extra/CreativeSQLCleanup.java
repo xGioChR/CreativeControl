@@ -62,7 +62,7 @@ public class CreativeSQLCleanup implements Runnable {
         CreativeSQLDatabase db = CreativeControl.getDb();
         
         Communicator com = plugin.getCommunicator();
-        com.msg(p, "Initializing... ");
+        com.msg(p, "&7Initializing... ");
 
         /* move blocks */
         List<String> tables = new ArrayList<String>();
@@ -76,7 +76,7 @@ public class CreativeSQLCleanup implements Runnable {
         }
         
         /* done */
-        com.msg(p, "All tables cleaned in {0} ms", (System.currentTimeMillis() - start));
+        com.msg(p, "&7All tables cleaned in &4{0}&7 ms", (System.currentTimeMillis() - start));
 
         lock = false;
     }
@@ -89,7 +89,7 @@ public class CreativeSQLCleanup implements Runnable {
         String table = db.prefix+"blocks_" + world;
 
         /* move regions table */
-        com.msg(p, "Cleaning table '"+table+"' ...");
+        com.msg(p, "&7Cleaning table '&4"+table+"&7' ...");
         
         WorldServer worldServer = ((CraftWorld)Bukkit.getWorld(world)).getHandle();
 
@@ -98,7 +98,7 @@ public class CreativeSQLCleanup implements Runnable {
             blocks_size = db.getTableCount(table);
         } catch (CoreMsgException ex) { } catch (CoreDbException ex) { }
 
-        com.msg(p, "Table size: " + blocks_size);
+        com.msg(p, "Table size: &4" + blocks_size);
 
         double blocks_process = 0;
         double blocks_done = 0;
@@ -115,7 +115,7 @@ public class CreativeSQLCleanup implements Runnable {
 
             if (blocks_process - blocks_last >= 5) {
                 System.gc();
-                com.msg(p, "{0} of ~{1} queries processed, {2}%", blocks_done, blocks_size, String.format("%d", (int) blocks_process));
+                com.msg(p, "&4{0}&7 of ~&4{1}&7 queries processed, &4{2}&7%", blocks_done, blocks_size, String.format("%d", (int) blocks_process));
                 blocks_last = blocks_process;
             }
 
@@ -133,7 +133,7 @@ public class CreativeSQLCleanup implements Runnable {
                     int id = worldServer.getTypeId(x, y, z);
 
                     if (type != id) {
-                        com.msg(p, "Invalid block at X: " + x + ", Y: " + y + ", Z: " + z + ", I1: " + type + ", I2: " + id);
+                        com.msg(p, "&7Invalid block at X: &4" + x + "&7, Y: &4" + y + "&7, Z: &4" + z + "&7, I1: &4" + type + "&7, I2: &4" + id);
                         delete = true;
                     }
                     
@@ -142,7 +142,7 @@ public class CreativeSQLCleanup implements Runnable {
                     if (!locations.contains(loc)) {
                         locations.add(loc);
                     } else {
-                        com.msg(p, "Duplicated block at X: " + x + ", Y: " + y + ", Z: " + z);
+                        com.msg(p, "&7Duplicated block at X: &4" + x + "&7, Y: &4" + y + "&7, Z: &4" + z);
                         delete = true;
                     }
 
@@ -174,6 +174,6 @@ public class CreativeSQLCleanup implements Runnable {
         }
 
         long survival_time = (System.currentTimeMillis() - blocks_start);
-        com.msg(p, "Table '" + table + "' cleaned in {0} ms", survival_time);
+        com.msg(p, "&7Table '&4" + table + "&7' cleaned in &4{0}&7 ms", survival_time);
     }
 }

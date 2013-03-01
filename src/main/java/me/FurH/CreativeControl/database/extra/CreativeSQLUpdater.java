@@ -56,7 +56,7 @@ public class CreativeSQLUpdater implements Runnable {
         long start = System.currentTimeMillis();
 
         Communicator com = plugin.getCommunicator();
-        com.msg(p, "Initializing... ");
+        com.msg(p, "&7Initializing... ");
         
         CreativeSQLDatabase db = CreativeControl.getDb();
 
@@ -119,7 +119,7 @@ public class CreativeSQLUpdater implements Runnable {
             com.error(Thread.currentThread(), ex, ex.getMessage());
         }
         
-        com.msg(p, "All data updated in {0} ms", (System.currentTimeMillis() - start));
+        com.msg(p, "&7All data updated in &4{0}&7 ms", (System.currentTimeMillis() - start));
 
         lock = false;
     }
@@ -132,14 +132,14 @@ public class CreativeSQLUpdater implements Runnable {
         String table = db.prefix + "blocks";
         
         /* move regions table */
-        com.msg(p, "Updating table '"+table+"' ...");
+        com.msg(p, "&7Updating table '&4"+table+"&7' ...");
 
         double blocks_size = 0;
         try {
             blocks_size = db.getTableCount(table);
         } catch (CoreMsgException ex) { } catch (CoreDbException ex) { }
 
-        com.msg(p, "Table size: " + blocks_size);
+        com.msg(p, "&7Table size: &4" + blocks_size);
 
         double blocks_process = 0;
         double blocks_done = 0;
@@ -153,7 +153,7 @@ public class CreativeSQLUpdater implements Runnable {
 
             if (blocks_process - blocks_last >= 5) {
                 System.gc();
-                com.msg(p, "{0} of ~{1} queries processed, {2}%", blocks_done, blocks_size, String.format("%d", (int) blocks_process));
+                com.msg(p, "&4{0}&7 of ~&4{1}&7 queries processed, &4{2}&7%", blocks_done, blocks_size, String.format("%d", (int) blocks_process));
                 blocks_last = blocks_process;
             }
 
@@ -207,7 +207,7 @@ public class CreativeSQLUpdater implements Runnable {
         }
         
         long blocks_time = (System.currentTimeMillis() - blocks_start);
-        com.msg(p, "Table '" + table + "' updated in {0} ms", blocks_time);
+        com.msg(p, "&7Table '&4" + table + "&7' updated in &4{0}&7 ms", blocks_time);
     }
  
     
@@ -222,14 +222,14 @@ public class CreativeSQLUpdater implements Runnable {
         }
         
         /* move regions table */
-        com.msg(p, "Updating table '"+table+"' ...");
+        com.msg(p, "&7Updating table '&4"+table+"&7' ...");
 
         double creative_size = 0;
         try {
             creative_size = db.getTableCount(table);
         } catch (CoreMsgException ex) { } catch (CoreDbException ex) { }
 
-        com.msg(p, "Table size: " + creative_size);
+        com.msg(p, "&7Table size: &4" + creative_size);
 
         double creative_process = 0;
         double creative_done = 0;
@@ -243,7 +243,7 @@ public class CreativeSQLUpdater implements Runnable {
 
             if (creative_process - creative_last >= 5) {
                 System.gc();
-                com.msg(p, "{0} of ~{1} queries processed, {2}%", creative_done, creative_size, String.format("%d", (int) creative_process));
+                com.msg(p, "&4{0}&7 of ~&4{1}&7 queries processed, &4{2}&7%", creative_done, creative_size, String.format("%d", (int) creative_process));
                 creative_last = creative_process;
             }
 
@@ -282,7 +282,7 @@ public class CreativeSQLUpdater implements Runnable {
         }
         
         long creative_time = (System.currentTimeMillis() - creative_start);
-        com.msg(p, "Table '" + table + "' updated in {0} ms", creative_time);
+        com.msg(p, "&7Table '&4" + table + "&7' updated in &4{0}&7 ms", creative_time);
     }
  
     public void update_players_survival_2() {
@@ -296,14 +296,14 @@ public class CreativeSQLUpdater implements Runnable {
         }
         
         /* move regions table */
-        com.msg(p, "Updating table '"+table+"' ...");
+        com.msg(p, "&7Updating table '&4"+table+"&7' ...");
 
         double survival_size = 0;
         try {
             survival_size = db.getTableCount(table);
         } catch (CoreMsgException ex) { } catch (CoreDbException ex) { }
 
-        com.msg(p, "Table size: " + survival_size);
+        com.msg(p, "&7Table size: &4" + survival_size);
 
         double survival_process = 0;
         double survival_done = 0;
@@ -317,7 +317,7 @@ public class CreativeSQLUpdater implements Runnable {
 
             if (survival_process - survival_last >= 5) {
                 System.gc();
-                com.msg(p, "{0} of ~{1} queries processed, {2}%", survival_done, survival_size, String.format("%d", (int) survival_process));
+                com.msg(p, "&4{0}&7 of ~&4{1}&7 queries processed, &4{2}&7%", survival_done, survival_size, String.format("%d", (int) survival_process));
                 survival_last = survival_process;
             }
 
@@ -361,7 +361,7 @@ public class CreativeSQLUpdater implements Runnable {
         }
         
         long survival_time = (System.currentTimeMillis() - survival_start);
-        com.msg(p, "Table '" + table + "' updated in {0} ms", survival_time);
+        com.msg(p, "&7Table '&4" + table + "&7' updated in &4{0}&7 ms", survival_time);
     }
 
     public void update_players_adventurer_2() {
@@ -375,14 +375,14 @@ public class CreativeSQLUpdater implements Runnable {
         }
         
         /* move regions table */
-        com.msg(p, "Updating table '"+table+"' ...");
+        com.msg(p, "&7Updating table '&4"+table+"&7' ...");
 
         double adventurer_size = 0;
         try {
             adventurer_size = db.getTableCount(table);
         } catch (CoreMsgException ex) { } catch (CoreDbException ex) { }
 
-        com.msg(p, "Table size: " + adventurer_size);
+        com.msg(p, "&7Table size: &4" + adventurer_size);
 
         double adventurer_process = 0;
         double adventurer_done = 0;
@@ -396,7 +396,7 @@ public class CreativeSQLUpdater implements Runnable {
 
             if (adventurer_process - adventurer_last >= 5) {
                 System.gc();
-                com.msg(p, "{0} of ~{1} queries processed, {2}%", adventurer_done, adventurer_size, String.format("%d", (int) adventurer_process));
+                com.msg(p, "&4{0}&7 of ~&4{1}&7 queries processed, &4{2}&7%", adventurer_done, adventurer_size, String.format("%d", (int) adventurer_process));
                 adventurer_last = adventurer_process;
             }
 
@@ -440,7 +440,7 @@ public class CreativeSQLUpdater implements Runnable {
         }
         
         long adventurer_time = (System.currentTimeMillis() - adventurer_start);
-        com.msg(p, "Table '" + table + "' updated in {0} ms", adventurer_time);
+        com.msg(p, "&7Table '&4" + table + "&7' updated in &4{0}&7 ms", adventurer_time);
     }
     
     public void update_friends_2() {
@@ -454,14 +454,14 @@ public class CreativeSQLUpdater implements Runnable {
         }
         
         /* move regions table */
-        com.msg(p, "Updating table '"+table+"' ...");
+        com.msg(p, "&7Updating table '&4"+table+"&7' ...");
 
         double friends_size = 0;
         try {
             friends_size = db.getTableCount(table);
         } catch (CoreMsgException ex) { } catch (CoreDbException ex) { }
 
-        com.msg(p, "Table size: " + friends_size);
+        com.msg(p, "&7Table size: &4" + friends_size);
 
         double friends_process = 0;
         double friends_done = 0;
@@ -475,7 +475,7 @@ public class CreativeSQLUpdater implements Runnable {
 
             if (friends_process - friends_last >= 5) {
                 System.gc();
-                com.msg(p, "{0} of ~{1} queries processed, {2}%", friends_done, friends_size, String.format("%d", (int) friends_process));
+                com.msg(p, "&4{0}&7 of ~&4{1}&7 queries processed, &4{2}&7%", friends_done, friends_size, String.format("%d", (int) friends_process));
                 friends_last = friends_process;
             }
 
@@ -513,6 +513,6 @@ public class CreativeSQLUpdater implements Runnable {
         }
         
         long friends_time = (System.currentTimeMillis() - friends_start);
-        com.msg(p, "Table '" + table + "' updated in {0} ms", friends_time);
+        com.msg(p, "&7Table '&4" + table + "&7' updated in &4{0}&7 ms", friends_time);
     }
 }

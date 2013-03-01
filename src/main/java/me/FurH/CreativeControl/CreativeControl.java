@@ -26,8 +26,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.UUID;
 import java.util.WeakHashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilderFactory;
 import me.FurH.Core.CorePlugin;
 import me.FurH.Core.exceptions.CoreDbException;
