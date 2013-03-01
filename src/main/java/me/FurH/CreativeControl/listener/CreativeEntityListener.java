@@ -54,7 +54,7 @@ public class CreativeEntityListener implements Listener {
 
         Communicator         com        = plugin.getCommunicator();
         CreativeMessages     messages   = CreativeControl.getMessages();
-        CreativeWorldNodes   config     = CreativeWorldConfig.get(e.getVehicle().getWorld());
+        CreativeWorldNodes   config     = CreativeControl.getWorldNodes(vehicle.getWorld());
 
         if (config.world_exclude) { return; }
         
@@ -86,7 +86,7 @@ public class CreativeEntityListener implements Listener {
         
         if (!(entity instanceof Player)) { return; }
 
-        CreativeWorldNodes config = CreativeWorldConfig.get(e.getVehicle().getWorld());
+        CreativeWorldNodes config = CreativeControl.getWorldNodes(vehicle.getWorld());
         CreativeControl plugin = CreativeControl.getPlugin();
         
         Player p = (Player)entity;
@@ -108,7 +108,7 @@ public class CreativeEntityListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onEntityExplode(EntityExplodeEvent e) {
         if (e.isCancelled()) { return; }
-        CreativeWorldNodes config = CreativeWorldConfig.get(e.getLocation().getWorld());
+        CreativeWorldNodes config = CreativeControl.getWorldNodes(e.getLocation().getWorld());
 
         if (config.world_exclude) { return; }
         
@@ -153,7 +153,7 @@ public class CreativeEntityListener implements Listener {
         Player p = (Player)e.getTarget();
         World world = p.getWorld();
         
-        CreativeWorldNodes config = CreativeWorldConfig.get(world);
+        CreativeWorldNodes config = CreativeControl.getWorldNodes(world);
         
         if (config.world_exclude) { return; }
         
@@ -178,7 +178,7 @@ public class CreativeEntityListener implements Listener {
         
         CreativeMessages     messages   = CreativeControl.getMessages();
         CreativeControl      plugin     = CreativeControl.getPlugin();
-        CreativeWorldNodes   config     = CreativeWorldConfig.get(world);
+        CreativeWorldNodes   config     = CreativeControl.getWorldNodes(world);
         Communicator         com        = plugin.getCommunicator();
         
         if (config.world_exclude) { return; }
@@ -217,7 +217,7 @@ public class CreativeEntityListener implements Listener {
             
             if (p.getGameMode().equals(GameMode.CREATIVE)) {
                 CreativeControl      plugin     = CreativeControl.getPlugin();
-                CreativeWorldNodes config = CreativeWorldConfig.get(world);
+                CreativeWorldNodes config = CreativeControl.getWorldNodes(world);
                 
                 if (config.world_exclude) { return; }
                 
@@ -240,7 +240,7 @@ public class CreativeEntityListener implements Listener {
         if ((event instanceof EntityDamageByEntityEvent)) {
             EntityDamageByEntityEvent e = (EntityDamageByEntityEvent)event;
 
-            CreativeWorldNodes config = CreativeWorldConfig.get(e.getDamager().getWorld());
+            CreativeWorldNodes config = CreativeControl.getWorldNodes(e.getDamager().getWorld());
             CreativeMessages     messages   = CreativeControl.getMessages();
             CreativeControl      plugin     = CreativeControl.getPlugin();
             Communicator         com        = plugin.getCommunicator();

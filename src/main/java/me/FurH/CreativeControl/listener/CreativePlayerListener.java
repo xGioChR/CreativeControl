@@ -115,7 +115,7 @@ public class CreativePlayerListener implements Listener {
          * Command Black List
          */
         CreativeControl       plugin   = CreativeControl.getPlugin();
-        CreativeWorldNodes config = CreativeWorldConfig.get(world);
+        CreativeWorldNodes config = CreativeControl.getWorldNodes(world);
         
         if (config.world_exclude) { return; }
         
@@ -162,7 +162,7 @@ public class CreativePlayerListener implements Listener {
         /*
          * Clear drops on creative death
          */
-        CreativeWorldNodes config = CreativeWorldConfig.get(world);
+        CreativeWorldNodes config = CreativeControl.getWorldNodes(world);
         
         if (config.world_exclude) { return; }
         
@@ -187,7 +187,7 @@ public class CreativePlayerListener implements Listener {
         /*
          * Prevent Creative Player Enchant Items
          */
-        CreativeWorldNodes config = CreativeWorldConfig.get(world);
+        CreativeWorldNodes config = CreativeControl.getWorldNodes(world);
         
         if (config.world_exclude) { return; }
         
@@ -209,7 +209,7 @@ public class CreativePlayerListener implements Listener {
         Player p = (Player)e.getPlayer();
         World world = p.getWorld();
         
-        CreativeWorldNodes config = CreativeWorldConfig.get(world);
+        CreativeWorldNodes config = CreativeControl.getWorldNodes(world);
         
         if (config.world_exclude) { return; }
         if (p.getGameMode().equals(GameMode.CREATIVE)) {
@@ -237,7 +237,7 @@ public class CreativePlayerListener implements Listener {
         World world = p.getWorld();
         
         CreativeMessages     messages   = CreativeControl.getMessages();
-        CreativeWorldNodes config = CreativeWorldConfig.get(world);
+        CreativeWorldNodes config = CreativeControl.getWorldNodes(world);
         
         if (config.world_exclude) { return; }
 
@@ -266,7 +266,7 @@ public class CreativePlayerListener implements Listener {
         Player p = (Player)e.getWhoClicked();
         World world = p.getWorld();
 
-        CreativeWorldNodes config = CreativeWorldConfig.get(world);
+        CreativeWorldNodes config = CreativeControl.getWorldNodes(world);
         
         if (config.world_exclude) { return; }
         
@@ -364,7 +364,7 @@ public class CreativePlayerListener implements Listener {
         World world = p.getWorld();
         Location loc = p.getLocation();
 
-        CreativeWorldNodes config = CreativeWorldConfig.get(world);
+        CreativeWorldNodes config = CreativeControl.getWorldNodes(world);
 
         if (config.world_exclude) { return; }
 
@@ -452,7 +452,7 @@ public class CreativePlayerListener implements Listener {
         /*
          * Gamemode Handler
          */
-        CreativeWorldNodes config = CreativeWorldConfig.get(world);
+        CreativeWorldNodes config = CreativeControl.getWorldNodes(world);
         if (config.world_changegm) {
             CreativeControl       plugin   = CreativeControl.getPlugin();
             Communicator          com      = plugin.getCommunicator();
@@ -485,7 +485,7 @@ public class CreativePlayerListener implements Listener {
         /*
         * Item Pickup prevent
         */
-        CreativeWorldNodes config = CreativeWorldConfig.get(world);
+        CreativeWorldNodes config = CreativeControl.getWorldNodes(world);
 
         if (config.world_exclude) { return; }
 
@@ -512,7 +512,7 @@ public class CreativePlayerListener implements Listener {
         /*
         * Item drop prevent
         */
-        CreativeWorldNodes config = CreativeWorldConfig.get(world);
+        CreativeWorldNodes config = CreativeControl.getWorldNodes(world);
         CreativeControl plugin = CreativeControl.getPlugin();
         
         if (config.world_exclude) { return; }
@@ -549,7 +549,7 @@ public class CreativePlayerListener implements Listener {
         Player p = e.getPlayer();
         World world = p.getWorld();
         
-        CreativeWorldNodes config = CreativeWorldConfig.get(world);
+        CreativeWorldNodes config = CreativeControl.getWorldNodes(world);
         
         if (config.world_exclude) { return; }
         
@@ -582,7 +582,7 @@ public class CreativePlayerListener implements Listener {
         CreativeMessages      messages = CreativeControl.getMessages();
         CreativeControl       plugin   = CreativeControl.getPlugin();
         Communicator          com      = plugin.getCommunicator();
-        CreativeWorldNodes    config   = CreativeWorldConfig.get(world);
+        CreativeWorldNodes    config   = CreativeControl.getWorldNodes(world);
         CreativeMainConfig    main     = CreativeControl.getMainConfig();
 
         if (p.getGameMode().equals(GameMode.CREATIVE)) {

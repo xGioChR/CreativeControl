@@ -43,7 +43,7 @@ public class CreativeWorldEditHook {
         final Location max = select.getMaximumPoint();
         final Location min = select.getMinimumPoint();
         final World world = max.getWorld();
-        final CreativeWorldNodes nodes = CreativeWorldConfig.get(world);
+        final CreativeWorldNodes nodes = CreativeControl.getWorldNodes(world);
         Thread t = new Thread() {
             @Override
             public void run() {
@@ -69,7 +69,7 @@ public class CreativeWorldEditHook {
         final Location max = select.getMaximumPoint();
         final Location min = select.getMinimumPoint();
         final World world = max.getWorld();
-        final CreativeWorldNodes nodes = CreativeWorldConfig.get(world);
+        final CreativeWorldNodes nodes = CreativeControl.getWorldNodes(world);
         Thread t = new Thread() {
             @Override
             public void run() {

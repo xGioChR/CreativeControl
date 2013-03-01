@@ -33,6 +33,7 @@ import me.FurH.CreativeControl.commands.CreativeCommands;
 import me.FurH.CreativeControl.configuration.CreativeMainConfig;
 import me.FurH.CreativeControl.configuration.CreativeMessages;
 import me.FurH.CreativeControl.configuration.CreativeWorldConfig;
+import me.FurH.CreativeControl.configuration.CreativeWorldNodes;
 import me.FurH.CreativeControl.data.CreativePlayerData;
 import me.FurH.CreativeControl.data.friend.CreativePlayerFriends;
 import me.FurH.CreativeControl.database.CreativeSQLDatabase;
@@ -121,9 +122,9 @@ public class CreativeControl extends CorePlugin {
         worldconfig = new CreativeWorldConfig(this);
 
         if (!mainconfig.config_single) {
-            for (World w : getServer().getWorlds()) { CreativeWorldConfig.load(w); }
+            for (World w : getServer().getWorlds()) { worldconfig.load(w); }
         } else {
-            CreativeWorldConfig.load(getServer().getWorlds().get(0));
+            worldconfig.load(getServer().getWorlds().get(0));
         }
 
         mainconfig.updateConfig();
@@ -231,12 +232,12 @@ public class CreativeControl extends CorePlugin {
         messages.load();
         mainconfig.load();
 
-        CreativeWorldConfig.clear();
+        worldconfig.clear();
         
         if (!mainconfig.config_single) {
-            for (World w : getServer().getWorlds()) { CreativeWorldConfig.load(w); }
+            for (World w : getServer().getWorlds()) { worldconfig.load(w); }
         } else {
-            CreativeWorldConfig.load(getServer().getWorlds().get(0));
+            worldconfig.load(getServer().getWorlds().get(0));
         }
         loadIntegrations();
         
@@ -317,6 +318,14 @@ public class CreativeControl extends CorePlugin {
                 }
             }
         }
+    }
+    
+    public static CreativeWorldConfig getWorldConfig() {
+        return worldconfig;
+    }
+
+    public static CreativeWorldNodes getWorldNodes(World world) {
+        return worldconfig.get(world);
     }
 
     public static CreativeControl getPlugin() { 
@@ -468,10 +477,10 @@ public class CreativeControl extends CorePlugin {
             });
             
             for (World world : getServer().getWorlds()) {
-                if (CreativeWorldConfig.get(world).block_ownblock) {
+                if (worldconfig.get(world).block_ownblock) {
                     OwnBlock++;
                 } else
-                if (CreativeWorldConfig.get(world).block_nodrop) {
+                if (worldconfig.get(world).block_nodrop) {
                     NoDrop++;
                 }
             }

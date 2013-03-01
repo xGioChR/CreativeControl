@@ -52,14 +52,12 @@ public class CreativeMoveListener implements Listener {
             e.getTo().getBlockZ() == e.getFrom().getBlockZ()) {
             return;
         }
-        
-        double start = System.currentTimeMillis();
-        
+                
         Player p = e.getPlayer();
         World world = p.getWorld();
         Location loc = p.getLocation();
 
-        CreativeWorldNodes config = CreativeWorldConfig.get(world);
+        CreativeWorldNodes config = CreativeControl.getWorldNodes(world);
 
         if (config.world_exclude) { return; }
 

@@ -27,24 +27,18 @@ import org.bukkit.World;
  * @author FurmigaHumana
  */
 public class CreativeWorldConfig extends Configuration {
-    private static CoreSafeCache<String, CreativeWorldNodes> cache = new CoreSafeCache<String, CreativeWorldNodes>(100);
-    private static CreativeWorldNodes nodes = new CreativeWorldNodes();
-    private static CreativeWorldConfig access;
+    private CoreSafeCache<String, CreativeWorldNodes> cache = new CoreSafeCache<String, CreativeWorldNodes>(100);
+    private CreativeWorldNodes nodes = new CreativeWorldNodes();
 
     public CreativeWorldConfig(CorePlugin plugin) {
         super(plugin);
-        access = this;
     }
 
-    public static void clear() {
+    public void clear() {
         cache.clear();
     }
 
-    public static CreativeWorldNodes get(World w) {
-        return access.get2(w);
-    }
-
-    public CreativeWorldNodes get2(World w) {
+    public CreativeWorldNodes get(World w) {
         CreativeMainConfig   main   = CreativeControl.getMainConfig();
         if (main.config_single) {
             return nodes;
@@ -55,11 +49,7 @@ public class CreativeWorldConfig extends Configuration {
         }
     }
 
-    public static void load(World w) {
-        access.load2(w);
-    }
-
-    public void load2(World w) {
+    public void load(World w) {
         CreativeMainConfig   main   = CreativeControl.getMainConfig();
         
         CreativeWorldNodes x = new CreativeWorldNodes();

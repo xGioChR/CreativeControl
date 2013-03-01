@@ -57,7 +57,7 @@ public class CreativeMiscListener implements Listener {
         if ((e.getEntity() instanceof TNTPrimed)) {
             TNTPrimed tnt = (TNTPrimed)e.getEntity();
             Block b = tnt.getLocation().getBlock();
-            CreativeWorldNodes config = CreativeWorldConfig.get(b.getWorld());
+            CreativeWorldNodes config = CreativeControl.getWorldNodes(b.getWorld());
             
             if (config.world_exclude) { return; }
             
@@ -100,7 +100,7 @@ public class CreativeMiscListener implements Listener {
         if (e.isCancelled()) { return; }
         Block b = e.getBlock();
 
-        CreativeWorldNodes config = CreativeWorldConfig.get(b.getWorld());
+        CreativeWorldNodes config = CreativeControl.getWorldNodes(b.getWorld());
         
         if (config.world_exclude) { return; }
         
@@ -120,7 +120,7 @@ public class CreativeMiscListener implements Listener {
         if (e.isCancelled()) { return; }
         Block b = e.getBlock();
         
-        CreativeWorldNodes config = CreativeWorldConfig.get(b.getWorld());
+        CreativeWorldNodes config = CreativeControl.getWorldNodes(b.getWorld());
         
         if (config.world_exclude) { return; }
         
@@ -160,7 +160,7 @@ public class CreativeMiscListener implements Listener {
         Block b = e.getBlock();
         Material type = b.getType();
         
-        CreativeWorldNodes config = CreativeWorldConfig.get(b.getWorld());
+        CreativeWorldNodes config = CreativeControl.getWorldNodes(b.getWorld());
         
         if (config.world_exclude) { return; }
         
@@ -182,7 +182,7 @@ public class CreativeMiscListener implements Listener {
         if (e.isCancelled()) { return; }
         Block b = e.getBlock();
         
-        CreativeWorldNodes config = CreativeWorldConfig.get(b.getWorld());
+        CreativeWorldNodes config = CreativeControl.getWorldNodes(b.getWorld());
         
         if (config.world_exclude) { return; }
         
@@ -214,7 +214,7 @@ public class CreativeMiscListener implements Listener {
         Player p = e.getPlayer();
         Block b = e.getBlockClicked();
         
-        CreativeWorldNodes config = CreativeWorldConfig.get(b.getWorld());
+        CreativeWorldNodes config = CreativeControl.getWorldNodes(b.getWorld());
         
         if (config.world_exclude) { return; }
         
@@ -251,7 +251,7 @@ public class CreativeMiscListener implements Listener {
         Block bDown = e.getBlockClicked();
         Block b = e.getBlockClicked().getRelative(e.getBlockFace());
 
-        CreativeWorldNodes config = CreativeWorldConfig.get(b.getWorld());
+        CreativeWorldNodes config = CreativeControl.getWorldNodes(b.getWorld());
         
         if (config.world_exclude) { return; }
         

@@ -40,7 +40,7 @@ public class CreativeUtil {
     public static boolean isEconomySign(org.bukkit.block.Sign sign) {
         String line1 = sign.getLine(0).replaceAll(" ", "_");
 
-        CreativeWorldNodes config = CreativeWorldConfig.get(sign.getWorld());
+        CreativeWorldNodes config = CreativeControl.getWorldNodes(sign.getWorld());
         
         if (line1.contains("§")) {
             line1 = line1.replaceAll("§([0-9a-fk-or])", "");

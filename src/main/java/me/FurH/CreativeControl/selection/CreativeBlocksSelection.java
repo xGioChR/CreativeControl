@@ -89,7 +89,7 @@ public class CreativeBlocksSelection {
         com.msg(sender, messages.allblocks_selsize, area);
         com.msg(sender, messages.allblocks_while);
         
-        final CreativeWorldNodes config = CreativeWorldConfig.get(min.getWorld());
+        final CreativeWorldNodes config = CreativeControl.getWorldNodes(min.getWorld());
 
         long startTimer = System.currentTimeMillis();
         final Player player = (Player) sender;

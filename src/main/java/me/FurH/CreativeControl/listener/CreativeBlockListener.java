@@ -62,7 +62,7 @@ public class CreativeBlockListener implements Listener {
         
         CreativeMessages        messages   = CreativeControl.getMessages();
         CreativeControl         plugin     = CreativeControl.getPlugin();
-        CreativeWorldNodes      config     = CreativeWorldConfig.get(world);
+        CreativeWorldNodes      config     = CreativeControl.getWorldNodes(world);
         Communicator            com        = plugin.getCommunicator();
 
         /*
@@ -240,7 +240,7 @@ public class CreativeBlockListener implements Listener {
 
         CreativeControl         plugin     = CreativeControl.getPlugin();
         CreativeMessages        messages   = CreativeControl.getMessages();
-        CreativeWorldNodes      config     = CreativeWorldConfig.get(world);
+        CreativeWorldNodes      config     = CreativeControl.getWorldNodes(world);
         CreativeBlockManager    manager    = CreativeControl.getManager();
         Communicator            com        = plugin.getCommunicator();
 
@@ -360,7 +360,7 @@ public class CreativeBlockListener implements Listener {
         
         World world = e.getBlock().getWorld();
         CreativeBlockManager    manager    = CreativeControl.getManager();
-        CreativeWorldNodes config = CreativeWorldConfig.get(world);
+        CreativeWorldNodes config = CreativeControl.getWorldNodes(world);
         
         if (config.block_pistons) {
             for (Block b : e.getBlocks()) {
@@ -383,7 +383,7 @@ public class CreativeBlockListener implements Listener {
         if (b.getType() == Material.AIR) { return; }
         if (!e.isSticky()) { return; }
         
-        CreativeWorldNodes config = CreativeWorldConfig.get(world);
+        CreativeWorldNodes config = CreativeControl.getWorldNodes(world);
         
         if (config.block_pistons) {
             BlockFace direction = null;

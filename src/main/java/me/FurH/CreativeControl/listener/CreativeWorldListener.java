@@ -42,7 +42,7 @@ public class CreativeWorldListener implements Listener {
     public void onWorldLoad(WorldLoadEvent e) {
         CreativeMainConfig   main     = CreativeControl.getMainConfig();
         if (!main.config_single) {
-            CreativeWorldConfig.load(e.getWorld());
+            CreativeControl.getWorldConfig().load(e.getWorld());
         }
     }
     
@@ -50,7 +50,7 @@ public class CreativeWorldListener implements Listener {
     public void onStructureGrown(StructureGrowEvent e) {
         if (e.isCancelled()) { return; }
 
-        CreativeWorldNodes config = CreativeWorldConfig.get(e.getWorld());
+        CreativeWorldNodes config = CreativeControl.getWorldNodes(e.getWorld());
 
         if (config.world_exclude) { return; }
         
