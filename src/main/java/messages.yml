@@ -5,7 +5,7 @@
 ## Don't use any caracter diferent than A-Za-z0-9
 ## Don't forgot to share your translation back with us!
 prefix:
-  tag: "&4[CreativeControl]:&7"
+  tag: "&8[&3CreativeControl&8]&7:&f"
   small: "&4[CC]:&7"
 ingame:
   integration:

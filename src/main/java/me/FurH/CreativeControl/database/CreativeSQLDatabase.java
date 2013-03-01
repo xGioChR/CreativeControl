@@ -16,6 +16,7 @@
 
 package me.FurH.CreativeControl.database;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -62,8 +63,8 @@ public final class CreativeSQLDatabase extends CoreSQLDatabase {
         ResultSet rs = null;
         
         try {
-            if (!nodrop) {
-                ps = getQuery("SELECT owner, x, y, z, type, allowd FROM `"+prefix+"blocks_"+block.getWorld().getName()+"` WHERE x = '" + block.getX() + "' AND z = '" + block.getZ() + "' AND y = '" + block.getY() + "';");
+            if (nodrop) {
+                ps = getQuery("SELECT owner, x, y, z, type, allowed FROM `"+prefix+"blocks_"+block.getWorld().getName()+"` WHERE x = '" + block.getX() + "' AND z = '" + block.getZ() + "' AND y = '" + block.getY() + "';");
             } else {
                 ps = getQuery("SELECT x, y, z, type FROM `"+prefix+"blocks_"+block.getWorld().getName()+"` WHERE x = '" + block.getX() + "' AND z = '" + block.getZ() + "' AND y = '" + block.getY() + "';");
             }
@@ -94,71 +95,78 @@ public final class CreativeSQLDatabase extends CoreSQLDatabase {
         
         return data;
     }
-
+    
     public void load() {
+        load(connection, type);
+    }
+
+    public void load(Connection connection, type type) {
+        Communicator com = plugin.getCommunicator();
+        
         try {
             /* player id table */
-            createTable("CREATE TABLE IF NOT EXISTS `"+prefix+"players` ({auto}, player VARCHAR(255));");
+            createTable(connection, "CREATE TABLE IF NOT EXISTS `"+prefix+"players` ({auto}, player VARCHAR(255));", type);
         } catch (CoreDbException ex) {
-            Logger.getLogger(CreativeSQLDatabase.class.getName()).log(Level.SEVERE, null, ex);
+            com.error(Thread.currentThread(), ex, "[TAG] Failed to create `"+prefix+"players` table, " + ex.getCause().getMessage());
         }
 
 
-        createIndex("CREATE INDEX `"+prefix+"names` ON `"+prefix+"players` (player);");
+        createIndex(connection, "CREATE INDEX `"+prefix+"names` ON `"+prefix+"players` (player);");
         try {
             /* players inventory */
-            createTable("CREATE TABLE IF NOT EXISTS `"+prefix+"players_adventurer` ({auto}, player INT, health INT, foodlevel INT, exhaustion INT, saturation INT, experience INT, armor TEXT, inventory TEXT);");
+            createTable(connection, "CREATE TABLE IF NOT EXISTS `"+prefix+"players_adventurer` ({auto}, player INT, health INT, foodlevel INT, exhaustion INT, saturation INT, experience INT, armor TEXT, inventory TEXT);", type);
         } catch (CoreDbException ex) {
-            Logger.getLogger(CreativeSQLDatabase.class.getName()).log(Level.SEVERE, null, ex);
+            com.error(Thread.currentThread(), ex, "[TAG] Failed to create `"+prefix+"players_adventurer` table, " + ex.getCause().getMessage());
         }
         try {
-            createTable("CREATE TABLE IF NOT EXISTS `"+prefix+"players_survival` ({auto}, player INT, health INT, foodlevel INT, exhaustion INT, saturation INT, experience INT, armor TEXT, inventory TEXT);");
+            createTable(connection, "CREATE TABLE IF NOT EXISTS `"+prefix+"players_survival` ({auto}, player INT, health INT, foodlevel INT, exhaustion INT, saturation INT, experience INT, armor TEXT, inventory TEXT);", type);
         } catch (CoreDbException ex) {
-            Logger.getLogger(CreativeSQLDatabase.class.getName()).log(Level.SEVERE, null, ex);
+            com.error(Thread.currentThread(), ex, "[TAG] Failed to create `"+prefix+"players_survival` table, " + ex.getCause().getMessage());
         }
         try {
-            createTable("CREATE TABLE IF NOT EXISTS `"+prefix+"players_creative` ({auto}, player INT, armor TEXT, inventory TEXT);");
+            createTable(connection, "CREATE TABLE IF NOT EXISTS `"+prefix+"players_creative` ({auto}, player INT, armor TEXT, inventory TEXT);", type);
         } catch (CoreDbException ex) {
-            Logger.getLogger(CreativeSQLDatabase.class.getName()).log(Level.SEVERE, null, ex);
+            com.error(Thread.currentThread(), ex, "[TAG] Failed to create `"+prefix+"players_creative` table, " + ex.getCause().getMessage());
         }
 
         /* block data */
         for (World world : Bukkit.getWorlds()) {
-            load(world.getName());
+            load(connection, world.getName(), type);
         }
         
         try {
             /* region data */
-            createTable("CREATE TABLE IF NOT EXISTS `"+prefix+"regions` ({auto}, name VARCHAR(255), start VARCHAR(255), end VARCHAR(255), type VARCHAR(255));");
+            createTable(connection, "CREATE TABLE IF NOT EXISTS `"+prefix+"regions` ({auto}, name VARCHAR(255), start VARCHAR(255), end VARCHAR(255), type VARCHAR(255));", type);
         } catch (CoreDbException ex) {
-            plugin.getCommunicator().error(Thread.currentThread(), ex, ex.getMessage());
+            com.error(Thread.currentThread(), ex, "[TAG] Failed to create `"+prefix+"regions` table, " + ex.getCause().getMessage());
         }
         try {
             /* friends data */
-            createTable("CREATE TABLE IF NOT EXISTS `"+prefix+"friends` ({auto}, player INT, friends TEXT);");
+            createTable(connection, "CREATE TABLE IF NOT EXISTS `"+prefix+"friends` ({auto}, player INT, friends TEXT);", type);
         } catch (CoreDbException ex) {
-            plugin.getCommunicator().error(Thread.currentThread(), ex, ex.getMessage());
+            com.error(Thread.currentThread(), ex, "[TAG] Failed to create `"+prefix+"friends` table, " + ex.getCause().getMessage());
         }
         try {
             /* internal data */
-            createTable("CREATE TABLE IF NOT EXISTS `"+prefix+"internal` (version INT);");
+            createTable(connection, "CREATE TABLE IF NOT EXISTS `"+prefix+"internal` (version INT);", type);
         } catch (CoreDbException ex) {
-            plugin.getCommunicator().error(Thread.currentThread(), ex, ex.getMessage());
+            com.error(Thread.currentThread(), ex, "[TAG] Failed to create `"+prefix+"internal` table, " + ex.getCause().getMessage());
         }
     }
 
-    public void load(String world) {
+    public void load(Connection connection, String world, type type) {
+        Communicator com = plugin.getCommunicator();
 
         try {
-            createTable("CREATE TABLE IF NOT EXISTS `"+prefix+"blocks_"+world+"` (owner INT, x INT, y INT, z INT, type INT, allowed VARCHAR(255), time BIGINT);");
+            createTable(connection, "CREATE TABLE IF NOT EXISTS `"+prefix+"blocks_"+world+"` (owner INT, x INT, y INT, z INT, type INT, allowed VARCHAR(255), time BIGINT);", type);
         } catch (CoreDbException ex) {
-            plugin.getCommunicator().error(Thread.currentThread(), ex, ex.getMessage());
+            com.error(Thread.currentThread(), ex, "[TAG] Failed to create `"+prefix+"blocks_"+world+"` table, " + ex.getCause().getMessage());
         }
 
         /* create the index */
-        createIndex("CREATE INDEX `"+prefix+"block_"+world+"` ON `"+prefix+"blocks_"+world+"` (x, z, y);");
-        createIndex("CREATE INDEX `"+prefix+"type_"+world+"` ON `"+prefix+"blocks_"+world+"` (type);");
-        createIndex("CREATE INDEX `"+prefix+"owner_"+world+"` ON `"+prefix+"blocks_"+world+"` (owner);");
+        createIndex(connection, "CREATE INDEX `"+prefix+"block_"+world+"` ON `"+prefix+"blocks_"+world+"` (x, z, y);");
+        createIndex(connection, "CREATE INDEX `"+prefix+"type_"+world+"` ON `"+prefix+"blocks_"+world+"` (type);");
+        createIndex(connection, "CREATE INDEX `"+prefix+"owner_"+world+"` ON `"+prefix+"blocks_"+world+"` (owner);");
     }
     
     public String getPlayerName(int id) {

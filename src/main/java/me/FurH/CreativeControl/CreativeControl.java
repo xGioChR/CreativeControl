@@ -24,8 +24,11 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Random;
 import java.util.UUID;
 import java.util.WeakHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilderFactory;
 import me.FurH.Core.CorePlugin;
 import me.FurH.Core.exceptions.CoreDbException;
@@ -71,7 +74,6 @@ import org.w3c.dom.NodeList;
  * @author FurmigaHumana
  */
 public class CreativeControl extends CorePlugin {
-    public static String tag = "[CreativeControl]: ";
 
     public CreativeControl() {
         super("&8[&3CreativeControl&8]&7:&f");
@@ -114,6 +116,8 @@ public class CreativeControl extends CorePlugin {
         messages.load();
 
         messages.updateConfig();
+        
+        getCommunicator().setTag(messages.prefix_tag);
 
         log("[TAG] Initializing configurations...");
         mainconfig = new CreativeMainConfig(this);
@@ -173,20 +177,82 @@ public class CreativeControl extends CorePlugin {
 
         setupLogBlock();
 
-        /*log("[TAG] Cached {0} protections", manager.preCache());
+        log("[TAG] Cached {0} protections", manager.preCache());
         log("[TAG] Loaded {0} regions", regioner.loadRegions());
-        log("[TAG] Loaded {0} dynamic block types", manager.loadIds());
-        log("[TAG] {0} blocks protected", manager.getTotal());*/
+        log("[TAG] {0} blocks protected", manager.getTotal());
 
         PluginDescriptionFile version = getDescription();
         currentversion = "v"+version.getVersion();
-        getLogger().info("[CreativeControl] CreativeControl " + currentversion + " Enabled");
+        log("[CreativeControl] CreativeControl " + currentversion + " Enabled");
 
         if (mainconfig.updater_enabled) {
             updateThread();
         }
 
         startMetrics();
+
+        /*Random rnd = new Random();
+
+        int j = 0;
+        for (int i = 0; i < 100; i++) {
+            
+            try {
+                database.execute("INSERT INTO `"+database.prefix+"regions` (name, start, end, type) VALUES ('name " + rnd.nextInt(256) + "', 'world:"+i + rnd.nextInt(256)+":"+rnd.nextInt(256)+":"+i + rnd.nextInt(256) + "', 'world:"+i + rnd.nextInt(256)+":"+rnd.nextInt(256)+":"+i + rnd.nextInt(256) + "', 'CREATIVE');");
+            } catch (CoreDbException ex) {
+                ex.printStackTrace();
+            }
+
+            if (j == 10000) {
+                System.out.println("i: " + i + ", " + (100000 - i) + " left");
+                try {
+                    database.commit();
+                } catch (CoreDbException ex) {
+                    ex.printStackTrace();
+                }
+                j = 0;
+            }
+            j++;
+        }
+        
+        for (int i = 0; i < 100000; i++) {
+            
+            try {
+                database.execute("INSERT INTO `"+database.prefix+"blocks_world` (owner, x, y, z, type, allowed, time) VALUES ('1', '" + (i + rnd.nextInt(256)) + "', '" + rnd.nextInt(256) + "', '" + (i + rnd.nextInt(256)) + "', '" + rnd.nextInt(256) + "', '" + null + "', '" + System.currentTimeMillis() + "');");
+            } catch (CoreDbException ex) {
+                ex.printStackTrace();
+            }
+
+            if (j == 10000) {
+                System.out.println("i: " + i + ", " + (100000 - i) + " left");
+                try {
+                    database.commit();
+                } catch (CoreDbException ex) {
+                    ex.printStackTrace();
+                }
+                j = 0;
+            }
+            j++;
+        }
+        
+        for (int i = 0; i < 100000; i++) {
+            
+            try {
+                database.execute("INSERT INTO `"+database.prefix+"blocks_world_nether` (owner, x, y, z, type, allowed, time) VALUES ('1', '" + (i + rnd.nextInt(256)) + "', '" + rnd.nextInt(256) + "', '" + (i + rnd.nextInt(256)) + "', '" + rnd.nextInt(256) + "', '" + null + "', '" + System.currentTimeMillis() + "');");
+            } catch (CoreDbException ex) {
+                ex.printStackTrace();
+            }
+
+            if (j == 10000) {
+                System.out.println("i: " + i + ", " + (100000 - i) + " left");
+                try {
+                    database.commit();
+                } catch (CoreDbException ex) {
+                    ex.printStackTrace();
+                }
+                j = 0;
+            }
+            j++;
+        }*/
     }
     
     @Override
@@ -308,6 +374,11 @@ public class CreativeControl extends CorePlugin {
                 log("[TAG] ***************************************************");                
             }
         }
+    }
+
+    @Override
+    public boolean hasPerm(CommandSender sender, String node) {
+        return sender.hasPermission("CreativeControl." + node);
     }
     
     private void clear() {
@@ -510,8 +581,9 @@ public class CreativeControl extends CorePlugin {
             @Override
             public void run() {
                 newversion = getVersion(currentversion);
-                int nv = CreativeUtil.toInteger(newversion);
-                int od = CreativeUtil.toInteger(currentversion);
+                
+                double nv = CreativeUtil.toDouble(newversion);
+                double od = CreativeUtil.toDouble(currentversion);
 
                 if (od < nv) {
                     log("New Version Found: {0} (You have: {1})", newversion, currentversion);

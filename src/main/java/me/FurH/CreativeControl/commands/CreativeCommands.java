@@ -53,7 +53,7 @@ public class CreativeCommands implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String string, String[] args) {
-        /*CreativeMessages         messages  = CreativeControl.getMessages();
+        CreativeMessages         messages  = CreativeControl.getMessages();
         CreativeControl          plugin    = CreativeControl.getPlugin();
         if (args.length <= 0) {
             msg(sender, "[TAG] &8CreativeControl &4{0} &8by &4FurmigaHumana", plugin.currentversion);
@@ -122,14 +122,14 @@ public class CreativeCommands implements CommandExecutor {
                     }
                 }
             }
-        }*/
+        }
         return true;
     }
 
     /*
      * //cc admin[0] migrator[1] [>sqlite/>mysql/>lwc][2]
      */
-    /*public boolean onAdminCommand(CommandSender sender, Command cmd, String string, String[] args) {
+    public boolean onAdminCommand(CommandSender sender, Command cmd, String string, String[] args) {
         CreativeMessages messages = CreativeControl.getMessages();
         CreativeControl plugin = CreativeControl.getPlugin();
         if (!plugin.hasPerm(sender, "Commands.Admin")) {
@@ -148,28 +148,21 @@ public class CreativeCommands implements CommandExecutor {
                                 msg(sender, messages.migrator_more2);
                                 return true;
                             } else {
-                                if (args[2].equalsIgnoreCase(">sqlite") || args[2].equalsIgnoreCase(">mysql")) {
-                                    CreativeSQLMigrator migrator = null;
-                                    String type = null;
+                                if (args[2].equalsIgnoreCase(">sqlite") || args[2].equalsIgnoreCase(">mysql") || args[2].equalsIgnoreCase(">h2")) {
 
-                                    if (args[2].equalsIgnoreCase(">sqlite")) {
-                                        type = "mysql>sqlite";
-                                    } else
-                                    if (args[2].equalsIgnoreCase(">mysql")) {
-                                        type = "sqlite>mysql";
-                                    }
+                                    CreativeSQLMigrator migrator = null;
 
                                     if (sender instanceof Player) {
-                                        migrator = new CreativeSQLMigrator(plugin, (Player)sender, type);
+                                        migrator = new CreativeSQLMigrator(plugin, (Player)sender, args[2]);
                                     } else {
-                                        migrator = new CreativeSQLMigrator(plugin, null, type);
+                                        migrator = new CreativeSQLMigrator(plugin, null, args[2]);
                                     }
 
                                     if (migrator.lock) {
                                         msg(sender, messages.migrator_locked);
                                         return true;
                                     } else {
-                                        Bukkit.getScheduler().runTaskAsynchronously(plugin, migrator); //TODO: ensure thread safety
+                                        Bukkit.getScheduler().runTaskAsynchronously(plugin, migrator);
                                         return true;
                                     }
                                 } else {
@@ -372,7 +365,7 @@ public class CreativeCommands implements CommandExecutor {
                                                 msg(sender, messages.commands_noperm);
                                                 return false;
                                             } else {
-                                                HashSet<String> locations = new HashSet<String>();
+                                                /*HashSet<String> locations = new HashSet<String>();
                                                 HashSet<String> backup = new HashSet<String>();
                                                 
                                                 long startTimer = System.currentTimeMillis();
@@ -429,7 +422,7 @@ public class CreativeCommands implements CommandExecutor {
                                                 db.queue("UPDATE `"+db.prefix+"blocks` SET owner = '"+newOwner+"' WHERE owner = '"+oldOwner+"'");
 
                                                 locations.clear(); locations = null;
-                                                backup.clear(); backup = null;
+                                                backup.clear(); backup = null;*/
 
                                                 msg(sender, messages.commands_cleanup_processed);
                                                 return true;
@@ -638,10 +631,10 @@ public class CreativeCommands implements CommandExecutor {
                             msg(sender, messages.commands_acleanup_help);
                             return true;
                         } else {
-                            for (World world : Bukkit.getWorlds()) {
+                            /*for (World world : Bukkit.getWorlds()) {
                                 String query = "DELETE FROM `"+db.prefix+"blocks_"+world.getName()+"`";
                                 db.execute(query);
-                            }
+                            }*/
 
                             //cache.clear();
                             msg(sender, messages.commands_cleanup_processed);
@@ -663,7 +656,7 @@ public class CreativeCommands implements CommandExecutor {
                                     msg(sender, messages.commands_tcleanup_help);
                                     return true;
                                 } else {
-                                    HashSet<String> locations = new HashSet<String>();
+                                    /*HashSet<String> locations = new HashSet<String>();
                                     HashSet<String> backup = new HashSet<String>();
 
                                     long startTimer = System.currentTimeMillis();
@@ -716,7 +709,7 @@ public class CreativeCommands implements CommandExecutor {
                                     }
                                     
                                     locations.clear(); locations = null;
-                                    backup.clear(); backup = null;
+                                    backup.clear(); backup = null;*/
                                     
                                     msg(sender, messages.commands_cleanup_processed);
                                     return true;
@@ -743,7 +736,7 @@ public class CreativeCommands implements CommandExecutor {
                                     msg(sender, messages.commands_pcleanup_help);
                                     return true;
                                 } else {
-                                    HashSet<String> locations = new HashSet<String>();
+                                    /*HashSet<String> locations = new HashSet<String>();
                                     HashSet<String> backup = new HashSet<String>();
 
                                     long startTimer = System.currentTimeMillis();
@@ -795,7 +788,7 @@ public class CreativeCommands implements CommandExecutor {
                                     }
                                     
                                     locations.clear(); locations = null;
-                                    backup.clear(); backup = null;
+                                    backup.clear(); backup = null;*/
                                     
                                     msg(sender, messages.commands_cleanup_processed);
                                     return true;
@@ -822,7 +815,7 @@ public class CreativeCommands implements CommandExecutor {
                                     msg(sender, messages.commands_wcleanup_help);
                                     return true;
                                 } else {
-                                    HashSet<String> locations = new HashSet<String>();
+                                    /*HashSet<String> locations = new HashSet<String>();
                                     HashSet<String> backup = new HashSet<String>();
 
                                     long startTimer = System.currentTimeMillis();
@@ -876,7 +869,7 @@ public class CreativeCommands implements CommandExecutor {
                                     }
                                     
                                     locations.clear(); locations = null;
-                                    backup.clear(); backup = null;
+                                    backup.clear(); backup = null;*/
                                     
                                     msg(sender, messages.commands_cleanup_processed);
                                     return true;
@@ -897,7 +890,7 @@ public class CreativeCommands implements CommandExecutor {
                             msg(sender, messages.commands_ccleanup_help);
                             return true;
                         } else {
-                            CreativeSQLCleanup cleanup = new CreativeSQLCleanup(null);
+                           /* CreativeSQLCleanup cleanup = new CreativeSQLCleanup(null);
                             if (sender instanceof Player) {
                                 cleanup = new CreativeSQLCleanup((Player)sender);
                             }
@@ -908,7 +901,8 @@ public class CreativeCommands implements CommandExecutor {
                             } else {
                                 Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, cleanup);
                                 return true;
-                            }
+                            }*/
+                            return true;
                         }
                     }
                 } else {
@@ -1362,15 +1356,10 @@ public class CreativeCommands implements CommandExecutor {
             return false;
         } else {
             if (args.length > 1) {
-                if (args[1].equalsIgnoreCase("report")) {
-                    msg(sender, "&7Report saved at: &a/plugins/CreativeControl/report/"+CreativePerformance.report()+".txt");
-                    return true;
-                } else {
-                    msg(sender, messages.commands_status_help);
-                    return true;
-                }
+                msg(sender, messages.commands_status_help);
+                return true;
             } else {
-                msg(sender, messages.commands_status_queue, db.getQueue());
+                //msg(sender, messages.commands_status_queue, db.getQueue());
                 msg(sender, messages.commands_status_sqlreads, db.getReads());
                 msg(sender, messages.commands_status_sqlwrites, db.getWrites());
                 //msg(sender, messages.commands_status_cache, (cache.getSize()), cache.getMaxSize());
@@ -1474,5 +1463,5 @@ public class CreativeCommands implements CommandExecutor {
 
     public void msg(CommandSender sender, String s, Object... objects) {
         CreativeControl.plugin.getCommunicator().msg(sender, s, objects);
-    }*/
+    }
 }

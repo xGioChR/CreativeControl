@@ -23,7 +23,6 @@ import me.FurH.Core.util.Communicator;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.configuration.CreativeMainConfig;
 import me.FurH.CreativeControl.configuration.CreativeMessages;
-import me.FurH.CreativeControl.configuration.CreativeWorldConfig;
 import me.FurH.CreativeControl.configuration.CreativeWorldNodes;
 import me.FurH.CreativeControl.manager.CreativeBlockData;
 import me.FurH.CreativeControl.manager.CreativeBlockManager;
@@ -194,12 +193,12 @@ public class CreativeBlockListener implements Listener {
             }
         } else
         if (config.block_ownblock) {
-            /*if (config.misc_liquid) {
+            if (config.misc_liquid) {
                 if (r.getType() != Material.AIR) {
-                    CreativeBlockData data = manager.getBlock(b);
+                    CreativeBlockData data = manager.isprotected(r, true);
                     if (data != null) {
-                        if (manager.isAllowed(p, b, data)) {
-                            manager.delBlock(b);
+                        if (manager.isAllowed(p, data)) {
+                            manager.unprotect(b);
                         } else {
                             com.msg(p, messages.blocks_pertence, data.owner);
                             e.setCancelled(true);
@@ -207,18 +206,18 @@ public class CreativeBlockListener implements Listener {
                         }
                     }
                 }
-            }*/
+            }
 
-            /*if (config.block_against) {
-                CreativeBlockData data = manager.getBlock(ba);
+            if (config.block_against) {
+                CreativeBlockData data = manager.isprotected(ba, true);
                 if (data != null) {
-                    if (!manager.isAllowed(p, ba, data)) {
+                    if (!manager.isAllowed(p, data)) {
                         com.msg(p, messages.blocks_pertence, data.owner);
                         e.setCancelled(true);
                         return;
                     }
                 }
-            }*/
+            }
 
             if (p.getGameMode().equals(GameMode.CREATIVE)) {
                 if (!plugin.hasPerm(p, "OwnBlock.DontSave")) {
@@ -236,7 +235,7 @@ public class CreativeBlockListener implements Listener {
     public void onBlockBreak(BlockBreakEvent e) {
         Player p = e.getPlayer();
         Block b = e.getBlock();
-        World world = p.getWorld();
+        World world = b.getWorld();
 
         CreativeControl         plugin     = CreativeControl.getPlugin();
         CreativeMessages        messages   = CreativeControl.getMessages();
@@ -244,7 +243,9 @@ public class CreativeBlockListener implements Listener {
         CreativeBlockManager    manager    = CreativeControl.getManager();
         Communicator            com        = plugin.getCommunicator();
 
-        if (config.world_exclude) { return; }
+        if (config.world_exclude) {
+            return;
+        }
         
         if (p.getGameMode().equals(GameMode.CREATIVE)) {
             if (e.isCancelled()) {
@@ -313,17 +314,17 @@ public class CreativeBlockListener implements Listener {
                 }
             }
         }
-        
-        if (config.world_nodrop) {
+                
+        if (config.block_nodrop) {
             HashSet<Block> attached = new HashSet<Block>();
             attached.add(b);
 
             if (config.block_attach) {
                 attached.addAll(BlockUtils.getAttachedBlock(b));
             }
-            
+                        
             for (Block block : attached) {
-                CreativeBlockData data = manager.isprotected(block, true);
+                CreativeBlockData data = manager.isprotected(block, false);
 
                 if (data != null) {
                     process(config, e, block, p);
@@ -342,7 +343,7 @@ public class CreativeBlockListener implements Listener {
                 CreativeBlockData data = manager.isprotected(block, false);
 
                 if (data != null) {
-                    if (!data.owner.equals(p.getName()) && !data.allowed.contains(p.getName()) && !plugin.hasPerm(p, "OwnBlock.Bypass")) {
+                    if (manager.isAllowed(p, data)) {
                         com.msg(p, messages.blocks_pertence, data.owner);
                         e.setCancelled(true);
                         break;
@@ -423,6 +424,8 @@ public class CreativeBlockListener implements Listener {
                 }
             }
 
+            System.out.println("Process");
+            
             manager.unprotect(b);
             logBlock(p, b);
             e.setExpToDrop(0);

@@ -20,7 +20,6 @@ import java.util.HashSet;
 import me.FurH.Core.exceptions.CoreMsgException;
 import me.FurH.Core.list.CollectionUtils;
 import me.FurH.CreativeControl.CreativeControl;
-import me.FurH.CreativeControl.configuration.CreativeWorldConfig;
 import me.FurH.CreativeControl.configuration.CreativeWorldNodes;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -88,6 +87,17 @@ public class CreativeUtil {
 
         try {
             return CollectionUtils.toInteger(str);
+        } catch (CoreMsgException ex) {
+            CreativeControl.plugin.getCommunicator().error(Thread.currentThread(), ex, ex.getMessage());
+        }
+        
+        return 0;
+    }
+    
+    public static double toDouble(String str) {
+
+        try {
+            return CollectionUtils.toDouble(str);
         } catch (CoreMsgException ex) {
             CreativeControl.plugin.getCommunicator().error(Thread.currentThread(), ex, ex.getMessage());
         }

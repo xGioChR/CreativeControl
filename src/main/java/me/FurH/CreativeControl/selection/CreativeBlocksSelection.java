@@ -18,12 +18,10 @@ package me.FurH.CreativeControl.selection;
 
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.bukkit.selections.Selection;
-import java.util.HashSet;
 import me.FurH.Core.util.Communicator;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.configuration.CreativeMainConfig;
 import me.FurH.CreativeControl.configuration.CreativeMessages;
-import me.FurH.CreativeControl.configuration.CreativeWorldConfig;
 import me.FurH.CreativeControl.configuration.CreativeWorldNodes;
 import me.FurH.CreativeControl.manager.CreativeBlockData;
 import me.FurH.CreativeControl.manager.CreativeBlockManager;
@@ -99,70 +97,70 @@ public class CreativeBlocksSelection {
                 for (int x = min.getBlockX(); x <= max.getBlockX(); x++) {
                     for (int y = min.getBlockY(); y <= max.getBlockY(); y++) {
                         for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
-                            /*World world = min.getWorld();
+                            World world = min.getWorld();
                             
                             Location loc = new Location(world, x, y, z);
                             Block block = world.getBlockAt(loc);
                             
                             if (block.getType() == Material.AIR) { continue; }
                                                         
-                            CreativeWorldNodes wconfig = CreativeWorldConfig.get(world);
+                            CreativeWorldNodes wconfig = CreativeControl.getWorldNodes(world);
                             
                             if (type == Type.DELALL) {
                                 if (wconfig.block_ownblock) {
-                                    CreativeBlockData data = manager.getBlock(block);
+                                    CreativeBlockData data = manager.isprotected(block, true);
                                     if (data != null) {
-                                        if (manager.isOwner(player, data.owner)) {
-                                            manager.delBlock(block);
+                                        if (data.owner.equalsIgnoreCase(args)) {
+                                            manager.unprotect(block);
                                         }
                                     }
                                 }
                                 if (wconfig.block_nodrop) {
                                     if (plugin.hasPerm(player, "Command.NoDrop")) {
-                                        manager.delBlock(block);
+                                        manager.unprotect(block);
                                     }
                                 }
                             } else
                             if (type == Type.DELPLAYER) {
                                 if (wconfig.block_ownblock) {
                                     if (args.equalsIgnoreCase(player.getName())) {
-                                        manager.delPlayer(args, block);
+                                        //manager.delPlayer(args, block);
                                     } else {
                                         if (plugin.hasPerm(player, "OwnBlock.DelPlayer")) {
-                                            manager.delPlayer(args, block);
+                                            //manager.delPlayer(args, block);
                                         }
                                     }
                                 }
 
                                 if (wconfig.block_nodrop) {
                                     if (plugin.hasPerm(player, "Command.NoDrop")) {
-                                        manager.delPlayer(args, block);
+                                        //manager.delPlayer(args, block);
                                     }
                                 }
                             } else
                             if (type == Type.DELTYPE) {
                                 if (wconfig.block_ownblock) {
-                                    CreativeBlockData data = manager.getBlock(block);
+                                    /*CreativeBlockData data = manager.getBlock(block);
                                     if (data != null) {
                                         if (manager.isOwner(player, data.owner)) {
                                             manager.delType(args, block);
                                         }
-                                    }
+                                    }*/
                                 }
                                 if (wconfig.block_nodrop) {
                                     if (plugin.hasPerm(player, "Command.NoDrop")) {
-                                        manager.delType(args, block);
+                                        //manager.delType(args, block);
                                     }
                                 }
                             } else
                             if (type == Type.ADD) {
-                                CreativeBlockData data = manager.getBlock(block);
-                                if (data == null) {
-                                    manager.addBlock(args, block, wconfig.block_nodrop);
-                                }
+                                //CreativeBlockData data = manager.getBlock(block);
+                                //if (data == null) {
+                                    //manager.addBlock(args, block, wconfig.block_nodrop);
+                                //}
                             } else
                             if (type == Type.ALLOW) {
-                                CreativeBlockData data = manager.getBlock(block);
+                                /*CreativeBlockData data = manager.getBlock(block);
                                 if (data != null) {
                                     if (manager.isAllowed(player, block, data)) {
                                         String mod = args.toLowerCase();
@@ -185,17 +183,17 @@ public class CreativeBlocksSelection {
                                             }
                                         }
                                     }
-                                }
+                                }*/
                             } else
                             if (type == Type.TRANSFER) {
-                                CreativeBlockData data = manager.getBlock(block);
+                                /*CreativeBlockData data = manager.getBlock(block);
                                 if (data != null) {
                                     if (manager.isOwner(player, data.owner)) {
                                         manager.delBlock(block);
                                         manager.addBlock(args, block, wconfig.block_nodrop);
                                     }
-                                }
-                            }*/
+                                }*/
+                            }
                         }
                     }
                 }
