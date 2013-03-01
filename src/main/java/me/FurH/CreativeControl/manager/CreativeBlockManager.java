@@ -116,6 +116,7 @@ public class CreativeBlockManager {
                         data = new CreativeBlockData(rs.getInt("type"));
                     }
                     
+                    count++;
                     cache.put(LocationUtils.locationToString(rs.getInt("x"), rs.getInt("y"), rs.getInt("z"), world.getName()), data);
                     ran++;
                 }
