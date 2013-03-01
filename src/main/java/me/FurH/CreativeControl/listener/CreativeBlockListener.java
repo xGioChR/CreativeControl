@@ -423,8 +423,6 @@ public class CreativeBlockListener implements Listener {
                     return;
                 }
             }
-
-            System.out.println("Process");
             
             manager.unprotect(b);
             logBlock(p, b);
