@@ -19,6 +19,7 @@ package me.FurH.CreativeControl.selection;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.bukkit.selections.Selection;
 import java.util.HashSet;
+import me.FurH.Core.util.Communicator;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.configuration.CreativeMainConfig;
 import me.FurH.CreativeControl.configuration.CreativeMessages;
@@ -26,8 +27,6 @@ import me.FurH.CreativeControl.configuration.CreativeWorldConfig;
 import me.FurH.CreativeControl.configuration.CreativeWorldNodes;
 import me.FurH.CreativeControl.manager.CreativeBlockData;
 import me.FurH.CreativeControl.manager.CreativeBlockManager;
-import me.FurH.CreativeControl.util.CreativeCommunicator;
-import me.FurH.CreativeControl.util.CreativeUtil;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -51,7 +50,7 @@ public class CreativeBlocksSelection {
     public boolean allBlocks(CommandSender sender, final String args, final Type type) {
         final CreativeControl      plugin   = CreativeControl.getPlugin();
         final CreativeBlockManager manager  = CreativeControl.getManager();
-        final CreativeCommunicator com      = CreativeControl.getCommunicator();
+        final Communicator         com      = plugin.getCommunicator();
         final CreativeMessages     messages = CreativeControl.getMessages();
         final CreativeMainConfig   main     = CreativeControl.getMainConfig();
         
@@ -100,7 +99,7 @@ public class CreativeBlocksSelection {
                 for (int x = min.getBlockX(); x <= max.getBlockX(); x++) {
                     for (int y = min.getBlockY(); y <= max.getBlockY(); y++) {
                         for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
-                            World world = min.getWorld();
+                            /*World world = min.getWorld();
                             
                             Location loc = new Location(world, x, y, z);
                             Block block = world.getBlockAt(loc);
@@ -196,7 +195,7 @@ public class CreativeBlocksSelection {
                                         manager.addBlock(args, block, wconfig.block_nodrop);
                                     }
                                 }
-                            }
+                            }*/
                         }
                     }
                 }

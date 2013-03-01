@@ -16,14 +16,14 @@
 
 package me.FurH.CreativeControl.listener;
 
+import java.util.ArrayList;
+import java.util.List;
+import me.FurH.Core.util.Communicator;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.configuration.CreativeMessages;
 import me.FurH.CreativeControl.configuration.CreativeWorldConfig;
 import me.FurH.CreativeControl.configuration.CreativeWorldNodes;
 import me.FurH.CreativeControl.manager.CreativeBlockManager;
-import me.FurH.CreativeControl.monitor.CreativePerformance;
-import me.FurH.CreativeControl.monitor.CreativePerformance.Event;
-import me.FurH.CreativeControl.util.CreativeCommunicator;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -45,19 +45,17 @@ public class CreativeEntityListener implements Listener {
     
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onVehicleCreate(VehicleCreateEvent e) {
-
-        double start = System.currentTimeMillis();
-
         CreativeControl plugin = CreativeControl.getPlugin();
         
         Vehicle vehicle = e.getVehicle();
         Player p = plugin.player;
         
         if (p == null) { return; }
-        
-        CreativeCommunicator com        = CreativeControl.getCommunicator();
+
+        Communicator         com        = plugin.getCommunicator();
         CreativeMessages     messages   = CreativeControl.getMessages();
-        CreativeWorldNodes config = CreativeWorldConfig.get(e.getVehicle().getWorld());
+        CreativeWorldNodes   config     = CreativeWorldConfig.get(e.getVehicle().getWorld());
+
         if (config.world_exclude) { return; }
         
         if (config.prevent_vehicle) {
@@ -79,15 +77,10 @@ public class CreativeEntityListener implements Listener {
                 }
             }
         }
-        
-        CreativePerformance.update(Event.VehicleCreateEvent, (System.currentTimeMillis() - start));
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onVehicleDestroy(VehicleDestroyEvent e) {
-        
-        double start = System.currentTimeMillis();
-        
         Entity entity = e.getAttacker();
         Vehicle vehicle = e.getVehicle();
         
@@ -107,8 +100,6 @@ public class CreativeEntityListener implements Listener {
                 }
             }
         }
-        
-        CreativePerformance.update(Event.VehicleDestroyEvent, (System.currentTimeMillis() - start));
     }
     
     /*
@@ -117,35 +108,37 @@ public class CreativeEntityListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onEntityExplode(EntityExplodeEvent e) {
         if (e.isCancelled()) { return; }
-        
-        double start = System.currentTimeMillis();
-
         CreativeWorldNodes config = CreativeWorldConfig.get(e.getLocation().getWorld());
 
         if (config.world_exclude) { return; }
         
+        List<Block> oldList = new ArrayList<Block>();
+        oldList.addAll(e.blockList());
+        
         if (config.block_explosion) {
+
             CreativeBlockManager manager    = CreativeControl.getManager();
             if (e.blockList() != null && e.blockList().size() > 0) {
                 for (Block b : e.blockList()) {
                     if (b != null && b.getType() != Material.AIR) {
                         if (config.block_ownblock) {
-                            if (manager.isProtected(b)) {
-                                e.blockList().remove(b);
+                            if (manager.isprotected(b, true) != null) {
+                                oldList.remove(b);
                             }
                         } else
                         if (config.block_nodrop) {
-                            if (manager.isProtected(b)) {
-                                manager.delBlock(b);
+                            if (manager.isprotected(b, true) != null) {
+                                manager.unprotect(b);
                                 b.setType(Material.AIR);
                             }
                         }
                     }
                 }
             }
+            
+            e.blockList().clear();
+            e.blockList().addAll(oldList);
         }
-        
-        CreativePerformance.update(Event.EntityExplodeEvent, (System.currentTimeMillis() - start));
     }
 
     /*
@@ -154,10 +147,9 @@ public class CreativeEntityListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void onEntityTarget(EntityTargetEvent e) {
         if (e.isCancelled())  { return; }
+
         if (!(e.getTarget() instanceof Player)) { return; }
         
-        double start = System.currentTimeMillis();
-
         Player p = (Player)e.getTarget();
         World world = p.getWorld();
         
@@ -173,8 +165,6 @@ public class CreativeEntityListener implements Listener {
                 }
             }
         }
-
-        CreativePerformance.update(Event.EntityTargetEvent, (System.currentTimeMillis() - start));
     }
 
     /*
@@ -182,17 +172,14 @@ public class CreativeEntityListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void onPlayerInteractEntity(PlayerInteractEntityEvent e) {
-        
-        double start = System.currentTimeMillis();
-        
         Player p = e.getPlayer();
         World world = p.getWorld();
         Entity entity = e.getRightClicked();
         
-        CreativeCommunicator com        = CreativeControl.getCommunicator();
         CreativeMessages     messages   = CreativeControl.getMessages();
         CreativeControl      plugin     = CreativeControl.getPlugin();
-        CreativeWorldNodes config = CreativeWorldConfig.get(world);
+        CreativeWorldNodes   config     = CreativeWorldConfig.get(world);
+        Communicator         com        = plugin.getCommunicator();
         
         if (config.world_exclude) { return; }
         
@@ -216,8 +203,6 @@ public class CreativeEntityListener implements Listener {
                 }
             }
         }
-        
-        CreativePerformance.update(Event.PlayerInteractEntityEvent, (System.currentTimeMillis() - start));
     }
     
     /*
@@ -225,7 +210,6 @@ public class CreativeEntityListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onEntityDeath(EntityDeathEvent e) {
-        double start = System.currentTimeMillis();
         
         if ((e.getEntity().getKiller() instanceof Player)) {
             Player p = e.getEntity().getKiller();
@@ -245,8 +229,6 @@ public class CreativeEntityListener implements Listener {
                 }
             }
         }
-        
-        CreativePerformance.update(Event.EntityDeathEvent, (System.currentTimeMillis() - start));
     }
 
     /*
@@ -254,16 +236,15 @@ public class CreativeEntityListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void onEntityDamage(EntityDamageEvent event) {
-        double start = System.currentTimeMillis();
         
         if ((event instanceof EntityDamageByEntityEvent)) {
             EntityDamageByEntityEvent e = (EntityDamageByEntityEvent)event;
-            
+
             CreativeWorldNodes config = CreativeWorldConfig.get(e.getDamager().getWorld());
-            CreativeCommunicator com        = CreativeControl.getCommunicator();
             CreativeMessages     messages   = CreativeControl.getMessages();
             CreativeControl      plugin     = CreativeControl.getPlugin();
-            
+            Communicator         com        = plugin.getCommunicator();
+
             if (config.world_exclude) { return; }
             
             if (((e.getDamager() instanceof Player)) && ((e.getEntity() instanceof Player))) { //Player versus Player
@@ -314,6 +295,5 @@ public class CreativeEntityListener implements Listener {
                 }
             }
         }
-        CreativePerformance.update(Event.EntityDamageEvent, (System.currentTimeMillis() - start));
     }
 }

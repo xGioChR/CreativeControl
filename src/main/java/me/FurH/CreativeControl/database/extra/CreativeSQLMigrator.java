@@ -16,23 +16,17 @@
 
 package me.FurH.CreativeControl.database.extra;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import me.FurH.CreativeControl.CreativeControl;
-import me.FurH.CreativeControl.configuration.CreativeMessages;
-import me.FurH.CreativeControl.database.CreativeSQLDatabase;
-import me.FurH.CreativeControl.util.CreativeCommunicator;
-import org.bukkit.entity.Player;
-
 /**
  *
  * @author FurmigaHumana
  */
 public final class CreativeSQLMigrator implements Runnable {
-    private CreativeControl plugin;
+
+    @Override
+    public void run() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    /*private CreativeControl plugin;
     private String data;
     private Player p;
     public boolean lock = false;
@@ -50,7 +44,7 @@ public final class CreativeSQLMigrator implements Runnable {
         open();
     }
     
-    public void open() {
+    public void open() {*/
         /*CreativeSQLDatabase db = CreativeControl.getDb();
         if (db.type == Type.MySQL) {
             mysql = db.connection;
@@ -65,7 +59,7 @@ public final class CreativeSQLMigrator implements Runnable {
         }
 
         db.loadDatabase("id INTEGER PRIMARY KEY AUTOINCREMENT", sqlite, false);
-        db.loadDatabase("id INT AUTO_INCREMENT, PRIMARY KEY (id)", mysql, false);*/
+        db.loadDatabase("id INT AUTO_INCREMENT, PRIMARY KEY (id)", mysql, false);
     }
 
     @Override
@@ -75,7 +69,7 @@ public final class CreativeSQLMigrator implements Runnable {
         long startTimer = System.currentTimeMillis();
         long elapsedTime = 0;
         
-        CreativeCommunicator com = CreativeControl.getCommunicator();
+        CreativeCommunicator com = CreativeControl.getCommunicator2();
         CreativeMessages messages = CreativeControl.getMessages();
 
         if (data.equalsIgnoreCase("MySQL>SQLite") || data.equalsIgnoreCase("SQLite<MySQL")) {
@@ -174,5 +168,6 @@ public final class CreativeSQLMigrator implements Runnable {
         elapsedTime = (System.currentTimeMillis() - startTimer);
         com.msg(p, messages.migrator_done, sucess, skip, elapsedTime);
         lock = false;
-    }
+    }*/
+
 }

@@ -16,14 +16,12 @@
 
 package me.FurH.CreativeControl.listener;
 
+import me.FurH.Core.util.Communicator;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.configuration.CreativeMainConfig;
 import me.FurH.CreativeControl.configuration.CreativeMessages;
 import me.FurH.CreativeControl.configuration.CreativeWorldConfig;
 import me.FurH.CreativeControl.configuration.CreativeWorldNodes;
-import me.FurH.CreativeControl.monitor.CreativePerformance;
-import me.FurH.CreativeControl.monitor.CreativePerformance.Event;
-import me.FurH.CreativeControl.util.CreativeCommunicator;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.BlockState;
@@ -42,21 +40,15 @@ public class CreativeWorldListener implements Listener {
 
     @EventHandler
     public void onWorldLoad(WorldLoadEvent e) {
-        double start = System.currentTimeMillis();
-
         CreativeMainConfig   main     = CreativeControl.getMainConfig();
         if (!main.config_single) {
             CreativeWorldConfig.load(e.getWorld());
         }
-
-        CreativePerformance.update(Event.WorldLoadEvent, (System.currentTimeMillis() - start));
     }
     
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onStructureGrown(StructureGrowEvent e) {
         if (e.isCancelled()) { return; }
-
-        double start = System.currentTimeMillis();
 
         CreativeWorldNodes config = CreativeWorldConfig.get(e.getWorld());
 
@@ -69,7 +61,7 @@ public class CreativeWorldListener implements Listener {
                 if (config.prevent_bonemeal) {
                     CreativeControl      plugin   = CreativeControl.getPlugin();
                     if (!plugin.hasPerm(p, "Preventions.Bonemeal")) {
-                        CreativeCommunicator com      = CreativeControl.getCommunicator();
+                        Communicator         com      = plugin.getCommunicator();
                         CreativeMessages     messages = CreativeControl.getMessages();
                         com.msg(p, messages.player_cantuse);
                         for (BlockState b : e.getBlocks()) {
@@ -80,7 +72,5 @@ public class CreativeWorldListener implements Listener {
                 }
             }
         }
-        
-        CreativePerformance.update(Event.StructureGrowEvent, (System.currentTimeMillis() - start));
     }
 }

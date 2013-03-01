@@ -21,17 +21,14 @@ import de.diddiz.LogBlock.Consumer;
 import de.diddiz.LogBlock.LogBlock;
 import java.io.IOException;
 import java.net.URL;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Random;
 import java.util.UUID;
 import java.util.WeakHashMap;
-import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilderFactory;
-import me.FurH.CreativeControl.cache.CreativeBlockCache;
+import me.FurH.Core.CorePlugin;
+import me.FurH.Core.exceptions.CoreDbException;
 import me.FurH.CreativeControl.commands.CreativeCommands;
 import me.FurH.CreativeControl.configuration.CreativeMainConfig;
 import me.FurH.CreativeControl.configuration.CreativeMessages;
@@ -45,16 +42,13 @@ import me.FurH.CreativeControl.integration.worldedit.CreativeWorldEditHook;
 import me.FurH.CreativeControl.integration.xAuth;
 import me.FurH.CreativeControl.listener.*;
 import me.FurH.CreativeControl.manager.CreativeBlockManager;
-import me.FurH.CreativeControl.manager.CreativeBlockMatcher;
 import me.FurH.CreativeControl.metrics.CreativeMetrics;
 import me.FurH.CreativeControl.metrics.CreativeMetrics.Graph;
 import me.FurH.CreativeControl.region.CreativeRegion;
 import me.FurH.CreativeControl.region.CreativeRegion.gmType;
 import me.FurH.CreativeControl.region.CreativeRegionManager;
 import me.FurH.CreativeControl.selection.CreativeBlocksSelection;
-import me.FurH.CreativeControl.util.CreativeCommunicator;
 import me.FurH.CreativeControl.util.CreativeUtil;
-import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -66,8 +60,6 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.RegisteredServiceProvider;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -77,27 +69,27 @@ import org.w3c.dom.NodeList;
  *
  * @author FurmigaHumana
  */
-public class CreativeControl extends JavaPlugin {
-    public static final Logger logger = Logger.getLogger("minecraft");
+public class CreativeControl extends CorePlugin {
     public static String tag = "[CreativeControl]: ";
-    public static Permission permission = null;
+
+    public CreativeControl() {
+        super("&8[&3CreativeControl&8]&7:&f");
+    }
 
     /* classes */
-    private static CreativeControl plugin;
-    private static CreativeBlockCache cache;
-    private static CreativeCommunicator communicator;
+    public static CreativeControl plugin;
     private static CreativeSQLDatabase database;
     private static CreativeBlocksSelection selector;
     private static CreativeRegionManager regioner;
     private static CreativeBlockManager manager;
-    private static CreativeBlockMatcher matcher;
     private static CreativePlayerData data;
     private static CreativeWorldEditHook worldedit;
     private static CreativePlayerFriends friends;
     private static CreativeMainConfig mainconfig;
     private static CreativeMessages messages;
     private static Consumer lbconsumer = null;
-    
+    private static CreativeWorldConfig worldconfig;
+
     public WeakHashMap<Player, Location> right = new WeakHashMap<Player, Location>();
     public WeakHashMap<Player, Location> left = new WeakHashMap<Player, Location>();
 
@@ -107,48 +99,26 @@ public class CreativeControl extends JavaPlugin {
     public HashSet<UUID> entity = new HashSet<UUID>();
     public Map<String, Integer> limits = new HashMap<String, Integer>();
     public Player player = null;
-    public static long start = 0;
 
     public String currentversion;
     public String newversion;
 
     public boolean hasUpdate;
-    
-    public int garbage() {
-        int total = 0;
-        
-        total += right.size();
-        right.clear();
-        
-        total += left.size();
-        left.clear();
-        
-        total += mods.size();
-        mods.clear();
-        
-        total += modsfastup.size();
-        modsfastup.clear();
-        
-        total += entity.size();
-        entity.clear();
-        
-        total += limits.size();
-        limits.clear();
-        
-        return total;
-    }
 
     @Override
     public void onEnable() {
-        start = System.currentTimeMillis();
         plugin = this;
-        communicator = new CreativeCommunicator();
-        messages = new CreativeMessages();
+
+        messages = new CreativeMessages(this);
         messages.load();
 
-        communicator.log("[TAG] Initializing configurations...");
-        mainconfig = new CreativeMainConfig();
+        messages.updateConfig();
+
+        log("[TAG] Initializing configurations...");
+        mainconfig = new CreativeMainConfig(this);
         mainconfig.load();
+
+        worldconfig = new CreativeWorldConfig(this);
 
         if (!mainconfig.config_single) {
             for (World w : getServer().getWorlds()) { CreativeWorldConfig.load(w); }
@@ -158,163 +128,74 @@ public class CreativeControl extends JavaPlugin {
 
         mainconfig.updateConfig();
 
-        communicator.log("[TAG] Loading Modules...");
-        cache = new CreativeBlockCache();
+        getCommunicator().setDebug(mainconfig.com_debugcons);
+        getCommunicator().setQuiet(mainconfig.com_quiet);
+
+        log("[TAG] Loading Modules...");
         selector = new CreativeBlocksSelection();
         regioner = new CreativeRegionManager();
         manager = new CreativeBlockManager();
         friends = new CreativePlayerFriends();
-        matcher = new CreativeBlockMatcher();
         data = new CreativePlayerData();
         worldedit = new CreativeWorldEditHook();
-        database = new CreativeSQLDatabase();
-        database.connect();
 
-        communicator.log("[TAG] Registring Events...");/*
+        database = new CreativeSQLDatabase(this, mainconfig.database_prefix, mainconfig.database_type, mainconfig.database_host, mainconfig.database_port, mainconfig.database_table, mainconfig.database_user, mainconfig.database_pass);
+
+        try {
+            database.connect();
+        } catch (CoreDbException ex) {
+            getCommunicator().error(Thread.currentThread(), ex, ex.getMessage());
+        }
+
+        database.load();
+
+        log("[TAG] Registring Events...");
         PluginManager pm = getServer().getPluginManager();
 
         pm.registerEvents(new CreativeBlockListener(), this);
         pm.registerEvents(new CreativeEntityListener(), this);
         pm.registerEvents(new CreativePlayerListener(), this);
         pm.registerEvents(new CreativeWorldListener(), this);
-        
+
         if (mainconfig.events_move) {
             pm.registerEvents(new CreativeMoveListener(), this);
         }
-        
+
         if (mainconfig.events_misc) {
             pm.registerEvents(new CreativeMiscListener(), this);
-        }*/
+        }
 
         loadIntegrations();
                 
         CommandExecutor cc = new CreativeCommands();
         getCommand("creativecontrol").setExecutor(cc);
-        
-        setupPermission();
+
         setupLogBlock();
 
-        //manager.setup();
-        communicator.log("[TAG] Cached {0} protections", manager.preCache());
-        communicator.log("[TAG] Loaded {0} regions", regioner.loadRegions());
-        communicator.log("[TAG] Loaded {0} dynamic block types", manager.loadIds());
-        communicator.log("[TAG] {0} blocks protected", manager.getTotal());
+        /*log("[TAG] Cached {0} protections", manager.preCache());
+        log("[TAG] Loaded {0} regions", regioner.loadRegions());
+        log("[TAG] Loaded {0} dynamic block types", manager.loadIds());
+        log("[TAG] {0} blocks protected", manager.getTotal());*/
 
         PluginDescriptionFile version = getDescription();
         currentversion = "v"+version.getVersion();
-        logger.info("[CreativeControl] CreativeControl " + currentversion + " Enabled");
+        getLogger().info("[CreativeControl] CreativeControl " + currentversion + " Enabled");
 
         if (mainconfig.updater_enabled) {
             updateThread();
         }
 
-        //startMetrics();
-
-        //CreativePlayerConversor.loadup();
-        /*CreativeSQLUpdater updater = new CreativeSQLUpdater(null);
-        if (!updater.lock) {
-            updater.loadup();
-        }*/
-        //String auto = (type == Type.MySQL ? "id INT AUTO_INCREMENT, PRIMARY KEY (id)" : "id INTEGER PRIMARY KEY AUTOINCREMENT");
-
-        /*Random rnd = new Random();
-        database.execute("CREATE TABLE IF NOT EXISTS `"+database.prefix+"blocks` (id INT AUTO_INCREMENT, PRIMARY KEY (id), owner VARCHAR(255), location VARCHAR(255), type INT, allowed VARCHAR(255), time VARCHAR(255));");
-        int j = 0;
-
-        for (int i = 0; i < 10000000; i++) {            
-            database.execute("INSERT INTO `"+database.prefix+"blocks` (owner, location, type, allowed, time) VALUES ('FurmigaHumana', 'world:"+i + rnd.nextInt(256)+":"+rnd.nextInt(256)+":"+i + rnd.nextInt(256)+"', '"+rnd.nextInt(256)+"', 'null', '"+System.currentTimeMillis()+"');");
-            if (j == 10000) {
-                System.out.println("i: " + i + ", " + (10000000 - i) + " left");
-                database.commit();
-                j = 0;
-            }
-            j++;
-        }
-        
-        database.commit();*/
-        
-        benchmark2();
+        startMetrics();
     }
     
-    public void benchmark2() {
-        int tick = 100;
-
-        Random rnd = new Random();
-        while (tick > 0) {
-            long c = System.currentTimeMillis();
-
-            int x = rnd.nextInt(10000000);
-            int y = rnd.nextInt(256);
-            int z = rnd.nextInt(10000000);
-            
-            benchmark2(x, y, z);
-
-            System.out.println("X: " + x + ", Y: " + y + ", Z: " + z + ", took: " + (System.currentTimeMillis() - c) + ", ms");
-            c = System.currentTimeMillis();
-            tick--;
-        }
-    }
-    
-    public void benchmark() {
-        int tick = 100;
-
-        Random rnd = new Random();
-        while (tick > 0) {
-            long c = System.currentTimeMillis();
-
-            int x = rnd.nextInt(10000000);
-            int y = rnd.nextInt(256);
-            int z = rnd.nextInt(10000000);
-            
-            benchmark(x, y, z);
-
-            System.out.println("X: " + x + ", Y: " + y + ", Z: " + z + ", took: " + (System.currentTimeMillis() - c) + ", ms");
-            c = System.currentTimeMillis();
-            tick--;
-        }
-    }
-    
-    public void benchmark2(int x, int y, int z) {
-        try {
-            String location = "world:"+x+":"+y+":"+z;
-            
-            PreparedStatement ps = database.getQuery("SELECT * FROM `"+database.prefix+"blocks` WHERE location = '"+location+"' LIMIT 1;");
-            ResultSet rs = ps.executeQuery();
-            
-            if (rs.next()) {
-                int owner = rs.getInt("owner");
-                int type = rs.getInt("type");
-                
-                System.out.println("X: " + x + ", Y: " + y + ", Z: " + z + ", FOUND!");
-            } else {
-                System.out.println("X: " + x + ", Y: " + y + ", Z: " + z + ", MISS!");
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
-    
-    public void benchmark(int x, int y, int z) {
-        try {
-            PreparedStatement ps = database.getQuery("SELECT * FROM `"+database.prefix+"blocks_world` WHERE x = '"+x+"' AND z = '"+z+"' AND y = '"+y+"' LIMIT 1;");
-            ResultSet rs = ps.executeQuery();
-            
-            if (rs.next()) {
-                int owner = rs.getInt("owner");
-                int type = rs.getInt("type");
-                
-                System.out.println("X: " + x + ", Y: " + y + ", Z: " + z + ", FOUND!");
-            } else {
-                System.out.println("X: " + x + ", Y: " + y + ", Z: " + z + ", MISS!");
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
-
     @Override
     public void onDisable() {
-        database.disconnect(false);
+
+        try {
+            database.disconnect(false);
+        } catch (CoreDbException ex) {
+            getCommunicator().error(Thread.currentThread(), ex, ex.getMessage());
+        }
 
         HandlerList.unregisterAll(this);
 
@@ -323,18 +204,17 @@ public class CreativeControl extends JavaPlugin {
         left.clear();
         mods.clear();
         modsfastup.clear();
-        cache.clear();
         data.clear();
         friends.clear();
         entity.clear();
         limits.clear();
         
-        logger.info("[CreativeControl] CreativeControl " + currentversion + " Disabled");
+        getLogger().info("[CreativeControl] CreativeControl " + currentversion + " Disabled");
         getServer().getScheduler().cancelTasks(this);
     }
     
     public void reload(CommandSender sender) {
-        boolean ssql = mainconfig.database_mysql;
+        String ssql  = mainconfig.database_type;
         boolean move = mainconfig.events_move;
         boolean misc = mainconfig.events_misc;
         
@@ -343,7 +223,6 @@ public class CreativeControl extends JavaPlugin {
         left.clear();
         mods.clear();
         modsfastup.clear();
-        cache.clear();
         data.clear();
         friends.clear();
         entity.clear();
@@ -361,34 +240,47 @@ public class CreativeControl extends JavaPlugin {
         }
         loadIntegrations();
         
-        boolean newssql = mainconfig.database_mysql;
+        String  newssql = mainconfig.database_type;
         boolean newmove = mainconfig.events_move;
         boolean newmisc = mainconfig.events_misc;
 
-        if (ssql != newssql) {
-            database.disconnect(false);
-            database.connect();
-            communicator.msg(sender, "[TAG] Database Type: &4{0}&7 Defined.", database.type);
+        if (!ssql.equals(newssql)) {
+            
+            try {
+                database.disconnect(false);
+            } catch (CoreDbException ex) {
+                getCommunicator().error(Thread.currentThread(), ex, ex.getMessage());
+            }
+            
+            try {
+                database.connect();
+            } catch (CoreDbException ex) {
+                getCommunicator().error(Thread.currentThread(), ex, ex.getMessage());
+            }
+
+            database.load();
+
+            msg(sender, "[TAG] Database Type: &4{0}&7 Defined.", database.type);
         }
         
         PluginManager pm = getServer().getPluginManager();
         if (move != newmove) {
             if (newmove) {
                 pm.registerEvents(new CreativeMoveListener(), this);
-                communicator.msg(sender, "[TAG] CreativeMoveListener registred, Listener enabled.");
+                msg(sender, "[TAG] CreativeMoveListener registred, Listener enabled.");
             } else {
                 HandlerList.unregisterAll(new CreativeMoveListener());
-                communicator.msg(sender, "[TAG] CreativeMoveListener unregistered, Listener disabled.");
+                msg(sender, "[TAG] CreativeMoveListener unregistered, Listener disabled.");
             }
         }
 
         if (misc != newmisc) {
             if (newmisc) {
                 pm.registerEvents(new CreativeMiscListener(), this);
-                communicator.msg(sender, "[TAG] CreativeMiscListener registred, Listener enabled.");
+                msg(sender, "[TAG] CreativeMiscListener registred, Listener enabled.");
             } else {
                 HandlerList.unregisterAll(new CreativeMoveListener());
-                communicator.msg(sender, "[TAG] CreativeMiscListener unregistered, Listener disabled.");
+                msg(sender, "[TAG] CreativeMiscListener unregistered, Listener disabled.");
             }
         }
     }
@@ -398,7 +290,7 @@ public class CreativeControl extends JavaPlugin {
         Plugin p = pm.getPlugin("MobArena");
         if (p != null) {
             if (p.isEnabled()) {
-                communicator.log("[TAG] MobArena support enabled!");
+                log("[TAG] MobArena support enabled!");
                 pm.registerEvents(new MobArena(), this);
             }
         }
@@ -408,11 +300,11 @@ public class CreativeControl extends JavaPlugin {
             if (p.isEnabled()) {
                 mainconfig.data_inventory = false;
                 mainconfig.data_status = false;
-                communicator.log("[TAG] ***************************************************");
-                communicator.log("[TAG] Multiverse-Inventories Detected!!");
-                communicator.log("[TAG] Per-GameMode inventories will be disabled by this plugin");
-                communicator.log("[TAG] Use the multiverse inventories manager!");
-                communicator.log("[TAG] ***************************************************");                
+                log("[TAG] ***************************************************");
+                log("[TAG] Multiverse-Inventories Detected!!");
+                log("[TAG] Per-GameMode inventories will be disabled by this plugin");
+                log("[TAG] Use the multiverse inventories manager!");
+                log("[TAG] ***************************************************");                
             }
         }
     }
@@ -431,14 +323,6 @@ public class CreativeControl extends JavaPlugin {
         return plugin; 
     }
 
-    public static CreativeBlockCache getCache() { 
-        return cache; 
-    }
-
-    public static CreativeCommunicator getCommunicator() { 
-        return communicator; 
-    }
-    
     public static CreativeBlocksSelection getSelector() { 
         return selector; 
     }
@@ -463,14 +347,6 @@ public class CreativeControl extends JavaPlugin {
         return manager; 
     }
     
-    public static Permission getPermissions() {
-        return permission;
-    }
-    
-    public static CreativeBlockMatcher getMatcher() { 
-        return matcher; 
-    }
-    
     public static CreativePlayerData getPlayerData() { 
         return data; 
     }
@@ -491,54 +367,15 @@ public class CreativeControl extends JavaPlugin {
         PluginManager pm = getServer().getPluginManager();
         Plugin x = pm.getPlugin("LogBlock");
         if (x != null) {
-            communicator.log("[TAG] LogBlock hooked as logging plugin");
+            log("[TAG] LogBlock hooked as logging plugin");
             lbconsumer = ((LogBlock)x).getConsumer();
         }
     }
-    
+
     public WorldEditPlugin getWorldEdit() {
         PluginManager pm = getServer().getPluginManager();
         Plugin wex = pm.getPlugin("WorldEdit");
         return (WorldEditPlugin) wex;
-    }
-
-    private boolean setupPermission() {
-        PluginManager pm = getServer().getPluginManager();
-        if (pm.getPlugin("Vault") != null) {
-            RegisteredServiceProvider permissionProvider = getServer().getServicesManager().getRegistration(Permission.class);
-            if (permissionProvider != null) {
-                permission = (Permission)permissionProvider.getProvider();
-            }
-            communicator.log("[TAG] Vault Hooked as Permission plugin");
-            return permission != null;
-        }
-        permission = null;
-        communicator.log("[TAG] Vault Plugin Not Found");
-        communicator.log("[TAG] Defaulting to SuperPerms");
-        return false;
-    }
-
-    public boolean hasPerm(CommandSender sender, String perm) {
-        if ((perm == null) || (perm.isEmpty())) {
-            return true;
-        }
-        
-        if (!(sender instanceof Player)) {
-            return true;
-        }
-
-        Player p = (Player) sender;
-        if (p.isOp()) {
-            if (!mainconfig.perm_ophas) {
-                return false;
-            }
-        }
-
-        if (permission != null) {
-            return permission.has(p, "CreativeControl."+perm);
-        } else {
-            return p.hasPermission("CreativeControl."+perm);
-        }
     }
 
     public boolean isLoggedIn(Player player) {
@@ -668,8 +505,8 @@ public class CreativeControl extends JavaPlugin {
                 int od = CreativeUtil.toInteger(currentversion);
 
                 if (od < nv) {
-                    communicator.log("New Version Found: {0} (You have: {1})", newversion, currentversion);
-                    communicator.log("Visit: http://bit.ly/creativecontrol/");
+                    log("New Version Found: {0} (You have: {1})", newversion, currentversion);
+                    log("Visit: http://bit.ly/creativecontrol/");
                     hasUpdate = true;
                 }
             }

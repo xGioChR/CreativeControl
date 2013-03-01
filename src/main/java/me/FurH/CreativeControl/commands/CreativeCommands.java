@@ -22,7 +22,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashSet;
 import me.FurH.CreativeControl.CreativeControl;
-import me.FurH.CreativeControl.cache.CreativeBlockCache;
 import me.FurH.CreativeControl.configuration.CreativeMainConfig;
 import me.FurH.CreativeControl.configuration.CreativeMessages;
 import me.FurH.CreativeControl.data.friend.CreativePlayerFriends;
@@ -31,13 +30,11 @@ import me.FurH.CreativeControl.database.extra.CreativeSQLBackup;
 import me.FurH.CreativeControl.database.extra.CreativeSQLCleanup;
 import me.FurH.CreativeControl.database.extra.CreativeSQLMigrator;
 import me.FurH.CreativeControl.manager.CreativeBlockManager;
-import me.FurH.CreativeControl.monitor.CreativePerformance;
 import me.FurH.CreativeControl.region.CreativeRegion.gmType;
 import me.FurH.CreativeControl.region.CreativeRegionManager;
 import me.FurH.CreativeControl.selection.CreativeBlocksSelection;
 import me.FurH.CreativeControl.selection.CreativeBlocksSelection.Type;
 import me.FurH.CreativeControl.selection.CreativeSelection;
-import me.FurH.CreativeControl.util.CreativeCommunicator;
 import me.FurH.CreativeControl.util.CreativeUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -56,7 +53,7 @@ public class CreativeCommands implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String string, String[] args) {
-        CreativeMessages         messages  = CreativeControl.getMessages();
+        /*CreativeMessages         messages  = CreativeControl.getMessages();
         CreativeControl          plugin    = CreativeControl.getPlugin();
         if (args.length <= 0) {
             msg(sender, "[TAG] &8CreativeControl &4{0} &8by &4FurmigaHumana", plugin.currentversion);
@@ -125,14 +122,14 @@ public class CreativeCommands implements CommandExecutor {
                     }
                 }
             }
-        }
+        }*/
         return true;
     }
 
     /*
      * //cc admin[0] migrator[1] [>sqlite/>mysql/>lwc][2]
      */
-    public boolean onAdminCommand(CommandSender sender, Command cmd, String string, String[] args) {
+    /*public boolean onAdminCommand(CommandSender sender, Command cmd, String string, String[] args) {
         CreativeMessages messages = CreativeControl.getMessages();
         CreativeControl plugin = CreativeControl.getPlugin();
         if (!plugin.hasPerm(sender, "Commands.Admin")) {
@@ -205,9 +202,7 @@ public class CreativeCommands implements CommandExecutor {
         CreativeControl          plugin    = CreativeControl.getPlugin();
         CreativePlayerFriends    friends   = CreativeControl.getFriends();
         CreativeBlocksSelection  selection = CreativeControl.getSelector();
-        CreativeBlockCache       cache     = CreativeControl.getCache();
         CreativeSQLDatabase      db        = CreativeControl.getDb();
-        CreativeCommunicator     com       = CreativeControl.getCommunicator();
 
         if (!plugin.hasPerm(sender, "Commands.Friend")) {
             msg(sender, messages.commands_noperm);
@@ -398,7 +393,7 @@ public class CreativeCommands implements CommandExecutor {
                                                     }
                                                     
                                                 } catch (SQLException ex) {
-                                                    com.error(Thread.currentThread(), ex, "[TAG] Failed to get the block from the database, {0}", ex.getMessage());
+                                                    CreativeControl.plugin.getCommunicator().error(Thread.currentThread(), ex, "[TAG] Failed to get the block from the database, " + ex.getMessage());
                                                     if (!db.isOk()) { db.fix(); }
                                                 } finally {
                                                     if (rs != null) {
@@ -416,17 +411,15 @@ public class CreativeCommands implements CommandExecutor {
                                                 elapsedTime = (System.currentTimeMillis() - startTimer);
                                                 msg(sender, messages.updater_loaded, locations.size(), elapsedTime);
 
-                                                /* Backup Start */
                                                 msg(sender, messages.backup_generating);
 
                                                 CreativeSQLBackup.backup(backup);
 
                                                 elapsedTime = (System.currentTimeMillis() - startTimer);
                                                 msg(sender, messages.backup_done, elapsedTime);
-                                                /* Backup End */
                                                 
                                                 for (String location : locations) {
-                                                    cache.remove(location);
+                                                    //cache.remove(location);
                                                 }
                                                 
                                                 CreativeBlockManager manager = CreativeControl.getManager();
@@ -568,9 +561,6 @@ public class CreativeCommands implements CommandExecutor {
         }
     }
 
-    /*
-     * Add command [/cc add]
-     */
     public boolean addCmd(CommandSender sender, Command cmd, String string, String[] args) {
         CreativeMessages         messages  = CreativeControl.getMessages();
         CreativeControl          plugin    = CreativeControl.getPlugin();
@@ -628,16 +618,11 @@ public class CreativeCommands implements CommandExecutor {
         }
         return false;
     }
-    
-    /*
-     * Cleanup command [/cc cleanup]
-     */
+
     public boolean cleanupCmd(CommandSender sender, Command cmd, String string, String[] args) {
         CreativeMessages         messages  = CreativeControl.getMessages();
         CreativeControl          plugin    = CreativeControl.getPlugin();
-        CreativeBlockCache       cache     = CreativeControl.getCache();
         CreativeSQLDatabase      db        = CreativeControl.getDb();
-        CreativeCommunicator     com       = CreativeControl.getCommunicator();
         
         if (!plugin.hasPerm(sender, "Commands.Cleanup")) {
             msg(sender, messages.commands_noperm);
@@ -658,7 +643,7 @@ public class CreativeCommands implements CommandExecutor {
                                 db.execute(query);
                             }
 
-                            cache.clear();
+                            //cache.clear();
                             msg(sender, messages.commands_cleanup_processed);
                             return true;
                         }
@@ -700,9 +685,7 @@ public class CreativeCommands implements CommandExecutor {
                                         }
 
                                     } catch (SQLException ex) {
-                                        com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
-                                                "[TAG] Failed to get the block from the database, {0}", ex.getMessage());
-                                        if (!db.isOk()) { db.fix(); }
+  
                                     } finally {
                                         if (rs != null) {
                                             try {
@@ -719,18 +702,16 @@ public class CreativeCommands implements CommandExecutor {
                                     elapsedTime = (System.currentTimeMillis() - startTimer);
                                     msg(sender, messages.updater_loaded, locations.size(), elapsedTime);
 
-                                    /* Backup Start */
                                     msg(sender, messages.backup_generating);
 
                                     CreativeSQLBackup.backup(backup);
 
                                     elapsedTime = (System.currentTimeMillis() - startTimer);
                                     msg(sender, messages.backup_done, elapsedTime);
-                                    /* Backup End */
 
                                     for (String location : locations) {
                                         String query = "DELETE FROM `"+db.prefix+"blocks` WHERE location = '"+location+"'";
-                                        cache.remove(location);
+                                        //cache.remove(location);
                                         db.execute(query);
                                     }
                                     
@@ -784,9 +765,6 @@ public class CreativeCommands implements CommandExecutor {
                                         }
                                         
                                     } catch (SQLException ex) {
-                                        com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
-                                                "[TAG] Failed to get the block from the database, {0}", ex.getMessage());
-                                        if (!db.isOk()) { db.fix(); }
                                     } finally {
                                         if (rs != null) {
                                             try {
@@ -803,18 +781,16 @@ public class CreativeCommands implements CommandExecutor {
                                     elapsedTime = (System.currentTimeMillis() - startTimer);
                                     msg(sender, messages.updater_loaded, locations.size(), elapsedTime);
 
-                                    /* Backup Start */
                                     msg(sender, messages.backup_generating);
 
                                     CreativeSQLBackup.backup(backup);
 
                                     elapsedTime = (System.currentTimeMillis() - startTimer);
                                     msg(sender, messages.backup_done, elapsedTime);
-                                    /* Backup End */
 
                                     for (String location : locations) {
                                         String query = "DELETE FROM `"+db.prefix+"blocks` WHERE location = '"+location+"'";
-                                        cache.remove(location);
+                                        //cache.remove(location);
                                         db.execute(query);
                                     }
                                     
@@ -867,9 +843,6 @@ public class CreativeCommands implements CommandExecutor {
                                                     + " '"+rs.getString("owner")+"', '"+rs.getString("location")+"', '"+rs.getInt("type")+"', '"+rs.getString("allowed")+"', '"+rs.getString("time")+"')");
                                         }
                                     } catch (SQLException ex) {
-                                        com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
-                                                "[TAG] Failed to get the block from the database, {0}", ex.getMessage());
-                                        if (!db.isOk()) { db.fix(); }
                                     } finally {
                                         if (rs != null) {
                                             try {
@@ -886,20 +859,18 @@ public class CreativeCommands implements CommandExecutor {
                                     elapsedTime = (System.currentTimeMillis() - startTimer);
                                     msg(sender, messages.updater_loaded, locations.size(), elapsedTime);
 
-                                    /* Backup Start */
                                     msg(sender, messages.backup_generating);
 
                                     CreativeSQLBackup.backup(backup);
 
                                     elapsedTime = (System.currentTimeMillis() - startTimer);
                                     msg(sender, messages.backup_done, elapsedTime);
-                                    /* Backup End */
 
                                     for (String location : locations) {
                                         Location loc = CreativeUtil.getLocation(location);
                                         if (loc.getWorld().getName().equalsIgnoreCase(args[2])) {
                                             String query = "DELETE FROM `"+db.prefix+"blocks` WHERE location = '"+location+"'";
-                                            cache.remove(location);
+                                            //cache.remove(location);
                                             db.execute(query);
                                         }
                                     }
@@ -960,10 +931,7 @@ public class CreativeCommands implements CommandExecutor {
             }
         }
     }
-    
-    /*
-     * Del command [/cc del]
-     */
+
     public boolean delCmd(CommandSender sender, Command cmd, String string, String[] args) {
         CreativeMessages         messages  = CreativeControl.getMessages();
         CreativeControl          plugin    = CreativeControl.getPlugin();
@@ -1060,10 +1028,7 @@ public class CreativeCommands implements CommandExecutor {
         }
         return false;
     }
-    
-    /*
-     * Selection command [/cc sel]
-     */
+
     public boolean selCmd(CommandSender sender, Command cmd, String string, String[] args) {
         CreativeMessages         messages  = CreativeControl.getMessages();
         CreativeControl          plugin    = CreativeControl.getPlugin();
@@ -1204,9 +1169,6 @@ public class CreativeCommands implements CommandExecutor {
         return true;
     }
     
-    /*
-     * Region command [/cc region]
-     */
     public boolean regionCmd(CommandSender sender, Command cmd, String string, String[] args) {
         CreativeMessages         messages  = CreativeControl.getMessages();
         CreativeControl          plugin    = CreativeControl.getPlugin();
@@ -1370,10 +1332,7 @@ public class CreativeCommands implements CommandExecutor {
         }
         return false;
     }
-    
-    /*
-     * Reload command [/cc reload]
-     */
+
     public boolean reloadCmd(CommandSender sender, Command cmd, String string, String[] args) {
         CreativeMessages         messages  = CreativeControl.getMessages();
         CreativeControl          plugin    = CreativeControl.getPlugin();
@@ -1392,14 +1351,11 @@ public class CreativeCommands implements CommandExecutor {
         return false;
     }
     
-    /*
-     * Status command [/cc status]
-     */
     public boolean statusCmd(CommandSender sender, Command cmd, String string, String[] args) {
         CreativeSQLDatabase      db        = CreativeControl.getDb();
         CreativeMessages         messages  = CreativeControl.getMessages();
         CreativeControl          plugin    = CreativeControl.getPlugin();
-        CreativeBlockCache       cache     = CreativeControl.getCache();
+        //CreativeBlockCache       cache     = CreativeControl.getCache();
         
         if (!plugin.hasPerm(sender, "Commands.Status")) {
             msg(sender, messages.commands_noperm);
@@ -1417,17 +1373,14 @@ public class CreativeCommands implements CommandExecutor {
                 msg(sender, messages.commands_status_queue, db.getQueue());
                 msg(sender, messages.commands_status_sqlreads, db.getReads());
                 msg(sender, messages.commands_status_sqlwrites, db.getWrites());
-                msg(sender, messages.commands_status_cache, (cache.getSize()), cache.getMaxSize());
-                msg(sender, messages.commands_status_cachereads, (cache.getReads()));
-                msg(sender, messages.commands_status_cachewrites, (cache.getWrites()));
+                //msg(sender, messages.commands_status_cache, (cache.getSize()), cache.getMaxSize());
+                //msg(sender, messages.commands_status_cachereads, (cache.getReads()));
+                //msg(sender, messages.commands_status_cachewrites, (cache.getWrites()));
                 return true;
             }
         }
     }
-    
-    /*
-     * Tool command [/cc tool]
-     */
+
     public boolean toolCmd(CommandSender sender, Command cmd, String string, String[] args) {
         CreativeMessages         messages  = CreativeControl.getMessages();
         CreativeControl          plugin    = CreativeControl.getPlugin();
@@ -1518,9 +1471,8 @@ public class CreativeCommands implements CommandExecutor {
         CreativeRegionManager    region    = CreativeControl.getRegioner();
         region.deleteRegion(string);
     }
-    
+
     public void msg(CommandSender sender, String s, Object... objects) {
-        CreativeCommunicator     com       = CreativeControl.getCommunicator();
-        com.msg(sender, s, objects);
-    }
+        CreativeControl.plugin.getCommunicator().msg(sender, s, objects);
+    }*/
 }

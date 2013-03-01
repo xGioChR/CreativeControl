@@ -12,6 +12,10 @@ public class CreativeBlockData {
     public HashSet<String> allowed;
     public String date;
     
+    public CreativeBlockData(int type) {
+        this.type = type;
+    }
+    
     public CreativeBlockData(String owner, int type, HashSet<String> allowed) {
         this.owner = owner;
         this.type = type;

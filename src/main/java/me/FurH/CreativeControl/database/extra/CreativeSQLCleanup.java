@@ -16,26 +16,17 @@
 
 package me.FurH.CreativeControl.database.extra;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.HashSet;
-import me.FurH.CreativeControl.CreativeControl;
-import me.FurH.CreativeControl.configuration.CreativeMessages;
-import me.FurH.CreativeControl.database.CreativeSQLDatabase;
-import me.FurH.CreativeControl.manager.CreativeBlockManager;
-import me.FurH.CreativeControl.util.CreativeCommunicator;
-import me.FurH.CreativeControl.util.CreativeUtil;
-import org.bukkit.Location;
-import org.bukkit.block.Block;
-import org.bukkit.entity.Player;
-
 /**
  *
  * @author FurmigaHumana
  */
 public class CreativeSQLCleanup implements Runnable {
-    public boolean lock = false;
+
+    @Override
+    public void run() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    /*public boolean lock = false;
     private Player p;
 
     public CreativeSQLCleanup(Player p) {
@@ -49,14 +40,14 @@ public class CreativeSQLCleanup implements Runnable {
         long startTimer = System.currentTimeMillis();
         long elapsedTime = 0;
 
-        CreativeCommunicator com = CreativeControl.getCommunicator();
+        CreativeCommunicator com = CreativeControl.getCommunicator2();
         CreativeMessages messages = CreativeControl.getMessages();
         
         System.gc();
         com.msg(p, messages.updater_loading);
         HashSet<String[]> blocks = new HashSet<String[]>();
         
-        /* Backup */ HashSet<String> backup = new HashSet<String>();
+        /* Backup  HashSet<String> backup = new HashSet<String>();
 
         CreativeSQLDatabase db = CreativeControl.getDb();
         CreativeBlockManager manager = CreativeControl.getManager();
@@ -94,25 +85,25 @@ public class CreativeSQLCleanup implements Runnable {
         }
 
         //CreativeBlockManager manager = CreativeControl.getManager();
-        elapsedTime = (System.currentTimeMillis() - startTimer);
-        com.msg(p, messages.updater_loaded, blocks.size(), elapsedTime);
+        /*elapsedTime = (System.currentTimeMillis() - startTimer);
+        com.msg(p, messages.updater_loaded, blocks.size(), elapsedTime);*/
         
         /* Backup Start */
-        com.msg(p, messages.backup_generating);
+        /*com.msg(p, messages.backup_generating);
         
         CreativeSQLBackup.backup(backup);
         System.gc();
 
         elapsedTime = (System.currentTimeMillis() - startTimer);
-        com.msg(p, messages.backup_done, elapsedTime);
+        com.msg(p, messages.backup_done, elapsedTime);*/
         /* Backup End */
         
-        com.msg(p, messages.cleanup_searching);
+        /*com.msg(p, messages.cleanup_searching);
         double corrupt = 0;
         double done = 0;
         double process = 0;
         
-        double last = 0;
+        double last = 0;*/
         
         /*try {
             //db.connection.commit();
@@ -121,7 +112,7 @@ public class CreativeSQLCleanup implements Runnable {
                     "[TAG] Failed to set AutoCommit and commit the database, {0}", ex.getMessage());
         }*/
 
-        HashSet<String> locations = new HashSet<String>();
+        /*HashSet<String> locations = new HashSet<String>();
         for (String[] string : blocks) {
             done++;
             process = ((done / blocks.size()) * 100.0D);
@@ -167,7 +158,7 @@ public class CreativeSQLCleanup implements Runnable {
                 com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
                         "[TAG] Failed to check the protection: {0}, {1}", string[0], ex.getMessage());
             }
-        }
+        }*/
 
         /*try {
             //db.connection.commit();
@@ -176,8 +167,8 @@ public class CreativeSQLCleanup implements Runnable {
                     "[TAG] Failed to set AutoCommit, {0}", ex.getMessage());
         }]*/
         
-        elapsedTime = (System.currentTimeMillis() - startTimer);
+        /*elapsedTime = (System.currentTimeMillis() - startTimer);
         com.msg(p, messages.cleanup_done, corrupt, blocks.size());
         lock = false;
-    }
+    }*/
 }

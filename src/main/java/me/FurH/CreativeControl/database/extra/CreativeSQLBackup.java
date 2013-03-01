@@ -21,7 +21,6 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.HashSet;
 import me.FurH.CreativeControl.CreativeControl;
-import me.FurH.CreativeControl.util.CreativeCommunicator;
 import me.FurH.CreativeControl.util.CreativeUtil;
 
 /**
@@ -29,9 +28,9 @@ import me.FurH.CreativeControl.util.CreativeUtil;
  * @author FurmigaHumana
  */
 public class CreativeSQLBackup {
-    
+    /*
     public static void backup(HashSet<String> backup) {        
-        CreativeCommunicator com = CreativeControl.getCommunicator();
+        CreativeCommunicator com = CreativeControl.getCommunicator2();
         CreativeControl plugin = CreativeControl.getPlugin();
         
         File dir = new File(plugin.getDataFolder() + File.separator + "backups" + File.separator);
@@ -51,5 +50,5 @@ public class CreativeSQLBackup {
         }
 
         writer.close();
-    }
+    }*/
 }

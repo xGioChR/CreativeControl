@@ -1,6 +1,6 @@
 Database:
-  ## MySQL, if false, SQLite will be used, SQLite is recomended to a maximum of 20 players.
-  MySQL: false
+  ## MySQL, the database type, can be SQLite, MySQL or H2.
+  Type: SQLite
   ## host, the MySQL host name
   host: localhost
   ## port, the MySQL port
@@ -12,7 +12,7 @@ Database:
   ## database, the MySQL database to be used by this plugin
   database: minecraft
   ## prefix, the prefix used to create the tables in the sql database
-  prefix: cc_
+  prefix: crcr_
 
 ## this section will define wich group the player will be added when he change his gamemode to creative, the player will not be removed from his original group
 Permissions:

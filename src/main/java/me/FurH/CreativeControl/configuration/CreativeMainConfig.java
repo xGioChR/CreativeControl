@@ -16,39 +16,20 @@
  
 package me.FurH.CreativeControl.configuration;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
-import me.FurH.CreativeControl.CreativeControl;
-import me.FurH.CreativeControl.util.CreativeCommunicator;
-import me.FurH.CreativeControl.util.CreativeUtil;
-import org.bukkit.World;
-import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.configuration.file.YamlConfiguration;
+import me.FurH.Core.CorePlugin;
+import me.FurH.Core.configuration.Configuration;
 
 /**
  *
  * @author FurmigaHumana
  */
-public class CreativeMainConfig {
-    private Map<String, CreativeFileInfo> cache = new HashMap<String, CreativeFileInfo>();
-    
-    public CreativeMainConfig() {
-        CreativeWorldConfig.setConfig(this);
+public class CreativeMainConfig extends Configuration {
+
+    public CreativeMainConfig(CorePlugin plugin) {
+        super(plugin);
     }
     
-    public boolean         database_mysql    = false;
+    public String          database_type     = "SQLite";
     public String          database_host     = "localhost";
     public String          database_port     = "3306";
     public String          database_user     = "root";
@@ -95,7 +76,7 @@ public class CreativeMainConfig {
     public boolean         com_debugstack    = true;
 
     public void load() {
-        database_mysql   = getBoolean("Database.MySQL");
+        database_type    = getString("Database.Type");
         database_host    = getString("Database.host");
         database_port    = getString("Database.port");
         database_user    = getString("Database.user");
@@ -140,255 +121,5 @@ public class CreativeMainConfig {
         com_quiet        = getBoolean("Communicator.Quiet");
         com_debugcons    = getBoolean("Debug.Console");
         com_debugstack   = getBoolean("Debug.Stack");
-    }
-
-    public void updateConfig() {
-        CreativeControl plugin = CreativeControl.getPlugin();
-        File file = null;
-        InputStream source = null;
-
-        for (String key : cache.keySet()) {
-            CreativeFileInfo info = cache.get(key);
-            if (info.needUpdate) {
-                file = new File(info.dir);
-                source = plugin.getResource(info.fileName);
-                updateConfig(file, source);
-            }
-        }
-    }
-
-    public void updateConfig(File file, InputStream source) {
-        CreativeCommunicator com    = CreativeControl.getCommunicator();
-        BufferedWriter writer = null;
-
-        try {
-            Scanner scanner = new Scanner(source);
-
-            List<String> lines = new ArrayList<String>();
-            String section = "";
-
-            while (scanner.hasNext()) {
-                String line = scanner.nextLine();
-                boolean comment = false;
-
-                if (line.replaceAll(" ", "").startsWith("#")) {
-                    comment = true;
-                }
-
-                if (!comment && line.endsWith(":")) {
-                    section = line.replaceAll(" ", "").replaceAll(":", "");
-                }
-
-                if (!comment && !section.isEmpty() && line.contains(":") && !line.endsWith(":")) {
-                    String node = section + "." + line.substring(0, line.lastIndexOf(':')).replaceAll(" ", "");
-
-                    HashMap<String, String> nodes = cache.get(file.getName()).values;
-
-                    String value = nodes.get(node);
-
-                    if (value.contains(".")) {
-                        value = value.replaceAll("\\.", "{DOT}");
-                    }
-
-                    if (value == null) {
-                        try {
-                            YamlConfiguration rsconfig = new YamlConfiguration();
-                            rsconfig.load(source);
-                            node = rsconfig.getString(node);
-                        } catch (Exception ex) { }
-                    }
-                    
-                    if (value == null) {
-                        com.log("[TAG] Can't update setting node: {0}, contact the developer.", node);
-                        continue;
-                    }
-                    
-                    if ("".equals(value) || value.isEmpty()) {
-                        value = "''";
-                    }
-
-                    line = node + ": " + value;
-
-                    String space = "";
-                    String[] split = line.split("\\.");
-
-                    while (space.length() < split.length - 1) {
-                        space += "  ";
-                    }
-
-                    line = space += split[ split.length - 1 ];
-                }
-
-                lines.add(line);
-            }
-            scanner.close();
-
-            Path path = Paths.get(file.getAbsolutePath());
-            writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8);
-
-            for (String line : lines) {
-
-                if (line.contains("{DOT}")) {
-                    writer.write(line.replaceAll("\\{DOT}", "."));
-                } else {
-                    writer.write(line);
-                }
-  
-                writer.newLine();
-            }
-
-        } catch (IOException ex) {
-            com.error(Thread.currentThread(), ex, "[TAG] Failed to update settings file: {0}", ex.getMessage());
-        } finally {
-            try {
-                if (writer != null) {
-                    writer.flush();
-                    writer.close();
-                }
-            } catch (IOException ex) {
-                com.error(Thread.currentThread(), ex, "[TAG] Failed to update settings file[2]: {0}", ex.getMessage());
-            }
-        }
-    }
-    
-    /*
-     * return a Boolean from the settings file
-     */
-    protected boolean getBoolean(World w, String node) {
-        return Boolean.parseBoolean(getSetting(node, w));
-    }
-    
-    /*
-     * return a Integer from the settings file
-     */
-    protected int getInteger(World w, String node) {
-        return Integer.parseInt(getSetting(node, w));
-    }
-    
-    /*
-     * return a Boolean from the settings file
-     */
-    protected boolean getBoolean(String node) {
-        return Boolean.parseBoolean(getSetting(node));
-    }
-
-    /*
-     * return a String from the settings file
-     */
-    protected String getString(String node) {
-        return getSetting(node);
-    }
-
-    /*
-     * return a Long from the settings file
-     */
-    protected long getLong(String node) {
-        return Long.parseLong(getSetting(node));
-    }
-    
-    /*
-     * return a Integer from the settings file
-     */
-    protected int getInteger(String node) {
-        return Integer.parseInt(getSetting(node));
-    }
-    
-    /*
-     * return a String HashSet from the settings file
-     */
-    protected HashSet<String> getStringList(World w, String node) {
-        return CreativeUtil.toStringHashSet(getSetting(node, w).replaceAll(" ", ""), ",");
-    }
-
-    /*
-     * return a Integer HashSet from the settings file
-     */
-    protected HashSet<Integer> getIntegerList(World w, String node) {
-        return CreativeUtil.toIntegerHashSet(getSetting(node, w).replaceAll(" ", ""), ",");
-    }
-        
-    /*
-     * return an Object from the Settings file
-     */
-    private String getSetting(String node, World w) {
-        CreativeControl      plugin = CreativeControl.getPlugin();
-        
-        File dir = new File(plugin.getDataFolder() + File.separator + "worlds", w != null ? w.getName() + ".yml" : "world.yml");
-        if (!dir.exists()) { CreativeUtil.ccFile(plugin.getResource("world.yml"), dir); }
-        
-        return getSetting(dir, node);
-    }
-    
-    private String getSetting(String node) {
-        CreativeControl      plugin = CreativeControl.getPlugin();
-        
-        File dir = new File(plugin.getDataFolder(), "settings.yml");
-        if (!dir.exists()) { CreativeUtil.ccFile(plugin.getResource("settings.yml"), dir); }
-        
-        return getSetting(dir, node);
-    }
-    
-    private String getSetting(File dir, String node) {
-        CreativeCommunicator com    = CreativeControl.getCommunicator();
-        CreativeControl      plugin = CreativeControl.getPlugin();
-        
-        CreativeFileInfo info = new CreativeFileInfo();
-        if (cache.containsKey(dir.getName())) {
-            info = cache.get(dir.getName());
-        }
-        
-        info.fileName = dir.getName();
-        info.dir = dir.getAbsolutePath();
-
-        YamlConfiguration config = new YamlConfiguration();
-        try {
-            config.load(dir);
-            
-            if (!config.contains(node)) {
-                info.needUpdate = true; /* file update required */
-
-                InputStream resource = plugin.getResource(dir.getName());
-                YamlConfiguration rsconfig = new YamlConfiguration();
-                rsconfig.load(resource);
-
-                if (rsconfig.contains(node)) {
-                    config.set(node, rsconfig.get(node));
-                    com.log("[TAG] Settings file updated, check at: {0}", node);
-                } else {
-                    config.set(node, node);
-                    com.log("[TAG] Can't get setting node: {0}, contact the developer.", node);
-                }
-
-                try {
-                    config.save(dir);
-                } catch (IOException ex) {
-                    com.error(Thread.currentThread(), ex, "[TAG] Can't update the settings file: {0}, node: {1}", ex.getMessage(), node);
-                }
-            }
-        } catch (IOException ex) {
-            com.error(Thread.currentThread(), ex, "[TAG] Can't load the settings file: {0}, node {1}", ex.getMessage(), node);
-        } catch (InvalidConfigurationException ex) {
-            com.log("[TAG] You have a broken node in your settings file at: {0}, {1}", node, ex.getMessage());
-            info.needUpdate = true; /* broken node */
-        }
-        
-        String value = config.getString(node);
-        if (value == null) {
-            com.log("[TAG] You have a missing setting node at: {0}", node);
-            value = node;
-            info.needUpdate = true; /* broken node */
-        }
-
-        info.values.put(node, value);
-        cache.put(dir.getName(), info);
-
-        return value;
-    }
-    
-    private class CreativeFileInfo {
-        public HashMap<String, String> values = new HashMap<String, String>();
-        public boolean needUpdate = false;
-        public String fileName = null;
-        public String dir = null;
     }
 }

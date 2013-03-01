@@ -17,9 +17,9 @@
 package me.FurH.CreativeControl.integration;
 
 import com.garbagemule.MobArena.events.ArenaPlayerJoinEvent;
+import me.FurH.Core.util.Communicator;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.configuration.CreativeMessages;
-import me.FurH.CreativeControl.util.CreativeCommunicator;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -37,8 +37,9 @@ public class MobArena implements Listener {
         if (e.isCancelled()) { return; }
         
         CreativeMessages messages = CreativeControl.getMessages();
-        CreativeCommunicator com = CreativeControl.getCommunicator();
+
         CreativeControl plugin = CreativeControl.getPlugin();
+        Communicator com = plugin.getCommunicator();
 
         Player p = e.getPlayer();
 

@@ -20,11 +20,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashSet;
+import me.FurH.Core.exceptions.CoreDbException;
+import me.FurH.Core.exceptions.CoreMsgException;
+import me.FurH.Core.location.LocationUtils;
+import me.FurH.Core.util.Communicator;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.database.CreativeSQLDatabase;
 import me.FurH.CreativeControl.region.CreativeRegion.gmType;
-import me.FurH.CreativeControl.util.CreativeCommunicator;
-import me.FurH.CreativeControl.util.CreativeUtil;
 import org.bukkit.Location;
 
 /**
@@ -33,11 +35,11 @@ import org.bukkit.Location;
  */
 public class CreativeRegionManager {    
     private HashSet<CreativeRegion> areas = new HashSet<CreativeRegion>();
-    
+
     public HashSet<CreativeRegion> getAreas() {
         return areas;
     }
-    
+
     public CreativeRegion getRegion(Location loc) {
         
         for (CreativeRegion region : areas) {
@@ -77,7 +79,7 @@ public class CreativeRegionManager {
     }
 
     public int loadRegions() {
-        CreativeCommunicator com    = CreativeControl.getCommunicator();
+        Communicator com    = CreativeControl.plugin.getCommunicator();
         CreativeSQLDatabase db = CreativeControl.getDb();
 
         int total = 0;
@@ -89,16 +91,18 @@ public class CreativeRegionManager {
             
             while (rs.next()) {
                 String name = rs.getString("name");
-                Location start = CreativeUtil.getLocation(rs.getString("start"));
-                Location end = CreativeUtil.getLocation(rs.getString("end"));
+                Location start = LocationUtils.stringToLocation2(rs.getString("start"));
+                Location end = LocationUtils.stringToLocation2(rs.getString("end"));
                 String type = rs.getString("type");
                 addRegion(name, start, end, type);
                 total++;
             }
         } catch (SQLException ex) {
-            com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
-                    "[TAG] Failed to get regions from the database, {0}", ex.getMessage());
-            if (!db.isOk()) { db.fix(); }
+            com.error(Thread.currentThread(), ex, "[TAG] Failed to get regions from the database, " + ex.getMessage());
+        } catch (CoreMsgException ex) {
+            com.error(Thread.currentThread(), ex, ex.getMessage());
+        } catch (CoreDbException ex) {
+            com.error(Thread.currentThread(), ex, ex.getMessage());
         } finally {
             if (rs != null) {
                 try {
@@ -115,7 +119,7 @@ public class CreativeRegionManager {
     }
     
     public boolean getRegion(String name) {
-        CreativeCommunicator com    = CreativeControl.getCommunicator();
+        Communicator com    = CreativeControl.plugin.getCommunicator();
         CreativeSQLDatabase db = CreativeControl.getDb();
 
         ResultSet rs = null;
@@ -128,9 +132,9 @@ public class CreativeRegionManager {
                 return true;
             }
         } catch (SQLException ex) {
-            com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
-                    "[TAG] Failed to get region from the database, {0}", ex.getMessage());
-            if (!db.isOk()) { db.fix(); }
+            com.error(Thread.currentThread(), ex, "[TAG] Failed to get region from the database, " + ex.getMessage());
+        } catch (CoreDbException ex) {
+            com.error(Thread.currentThread(), ex, ex.getMessage());
         } finally {
             if (rs != null) {
                 try {
@@ -163,11 +167,11 @@ public class CreativeRegionManager {
 
         if (!getRegion(name)) {
             addRegion(name, start, end, type.toString());
-            db.queue("INSERT INTO `"+db.prefix+"regions` (name, start, end, type) VALUES ('"+name+"', '"+CreativeUtil.getLocation(start)+"', '"+CreativeUtil.getLocation(end)+"', '"+type.toString()+"')");
+            db.queue("INSERT INTO `"+db.prefix+"regions` (name, start, end, type) VALUES ('"+name+"', '"+LocationUtils.locationToString2(start)+"', '"+LocationUtils.locationToString2(end)+"', '"+type.toString()+"')");
         } else {
             removeRegion(name);
             addRegion(name, start, end, type.toString());
-            db.queue("UPDATE `"+db.prefix+"regions` SET start = '"+CreativeUtil.getLocation(start)+"', end = '"+CreativeUtil.getLocation(end)+"', type = '"+type.toString()+"' WHERE name = '"+name+"'");
+            db.queue("UPDATE `"+db.prefix+"regions` SET start = '"+LocationUtils.locationToString2(start)+"', end = '"+LocationUtils.locationToString2(end)+"', type = '"+type.toString()+"' WHERE name = '"+name+"'");
         }
     }
 }

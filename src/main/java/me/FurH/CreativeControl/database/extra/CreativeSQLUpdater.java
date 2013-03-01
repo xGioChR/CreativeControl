@@ -16,21 +16,12 @@
 
 package me.FurH.CreativeControl.database.extra;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import me.FurH.CreativeControl.CreativeControl;
-import me.FurH.CreativeControl.configuration.CreativeMessages;
-import me.FurH.CreativeControl.database.CreativeSQLDatabase;
-import me.FurH.CreativeControl.util.CreativeCommunicator;
-import org.bukkit.entity.Player;
-
 /**
  *
  * @author FurmigaHumana
  */
 public class CreativeSQLUpdater {
-    public boolean lock = false;
+    /*public boolean lock = false;
     private Player p;
     
     public void loadup() {
@@ -50,7 +41,7 @@ public class CreativeSQLUpdater {
         long startTimer = System.currentTimeMillis();
         long elapsedTime = 0;
 
-        CreativeCommunicator com = CreativeControl.getCommunicator();
+        CreativeCommunicator com = CreativeControl.getCommunicator2();
         CreativeMessages messages = CreativeControl.getMessages();
         
         com.msg(p, messages.updater_loading);
@@ -83,12 +74,12 @@ public class CreativeSQLUpdater {
             int skip = 0;
             double last = 0;
 
-            /*try {
+            try {
                 db.connection.commit();
             } catch (SQLException ex) {
                 com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
                         "[TAG] Failed to set AutoCommit and commit the database, {0}", ex.getMessage());
-            }*/
+            }
 
             while (rs.next()) {
                 done++; //db.reads++;
@@ -156,17 +147,17 @@ public class CreativeSQLUpdater {
         db.execute("UPDATE `"+db.prefix+"internal` SET version = '"+db.version+"'");
         db.execute("ALTER TABLE `CreativeControl` RENAME TO `"+db.prefix+"old`");
 
-        /*try {
+        try {
             db.connection.commit();
         } catch (SQLException ex) {
             com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
                     "[TAG] Failed to set AutoCommit, {0}", ex.getMessage());
-        }*/
+        }
         
         System.gc();
         
         elapsedTime = (System.currentTimeMillis() - startTimer);
         com.msg(p, messages.updater_done, sucess, elapsedTime);
         lock = false;
-    }
+    }*/
 }

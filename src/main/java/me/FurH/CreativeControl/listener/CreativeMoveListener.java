@@ -16,15 +16,13 @@
 
 package me.FurH.CreativeControl.listener;
 
+import me.FurH.Core.util.Communicator;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.configuration.CreativeMessages;
 import me.FurH.CreativeControl.configuration.CreativeWorldConfig;
 import me.FurH.CreativeControl.configuration.CreativeWorldNodes;
-import me.FurH.CreativeControl.monitor.CreativePerformance;
-import me.FurH.CreativeControl.monitor.CreativePerformance.Event;
 import me.FurH.CreativeControl.region.CreativeRegion;
 import me.FurH.CreativeControl.region.CreativeRegion.gmType;
-import me.FurH.CreativeControl.util.CreativeCommunicator;
 import me.FurH.CreativeControl.util.CreativeUtil;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -65,9 +63,9 @@ public class CreativeMoveListener implements Listener {
 
         if (config.world_exclude) { return; }
 
-        CreativeCommunicator com        = CreativeControl.getCommunicator();
         CreativeMessages     messages   = CreativeControl.getMessages();
         CreativeControl      plugin     = CreativeControl.getPlugin();
+        Communicator         com        = plugin.getCommunicator();
         
         CreativeRegion region = CreativeControl.getRegioner().getRegion(loc);
         if (region != null) {
@@ -130,7 +128,5 @@ public class CreativeMoveListener implements Listener {
                 }
             }
         }
-
-        CreativePerformance.update(Event.PlayerMoveEvent, (System.currentTimeMillis() - start));
     }
 }

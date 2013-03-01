@@ -18,8 +18,8 @@ package me.FurH.CreativeControl.listener;
 
 import com.sk89q.worldedit.bukkit.selections.Selection;
 import java.util.ArrayList;
+import me.FurH.Core.util.Communicator;
 import me.FurH.CreativeControl.CreativeControl;
-import me.FurH.CreativeControl.cache.CreativeBlockCache;
 import me.FurH.CreativeControl.configuration.CreativeMainConfig;
 import me.FurH.CreativeControl.configuration.CreativeMessages;
 import me.FurH.CreativeControl.configuration.CreativeWorldConfig;
@@ -29,11 +29,8 @@ import me.FurH.CreativeControl.data.friend.CreativePlayerFriends;
 import me.FurH.CreativeControl.integration.worldedit.CreativeWorldEditHook;
 import me.FurH.CreativeControl.manager.CreativeBlockData;
 import me.FurH.CreativeControl.manager.CreativeBlockManager;
-import me.FurH.CreativeControl.monitor.CreativePerformance;
-import me.FurH.CreativeControl.monitor.CreativePerformance.Event;
 import me.FurH.CreativeControl.region.CreativeRegion;
 import me.FurH.CreativeControl.region.CreativeRegion.gmType;
-import me.FurH.CreativeControl.util.CreativeCommunicator;
 import me.FurH.CreativeControl.util.CreativeUtil;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.*;
@@ -64,9 +61,7 @@ public class CreativePlayerListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onPlayerGameModeChange(PlayerGameModeChangeEvent e) {
         if (e.isCancelled()) { return; }
-        
-        double start = System.currentTimeMillis();
-        
+                
         Player player = e.getPlayer();
         GameMode newgm = e.getNewGameMode();
         GameMode oldgm = player.getGameMode();
@@ -88,8 +83,7 @@ public class CreativePlayerListener implements Listener {
         }
         
         if (config.perm_enabled) {
-            Permission permissions = CreativeControl.getPermissions();
-            if (permissions != null) {
+            /*if (permissions != null) {
                 if (newgm.equals(GameMode.CREATIVE)) {
                     for (String group : permissions.getPlayerGroups(player)) {
                         if (group.equalsIgnoreCase(config.perm_from)) {
@@ -102,10 +96,8 @@ public class CreativePlayerListener implements Listener {
                         permissions.playerRemoveGroup(player, config.perm_to);
                     }
                 }
-            }
+            }*/
         }
-
-        CreativePerformance.update(Event.PlayerGameModeChangeEvent, (System.currentTimeMillis() - start));
     }
     
     /*
@@ -114,9 +106,7 @@ public class CreativePlayerListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onPlayerCommand(PlayerCommandPreprocessEvent e) {
         if (e.isCancelled()) { return; }
-        
-        double start = System.currentTimeMillis();
-        
+                
         Player p = e.getPlayer();
         String msg = e.getMessage().toLowerCase();
         World world = p.getWorld();
@@ -133,7 +123,7 @@ public class CreativePlayerListener implements Listener {
             if (!plugin.hasPerm(p, "BlackList.Commands")) {
                 for (String cmd : msg.split(" ")) {
                     if (config.black_cmds.contains(cmd)) {
-                        CreativeCommunicator  com      = CreativeControl.getCommunicator();
+                        Communicator          com      = plugin.getCommunicator();
                         CreativeMessages      messages = CreativeControl.getMessages();
                         com.msg(p, messages.player_cmdblacklist);
                         e.setCancelled(true);
@@ -158,8 +148,6 @@ public class CreativePlayerListener implements Listener {
                 }
             }
         }
-
-        CreativePerformance.update(Event.PlayerCommandPreprocessEvent, (System.currentTimeMillis() - start));
     }
     
     /*
@@ -167,9 +155,7 @@ public class CreativePlayerListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onPlayerDeath(PlayerDeathEvent e) {
-        
-        double start = System.currentTimeMillis();
-        
+
         Player p = e.getEntity();
         World world = p.getWorld();
         
@@ -186,8 +172,6 @@ public class CreativePlayerListener implements Listener {
                 e.getDrops().clear();
             }
         }
-        
-        CreativePerformance.update(Event.PlayerDeathEvent, (System.currentTimeMillis() - start));
     }
     
     /*
@@ -196,9 +180,7 @@ public class CreativePlayerListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onEnchantItemEvent(EnchantItemEvent e) {
         if (e.isCancelled()) { return; }
-        
-        double start = System.currentTimeMillis();
-        
+                
         Player p = e.getEnchanter();
         World world = p.getWorld();
 
@@ -215,8 +197,6 @@ public class CreativePlayerListener implements Listener {
                 e.setCancelled(true);
             }
         }
-        
-        CreativePerformance.update(Event.EnchantItemEvent, (System.currentTimeMillis() - start));
     }
     
     /*
@@ -225,9 +205,7 @@ public class CreativePlayerListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onInventoryClose(InventoryCloseEvent e) {
         if (!(e.getPlayer() instanceof Player)) { return; }
-        
-        double start = System.currentTimeMillis();
-        
+                
         Player p = (Player)e.getPlayer();
         World world = p.getWorld();
         
@@ -246,8 +224,6 @@ public class CreativePlayerListener implements Listener {
                 }
             }
         }
-        
-        CreativePerformance.update(Event.InventoryCloseEvent, (System.currentTimeMillis() - start));
     }
     
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
@@ -260,7 +236,6 @@ public class CreativePlayerListener implements Listener {
         Player p = (Player)entity;
         World world = p.getWorld();
         
-        CreativeCommunicator com        = CreativeControl.getCommunicator();
         CreativeMessages     messages   = CreativeControl.getMessages();
         CreativeWorldNodes config = CreativeWorldConfig.get(world);
         
@@ -268,6 +243,8 @@ public class CreativePlayerListener implements Listener {
 
         if (p.getGameMode().equals(GameMode.CREATIVE)) {
             CreativeControl       plugin   = CreativeControl.getPlugin();
+            Communicator          com      = plugin.getCommunicator();
+
             if (config.prevent_invinteract) {
                 if (!plugin.hasPerm(p, "Preventions.InventoryOpen")) {
                     com.msg(p, messages.player_cantdo);
@@ -285,9 +262,7 @@ public class CreativePlayerListener implements Listener {
     public void onInventoryClick(InventoryClickEvent e) {
         if (e.isCancelled()) { return; }
         if (!(e.getWhoClicked() instanceof Player)) { return; }
-        
-        double start = System.currentTimeMillis();
-        
+                
         Player p = (Player)e.getWhoClicked();
         World world = p.getWorld();
 
@@ -363,8 +338,6 @@ public class CreativePlayerListener implements Listener {
                 }
             }
         }
-        
-        CreativePerformance.update(Event.InventoryClickEvent, (System.currentTimeMillis() - start));
     }
  
     /*
@@ -372,11 +345,7 @@ public class CreativePlayerListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onPlayerKick(PlayerKickEvent e) {
-        double start = System.currentTimeMillis();
-        
         cleanup(e.getPlayer());
-        
-        CreativePerformance.update(Event.PlayerKickEvent, (System.currentTimeMillis() - start));
     }
     
     /*
@@ -384,11 +353,7 @@ public class CreativePlayerListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onPlayerQuit(PlayerQuitEvent e) {
-        double start = System.currentTimeMillis();
-        
         cleanup(e.getPlayer());
-        
-        CreativePerformance.update(Event.PlayerQuitEvent, (System.currentTimeMillis() - start));
     }
     
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
@@ -403,9 +368,9 @@ public class CreativePlayerListener implements Listener {
 
         if (config.world_exclude) { return; }
 
-        CreativeCommunicator com        = CreativeControl.getCommunicator();
         CreativeMessages     messages   = CreativeControl.getMessages();
         CreativeControl      plugin     = CreativeControl.getPlugin();
+        Communicator         com        = plugin.getCommunicator();
         
         CreativeRegion region = CreativeControl.getRegioner().getRegion(loc);
         if (region != null) {
@@ -462,7 +427,7 @@ public class CreativePlayerListener implements Listener {
                 Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
                     @Override
                     public void run() {
-                        CreativeCommunicator  com      = CreativeControl.getCommunicator();
+                        Communicator          com      = plugin.getCommunicator();
                         CreativeMessages      messages = CreativeControl.getMessages();
                         com.msg(p, messages.updater_new, plugin.newversion, plugin.currentversion);
                         com.msg(p, messages.updater_visit);
@@ -471,7 +436,6 @@ public class CreativePlayerListener implements Listener {
             }
         }
         
-        CreativePerformance.update(Event.PlayerJoinEvent, (System.currentTimeMillis() - start));
     }
 
     /*
@@ -491,7 +455,7 @@ public class CreativePlayerListener implements Listener {
         CreativeWorldNodes config = CreativeWorldConfig.get(world);
         if (config.world_changegm) {
             CreativeControl       plugin   = CreativeControl.getPlugin();
-            CreativeCommunicator  com      = CreativeControl.getCommunicator();
+            Communicator          com      = plugin.getCommunicator();
             CreativeMessages      messages = CreativeControl.getMessages();
             if (p.getGameMode().equals(GameMode.CREATIVE)) {
                 if ((!config.world_creative) && (!plugin.hasPerm(p, "World.Keep"))) {
@@ -506,8 +470,6 @@ public class CreativePlayerListener implements Listener {
                 }
             }
         }
-        
-        CreativePerformance.update(Event.PlayerChangedWorldEvent, (System.currentTimeMillis() - start));
     }
 
     /*
@@ -516,9 +478,7 @@ public class CreativePlayerListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void onPlayerPickupItem(PlayerPickupItemEvent e) {
         if (e.isCancelled()) { return; }
-        
-        double start = System.currentTimeMillis();
-        
+                
         Player p = e.getPlayer();
         World world = p.getWorld();
 
@@ -537,8 +497,6 @@ public class CreativePlayerListener implements Listener {
                 }
             }
         }
-        
-        CreativePerformance.update(Event.PlayerPickupItemEvent, (System.currentTimeMillis() - start));
     }
     
     /*
@@ -547,9 +505,7 @@ public class CreativePlayerListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void onPlayerDropItem(PlayerDropItemEvent e) {
         if (e.isCancelled()) { return; }
-        
-        double start = System.currentTimeMillis();
-        
+                
         Player p = e.getPlayer();
         World world = p.getWorld();
         
@@ -565,7 +521,7 @@ public class CreativePlayerListener implements Listener {
             if (config.prevent_drop) {
                 if (!plugin.hasPerm(p, "Preventions.ItemDrop")) {
                     String itemName = e.getItemDrop().getType().getName().toLowerCase().replace("_", " ");
-                    CreativeCommunicator  com      = CreativeControl.getCommunicator();
+                    Communicator          com      = plugin.getCommunicator();
                     CreativeMessages      messages = CreativeControl.getMessages();
                     com.msg(p, messages.player_cantdrop, itemName);
                     e.getItemDrop().remove();
@@ -581,8 +537,6 @@ public class CreativePlayerListener implements Listener {
                 }
             }
         }
-        
-        CreativePerformance.update(Event.PlayerDropItemEvent, (System.currentTimeMillis() - start));
     }
     
     /*
@@ -603,7 +557,7 @@ public class CreativePlayerListener implements Listener {
             if (config.prevent_eggs) {
                 CreativeControl       plugin   = CreativeControl.getPlugin();
                 if (!plugin.hasPerm(p, "Preventions.Eggs")) {
-                    CreativeCommunicator  com      = CreativeControl.getCommunicator();
+                    Communicator          com      = plugin.getCommunicator();
                     CreativeMessages      messages = CreativeControl.getMessages();
                     com.msg(p, messages.player_chicken);
                     e.setHatching(false);
@@ -611,8 +565,6 @@ public class CreativePlayerListener implements Listener {
                 }
             }
         }
-        
-        CreativePerformance.update(Event.PlayerEggThrowEvent, (System.currentTimeMillis() - start));
     }
     
     /*
@@ -627,9 +579,9 @@ public class CreativePlayerListener implements Listener {
         World world = p.getWorld();
         String ItemName = p.getItemInHand().getType().toString().toLowerCase().replace("_", " ");
         
-        CreativeCommunicator  com      = CreativeControl.getCommunicator();
         CreativeMessages      messages = CreativeControl.getMessages();
         CreativeControl       plugin   = CreativeControl.getPlugin();
+        Communicator          com      = plugin.getCommunicator();
         CreativeWorldNodes    config   = CreativeWorldConfig.get(world);
         CreativeMainConfig    main     = CreativeControl.getMainConfig();
 
@@ -764,8 +716,6 @@ public class CreativePlayerListener implements Listener {
                 }
             }
         }
-        
-        CreativePerformance.update(Event.PlayerInteractEvent, (System.currentTimeMillis() - start));
     }
 
     /*
@@ -775,7 +725,7 @@ public class CreativePlayerListener implements Listener {
      * Print informations about the block
      */
     public void info(Player p, Block b) {
-        if (!is(p, b)) { return; }
+        /*if (!is(p, b)) { return; }
 
         CreativeWorldNodes nodes = CreativeWorldConfig.get(b.getWorld());
         
@@ -796,7 +746,7 @@ public class CreativePlayerListener implements Listener {
             incache = cache.contains(CreativeUtil.getLocation(b.getLocation()));
         }
 
-        CreativeCommunicator com = CreativeControl.getCommunicator();
+        CreativeCommunicator com = CreativeControl.getCommunicator2();
         CreativeMessages messages = CreativeControl.getMessages();
         CreativeControl plugin = CreativeControl.getPlugin();
         
@@ -841,16 +791,16 @@ public class CreativePlayerListener implements Listener {
         com.msg(p, messages.blockinfo_status, (incache ? messages.blockinfo_incache : ""), (insql ? messages.blockinfo_insql : messages.blockinfo_queue));
         com.msg(p, messages.blockinfo_date, CreativeUtil.getDate(Long.parseLong(date)));
         plugin.mods.remove(p.getName());
-        plugin.modsfastup.remove(p.getName());
+        plugin.modsfastup.remove(p.getName());*/
     }
     
     /*
      * Add a block to the database
      */
     public void add(Player p, Block b) {
-        if (!is(p, b)) { return; }
+        /*if (!is(p, b)) { return; }
         
-        CreativeCommunicator com = CreativeControl.getCommunicator();
+        CreativeCommunicator com = CreativeControl.getCommunicator2();
         CreativeBlockManager manager = CreativeControl.getManager();
         CreativeMessages messages = CreativeControl.getMessages();
         CreativeControl plugin = CreativeControl.getPlugin();
@@ -876,16 +826,16 @@ public class CreativePlayerListener implements Listener {
         }
 
         plugin.mods.remove(p.getName());
-        plugin.modsfastup.remove(p.getName());
+        plugin.modsfastup.remove(p.getName());*/
     }
     
     /*
      * Remove a protection from the block
      */
     public void del(Player p, Block b) {
-        if (!is(p, b)) { return; }
+        /*if (!is(p, b)) { return; }
         
-        CreativeCommunicator com = CreativeControl.getCommunicator();
+        CreativeCommunicator com = CreativeControl.getCommunicator2();
         CreativeBlockManager manager = CreativeControl.getManager();
         CreativeMessages messages = CreativeControl.getMessages();
         CreativeControl plugin = CreativeControl.getPlugin();
@@ -914,11 +864,11 @@ public class CreativePlayerListener implements Listener {
         }
 
         plugin.mods.remove(p.getName());
-        plugin.modsfastup.remove(p.getName());
+        plugin.modsfastup.remove(p.getName());*/
     }
     
     private boolean is(Player p, Block b) {
-        CreativeCommunicator com = CreativeControl.getCommunicator();
+        /*CreativeCommunicator com = CreativeControl.getCommunicator2();
         CreativeBlockManager manager = CreativeControl.getManager();
         CreativeMessages messages = CreativeControl.getMessages();
         CreativeControl plugin = CreativeControl.getPlugin();
@@ -936,7 +886,7 @@ public class CreativePlayerListener implements Listener {
             plugin.mods.remove(p.getName());
             plugin.modsfastup.remove(p.getName());
             return false;
-        }
+        }*/
         
         return true;
     }

@@ -18,6 +18,8 @@ package me.FurH.CreativeControl.listener;
 
 import de.diddiz.LogBlock.Consumer;
 import java.util.HashSet;
+import me.FurH.Core.blocks.BlockUtils;
+import me.FurH.Core.util.Communicator;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.configuration.CreativeMainConfig;
 import me.FurH.CreativeControl.configuration.CreativeMessages;
@@ -25,11 +27,6 @@ import me.FurH.CreativeControl.configuration.CreativeWorldConfig;
 import me.FurH.CreativeControl.configuration.CreativeWorldNodes;
 import me.FurH.CreativeControl.manager.CreativeBlockData;
 import me.FurH.CreativeControl.manager.CreativeBlockManager;
-import me.FurH.CreativeControl.manager.CreativeBlockMatcher;
-import me.FurH.CreativeControl.manager.CreativeBlocks;
-import me.FurH.CreativeControl.monitor.CreativePerformance;
-import me.FurH.CreativeControl.monitor.CreativePerformance.Event;
-import me.FurH.CreativeControl.util.CreativeCommunicator;
 import me.FurH.CreativeControl.util.CreativeUtil;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -58,18 +55,16 @@ public class CreativeBlockListener implements Listener {
      * Block Place Module
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void onBlockPlace(BlockPlaceEvent e) {
-        double start = System.currentTimeMillis();
-        
+    public void onBlockPlace(BlockPlaceEvent e) {        
         Player p = e.getPlayer();
         Block b = e.getBlockPlaced();
         World world = p.getWorld();
         
-        CreativeCommunicator    com        = CreativeControl.getCommunicator();
         CreativeMessages        messages   = CreativeControl.getMessages();
         CreativeControl         plugin     = CreativeControl.getPlugin();
-        CreativeWorldNodes config = CreativeWorldConfig.get(world);
-        
+        CreativeWorldNodes      config     = CreativeWorldConfig.get(world);
+        Communicator            com        = plugin.getCommunicator();
+
         /*
          * Excluded Worlds
          */
@@ -185,26 +180,21 @@ public class CreativeBlockListener implements Listener {
 
         Block r = e.getBlockReplacedState().getBlock();
         Block ba = e.getBlockAgainst();
-        /*
-         * NoDrop Save Section
-         */
+
         if (config.block_nodrop) {
             if (config.misc_liquid) {
                 if (r.getType() != Material.AIR) {
-                    manager.delBlock(r);
+                    manager.unprotect(r);
                 }
             } 
             if (p.getGameMode().equals(GameMode.CREATIVE)) {
                 if (!plugin.hasPerm(p, "NoDrop.DontSave")) {
-                    manager.addBlock(p, b, true);
+                    manager.protect(p, b);
                 }
             }
         } else
-        /*
-         * OwnBlock Section
-         */
         if (config.block_ownblock) {
-            if (config.misc_liquid) {
+            /*if (config.misc_liquid) {
                 if (r.getType() != Material.AIR) {
                     CreativeBlockData data = manager.getBlock(b);
                     if (data != null) {
@@ -217,9 +207,9 @@ public class CreativeBlockListener implements Listener {
                         }
                     }
                 }
-            }
+            }*/
 
-            if (config.block_against) {
+            /*if (config.block_against) {
                 CreativeBlockData data = manager.getBlock(ba);
                 if (data != null) {
                     if (!manager.isAllowed(p, ba, data)) {
@@ -228,15 +218,14 @@ public class CreativeBlockListener implements Listener {
                         return;
                     }
                 }
-            }
+            }*/
 
             if (p.getGameMode().equals(GameMode.CREATIVE)) {
                 if (!plugin.hasPerm(p, "OwnBlock.DontSave")) {
-                    manager.addBlock(p.getName(), b, false);
+                    manager.protect(p, b);
                 }
             }
         }
-        CreativePerformance.update(Event.BlockPlaceEvent, (System.currentTimeMillis() - start));
     }
 
     
@@ -245,20 +234,16 @@ public class CreativeBlockListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent e) {
-        double start = System.currentTimeMillis();
         Player p = e.getPlayer();
         Block b = e.getBlock();
         World world = p.getWorld();
 
         CreativeControl         plugin     = CreativeControl.getPlugin();
-        CreativeCommunicator    com        = CreativeControl.getCommunicator();
         CreativeMessages        messages   = CreativeControl.getMessages();
         CreativeWorldNodes      config     = CreativeWorldConfig.get(world);
         CreativeBlockManager    manager    = CreativeControl.getManager();
-        
-        /*
-         * Excluded Worlds
-         */
+        Communicator            com        = plugin.getCommunicator();
+
         if (config.world_exclude) { return; }
         
         if (p.getGameMode().equals(GameMode.CREATIVE)) {
@@ -334,40 +319,45 @@ public class CreativeBlockListener implements Listener {
             attached.add(b);
 
             if (config.block_attach) {
-                attached = CreativeBlockMatcher.getAttached(b);
+                attached.addAll(BlockUtils.getAttachedBlock(b));
             }
+            
+            for (Block block : attached) {
+                CreativeBlockData data = manager.isprotected(block, true);
 
-            for (Block bx : attached) {
-                process(config, e, bx, p);
-            }
-            return;
-        }
-                
-        if (config.block_ownblock) {
-            for (CreativeBlocks bls : manager.getBlocks(b, config.block_attach)) {
-                if (!manager.isAllowed(p, bls.block, bls.data)) {
-                    com.msg(p, messages.blocks_pertence, bls.data.owner);
-                    e.setCancelled(true);
-                    break;
-                } else {
-                    process(config, e, bls.block, p);
+                if (data != null) {
+                    process(config, e, block, p);
                 }
             }
         } else
-        if (config.block_nodrop) {
-            for (CreativeBlocks bls : manager.getBlocks(b, config.block_attach)) {
-                process(config, e, bls.block, p);
+        if (config.block_ownblock) {
+            HashSet<Block> attached = new HashSet<Block>();
+            attached.add(b);
+
+            if (config.block_attach) {
+                attached.addAll(BlockUtils.getAttachedBlock(b));
+            }
+
+            for (Block block : attached) {
+                CreativeBlockData data = manager.isprotected(block, false);
+
+                if (data != null) {
+                    if (!data.owner.equals(p.getName()) && !data.allowed.contains(p.getName()) && !plugin.hasPerm(p, "OwnBlock.Bypass")) {
+                        com.msg(p, messages.blocks_pertence, data.owner);
+                        e.setCancelled(true);
+                        break;
+                    } else {
+                        process(config, e, block, p);
+                    }
+                }
             }
         }
-        CreativePerformance.update(Event.BlockBreakEvent, (System.currentTimeMillis() - start));
     }
     
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void onPistonExtend(BlockPistonExtendEvent e) {
         if (e.isCancelled()) { return; }
         
-        double start = System.currentTimeMillis();
-
         World world = e.getBlock().getWorld();
         CreativeBlockManager    manager    = CreativeControl.getManager();
         CreativeWorldNodes config = CreativeWorldConfig.get(world);
@@ -375,21 +365,18 @@ public class CreativeBlockListener implements Listener {
         if (config.block_pistons) {
             for (Block b : e.getBlocks()) {
                 if (b.getType() == Material.AIR) { return; }
-                if (manager.isProtected(b)) {
+                if (manager.isprotected(b, true) != null) {
                     e.setCancelled(true);
                     break;
                 }
             }
         }
-        CreativePerformance.update(Event.BlockPistonExtendEvent, (System.currentTimeMillis() - start));
     }
     
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void onPistonRetract(BlockPistonRetractEvent e) {
         if (e.isCancelled()) { return; }
-        
-        double start = System.currentTimeMillis();
-        
+                
         Block b = e.getBlock();
         World world = b.getWorld();
 
@@ -409,12 +396,10 @@ public class CreativeBlockListener implements Listener {
             if (direction == null) { return; }
             Block moved = b.getRelative(direction, 2);
             CreativeBlockManager    manager    = CreativeControl.getManager();
-            if (manager.isProtected(moved)) {
+            if (manager.isprotected(moved, true) != null) {
                 e.setCancelled(true);
             }
         }
-        
-        CreativePerformance.update(Event.BlockPistonRetractEvent, (System.currentTimeMillis() - start));
     }
     
     public void logBlock(Player p, Block b) {
@@ -426,9 +411,9 @@ public class CreativeBlockListener implements Listener {
 
     private void process(CreativeWorldNodes config, BlockBreakEvent e, Block b, Player p) {
         if (!e.isCancelled()) {
-            CreativeCommunicator    com        = CreativeControl.getCommunicator();
             CreativeMessages        messages   = CreativeControl.getMessages();
             CreativeBlockManager    manager    = CreativeControl.getManager();
+            Communicator            com        = CreativeControl.plugin.getCommunicator();
             
             if (config.block_creative) {
                 if (!p.getGameMode().equals(GameMode.CREATIVE)) {
@@ -438,10 +423,11 @@ public class CreativeBlockListener implements Listener {
                 }
             }
 
-            manager.delBlock(b);
+            manager.unprotect(b);
             logBlock(p, b);
             e.setExpToDrop(0);
             b.setType(Material.AIR);
+
             if (!p.getGameMode().equals(GameMode.CREATIVE)) {
                 com.msg(p, messages.blocks_nodrop);
             }

@@ -19,35 +19,26 @@ package me.FurH.CreativeControl.data;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import me.FurH.Core.cache.CoreLRUCache;
+import me.FurH.Core.exceptions.CoreDbException;
+import me.FurH.Core.exceptions.CoreMsgException;
+import me.FurH.Core.inventory.InvUtils;
+import me.FurH.Core.util.Communicator;
 import me.FurH.CreativeControl.CreativeControl;
-import me.FurH.CreativeControl.cache.CreativeLRUCache;
 import me.FurH.CreativeControl.configuration.CreativeMainConfig;
 import me.FurH.CreativeControl.database.CreativeSQLDatabase;
-import me.FurH.CreativeControl.util.CreativeArmorMeta;
-import me.FurH.CreativeControl.util.CreativeBookMeta;
-import me.FurH.CreativeControl.util.CreativeCommunicator;
-import me.FurH.CreativeControl.util.CreativeFireworkMeta;
-import me.FurH.CreativeControl.util.CreativeItemMeta;
 import org.bukkit.GameMode;
-import org.bukkit.Material;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.BookMeta;
-import org.bukkit.inventory.meta.LeatherArmorMeta;
 
 /**
  *
  * @author FurmigaHumana
  */
 public class CreativePlayerData {
-    public CreativeLRUCache<String, CreativePlayerCache> adventurer_cache = new CreativeLRUCache<String, CreativePlayerCache>(1000);
-    public CreativeLRUCache<String, CreativePlayerCache> creative_cache = new CreativeLRUCache<String, CreativePlayerCache>(1000);
-    public CreativeLRUCache<String, CreativePlayerCache> survival_cache = new CreativeLRUCache<String, CreativePlayerCache>(1000);
+    public CoreLRUCache<String, CreativePlayerCache> adventurer_cache = new CoreLRUCache<String, CreativePlayerCache>(1000);
+    public CoreLRUCache<String, CreativePlayerCache> creative_cache = new CoreLRUCache<String, CreativePlayerCache>(1000);
+    public CoreLRUCache<String, CreativePlayerCache> survival_cache = new CoreLRUCache<String, CreativePlayerCache>(1000);
 
     public void clear() {
         adventurer_cache.clear();
@@ -59,21 +50,6 @@ public class CreativePlayerData {
         adventurer_cache.remove(player);
         creative_cache.remove(player);
         survival_cache.remove(player);
-    }
-    
-    public int saveRam() {
-        int total = 0;
-        
-        total += adventurer_cache.size();
-        adventurer_cache.clear();
-        
-        total += creative_cache.size();
-        creative_cache.clear();
-        
-        total += survival_cache.size();
-        survival_cache.clear();
-        
-        return total;
     }
     
     public void process(Player player, GameMode newgm, GameMode oldgm) {
@@ -95,8 +71,13 @@ public class CreativePlayerData {
 
                 String query = "INSERT INTO `"+db.prefix+"players_adventurer` (player, health, foodlevel, exhaustion, saturation, experience, armor, inventory) VALUES "
                         + "('"+cache.name+"', '"+cache.health+"', '"+cache.food+"', '"+cache.ex+"', '"+cache.sat+"', '" + cache.exp +"', '"+ toListString(cache.armor) +"', '"+ toListString(cache.items) +"');";
-
-                db.execute(query);
+                
+                try {
+                    db.execute(query);
+                } catch (CoreDbException ex) {
+                    CreativeControl.plugin.getCommunicator().error(Thread.currentThread(), ex, ex.getMessage());
+                }
+                
                 return true;
             } else {
                 cache = newCache(p, cache);
@@ -106,7 +87,13 @@ public class CreativePlayerData {
                 
                 String query = "UPDATE `"+db.prefix+"players_adventurer` SET health = '"+cache.health+"', foodlevel = '"+cache.food+"', exhaustion = '"+cache.ex+"', "
                         + "saturation = '"+cache.sat+"', experience = '"+cache.exp+"', armor = '"+toListString(cache.armor)+"', inventory = '"+ toListString(cache.items) +"' WHERE id = '"+cache.id+"'";
-                db.execute(query);
+
+                try {
+                    db.execute(query);
+                } catch (CoreDbException ex) {
+                    CreativeControl.plugin.getCommunicator().error(Thread.currentThread(), ex, ex.getMessage());
+                }
+                
                 return true;
             }
         } else 
@@ -121,8 +108,13 @@ public class CreativePlayerData {
                 
                 String query = "INSERT INTO `"+db.prefix+"players_creative` (player, armor, inventory) VALUES "
                         + "('"+cache.name+"', '"+ toListString(cache.armor) +"', '"+ toListString(cache.items) +"');";
-                
-                db.execute(query);
+
+                try {
+                    db.execute(query);
+                } catch (CoreDbException ex) {
+                    CreativeControl.plugin.getCommunicator().error(Thread.currentThread(), ex, ex.getMessage());
+                }
+
                 return true;
             } else {
                 cache = newCache(p, cache);
@@ -131,7 +123,13 @@ public class CreativePlayerData {
                 creative_cache.put(cache.name, cache);
                 
                 String query = "UPDATE `"+db.prefix+"players_creative` SET armor = '"+toListString(cache.armor)+"', inventory = '"+ toListString(cache.items) +"' WHERE id = '"+cache.id+"'";
-                db.execute(query);
+
+                try {
+                    db.execute(query);
+                } catch (CoreDbException ex) {
+                    CreativeControl.plugin.getCommunicator().error(Thread.currentThread(), ex, ex.getMessage());
+                }
+
                 return true;
             }
         } else 
@@ -146,8 +144,13 @@ public class CreativePlayerData {
                 
                 String query = "INSERT INTO `"+db.prefix+"players_survival` (player, health, foodlevel, exhaustion, saturation, experience, armor, inventory) VALUES "
                         + "('"+cache.name+"', '"+cache.health+"', '"+cache.food+"', '"+cache.ex+"', '"+cache.sat+"', '" + cache.exp +"', '"+ toListString(cache.armor) +"', '"+ toListString(cache.items) +"');";
+
+                try {
+                    db.execute(query);
+                } catch (CoreDbException ex) {
+                    CreativeControl.plugin.getCommunicator().error(Thread.currentThread(), ex, ex.getMessage());
+                }
                 
-                db.execute(query);
                 return true;
             } else {
                 cache = newCache(p, cache);
@@ -157,7 +160,13 @@ public class CreativePlayerData {
                 
                 String query = "UPDATE `"+db.prefix+"players_survival` SET health = '"+cache.health+"', foodlevel = '"+cache.food+"', exhaustion = '"+cache.ex+"', "
                         + "saturation = '"+cache.sat+"', experience = '"+cache.exp+"', armor = '"+toListString(cache.armor)+"', inventory = '"+ toListString(cache.items) +"' WHERE id = '"+cache.id+"'";
-                db.execute(query);
+                
+                try {
+                    db.execute(query);
+                } catch (CoreDbException ex) {
+                    CreativeControl.plugin.getCommunicator().error(Thread.currentThread(), ex, ex.getMessage());
+                }
+                
                 return true;
             }
         } else {
@@ -193,7 +202,7 @@ public class CreativePlayerData {
     
     public CreativePlayerCache hasAdv(String player) {
         CreativePlayerCache cache = adventurer_cache.get(player.toLowerCase());
-        CreativeCommunicator com        = CreativeControl.getCommunicator();
+        Communicator com        = CreativeControl.plugin.getCommunicator();
         CreativeSQLDatabase db = CreativeControl.getDb();
         
         if (cache == null) {
@@ -217,9 +226,9 @@ public class CreativePlayerData {
                     adventurer_cache.put(cache.name, cache);
                 }
             } catch (SQLException ex) {
-                com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
-                        "[TAG] Failed to get the data from the database, {0}", ex.getMessage());
-                if (!db.isOk()) { db.fix(); }
+                com.error(Thread.currentThread(), ex, "[TAG] Failed to get the data from the database, " + ex.getMessage());
+            } catch (CoreDbException ex) {
+                com.error(Thread.currentThread(), ex, ex.getMessage());
             } finally {
                 if (rs != null) {
                     try {
@@ -233,7 +242,7 @@ public class CreativePlayerData {
     
     public CreativePlayerCache hasSur(String player) {
         CreativePlayerCache cache = survival_cache.get(player.toLowerCase());
-        CreativeCommunicator com        = CreativeControl.getCommunicator();
+        Communicator com        = CreativeControl.plugin.getCommunicator();
         CreativeSQLDatabase db = CreativeControl.getDb();
         
         if (cache == null) {
@@ -258,20 +267,15 @@ public class CreativePlayerData {
                 }
 
             } catch (SQLException ex) {
-                com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
-                        "[TAG] Failed to get the data from the database, {0}", ex.getMessage());
-                if (!db.isOk()) { db.fix(); }
+                com.error(Thread.currentThread(), ex, "[TAG] Failed to get the data from the database, " + ex.getMessage());
+            } catch (CoreDbException ex) {
+                com.error(Thread.currentThread(), ex, ex.getMessage());
             } finally {
                 if (rs != null) {
                     try {
                         rs.close();
                     } catch (SQLException ex) { }
-                }/*
-                if (ps != null) {
-                    try {
-                        ps.close();
-                    } catch (SQLException ex) { }
-                }*/
+                }
             }
         }
         return cache;
@@ -279,7 +283,7 @@ public class CreativePlayerData {
     
     public CreativePlayerCache hasCre(String player) {
         CreativePlayerCache cache = creative_cache.get(player.toLowerCase());
-        CreativeCommunicator com        = CreativeControl.getCommunicator();
+        Communicator com        = CreativeControl.plugin.getCommunicator();
         CreativeSQLDatabase db = CreativeControl.getDb();
 
         if (cache == null) {
@@ -299,20 +303,15 @@ public class CreativePlayerData {
                 }
 
             } catch (SQLException ex) {
-                com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
-                        "[TAG] Failed to get the data from the database, {0}", ex.getMessage());
-                if (!db.isOk()) { db.fix(); }
+                com.error(Thread.currentThread(), ex, "[TAG] Failed to get the data from the database, " + ex.getMessage());
+            } catch (CoreDbException ex) {
+                com.error(Thread.currentThread(), ex, ex.getMessage());
             } finally {
                 if (rs != null) {
                     try {
                         rs.close();
                     } catch (SQLException ex) { }
-                }/*
-                if (ps != null) {
-                    try {
-                        ps.close();
-                    } catch (SQLException ex) { }
-                }*/
+                }
             }
         }
         return cache;
@@ -340,150 +339,19 @@ public class CreativePlayerData {
         
         p.getInventory().setContents(cache.items);
     }
-    
-    public ItemStack[] toArrayStack(String item) {
-        String[] stacks = item.substring(1, item.length() - 1).split(", ");
 
-        ItemStack[] items = new ItemStack[ stacks.length ];
-        for (int i = 0; i < stacks.length; i++) {
-            items[i] = toItemStack(stacks[i]);
-        }
-
-        return items;
+    private String toListString(ItemStack[] armor) {
+        return InvUtils.toListString(armor);
     }
 
-    private ItemStack toItemStack(String string) {
-        CreativeCommunicator com        = CreativeControl.getCommunicator();
+    private ItemStack[] toArrayStack(String string) {
 
-        if (string.equals("0")) {
-            return null;
-        }
-
-        ItemStack stack = new ItemStack(Material.AIR);
-        if (string.equals("[]")) { return stack; }
-        if (!string.contains(":")) { return stack; }
-        
-        String[] inv = string.split(":");
-        if (inv.length < 4) { return stack; }
-        
-        String id = inv[0];
-        String data = inv[1];
-        String amount = inv[2];
-        String durability = inv[3];
-        String enchantments = inv[4];
-        
-        boolean meta = false;
         try {
-            String fire = inv[5];
-            meta = true;
-        } catch (Exception ex) {
-            meta = false;
+            return InvUtils.toArrayStack(string);
+        } catch (CoreMsgException ex) {
+            CreativeControl.plugin.getCommunicator().error(Thread.currentThread(), ex, ex.getMessage());
         }
         
-        if (!string.equals("0:0:0:1:[]")) {
-            try {
-                stack = new ItemStack(Integer.parseInt(id));
-                stack.setAmount(Integer.parseInt(amount));
-                stack.setDurability(Short.parseShort(durability));
-
-                int i = Integer.parseInt(data);
-                if (i > 128) {
-                    i = 128;
-                }
-
-                stack.getData().setData((byte)i);
-            } catch (Exception ex) {
-                com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
-                        "[TAG] Invalid Item String: {0}, {1}", string, ex.getMessage());
-                return new ItemStack(Material.AIR);
-            }
-
-            if (!enchantments.equals("[]")) {
-                enchantments = enchantments.replaceAll("[^a-zA-Z0-9_:,=]", "");
-                String[] enchant = enchantments.split(",");
-
-                List<String> encht = new ArrayList<String>();
-                encht.addAll(Arrays.asList(enchant));
-
-                for (String exlvl : encht) {
-                    if (exlvl.contains("=")) {
-                        String[] split = exlvl.split("=");
-                        String name = split[0];
-                        String lvl = split[1];
-                        try {
-                            Enchantment ext = Enchantment.getByName(name);
-                            stack.addUnsafeEnchantment(ext, Integer.parseInt(lvl));
-                        } catch (Exception ex) {
-                            com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
-                                    "[TAG] Invalid Enchantment: {0} level {1}, {2}", name, lvl, ex.getMessage());
-                        }
-                    }
-                }
-            }
-            if (meta) {
-                stack = CreativeItemMeta.setItemMeta(stack, inv[5]);
-                
-                if (stack.getType() == Material.FIREWORK) {
-                    stack = CreativeFireworkMeta.getFireWork(stack, string);
-                }
-                if (stack.getType() == Material.BOOK || stack.getType() == Material.BOOK_AND_QUILL || stack.getType() == Material.WRITTEN_BOOK) {
-                    stack = CreativeBookMeta.setBookMeta(stack, inv[5]);
-                }
-                if (stack.getType() == Material.LEATHER_HELMET || stack.getType() == Material.LEATHER_CHESTPLATE || stack.getType() == Material.LEATHER_LEGGINGS || stack.getType() == Material.LEATHER_BOOTS) {
-                    stack = CreativeArmorMeta.setArmorMeta(stack, inv[5]);
-                }
-            }
-        }
-
-        return stack;
-    }
-    
-    public String toListString(ItemStack[] source) {
-        List<String> items = new ArrayList<String>();
-
-        for (ItemStack item : source) {
-            items.add(toString(item));
-        }
-
-        return items.toString();
-    }
-
-    private String toString(ItemStack item) {
-        if (item == null) { 
-            return "0"; 
-        }
-
-        if (item.getType() == Material.AIR) {
-            return "0";
-        }
-
-        int type = item.getTypeId();
-        int amount = item.getAmount();
-        byte data = item.getData().getData();
-        short durability = item.getDurability();
-
-        Map<Enchantment, Integer> e1 = item.getEnchantments();
-        
-        List<String> enchantments = new ArrayList<String>();
-        for (Enchantment key : e1.keySet()) {
-            enchantments.add(key.getName() + "=" + e1.get(key));
-        }
-        
-        String ret = ("'"+type+":"+data+":"+amount+":"+durability+":"+enchantments+"'").replaceAll("[^a-zA-Z0-9:,_=\\[\\]]", "");
-        
-        if (item.hasItemMeta()) {
-            ret += CreativeItemMeta.getItemMeta(item);
-        }
-        if (item.getType() == Material.FIREWORK) {
-            ret = CreativeFireworkMeta.getFireWork(ret, item);
-        }
-        if (item.getItemMeta() instanceof BookMeta) {
-            ret += CreativeBookMeta.getBookMeta(item);
-        }
-        if (item.getItemMeta() instanceof LeatherArmorMeta) {
-            ret += CreativeArmorMeta.getArmorMeta(item);
-        }
-
-        return ret;
+        return null;
     }
 }

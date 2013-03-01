@@ -53,7 +53,7 @@ public class CreativeWorldEditHook {
                             Location loc = new Location(world, x, y, z);
                             Block b = world.getBlockAt(loc);
                             CreativeBlockManager manager = CreativeControl.getManager();
-                            manager.addBlock(p.getName(), b, nodes.block_nodrop);
+                            manager.protect(p, b);
                         }
                     }
                 }
@@ -79,7 +79,7 @@ public class CreativeWorldEditHook {
                             Location loc = new Location(world, x, y, z);
                             Block b = world.getBlockAt(loc);
                             CreativeBlockManager manager = CreativeControl.getManager();
-                            manager.addBlock(p.getName(), b, nodes.block_nodrop);
+                            manager.protect(p, b);
                         }
                     }
                 }

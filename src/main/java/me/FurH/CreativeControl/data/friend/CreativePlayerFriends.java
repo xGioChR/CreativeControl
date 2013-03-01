@@ -20,10 +20,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashSet;
+import me.FurH.Core.cache.CoreLRUCache;
+import me.FurH.Core.exceptions.CoreDbException;
 import me.FurH.CreativeControl.CreativeControl;
-import me.FurH.CreativeControl.cache.CreativeLRUCache;
 import me.FurH.CreativeControl.database.CreativeSQLDatabase;
-import me.FurH.CreativeControl.util.CreativeCommunicator;
 import me.FurH.CreativeControl.util.CreativeUtil;
 import org.bukkit.entity.Player;
 
@@ -32,7 +32,7 @@ import org.bukkit.entity.Player;
  * @author FurmigaHumana
  */
 public class CreativePlayerFriends {
-    private CreativeLRUCache<String, HashSet<String>> hascache = new CreativeLRUCache<String, HashSet<String>>(500);
+    private CoreLRUCache<String, HashSet<String>> hascache = new CoreLRUCache<String, HashSet<String>>(500);
     
     public void uncache(Player p) {
         hascache.remove(p.getName().toLowerCase());
@@ -48,13 +48,17 @@ public class CreativePlayerFriends {
         hascache.put(player, friends);
 
         String query = "UPDATE `"+db.prefix+"friends` SET friends = '"+friends.toString()+"' WHERE player = '"+player.toLowerCase()+"'";
-        db.execute(query);
+        
+        try {
+            db.execute(query);
+        } catch (CoreDbException ex) {
+            CreativeControl.plugin.getCommunicator().error(Thread.currentThread(), ex, ex.getMessage());
+        }
     }
     
     public HashSet<String> getFriends(String player) {
         HashSet<String> friends = hascache.get(player);
         
-        CreativeCommunicator com        = CreativeControl.getCommunicator();
         CreativeSQLDatabase db = CreativeControl.getDb();
 
         if (friends == null) {
@@ -73,20 +77,15 @@ public class CreativePlayerFriends {
 
                 hascache.put(player, friends);
             } catch (SQLException ex) {
-                com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
-                        "[TAG] Failed to get the data from the database, {0}", ex.getMessage());
-                if (!db.isOk()) { db.fix(); }
+                CreativeControl.plugin.getCommunicator().error(Thread.currentThread(), ex, "[TAG] Failed to get the data from the database, " + ex.getMessage());
+            } catch (CoreDbException ex) {
+                CreativeControl.plugin.getCommunicator().error(Thread.currentThread(), ex, ex.getMessage());
             } finally {
                 if (rs != null) {
                     try {
                         rs.close();
                     } catch (SQLException ex) { }
-                }/*
-                if (ps != null) {
-                    try {
-                        ps.close();
-                    } catch (SQLException ex) { }
-                }*/
+                }
             }
         }
         

@@ -16,21 +16,19 @@
 
 package me.FurH.CreativeControl.configuration;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import me.FurH.CreativeControl.CreativeControl;
-import me.FurH.CreativeControl.util.CreativeCommunicator;
-import me.FurH.CreativeControl.util.CreativeCommunicator.Type;
-import me.FurH.CreativeControl.util.CreativeUtil;
-import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.configuration.file.YamlConfiguration;
+import me.FurH.Core.CorePlugin;
+import me.FurH.Core.configuration.Configuration;
 
 /**
  *
  * @author FurmigaHumana
  */
-public class CreativeMessages {
+public class CreativeMessages extends Configuration {
+
+    public CreativeMessages(CorePlugin plugin) {
+        super(plugin);
+    }
+    
     public String prefix_tag                     = "prefix.tag";
     public String prefix_small                   = "prefix.small";
     
@@ -482,52 +480,5 @@ public class CreativeMessages {
         migrator_converted             = getMessage("Commands.Migrator.Converted");
         migrator_duplicated            = getMessage("Commands.Migrator.Duplicated");
         migrator_done                  = getMessage("Commands.Migrator.Done");
-    }
-    
-    private String getMessage(String node) {
-        CreativeCommunicator com    = CreativeControl.getCommunicator();
-        CreativeControl      plugin = CreativeControl.getPlugin();
-        
-        File dir = new File(plugin.getDataFolder(), "messages.yml");
-        if (!dir.exists()) { CreativeUtil.ccFile(plugin.getResource("messages.yml"), dir); }
-
-        YamlConfiguration config = new YamlConfiguration();
-        try {
-            config.load(dir);
-            if (!config.contains(node)) {
-                InputStream resource = plugin.getResource("messages.yml");
-                YamlConfiguration rsconfig = new YamlConfiguration();
-                rsconfig.load(resource);
-
-                if (rsconfig.contains(node)) {
-                    config.set(node, rsconfig.getString(node));
-                    com.log(CreativeControl.tag + "Messages file updated, check at: {0}", node);
-                } else {
-                    config.set(node, node);
-                    com.log(CreativeControl.tag + "Can't get the message node {0}, contact the developer.", node);
-                }
-
-                try {
-                    config.save(dir);
-                } catch (IOException ex) {
-                    com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
-                            CreativeControl.tag + "Can't update the messages file: {0}, node: {1}", ex.getMessage(), node);
-                }
-            }
-        } catch (IOException ex) {
-            com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
-                    CreativeControl.tag + "Can't load the messages file: {0}, node: {1}", ex.getMessage(), node);
-        } catch (InvalidConfigurationException ex) {
-            com.error(Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getLineNumber(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex, 
-                    CreativeControl.tag + "Can't load the messages file: {0}, node: {1}", ex.getMessage(), node);
-            com.log(CreativeControl.tag + " You have a broken message node at: {0}", node);
-        }
-        
-        String value = config.getString(node);
-        if (value == null) {
-            com.log(CreativeControl.tag + " You have a missing message node at: {0}", Type.SEVERE, node);
-            value = node;
-        }
-        return value;
     }
 }

@@ -16,546 +16,228 @@
 
 package me.FurH.CreativeControl.database;
 
-import java.io.File;
-import java.io.IOException;
-import java.sql.*;
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import me.FurH.Core.CorePlugin;
+import me.FurH.Core.cache.CoreLRUCache;
+import me.FurH.Core.database.CoreSQLDatabase;
+import me.FurH.Core.exceptions.CoreDbException;
+import me.FurH.Core.exceptions.CoreMsgException;
+import me.FurH.Core.list.CollectionUtils;
+import me.FurH.Core.util.Communicator;
 import me.FurH.CreativeControl.CreativeControl;
-import me.FurH.CreativeControl.cache.CreativeLRUCache;
-import me.FurH.CreativeControl.configuration.CreativeMainConfig;
-import me.FurH.CreativeControl.monitor.CreativePerformance;
-import me.FurH.CreativeControl.monitor.CreativePerformance.Event;
-import me.FurH.CreativeControl.util.CreativeCommunicator;
+import me.FurH.CreativeControl.manager.CreativeBlockData;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
 
 /**
  *
  * @author FurmigaHumana
  */
-public final class CreativeSQLDatabase {
-    private Map<String, PreparedStatement> cache = Collections.synchronizedMap(new CreativeLRUCache<String, PreparedStatement>(15000));
-    private Queue<String> queue = new LinkedBlockingQueue<String>();
-    private AtomicBoolean lock = new AtomicBoolean(false);
-    public enum type { MySQL, SQLite, H2; }
-    private Connection connection;
-    public String prefix = "cc_";
-    public type type;
+public final class CreativeSQLDatabase extends CoreSQLDatabase {
+    private static CoreLRUCache<String, Integer> owners = new CoreLRUCache<String, Integer>(Bukkit.getMaxPlayers() * 5);
 
-    public double version = 1;
-    private int writes = 0;
-    private int reads = 0;
-    private int fix = 0;
-    
-    public int getQueue() {
-        return queue.size();
+    public CreativeSQLDatabase(CorePlugin plugin, String prefix, String engine, String database_host, String database_port, String database_table, String database_user, String database_pass) {
+        super(plugin, prefix, engine, database_host, database_port, database_table, database_user, database_pass);
     }
     
-    public int getReads() {
-        return reads;
+    public void protect(Player player, Block block) {
+        queue("INSERT INTO `"+prefix+"blocks_"+block.getWorld().getName()+"` (owner, x, y, z, type, allowed, time) VALUES ('"+getPlayerId(player.getName()) + "', '" + block.getX() + "', '" + block.getY() + "', '" + block.getZ() + "', '" + block.getTypeId() + "', '" + null + "', '" + System.currentTimeMillis() + "');");
     }
     
-    public int getWrites() {
-        return writes;
+    public void unprotect(Block block) {
+        queue("DELETE FROM `"+prefix+"blocks_"+block.getWorld().getName()+"` WHERE x = '" + block.getX() + "' AND z = '" + block.getZ() + "' AND y = '" + block.getY() + "';");
     }
-
-    /*
-     * Open the connection to the database
-     */
-    public void connect() {
-        CreativeCommunicator com    = CreativeControl.getCommunicator();
-
-        com.log("[TAG] Connecting to the {0} Database...", type);
-        CreativeMainConfig config = CreativeControl.getMainConfig();
-        if (config.database_mysql) {
-            type = type.MySQL;
-        } else {
-            type = type.SQLite;
-        }
-
-        if (type == type.SQLite) {
-            connection = getSQLiteConnection();
-        } else {
-            connection = getMySQLConnection();
-        }
-
-        if (connection != null) {
-            try {
-                connection.setAutoCommit(false);
-                connection.commit();
-            } catch (SQLException ex) {
-                com.error(Thread.currentThread(), ex, "[TAG] Failed to commit the {0} database, {1}", type, ex.getMessage());
-            }
-            
-            queue();
-            garbage();
-            
-            com.log("[TAG] {0} Connected Successfuly!", type);
-
-            load();
-        }
-    }
-
-    public Connection getSQLiteConnection() {
-        CreativeCommunicator com    = CreativeControl.getCommunicator();
+    
+    public CreativeBlockData isprotected(Block block, boolean nodrop) {
+        
+        Communicator com = CreativeControl.plugin.getCommunicator();
+        CreativeBlockData data = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
         
         try {
-            Class.forName("org.sqlite.JDBC");
-        } catch (ClassNotFoundException ex) {
-            com.error(Thread.currentThread(), ex, "[TAG] You don't have the required {0} driver, {1}", type, ex.getMessage());
-        }
-        
-        File SQLite = new File(CreativeControl.getPlugin().getDataFolder(), "database.db");
-        try {
-            SQLite.createNewFile();
-        } catch (IOException ex) {
-            com.error(Thread.currentThread(), ex, "[TAG] Failed to create the SQLite file, {0}", ex.getMessage());
-        }
-        
-        try {
-            return connection = DriverManager.getConnection("jdbc:sqlite:" + SQLite.getAbsolutePath());
-        } catch (SQLException ex) {
-            com.error(Thread.currentThread(), ex, "[TAG] Failed open the {0} connection, {1}", type, ex.getMessage());
-        }
-
-        return null;
-    }
-    
-    public Connection getMySQLConnection() {
-        CreativeCommunicator com    = CreativeControl.getCommunicator();
-
-        try {
-            Class.forName("com.mysql.jdbc.Driver");
-        } catch (ClassNotFoundException ex) {
-            com.error(Thread.currentThread(), ex, "[TAG] You don't have the required {0} driver, {1}", type, ex.getMessage());
-        }
-
-        CreativeMainConfig   config = CreativeControl.getMainConfig();
-        String url = "jdbc:mysql://" + config.database_host + ":" + config.database_port + "/" + config.database_table +"?autoReconnect=true";
-
-        try {
-            return connection = DriverManager.getConnection(url, config.database_user, config.database_pass);
-        } catch (SQLException ex) {
-            com.error(Thread.currentThread(), ex, "[TAG] Failed open the {0} connection, {1}", type, ex.getMessage());
-        }
-
-        return null;
-    }
-    
-    public void disconnect(boolean fix) {
-        CreativeCommunicator com    = CreativeControl.getCommunicator();
-        com.log("[TAG] Closing the {0} connection...", type);
-
-        if (!fix) {
-            lock.set(true);
-
-            if (!queue.isEmpty()) {
-                com.log("[TAG] Queue isn't empty! Running the remaining queue...");
-
-                double process = 0;
-                double done = 0;
-                double total = queue.size();
-
-                double last = 0;
-
-                try {
-                    connection.commit();
-                } catch (SQLException ex) {
-                    com.error(Thread.currentThread(), ex, "[TAG] Failed to commit the database, {0}", ex.getMessage());
-                }
-
-                while (!queue.isEmpty()) {
-                    done++;
-
-                    String query = queue.poll();
-                    if (query == null) { continue; }
-
-                    process = ((done / total) * 100.0D);
-
-                    if (process - last > 5) {
-                        System.gc();
-                        com.log("[TAG] Processed {0} of {1} queries, {2}%", done, total, String.format("%d", (int) process));
-                        last = process;
-                    }
-
-                    execute(query);
-                }
-
-                try {
-                    connection.commit();
-                } catch (SQLException ex) {
-                    com.error(Thread.currentThread(), ex, "[TAG] Failed to commit the database, {0}", ex.getMessage());
-                }
-
-                System.gc();
-            }
-        }
-
-        try {
-            if (connection != null) {
-                connection.commit();
-                
-                connection.close();
-
-                if (connection.isClosed()) {
-                    com.log("[TAG] {0} connection closed successfuly!", type);
-                }
-            }
-        } catch (SQLException ex) {
-            com.error(Thread.currentThread(), ex, "[TAG] Can't close the {0} connection, {1}", type, ex.getMessage());
-        }
-    }
-    
-    public void fix() {
-        CreativeCommunicator com    = CreativeControl.getCommunicator();
-        if (fix >= 3) {
-            com.log("[TAG] Failed to fix the {0} connection after 3 attempts, shutting down...");
-            Bukkit.getPluginManager().disablePlugin(CreativeControl.getPlugin());
-            return;
-        }
-        
-        fix++;
-        com.log("[TAG] The {0} database is down, reconnecting...", type);
-
-        disconnect(true);
-        connect();
-
-        if (isOk()) {
-            com.log("[TAG] {0} database is now up and running!", type);
-            fix = 0;
-        } else {
-            com.log("[TAG] Failed to fix the {0} connection!, attempt {1} of 3.", type, fix);
-        }
-    }
-    
-    public boolean isOk() {
-        if (connection == null) {
-            return false;
-        }
-        
-        try {
-            if (connection.isClosed()) {
-                return false;
-            } else 
-            if (connection.isReadOnly()) {
-                return false;
-            } else if (type == type.MySQL) {
-                if (connection.isValid(30)) {
-                    return false;
-                }
-            }
-        } catch (SQLException ex) {
-            CreativeCommunicator com    = CreativeControl.getCommunicator();
-            com.error(Thread.currentThread(), ex, "[TAG] Failed to check if the {0} is up, {1}", type, ex.getMessage());
-            return false;
-        }
-        
-        return true;
-    }
-    
-    public void load() {
-        Statement st = null;
-        try {
-            st = connection.createStatement();
-            
-            /* player id table */
-            st.executeUpdate("CREATE TABLE IF NOT EXISTS `"+prefix+"players` (id INT AUTO_INCREMENT, PRIMARY KEY (id), player VARCHAR(255));");
-            try {
-                st.executeUpdate("CREATE INDEX `"+prefix+"names` ON `"+prefix+"players` (player);");
-            } catch (SQLException ex) { }
-                        
-            /* players inventory */
-            st.executeUpdate("CREATE TABLE IF NOT EXISTS `"+prefix+"players_adventurer` (id INT AUTO_INCREMENT, PRIMARY KEY (id), player INT, health INT, foodlevel INT, exhaustion INT, saturation INT, experience INT, armor TEXT, inventory TEXT);");
-            st.executeUpdate("CREATE TABLE IF NOT EXISTS `"+prefix+"players_survival` (id INT AUTO_INCREMENT, PRIMARY KEY (id), player INT, health INT, foodlevel INT, exhaustion INT, saturation INT, experience INT, armor TEXT, inventory TEXT);");
-            st.executeUpdate("CREATE TABLE IF NOT EXISTS `"+prefix+"players_creative` (id INT AUTO_INCREMENT, PRIMARY KEY (id), player INT, armor TEXT, inventory TEXT);");
-
-            /* block data */
-            for (World world : Bukkit.getWorlds()) {
-                load(world.getName());
+            if (!nodrop) {
+                ps = getQuery("SELECT owner, x, y, z, type, allowd FROM `"+prefix+"blocks_"+block.getWorld().getName()+"` WHERE x = '" + block.getX() + "' AND z = '" + block.getZ() + "' AND y = '" + block.getY() + "';");
+            } else {
+                ps = getQuery("SELECT x, y, z, type FROM `"+prefix+"blocks_"+block.getWorld().getName()+"` WHERE x = '" + block.getX() + "' AND z = '" + block.getZ() + "' AND y = '" + block.getY() + "';");
             }
 
-            /* region data */
-            st.executeUpdate("CREATE TABLE IF NOT EXISTS `"+prefix+"regions` (id INT AUTO_INCREMENT, PRIMARY KEY (id), name VARCHAR(255), start VARCHAR(255), end VARCHAR(255), type VARCHAR(255));");
-            
-            /* friends data */
-            st.executeUpdate("CREATE TABLE IF NOT EXISTS `"+prefix+"friends` (id INT AUTO_INCREMENT, PRIMARY KEY (id), player INT, friends TEXT);");
-            
-            /* internal data */
-            st.executeUpdate("CREATE TABLE IF NOT EXISTS `"+prefix+"internal` (version INT);");
+            rs = ps.getResultSet();
+        
+            if (rs.next()) {
+                if (!nodrop) {
+                    data = new CreativeBlockData(getPlayerName(rs.getInt("owner")), rs.getInt("type"), CollectionUtils.toStringHashSet(rs.getString("allowed"), ", "));
+                } else {
+                    data = new CreativeBlockData(rs.getInt("type"));
+                }
+            }
+
+        } catch (CoreDbException ex) {
+            com.error(Thread.currentThread(), ex, ex.getMessage());
         } catch (SQLException ex) {
-            CreativeCommunicator com    = CreativeControl.getCommunicator();
-            com.error(Thread.currentThread(), ex, "[TAG] Can't create tables in the {0} database, {1}", type, ex.getMessage());
-            if (!isOk()) { fix(); }
+            com.error(Thread.currentThread(), ex, "[TAG] Failed to get block from database, " + ex.getMessage());
+        } catch (CoreMsgException ex) {
+            com.error(Thread.currentThread(), ex, ex.getMessage());
         } finally {
-            try {
-                if (st != null) { 
-                    st.close(); 
-                }
-            } catch (SQLException ex) { }
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (Exception ex) { }
+            }
+        }
+        
+        return data;
+    }
+
+    public void load() {
+        try {
+            /* player id table */
+            createTable("CREATE TABLE IF NOT EXISTS `"+prefix+"players` ({auto}, player VARCHAR(255));");
+        } catch (CoreDbException ex) {
+            Logger.getLogger(CreativeSQLDatabase.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+
+        createIndex("CREATE INDEX `"+prefix+"names` ON `"+prefix+"players` (player);");
+        try {
+            /* players inventory */
+            createTable("CREATE TABLE IF NOT EXISTS `"+prefix+"players_adventurer` ({auto}, player INT, health INT, foodlevel INT, exhaustion INT, saturation INT, experience INT, armor TEXT, inventory TEXT);");
+        } catch (CoreDbException ex) {
+            Logger.getLogger(CreativeSQLDatabase.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        try {
+            createTable("CREATE TABLE IF NOT EXISTS `"+prefix+"players_survival` ({auto}, player INT, health INT, foodlevel INT, exhaustion INT, saturation INT, experience INT, armor TEXT, inventory TEXT);");
+        } catch (CoreDbException ex) {
+            Logger.getLogger(CreativeSQLDatabase.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        try {
+            createTable("CREATE TABLE IF NOT EXISTS `"+prefix+"players_creative` ({auto}, player INT, armor TEXT, inventory TEXT);");
+        } catch (CoreDbException ex) {
+            Logger.getLogger(CreativeSQLDatabase.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        /* block data */
+        for (World world : Bukkit.getWorlds()) {
+            load(world.getName());
+        }
+        
+        try {
+            /* region data */
+            createTable("CREATE TABLE IF NOT EXISTS `"+prefix+"regions` ({auto}, name VARCHAR(255), start VARCHAR(255), end VARCHAR(255), type VARCHAR(255));");
+        } catch (CoreDbException ex) {
+            plugin.getCommunicator().error(Thread.currentThread(), ex, ex.getMessage());
+        }
+        try {
+            /* friends data */
+            createTable("CREATE TABLE IF NOT EXISTS `"+prefix+"friends` ({auto}, player INT, friends TEXT);");
+        } catch (CoreDbException ex) {
+            plugin.getCommunicator().error(Thread.currentThread(), ex, ex.getMessage());
+        }
+        try {
+            /* internal data */
+            createTable("CREATE TABLE IF NOT EXISTS `"+prefix+"internal` (version INT);");
+        } catch (CoreDbException ex) {
+            plugin.getCommunicator().error(Thread.currentThread(), ex, ex.getMessage());
         }
     }
 
     public void load(String world) {
-        Statement st = null;
+
         try {
-            st = connection.createStatement();
-            /* load the world blocks table */
-            //st.executeUpdate("CREATE TABLE IF NOT EXISTS `"+prefix+"blocks_"+world+"` (id INT AUTO_INCREMENT, PRIMARY KEY (id), owner INT, cx INT, cz INT, x INT, y INT, z INT, type INT, allowed VARCHAR(255), time VARCHAR(255));");
-            st.executeUpdate("CREATE TABLE IF NOT EXISTS `"+prefix+"blocks_"+world+"` (owner INT, x INT, y INT, z INT, type INT, allowed VARCHAR(255), time BIGINT);");
-            /* create the index */
-            try {
-                st.executeUpdate("CREATE INDEX `"+prefix+"block_"+world+"` ON `"+prefix+"blocks_"+world+"` (x, z, y);");
-                st.executeUpdate("CREATE INDEX `"+prefix+"type_"+world+"` ON `"+prefix+"blocks_"+world+"` (type);");
-                //st.executeUpdate("CREATE INDEX `"+prefix+"chunk_"+world+"` ON `"+prefix+"blocks_"+world+"` (cx, cz)");
-                st.executeUpdate("CREATE INDEX `"+prefix+"owner_"+world+"` ON `"+prefix+"blocks_"+world+"` (owner);");
-            } catch (SQLException ex) { }
-        } catch (SQLException ex) {
-            CreativeCommunicator com    = CreativeControl.getCommunicator();
-            com.error(Thread.currentThread(), ex, "[TAG] Can't create world table in the {0} database, {1}", type, ex.getMessage());
-            if (!isOk()) { fix(); }
-        } finally {
-            try {
-                if (st != null) { 
-                    st.close(); 
-                }
-            } catch (SQLException ex) { }
+            createTable("CREATE TABLE IF NOT EXISTS `"+prefix+"blocks_"+world+"` (owner INT, x INT, y INT, z INT, type INT, allowed VARCHAR(255), time BIGINT);");
+        } catch (CoreDbException ex) {
+            plugin.getCommunicator().error(Thread.currentThread(), ex, ex.getMessage());
         }
+
+        /* create the index */
+        createIndex("CREATE INDEX `"+prefix+"block_"+world+"` ON `"+prefix+"blocks_"+world+"` (x, z, y);");
+        createIndex("CREATE INDEX `"+prefix+"type_"+world+"` ON `"+prefix+"blocks_"+world+"` (type);");
+        createIndex("CREATE INDEX `"+prefix+"owner_"+world+"` ON `"+prefix+"blocks_"+world+"` (owner);");
     }
     
-    public double getVersion() {
-        double ret = -1;
+    public String getPlayerName(int id) {
+        String ret = null;
         
+        if (owners.containsValue(id)) {
+            return owners.getKey(id);
+        }
+        
+        Communicator com = CreativeControl.plugin.getCommunicator();
+
         PreparedStatement ps = null;
         ResultSet rs = null;
 
         try {
-            ps = prepare("SELECT version FROM `"+prefix+"internal`;");            
-            rs = ps.executeQuery();
-
+            ps = getQuery("SELECT player FROM `"+prefix+"players` WHERE id = '" + id + "' LIMIT 1;");
+            rs = ps.getResultSet();
+            
             if (rs.next()) {
-                reads++;
-                ret = rs.getDouble("version");
+                ret = rs.getString("player");
             }
-
-        } catch (Exception ex) {
-            CreativeCommunicator com    = CreativeControl.getCommunicator();
-            com.error(Thread.currentThread(), ex, "[TAG] Can't read the {0} database, {1}", type, ex.getMessage());
-            if (!isOk()) { fix(); }
+        } catch (SQLException ex) {
+            com.error(Thread.currentThread(), ex, "[TAG] Failed to get player data from the database, {0}", ex.getMessage());
+        } catch (CoreDbException ex) {
+            com.error(Thread.currentThread(), ex, ex.getMessage());
         } finally {
-            if (ps != null) {
-                try {
-                    ps.close();
-                } catch (SQLException ex) { }
-            }
             if (rs != null) {
                 try {
                     rs.close();
                 } catch (SQLException ex) { }
             }
         }
+
+        owners.put(ret, id);
         return ret;
     }
     
-    /*
-     * Execute a query
-     */
-    public void queue(String query) {
-        queue.add(query);
-    }
-
-    public void execute(String query, Object...objects) {
-        double start = System.currentTimeMillis();
+    public int getPlayerId(String player) {
+        int ret = -1;
         
-        if (objects != null && objects.length > 0) {
-            query = MessageFormat.format(query, objects);
+        if (owners.containsKey(player)) {
+            return owners.get(player);
         }
 
-        Statement st = null;
-        PreparedStatement ps = null;
-
-        writes++;
-        try {
-            ps = connection.prepareStatement(query);
-            ps.execute();
-        } catch (SQLException ex) {
-            CreativeCommunicator com    = CreativeControl.getCommunicator();
-            com.error(Thread.currentThread(), ex, "[TAG] Can't write in the {0} database, {1}, Query: {2}", type, ex.getMessage(), query);
-        } finally {
-            if (st != null) {
-                try {
-                    st.close();
-                } catch (SQLException ex) { }
-            }
-            if (ps != null) {
-                try {
-                    ps.close();
-                } catch (SQLException ex) { }
-            }
-        }
-
-        CreativePerformance.update(Event.SQLWrite, (System.currentTimeMillis() - start));
-    }
-    
-    /*
-     * return a sql object
-     */
-    public PreparedStatement getQuery(String query, Object...objects) {
-        double start = System.currentTimeMillis();
-        
-        if (objects != null && objects.length > 0) {
-            query = MessageFormat.format(query, objects);
-        }
-
-        try {
-            PreparedStatement ps = prepare(query);
-
-            try {
-                ps.execute();
-            } catch (SQLException ex) {
-                ps = connection.prepareStatement(query);
-                ps.execute();
-            }
-            
-            reads++;
-            
-            return ps;
-        } catch (Exception ex) {
-            CreativeCommunicator com    = CreativeControl.getCommunicator();
-            com.error(Thread.currentThread(), ex, "[TAG] Can't read the {0} database, {1}, Query: {2}", type, ex.getMessage(), query);
-            if (!isOk()) { fix(); }
-        }
-        
-        CreativePerformance.update(Event.SQLRead, (System.currentTimeMillis() - start));
-        return null;
-    }
-    
-    public boolean hasTable(String table) {
+        Communicator com = CreativeControl.plugin.getCommunicator();
         PreparedStatement ps = null;
         ResultSet rs = null;
-
+        
         try {
-            ps = prepare("SELECT * FROM `"+table+"` LIMIT 1;");
-            rs = ps.executeQuery();
-
-            return rs.next();
-        } catch (SQLException ex) {
-            return false;
-        } finally {
-            if (ps != null) {
-                try {
-                    ps.close();
-                } catch (SQLException ex) { }
+            ps = getQuery("SELECT id FROM `"+prefix+"players` WHERE player = '" + player + "' LIMIT 1;");
+            rs = ps.getResultSet();
+            
+            if (rs.next()) {
+                ret = rs.getInt("id");
             }
+        } catch (SQLException ex) {
+            com.error(Thread.currentThread(), ex, "[TAG] Failed to get player data from the database, {0}", ex.getMessage());
+        } catch (CoreDbException ex) {
+            com.error(Thread.currentThread(), ex, ex.getMessage());
+        } finally {
             if (rs != null) {
                 try {
                     rs.close();
                 } catch (SQLException ex) { }
             }
         }
-    }
+        
+        if (ret == -1) {
 
-    private void queue() {
-        final CreativeMainConfig   config = CreativeControl.getMainConfig();
-
-        final long each = config.queue_each;
-        final int limit = config.queue_count;
-        final int sleep = config.queue_sleep;
-
-        Thread t = new Thread() {
-            @Override
-            public void run() {
-                int count = 0;
-                while (!lock.get()) {
-                    try {
-                        if (queue.isEmpty()) {
-                            commit();
-                            sleep(sleep);
-                            continue;
-                        }
-
-                        String query = queue.poll();
-
-                        if (query == null) {
-                            commit();
-                            sleep(sleep);
-                            continue;
-                        }
-
-                        if (count >= limit) {
-                            commit();
-                            count = 0;
-                            sleep(sleep);
-                        }
-
-                        count++;
-                        execute(query);
-
-                        sleep(each);
-                    } catch (Exception ex) { }
-                }
-            }
-        };
-        t.setPriority(Thread.MIN_PRIORITY);
-        t.setName("CreativeControl Database Task");
-        t.start();
-    }
-    
-    public void commit() {
-        try {
-            connection.commit();
-        } catch (SQLException ex) {
-            CreativeCommunicator com    = CreativeControl.getCommunicator();
-            com.error(Thread.currentThread(), ex, "[TAG] Can't create world table in the {0} database, {1}", type, ex.getMessage());
-            if (!isOk()) { fix(); }
-        }
-    }
-    
-    /*
-     * Prepare and add the statement to the cache
-     */
-    public PreparedStatement prepare(String query) {        
-        if (cache.containsKey(query)) { 
-            return cache.get(query); 
-        } else {
             try {
-                PreparedStatement ps = connection.prepareStatement(query);
-                cache.put(query, ps);
-                return ps;
-            } catch (SQLException ex) {
-                CreativeCommunicator com    = CreativeControl.getCommunicator();
-                com.error(Thread.currentThread(), ex, "[TAG] Can't read the {0} database, {1}, prepare: {2}", type, ex.getMessage(), query);
-                if (!isOk()) { fix(); }
+                execute("INSERT INTO `"+prefix+"players` (player) VALUES ('"+player+"');");
+            } catch (CoreDbException ex) {
+                com.error(Thread.currentThread(), ex, ex.getMessage());
             }
+
+            return getPlayerId(player);
         }
-        return null;
-    }
-    
-    public void garbage() {
-        Bukkit.getScheduler().runTaskTimerAsynchronously(CreativeControl.getPlugin(), new Runnable() {
-            final List<String> keys = new ArrayList<String>(cache.keySet());
-            @Override
-            public void run() {
-
-                for (String query : keys) {
-                    PreparedStatement ps = cache.get(query);
-
-                    try {
-                        ps.close();
-                    } catch (SQLException ex) { }
-                    
-                    ps = null;
-                }
-
-                cache.clear();
-                keys.clear();
-            }
-        }, 900 * 20, 900 * 20);
+        
+        owners.put(player, ret);
+        return ret;
     }
 }
