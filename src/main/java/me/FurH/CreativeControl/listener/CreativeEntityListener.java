@@ -17,7 +17,9 @@
 package me.FurH.CreativeControl.listener;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.UUID;
 import me.FurH.Core.util.Communicator;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.configuration.CreativeMessages;
@@ -41,14 +43,18 @@ import org.bukkit.event.vehicle.VehicleDestroyEvent;
  * @author FurmigaHumana
  */
 public class CreativeEntityListener implements Listener {
-    
+    public static List<Player> waiting = new ArrayList<Player>();
+
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onVehicleCreate(VehicleCreateEvent e) {
         CreativeControl plugin = CreativeControl.getPlugin();
         
         Vehicle vehicle = e.getVehicle();
-        Player p = plugin.player;
-        
+        if (waiting.isEmpty()) {
+            return;
+        }
+
+        Player p = waiting.remove(0);
         if (p == null) { return; }
 
         Communicator         com        = plugin.getCommunicator();
@@ -56,23 +62,24 @@ public class CreativeEntityListener implements Listener {
         CreativeWorldNodes   config     = CreativeControl.getWorldNodes(vehicle.getWorld());
 
         if (config.world_exclude) { return; }
-        
+
         if (config.prevent_vehicle) {
             if (!plugin.hasPerm(p, "Preventions.Vehicle")) {
                 int limit = config.prevent_limitvechile;
-                int total = 0;
                 
-                if (plugin.limits.get(p.getName()) != null) {
-                    total = plugin.limits.get(p.getName());
+                HashSet<UUID> entities = new HashSet<UUID>();
+                if (plugin.limits.containsKey(p.getName())) {
+                    entities = plugin.limits.get(p.getName());
                 }
-                
+
+                int total = entities.size();
+
                 if (limit > 0 && total >= limit) {
                     com.msg(p, messages.entity_vehicle);
                     vehicle.remove();
                 } else {
-                    plugin.entity.add(vehicle.getUniqueId());
-                    plugin.limits.remove(p.getName());
-                    plugin.limits.put(p.getName(), total++);
+                    entities.add(vehicle.getUniqueId());
+                    plugin.limits.put(p.getName(), entities);
                 }
             }
         }
@@ -87,17 +94,17 @@ public class CreativeEntityListener implements Listener {
 
         CreativeWorldNodes config = CreativeControl.getWorldNodes(vehicle.getWorld());
         CreativeControl plugin = CreativeControl.getPlugin();
-        
-        Player p = (Player)entity;
+
         if (config.world_exclude) { return; }
-        
+
         if (config.prevent_vehicle) {
-            if (!plugin.hasPerm(p, "Preventions.Vehicle")) {
-                if (plugin.entity.contains(vehicle.getUniqueId())) {
-                    plugin.entity.remove(vehicle.getUniqueId());
-                    vehicle.remove();
-                }
+            String master = plugin.removeVehicle(vehicle.getUniqueId());
+            if (master == null) {
+                return;
             }
+
+            e.setCancelled(true);
+            vehicle.remove();
         }
     }
     

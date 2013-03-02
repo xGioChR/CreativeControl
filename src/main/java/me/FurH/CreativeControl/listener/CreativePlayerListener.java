@@ -675,9 +675,11 @@ public class CreativePlayerListener implements Listener {
             }
         }
         
-        if (p.getItemInHand().getType() == Material.MINECART || p.getItemInHand().getType() == Material.BOAT) {
+        if ((e.getAction() == Action.LEFT_CLICK_BLOCK || e.getAction() == Action.RIGHT_CLICK_BLOCK) && (e.getMaterial() == Material.MINECART || e.getMaterial() == Material.BOAT)) {
             if (p.getGameMode().equals(GameMode.CREATIVE)) {
-                plugin.player = p;
+                if (!CreativeEntityListener.waiting.contains(p)) {
+                    CreativeEntityListener.waiting.add(p);
+                }
             }
         }
         

@@ -63,6 +63,7 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -100,9 +101,8 @@ public class CreativeControl extends CorePlugin {
     public WeakHashMap<String, String> mods = new WeakHashMap<String, String>();
     public HashSet<String> modsfastup = new HashSet<String>();
 
-    public HashSet<UUID> entity = new HashSet<UUID>();
-    public Map<String, Integer> limits = new HashMap<String, Integer>();
-    public Player player = null;
+    //public HashSet<UUID> entity = new HashSet<UUID>();
+    public Map<String, HashSet<UUID>> limits = new HashMap<String, HashSet<UUID>>();
 
     public String currentversion;
     public String newversion;
@@ -177,6 +177,10 @@ public class CreativeControl extends CorePlugin {
         getCommand("creativecontrol").setExecutor(cc);
 
         setupLogBlock();
+        
+        if (setupPermissions()) {
+            log("[TAG] Vault hooked as permissions plugin");
+        }
 
         log("[TAG] Cached {0} protections", manager.preCache());
         log("[TAG] Loaded {0} regions", regioner.loadRegions());
@@ -220,7 +224,7 @@ public class CreativeControl extends CorePlugin {
         modsfastup.clear();
         data.clear();
         friends.clear();
-        entity.clear();
+        //entity.clear();
         limits.clear();
         
         getLogger().info("[CreativeControl] CreativeControl " + currentversion + " Disabled");
@@ -239,7 +243,7 @@ public class CreativeControl extends CorePlugin {
         modsfastup.clear();
         data.clear();
         friends.clear();
-        entity.clear();
+        //entity.clear();
         limits.clear();
         
         messages.load();
@@ -336,7 +340,34 @@ public class CreativeControl extends CorePlugin {
         return sender.hasPermission("CreativeControl." + node);
     }
     
+    public String removeVehicle(UUID uuid) {
+        String master = null;
+        
+        for (String key : limits.keySet()) {
+            if (limits.get(key).contains(uuid)) {
+                master = key;
+                break;
+            }
+        }
+
+        if (master == null) {
+            return null;
+        }
+        
+        HashSet<UUID> entity = limits.get(master);
+        entity.remove(uuid);
+
+        limits.put(master, entity);
+        return master;
+    }
+    
     private void clear() {
+        HashSet<UUID> entity = new HashSet<UUID>();
+
+        for (String key : limits.keySet()) {
+            entity.addAll(limits.get(key));
+        }
+
         for (World w : getServer().getWorlds()) {
             for (Entity x : w.getEntities()) {
                 if (entity.contains(x.getUniqueId())) {
@@ -344,6 +375,8 @@ public class CreativeControl extends CorePlugin {
                 }
             }
         }
+        
+        entity.clear();
     }
     
     public static Permission getPermissions() {
@@ -409,6 +442,14 @@ public class CreativeControl extends CorePlugin {
             log("[TAG] LogBlock hooked as logging plugin");
             lbconsumer = ((LogBlock)x).getConsumer();
         }
+    }
+    
+    private boolean setupPermissions() {
+        RegisteredServiceProvider<Permission> permissionProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.permission.Permission.class);
+        if (permissionProvider != null) {
+            permissions = permissionProvider.getProvider();
+        }
+        return (permissions != null);
     }
 
     public WorldEditPlugin getWorldEdit() {
@@ -541,8 +582,8 @@ public class CreativeControl extends CorePlugin {
             public void run() {
                 newversion = getVersion(currentversion);
                 
-                double nv = CreativeUtil.toDouble(newversion);
-                double od = CreativeUtil.toDouble(currentversion);
+                double nv = CreativeUtil.toDouble(newversion.replaceAll("[^0-9]", ""));
+                double od = CreativeUtil.toDouble(currentversion.replaceAll("[^0-9]", ""));
 
                 if (od < nv) {
                     log("New Version Found: {0} (You have: {1})", newversion, currentversion);
