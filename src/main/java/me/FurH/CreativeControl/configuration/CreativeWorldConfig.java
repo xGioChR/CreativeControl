@@ -27,7 +27,7 @@ import org.bukkit.World;
  * @author FurmigaHumana
  */
 public class CreativeWorldConfig extends Configuration {
-    private CoreSafeCache<String, CreativeWorldNodes> cache = new CoreSafeCache<String, CreativeWorldNodes>(100);
+    private CoreSafeCache<String, CreativeWorldNodes> config_cache = new CoreSafeCache<String, CreativeWorldNodes>(100);
     private CreativeWorldNodes nodes = new CreativeWorldNodes();
 
     public CreativeWorldConfig(CorePlugin plugin) {
@@ -35,7 +35,7 @@ public class CreativeWorldConfig extends Configuration {
     }
 
     public void clear() {
-        cache.clear();
+        config_cache.clear();
     }
 
     public CreativeWorldNodes get(World w) {
@@ -43,7 +43,7 @@ public class CreativeWorldConfig extends Configuration {
         if (main.config_single) {
             return nodes;
         } else {
-            CreativeWorldNodes n = cache.get(w.getName());
+            CreativeWorldNodes n = config_cache.get(w.getName());
             if (n == null) { load(w); }
             return n;
         }
@@ -109,7 +109,7 @@ public class CreativeWorldConfig extends Configuration {
         x.prevent_open          = getBoolean(w, "Preventions.InventoryOpen");
 
         if (!main.config_single) {
-            cache.put(w.getName(), x);
+            config_cache.put(w.getName(), x);
         } else {
             nodes = x;
         }

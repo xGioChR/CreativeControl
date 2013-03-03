@@ -131,8 +131,8 @@ public class CreativeControl extends CorePlugin {
         } else {
             worldconfig.load(getServer().getWorlds().get(0));
         }
-
-        //mainconfig.updateConfig();
+        
+        mainconfig.updateConfig();
 
         getCommunicator().setDebug(mainconfig.com_debugcons);
         getCommunicator().setQuiet(mainconfig.com_quiet);
