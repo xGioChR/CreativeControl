@@ -125,6 +125,7 @@ public class CreativeControl extends CorePlugin {
         mainconfig.load();
 
         worldconfig = new CreativeWorldConfig(this);
+        worldconfig.setSingleConfig(mainconfig.config_single);
 
         if (!mainconfig.config_single) {
             for (World w : getServer().getWorlds()) { worldconfig.load(w); }
