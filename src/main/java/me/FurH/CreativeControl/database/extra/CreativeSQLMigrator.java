@@ -65,7 +65,7 @@ public class CreativeSQLMigrator implements Runnable {
         Communicator com = plugin.getCommunicator();
         com.msg(p, "&7Initializing... ");
 
-        CreativeSQLDatabase db = CreativeControl.getDb();
+        CreativeSQLDatabase db = CreativeControl.getDb2();
 
         if (data.equalsIgnoreCase(">SQLite")) {
             com.msg(p, "&7Connecting to the &4SQLite&7 database...");
@@ -144,7 +144,7 @@ public class CreativeSQLMigrator implements Runnable {
     
     public void move_blocks(String table) {
         Communicator com = plugin.getCommunicator();
-        CreativeSQLDatabase db = CreativeControl.getDb();
+        CreativeSQLDatabase db = CreativeControl.getDb2();
         long blocks_start = System.currentTimeMillis();
         
         /* move regions table */
@@ -218,7 +218,7 @@ public class CreativeSQLMigrator implements Runnable {
     
     public void move_regions() {
         Communicator com = plugin.getCommunicator();
-        CreativeSQLDatabase db = CreativeControl.getDb();
+        CreativeSQLDatabase db = CreativeControl.getDb2();
         long regions_start = System.currentTimeMillis();
 
         String table = db.prefix + "regions";
@@ -291,7 +291,7 @@ public class CreativeSQLMigrator implements Runnable {
     
     public void move_players_survival() {
         Communicator com = plugin.getCommunicator();
-        CreativeSQLDatabase db = CreativeControl.getDb();
+        CreativeSQLDatabase db = CreativeControl.getDb2();
         long survival_start = System.currentTimeMillis();
 
         String table = db.prefix + "players_survival";
@@ -368,7 +368,7 @@ public class CreativeSQLMigrator implements Runnable {
     
     public void move_players_creative() {
         Communicator com = plugin.getCommunicator();
-        CreativeSQLDatabase db = CreativeControl.getDb();
+        CreativeSQLDatabase db = CreativeControl.getDb2();
         long creative_start = System.currentTimeMillis();
 
         String table = db.prefix + "players_creative";
@@ -440,7 +440,7 @@ public class CreativeSQLMigrator implements Runnable {
 
     public void move_players_adventurer() {
         Communicator com = plugin.getCommunicator();
-        CreativeSQLDatabase db = CreativeControl.getDb();
+        CreativeSQLDatabase db = CreativeControl.getDb2();
         long adventurer_start = System.currentTimeMillis();
         
         String table = db.prefix + "players_adventurer";
@@ -517,7 +517,7 @@ public class CreativeSQLMigrator implements Runnable {
     
     public void move_players() {
         Communicator com = plugin.getCommunicator();
-        CreativeSQLDatabase db = CreativeControl.getDb();
+        CreativeSQLDatabase db = CreativeControl.getDb2();
         long players_start = System.currentTimeMillis();
         
         String table = db.prefix + "players";
@@ -588,7 +588,7 @@ public class CreativeSQLMigrator implements Runnable {
     
     public void move_internal() {
         Communicator com = plugin.getCommunicator();
-        CreativeSQLDatabase db = CreativeControl.getDb();
+        CreativeSQLDatabase db = CreativeControl.getDb2();
         long internal_start = System.currentTimeMillis();
         
         String table = db.prefix + "internal";
@@ -658,7 +658,7 @@ public class CreativeSQLMigrator implements Runnable {
     
     public void move_friends() {
         Communicator com = plugin.getCommunicator();
-        CreativeSQLDatabase db = CreativeControl.getDb();
+        CreativeSQLDatabase db = CreativeControl.getDb2();
         long friends_start = System.currentTimeMillis();
         
         String table = db.prefix + "friends";

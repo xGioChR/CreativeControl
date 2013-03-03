@@ -59,7 +59,7 @@ public class CreativeSQLCleanup implements Runnable {
         lock = true;
         long start = System.currentTimeMillis();
 
-        CreativeSQLDatabase db = CreativeControl.getDb();
+        CreativeSQLDatabase db = CreativeControl.getDb2();
         
         Communicator com = plugin.getCommunicator();
         com.msg(p, "&7Initializing... ");
@@ -83,7 +83,7 @@ public class CreativeSQLCleanup implements Runnable {
     
     public void cleanup_blocks(String world) {
         Communicator com = plugin.getCommunicator();
-        CreativeSQLDatabase db = CreativeControl.getDb();
+        CreativeSQLDatabase db = CreativeControl.getDb2();
         long blocks_start = System.currentTimeMillis();
 
         String table = db.prefix+"blocks_" + world;

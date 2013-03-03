@@ -66,7 +66,7 @@ public class CreativeBlockManager {
         if (isprotectable(b.getWorld(), b.getTypeId())) {
             cache.remove(LocationUtils.locationToString(b.getLocation()));
 
-            CreativeControl.getDb().unprotect(b);
+            CreativeControl.getDb2().unprotect(b);
         }
     }
 
@@ -76,13 +76,13 @@ public class CreativeBlockManager {
             CreativeBlockData data = new CreativeBlockData(p.getName(), b.getTypeId(), null);
             cache.put(LocationUtils.locationToString(b.getLocation()), data);
 
-            CreativeControl.getDb().protect(p, b);
+            CreativeControl.getDb2().protect(p, b);
         }
     }
     
     public int preCache() {
         
-        CreativeSQLDatabase db = CreativeControl.getDb();
+        CreativeSQLDatabase db = CreativeControl.getDb2();
         Communicator com = CreativeControl.plugin.getCommunicator();
         CreativeMainConfig config = CreativeControl.getMainConfig();
         
@@ -148,7 +148,7 @@ public class CreativeBlockManager {
     }
     
     public int getTotal() {
-        CreativeSQLDatabase db = CreativeControl.getDb();
+        CreativeSQLDatabase db = CreativeControl.getDb2();
         Communicator com = CreativeControl.plugin.getCommunicator();
         
         int total = 0;
@@ -178,14 +178,14 @@ public class CreativeBlockManager {
             return cache.get(key);
         }
 
-        CreativeBlockData data = CreativeControl.getDb().isprotected(block, nodrop);
+        CreativeBlockData data = CreativeControl.getDb2().isprotected(block, nodrop);
         cache.put(key, data);
 
         return data;
     }
     
     public CreativeBlockData getFullData(Location location) {
-        return CreativeControl.getDb().getFullData(location);
+        return CreativeControl.getDb2().getFullData(location);
     }
     
     public boolean isprotectable(World world, int typeId) {

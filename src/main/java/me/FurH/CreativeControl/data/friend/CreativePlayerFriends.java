@@ -43,7 +43,7 @@ public class CreativePlayerFriends {
     }
     
     public void saveFriends(String player, HashSet<String> friends) {
-        CreativeSQLDatabase db = CreativeControl.getDb();
+        CreativeSQLDatabase db = CreativeControl.getDb2();
         
         hascache.put(player, friends);
 
@@ -59,7 +59,7 @@ public class CreativePlayerFriends {
     public HashSet<String> getFriends(String player) {
         HashSet<String> friends = hascache.get(player);
         
-        CreativeSQLDatabase db = CreativeControl.getDb();
+        CreativeSQLDatabase db = CreativeControl.getDb2();
 
         if (friends == null) {
             PreparedStatement ps = null;

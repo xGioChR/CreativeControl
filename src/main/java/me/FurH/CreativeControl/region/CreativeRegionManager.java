@@ -80,7 +80,7 @@ public class CreativeRegionManager {
 
     public int loadRegions() {
         Communicator com    = CreativeControl.plugin.getCommunicator();
-        CreativeSQLDatabase db = CreativeControl.getDb();
+        CreativeSQLDatabase db = CreativeControl.getDb2();
 
         int total = 0;
         PreparedStatement ps = null;
@@ -120,7 +120,7 @@ public class CreativeRegionManager {
     
     public boolean getRegion(String name) {
         Communicator com    = CreativeControl.plugin.getCommunicator();
-        CreativeSQLDatabase db = CreativeControl.getDb();
+        CreativeSQLDatabase db = CreativeControl.getDb2();
 
         ResultSet rs = null;
         PreparedStatement ps = null;
@@ -155,7 +155,7 @@ public class CreativeRegionManager {
      * Delete region files
      */
     public void deleteRegion(String name) {
-        CreativeSQLDatabase db = CreativeControl.getDb();
+        CreativeSQLDatabase db = CreativeControl.getDb2();
 
         removeRegion(name);
 
@@ -163,7 +163,7 @@ public class CreativeRegionManager {
     }
 
     public void saveRegion(String name, gmType type, Location start, Location end) {
-        CreativeSQLDatabase db = CreativeControl.getDb();
+        CreativeSQLDatabase db = CreativeControl.getDb2();
 
         if (!getRegion(name)) {
             addRegion(name, start, end, type.toString());

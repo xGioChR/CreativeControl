@@ -59,7 +59,7 @@ public class CreativePlayerData {
     }
     
     public boolean save(Player p, GameMode gm) {
-        CreativeSQLDatabase db = CreativeControl.getDb();
+        CreativeSQLDatabase db = CreativeControl.getDb2();
         if (gm.equals(GameMode.ADVENTURE)) {
             CreativePlayerCache cache = hasAdv(p.getName());
             
@@ -203,7 +203,7 @@ public class CreativePlayerData {
     public CreativePlayerCache hasAdv(String player) {
         CreativePlayerCache cache = adventurer_cache.get(player.toLowerCase());
         Communicator com        = CreativeControl.plugin.getCommunicator();
-        CreativeSQLDatabase db = CreativeControl.getDb();
+        CreativeSQLDatabase db = CreativeControl.getDb2();
         
         if (cache == null) {
             PreparedStatement ps = null;
@@ -243,7 +243,7 @@ public class CreativePlayerData {
     public CreativePlayerCache hasSur(String player) {
         CreativePlayerCache cache = survival_cache.get(player.toLowerCase());
         Communicator com        = CreativeControl.plugin.getCommunicator();
-        CreativeSQLDatabase db = CreativeControl.getDb();
+        CreativeSQLDatabase db = CreativeControl.getDb2();
         
         if (cache == null) {
             PreparedStatement ps = null;
@@ -284,7 +284,7 @@ public class CreativePlayerData {
     public CreativePlayerCache hasCre(String player) {
         CreativePlayerCache cache = creative_cache.get(player.toLowerCase());
         Communicator com        = CreativeControl.plugin.getCommunicator();
-        CreativeSQLDatabase db = CreativeControl.getDb();
+        CreativeSQLDatabase db = CreativeControl.getDb2();
 
         if (cache == null) {
             PreparedStatement ps = null;

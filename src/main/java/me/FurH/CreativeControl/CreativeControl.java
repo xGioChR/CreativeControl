@@ -402,8 +402,13 @@ public class CreativeControl extends CorePlugin {
     public static CreativePlayerFriends getFriends() {
         return friends;
     }
+
+    @Override
+    public CreativeSQLDatabase getDb() { 
+        return CreativeControl.getDb2();
+    }
     
-    public static CreativeSQLDatabase getDb() { 
+    public static CreativeSQLDatabase getDb2() { 
         return database; 
     }
     

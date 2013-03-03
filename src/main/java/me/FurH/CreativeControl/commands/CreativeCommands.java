@@ -191,7 +191,7 @@ public class CreativeCommands implements CommandExecutor {
         CreativeControl          plugin    = CreativeControl.getPlugin();
         CreativePlayerFriends    friends   = CreativeControl.getFriends();
         CreativeBlocksSelection  selection = CreativeControl.getSelector();
-        CreativeSQLDatabase      db        = CreativeControl.getDb();
+        CreativeSQLDatabase      db        = CreativeControl.getDb2();
 
         if (!plugin.hasPerm(sender, "Commands.Friend")) {
             msg(sender, messages.commands_noperm);
@@ -564,7 +564,7 @@ public class CreativeCommands implements CommandExecutor {
     public boolean cleanupCmd(CommandSender sender, Command cmd, String string, String[] args) {
         CreativeMessages         messages  = CreativeControl.getMessages();
         CreativeControl          plugin    = CreativeControl.getPlugin();
-        CreativeSQLDatabase      db        = CreativeControl.getDb();
+        CreativeSQLDatabase      db        = CreativeControl.getDb2();
         CreativeBlockManager     manager   = CreativeControl.getManager();
         
         if (!plugin.hasPerm(sender, "Commands.Cleanup")) {
@@ -1150,7 +1150,7 @@ public class CreativeCommands implements CommandExecutor {
     }
     
     public boolean statusCmd(CommandSender sender, Command cmd, String string, String[] args) {
-        CreativeSQLDatabase      db        = CreativeControl.getDb();
+        CreativeSQLDatabase      db        = CreativeControl.getDb2();
         CreativeMessages         messages  = CreativeControl.getMessages();
         CreativeControl          plugin    = CreativeControl.getPlugin();
         CreativeBlockManager     manager   = CreativeControl.getManager();

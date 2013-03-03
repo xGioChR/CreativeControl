@@ -59,13 +59,13 @@ public class CreativeWorldConfig extends Configuration {
         x.world_changegm        = getBoolean(w, "World.ChangeGameMode");
         x.world_nodrop          = getBoolean(w, "World.GlobalNoDrop");
 
-        x.black_cmds            = getStringSet(w, "BlackList.Commands");
-        x.black_place           = getIntegerSet(w, "BlackList.BlockPlace");
-        x.black_break           = getIntegerSet(w, "BlackList.BlockBreak");
-        x.black_use             = getIntegerSet(w, "BlackList.ItemUse");
-        x.black_interact        = getIntegerSet(w, "BlackList.ItemInteract");
-        x.black_inventory       = getIntegerSet(w, "BlackList.Inventory");
-        x.black_sign            = getStringSet(w, "BlackList.EconomySigns");
+        x.black_cmds            = getStringAsStringSet(w, "BlackList.Commands");
+        x.black_place           = getStringAsIntegerSet(w, "BlackList.BlockPlace");
+        x.black_break           = getStringAsIntegerSet(w, "BlackList.BlockBreak");
+        x.black_use             = getStringAsIntegerSet(w, "BlackList.ItemUse");
+        x.black_interact        = getStringAsIntegerSet(w, "BlackList.ItemInteract");
+        x.black_inventory       = getStringAsIntegerSet(w, "BlackList.Inventory");
+        x.black_sign            = getStringAsStringSet(w, "BlackList.EconomySigns");
         x.black_sign_all        = false;
         
         x.misc_tnt              = getBoolean(w, "MiscProtection.NoTNTExplosion");
@@ -82,7 +82,7 @@ public class CreativeWorldConfig extends Configuration {
         x.block_against         = getBoolean(w, "BlockProtection.BlockAgainst");
         x.block_attach          = getBoolean(w, "BlockProtection.CheckAttached");
         x.block_invert          = getBoolean(w, "BlockProtection.inverted");
-        x.block_exclude         = getIntegerSet(w, "BlockProtection.exclude");
+        x.block_exclude         = getStringAsIntegerSet(w, "BlockProtection.exclude");
 
         x.prevent_drop          = getBoolean(w, "Preventions.ItemDrop");
         x.prevent_pickup        = getBoolean(w, "Preventions.ItemPickup");

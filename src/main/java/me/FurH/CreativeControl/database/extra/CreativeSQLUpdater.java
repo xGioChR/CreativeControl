@@ -58,7 +58,7 @@ public class CreativeSQLUpdater implements Runnable {
         Communicator com = plugin.getCommunicator();
         com.msg(p, "&7Initializing... ");
         
-        CreativeSQLDatabase db = CreativeControl.getDb();
+        CreativeSQLDatabase db = CreativeControl.getDb2();
 
         List<String> thistables = new ArrayList<String>();
         thistables.add(db.prefix + "players_survival");
@@ -126,7 +126,7 @@ public class CreativeSQLUpdater implements Runnable {
     
     public void update_blocks_2() {
         Communicator com = plugin.getCommunicator();
-        CreativeSQLDatabase db = CreativeControl.getDb();
+        CreativeSQLDatabase db = CreativeControl.getDb2();
         long blocks_start = System.currentTimeMillis();
         
         String table = db.prefix + "blocks";
@@ -213,7 +213,7 @@ public class CreativeSQLUpdater implements Runnable {
     
     public void update_players_creative_2() {
         Communicator com = plugin.getCommunicator();
-        CreativeSQLDatabase db = CreativeControl.getDb();
+        CreativeSQLDatabase db = CreativeControl.getDb2();
         long creative_start = System.currentTimeMillis();
         
         String table = db.prefix + "players_creative";
@@ -287,7 +287,7 @@ public class CreativeSQLUpdater implements Runnable {
  
     public void update_players_survival_2() {
         Communicator com = plugin.getCommunicator();
-        CreativeSQLDatabase db = CreativeControl.getDb();
+        CreativeSQLDatabase db = CreativeControl.getDb2();
         long survival_start = System.currentTimeMillis();
         
         String table = db.prefix + "players_survival";
@@ -366,7 +366,7 @@ public class CreativeSQLUpdater implements Runnable {
 
     public void update_players_adventurer_2() {
         Communicator com = plugin.getCommunicator();
-        CreativeSQLDatabase db = CreativeControl.getDb();
+        CreativeSQLDatabase db = CreativeControl.getDb2();
         long adventurer_start = System.currentTimeMillis();
         
         String table = db.prefix + "players_adventurer";
@@ -445,7 +445,7 @@ public class CreativeSQLUpdater implements Runnable {
     
     public void update_friends_2() {
         Communicator com = plugin.getCommunicator();
-        CreativeSQLDatabase db = CreativeControl.getDb();
+        CreativeSQLDatabase db = CreativeControl.getDb2();
         long friends_start = System.currentTimeMillis();
         
         String table = db.prefix + "friends";
