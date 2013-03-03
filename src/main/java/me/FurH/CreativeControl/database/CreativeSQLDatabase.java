@@ -209,6 +209,14 @@ public final class CreativeSQLDatabase extends CoreSQLDatabase {
 
     public void load(Connection connection, String world, type type) {
         Communicator com = plugin.getCommunicator();
+        
+        if (connection == null) {
+            connection = this.connection;
+        }
+        
+        if (type == null) {
+            type = this.type;
+        }
 
         try {
             createTable(connection, "CREATE TABLE IF NOT EXISTS `"+prefix+"blocks_"+world+"` (owner INT, x INT, y INT, z INT, type INT, allowed VARCHAR(255), time BIGINT);", type);

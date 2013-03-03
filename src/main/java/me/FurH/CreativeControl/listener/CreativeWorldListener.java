@@ -41,6 +41,7 @@ public class CreativeWorldListener implements Listener {
     public void onWorldLoad(WorldLoadEvent e) {
         CreativeMainConfig   main     = CreativeControl.getMainConfig();
         if (!main.config_single) {
+            CreativeControl.getDb2().load(null, e.getWorld().getName(), null);
             CreativeControl.getWorldConfig().load(e.getWorld());
         }
     }
