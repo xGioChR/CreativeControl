@@ -331,6 +331,9 @@ public class CreativeControl extends CorePlugin {
 
     @Override
     public boolean hasPerm(CommandSender sender, String node) {
+        if (permissions != null) {
+            return permissions.has(sender, "CreativeControl." + node);
+        }
         return sender.hasPermission("CreativeControl." + node);
     }
     
