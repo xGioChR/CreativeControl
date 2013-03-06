@@ -78,6 +78,7 @@ public class CreativeWorldConfig extends Configuration {
         x.block_explosion       = getBoolean(w, "BlockProtection.Explosions");
         x.block_creative        = getBoolean(w, "BlockProtection.CreativeOnly");
         x.block_pistons         = getBoolean(w, "BlockProtection.Pistons");
+        x.block_physics         = getBoolean(w, "BlockProtection.Physics");
         x.block_against         = getBoolean(w, "BlockProtection.BlockAgainst");
         x.block_attach          = getBoolean(w, "BlockProtection.CheckAttached");
         x.block_invert          = getBoolean(w, "BlockProtection.inverted");

@@ -54,6 +54,8 @@ BlockProtection:
   ## Pistons, if true, Creative blocks [NoDrop and OwnBlocks] Will be protected against pistons.
   ## If this is false, when a piston push a block, he will be unprotected.
   Pistons: false
+  ## Physics, if true, protected blocks will not be affected by physics, if NoDrop is true the block will disapear, if OwnBlock is true the block will no fall
+  Physics: false
   ## BlockAgainst, if true, the OwnBlock protection will check if the block against is protected
   BlockAgainst: false
   ## CheckAttached, if true, attached blocks like torches will be protected, disable this to save cpu

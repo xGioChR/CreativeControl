@@ -38,6 +38,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -314,9 +315,14 @@ public class CreativeBlockListener implements Listener {
             attached.add(b);
 
             if (config.block_attach) {
+                
+                if (b.getRelative(BlockFace.UP).getType() == Material.SAND || b.getRelative(BlockFace.UP).getType() == Material.GRAVEL) {
+                    attached.add(b.getRelative(BlockFace.UP));
+                }
+                
                 attached.addAll(BlockUtils.getAttachedBlock(b));
             }
-                        
+            
             for (Block block : attached) {
                 CreativeBlockData data = manager.isprotected(block, false);
 
@@ -345,6 +351,30 @@ public class CreativeBlockListener implements Listener {
                         process(config, e, block, p);
                     }
                 }
+            }
+        }
+    }
+    
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
+    public void onBlockPhysics(BlockPhysicsEvent e) {
+        if (e.isCancelled()) { return; }
+        
+        Block block = e.getBlock();
+        World world = block.getWorld();
+        
+        CreativeWorldNodes      config     = CreativeControl.getWorldNodes(world);
+        CreativeBlockManager    manager    = CreativeControl.getManager();
+        
+        if (!config.block_physics) {
+            return;
+        }
+
+        CreativeBlockData data = manager.isprotected(block, false);
+        if (data != null) {
+            if (config.block_nodrop) {
+                block.setType(Material.AIR);
+            } else if (config.block_ownblock) {
+                e.setCancelled(true);
             }
         }
     }
