@@ -13,6 +13,7 @@ MainNode:
 BlockPlace:
   cantplace: "&7You can't place this block in creative mode!"
 
+## BlockManager, all messages related with the ownblock/nodrop function
 BlockManager:
   belongsto: "&7This block belongs to &4{0}"
   unprotected: "&cThis block is not protected!"
@@ -31,6 +32,7 @@ Limits:
   vehicles: "&7You reach the limit of vehicles, destroy the old ones!"
 
 Regions:
+  ## Use {0} to replace with the region name
   welcome_creative: "&7You have entered in a creative region!"
   welcome_survival: "&7You have entered in a survival region!"
   farewell_creative: "&7You have left a creative region!"

@@ -31,7 +31,7 @@ public class CreativeMessages extends Configuration {
     
     public String prefix_tag                        = "prefix.tag";
     
-    public String messages_restricted               = "MainNode.restricted";
+    public String mainode_restricted                = "MainNode.restricted";
     
     public String blockplace_cantplace              = "BlockPlace.cantplace";
     
@@ -65,7 +65,7 @@ public class CreativeMessages extends Configuration {
 
         prefix_tag                        = getMessage("prefix.tag");
     
-        messages_restricted               = getMessage("MainNode.restricted");
+        mainode_restricted               = getMessage("MainNode.restricted");
     
         blockplace_cantplace              = getMessage("BlockPlace.cantplace");
     

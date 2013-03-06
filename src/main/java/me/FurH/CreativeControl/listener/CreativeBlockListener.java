@@ -75,7 +75,7 @@ public class CreativeBlockListener implements Listener {
                     Sign sign = (Sign)e.getBlockAgainst().getState();
                     if (CreativeUtil.isEconomySign(sign)) {
                         if (!plugin.hasPerm(p, "BlackList.EconomySigns")) {
-                            com.msg(p, "&4You can't do that in creative mode!");
+                            com.msg(p, messages.mainode_restricted);
                             e.setCancelled(true);
                             return;
                         }
@@ -94,7 +94,7 @@ public class CreativeBlockListener implements Listener {
             if (config.world_changegm) {
                 if (p.getGameMode().equals(GameMode.CREATIVE)) {
                     if ((!config.world_creative) && (!plugin.hasPerm(p, "World.Keep"))) {
-                        com.msg(p, "&7Creative mode is not allowed in this world!");
+                        com.msg(p, messages.region_creative_unallowed);
                         p.setGameMode(GameMode.SURVIVAL);
                         e.setCancelled(true);
                         return;
@@ -102,7 +102,7 @@ public class CreativeBlockListener implements Listener {
                 } else 
                 if (p.getGameMode().equals(GameMode.SURVIVAL)) {
                     if ((config.world_creative) && (!plugin.hasPerm(p, "World.Keep"))) {
-                        com.msg(p, "&7Survival mode is not allowed in this world!");
+                        com.msg(p, messages.region_survival_unallowed);
                         p.setGameMode(GameMode.CREATIVE);
                         e.setCancelled(true);
                         return;
@@ -117,7 +117,7 @@ public class CreativeBlockListener implements Listener {
              */
             if ((config.black_place != null) && (config.black_place.contains(b.getTypeId()))) {
                 if (!plugin.hasPerm(p, "BlackList.BlockPlace." + b.getTypeId())) {
-                    com.msg(p, "&7You can't place this block in creative mode!");
+                    com.msg(p, messages.blockplace_cantplace);
                     e.setCancelled(true);
                     return;
                 }
@@ -134,7 +134,7 @@ public class CreativeBlockListener implements Listener {
                             (world.getBlockAt(b.getX() - 1, b.getY() - 1, b.getZ()).getType() == Material.SOUL_SAND) ||
                             (world.getBlockAt(b.getX(), b.getY() - 1, b.getZ() - 1).getType() == Material.SOUL_SAND) &&
                             (world.getBlockAt(b.getX(), b.getY() - 1, b.getZ() + 1).getType() == Material.SOUL_SAND)) {
-                        com.msg(p, "&4You can't do that in creative mode!");
+                        com.msg(p, messages.mainode_restricted);
                         e.setCancelled(true);
                         return;
                     }
@@ -148,7 +148,7 @@ public class CreativeBlockListener implements Listener {
                     ((b.getType() == Material.PUMPKIN) || (b.getType() == Material.JACK_O_LANTERN)) &&
                     (world.getBlockAt(b.getX(), b.getY() - 1, b.getZ()).getType() == Material.SNOW_BLOCK) &&
                     (world.getBlockAt(b.getX(), b.getY() - 2, b.getZ()).getType() == Material.SNOW_BLOCK)) {
-                com.msg(p, "&4You can't do that in creative mode!");
+                com.msg(p, messages.mainode_restricted);
                 e.setCancelled(true);
                 return;
             }
@@ -164,7 +164,7 @@ public class CreativeBlockListener implements Listener {
                     (world.getBlockAt(b.getX() - 1, b.getY() - 1, b.getZ()).getType() == Material.IRON_BLOCK)) ||
                     ((world.getBlockAt(b.getX(), b.getY() - 1, b.getZ() + 1).getType() == Material.IRON_BLOCK) &&
                     (world.getBlockAt(b.getX(), b.getY() - 1, b.getZ() - 1).getType() == Material.IRON_BLOCK)))) {
-                com.msg(p, "&4You can't do that in creative mode!");
+                com.msg(p, messages.mainode_restricted);
                 e.setCancelled(true);
                 return;
             }
@@ -199,7 +199,7 @@ public class CreativeBlockListener implements Listener {
                         if (manager.isAllowed(p, data)) {
                             manager.unprotect(b);
                         } else {
-                            com.msg(p, "&7This block belongs to &4{0}", data.owner);
+                            com.msg(p, messages.blockmanager_belongs, data.owner);
                             e.setCancelled(true);
                             return;
                         }
@@ -211,7 +211,7 @@ public class CreativeBlockListener implements Listener {
                 CreativeBlockData data = manager.isprotected(ba, true);
                 if (data != null) {
                     if (!manager.isAllowed(p, data)) {
-                        com.msg(p, "&7This block belongs to &4{0}", data.owner);
+                        com.msg(p, messages.blockmanager_belongs, data.owner);
                         e.setCancelled(true);
                         return;
                     }
@@ -252,7 +252,7 @@ public class CreativeBlockListener implements Listener {
                     Sign sign = (Sign)b.getState();
                     if (CreativeUtil.isEconomySign(sign)) {
                         if (!plugin.hasPerm(p, "BlackList.EconomySigns")) {
-                            com.msg(p, "&4You can't do that in creative mode!");
+                            com.msg(p, messages.mainode_restricted);
                             e.setCancelled(true);
                             return;
                         }
@@ -270,7 +270,7 @@ public class CreativeBlockListener implements Listener {
             if (config.world_changegm) {
                 if (p.getGameMode().equals(GameMode.CREATIVE)) {
                     if ((!config.world_creative) && (!plugin.hasPerm(p, "World.Keep"))) {
-                        com.msg(p, "&7Creative mode is not allowed in this world!");
+                        com.msg(p, messages.region_creative_unallowed);
                         p.setGameMode(GameMode.SURVIVAL);
                         e.setCancelled(true);
                         return;
@@ -278,7 +278,7 @@ public class CreativeBlockListener implements Listener {
                 } else 
                 if (p.getGameMode().equals(GameMode.SURVIVAL)) {
                     if ((config.world_creative) && (!plugin.hasPerm(p, "World.Keep"))) {
-                        com.msg(p, "&7Survival mode is not allowed in this world!");
+                        com.msg(p, messages.region_survival_unallowed);
                         p.setGameMode(GameMode.CREATIVE);
                         e.setCancelled(true);
                         return;
@@ -294,7 +294,7 @@ public class CreativeBlockListener implements Listener {
             if ((config.prevent_bedrock) && (!plugin.hasPerm(p, "Preventions.BreakBedRock"))) {
                 if (b.getType() == Material.BEDROCK) {
                     if (b.getY() < 1) {
-                        com.msg(p, "&7You can't break this block in creative mode!");
+                        com.msg(p, messages.blockbreak_survival);
                         e.setCancelled(true);
                         return;
                     }
@@ -306,7 +306,7 @@ public class CreativeBlockListener implements Listener {
              */
             if ((config.black_break != null) && (config.black_break.contains(b.getTypeId()))) {
                 if (!plugin.hasPerm(p, "BlackList.BlockBreak" + b.getTypeId())) {
-                    com.msg(p, "&7You can't break this block in creative mode!");
+                    com.msg(p, messages.blockbreak_cantbreak);
                     e.setCancelled(true);
                     return;
                 }
@@ -342,7 +342,7 @@ public class CreativeBlockListener implements Listener {
 
                 if (data != null) {
                     if (manager.isAllowed(p, data)) {
-                        com.msg(p, "&7This block belongs to &4{0}", data.owner);
+                        com.msg(p, messages.blockmanager_belongs, data.owner);
                         e.setCancelled(true);
                         break;
                     } else {
@@ -416,7 +416,7 @@ public class CreativeBlockListener implements Listener {
             
             if (config.block_creative) {
                 if (!p.getGameMode().equals(GameMode.CREATIVE)) {
-                    com.msg(p, "&7This block can't be broken in survival mode!");
+                    com.msg(p, messages.blockbreak_cantbreak);
                     e.setCancelled(true);
                     return;
                 }
@@ -428,7 +428,7 @@ public class CreativeBlockListener implements Listener {
             b.setType(Material.AIR);
 
             if (!p.getGameMode().equals(GameMode.CREATIVE)) {
-                com.msg(p, "&7That was a creative block, therefore was not dropped.");
+                com.msg(p, messages.blockbreak_creativeblock);
             }
         }
     }

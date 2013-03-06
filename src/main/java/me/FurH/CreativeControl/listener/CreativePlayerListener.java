@@ -128,7 +128,7 @@ public class CreativePlayerListener implements Listener {
                     if (config.black_cmds.contains(cmd)) {
                         Communicator          com      = plugin.getCommunicator();
                         CreativeMessages      messages = CreativeControl.getMessages();
-                        com.msg(p, "&4You can't use this command in creative mode!");
+                        com.msg(p, messages.blacklist_commands);
                         e.setCancelled(true);
                         return;
                     }
@@ -250,7 +250,7 @@ public class CreativePlayerListener implements Listener {
 
             if (config.prevent_invinteract) {
                 if (!plugin.hasPerm(p, "Preventions.InventoryOpen")) {
-                    com.msg(p, "&4You can't do that in creative mode!");
+                    com.msg(p, messages.mainode_restricted);
                     p.closeInventory();
                     e.setCancelled(true);
                 }
@@ -387,7 +387,7 @@ public class CreativePlayerListener implements Listener {
             if (type == CreativeMode.CREATIVE) {
                 if (!plugin.hasPerm(p, "Region.Keep.Survival")) {
                     if (!p.getGameMode().equals(GameMode.CREATIVE)) {
-                        com.msg(p, "&7You have entered in a creative region!", region.name);
+                        com.msg(p, messages.region_welcome_creative, region.name);
                         p.setGameMode(GameMode.CREATIVE);
                     }
                 }
@@ -396,7 +396,7 @@ public class CreativePlayerListener implements Listener {
                 if (!p.getGameMode().equals(GameMode.SURVIVAL)) {
                     if (!plugin.hasPerm(p, "Region.Keep.Creative")) {
                         CreativeUtil.getFloor(p);
-                        com.msg(p, "&7You have entered in a survival region!", region.name);
+                        com.msg(p, messages.region_welcome_survival, region.name);
                         p.setGameMode(GameMode.SURVIVAL);
                     }
                 }
@@ -457,13 +457,13 @@ public class CreativePlayerListener implements Listener {
             CreativeMessages      messages = CreativeControl.getMessages();
             if (p.getGameMode().equals(GameMode.CREATIVE)) {
                 if ((!config.world_creative) && (!plugin.hasPerm(p, "World.Keep"))) {
-                    com.msg(p, "&7Creative mode is not allowed in this world!");
+                    com.msg(p, messages.region_creative_unallowed);
                     p.setGameMode(GameMode.SURVIVAL);
                 }
             } else 
             if (p.getGameMode().equals(GameMode.SURVIVAL)) {
                 if ((config.world_creative) && (!plugin.hasPerm(p, "World.Keep"))) {
-                    com.msg(p, "&7Survival mode is not allowed in this world!");
+                    com.msg(p, messages.region_survival_unallowed);
                     p.setGameMode(GameMode.CREATIVE);
                 }
             }
@@ -520,7 +520,7 @@ public class CreativePlayerListener implements Listener {
                 if (!plugin.hasPerm(p, "Preventions.ItemDrop")) {
                     Communicator          com      = plugin.getCommunicator();
                     CreativeMessages      messages = CreativeControl.getMessages();
-                    com.msg(p, "&4You can't do that in creative mode!");
+                    com.msg(p, messages.mainode_restricted);
                     e.getItemDrop().remove();
                 }
             }
@@ -555,7 +555,7 @@ public class CreativePlayerListener implements Listener {
                 if (!plugin.hasPerm(p, "Preventions.Eggs")) {
                     Communicator          com      = plugin.getCommunicator();
                     CreativeMessages      messages = CreativeControl.getMessages();
-                    com.msg(p, "&4You can't do that in creative mode!");
+                    com.msg(p, messages.mainode_restricted);
                     e.setHatching(false);
                     e.setNumHatches((byte)0);
                 }
@@ -595,7 +595,7 @@ public class CreativePlayerListener implements Listener {
                     Sign sign = (Sign)i.getState();
                     if (CreativeUtil.isEconomySign(sign)) {
                         if (!plugin.hasPerm(p, "BlackList.EconomySigns")) {
-                            com.msg(p, "&4You can't do that in creative mode!");
+                            com.msg(p, messages.mainode_restricted);
                             e.setCancelled(true);
                             return;
                         }
@@ -609,14 +609,14 @@ public class CreativePlayerListener implements Listener {
                 if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
                     Location right = e.getClickedBlock().getLocation();
                     plugin.right.put(p, right);
-                    com.msg(p, "&7Second point selected! (&4{0}&7,&4 {1}&7,&4 {2}&7)", right.getBlockX(), right.getBlockY(), right.getBlockZ());
+                    com.msg(p, messages.selection_second, right.getBlockX(), right.getBlockY(), right.getBlockZ());
                     e.setCancelled(true);
                     return;
                 } else
                 if (e.getAction() == Action.LEFT_CLICK_BLOCK) {
                     Location left = e.getClickedBlock().getLocation();
                     plugin.left.put(p, left);
-                    com.msg(p, "&7First point selected! (&4{0}&7,&4 {1}&7,&4 {2}&7)", left.getBlockX(), left.getBlockY(), left.getBlockZ());
+                    com.msg(p, messages.selection_first, left.getBlockX(), left.getBlockY(), left.getBlockZ());
                     e.setCancelled(true);
                     return;
                 }
@@ -665,7 +665,7 @@ public class CreativePlayerListener implements Listener {
             if (p.getGameMode().equals(GameMode.CREATIVE)) {
                 if (config.black_interact.contains(i.getTypeId())) {
                     if (!plugin.hasPerm(p, "BlackList.ItemInteract."+i.getTypeId())) {
-                        com.msg(p, "&4You can't do that in creative mode!");
+                        com.msg(p, messages.mainode_restricted);
                         e.setCancelled(true);
                         return;
                     }
@@ -687,7 +687,7 @@ public class CreativePlayerListener implements Listener {
                     if (config.prevent_eggs) {
                         if ((p.getItemInHand().getType() == Material.MONSTER_EGG) || (p.getItemInHand().getType() == Material.MONSTER_EGGS)) {
                             if (!plugin.hasPerm(p, "Preventions.Eggs")) {
-                                com.msg(p, "&4You can't do that in creative mode!");
+                                com.msg(p, messages.mainode_restricted);
                                 e.setCancelled(true);
                                 return;
                             }
@@ -696,7 +696,7 @@ public class CreativePlayerListener implements Listener {
                     
                     if (config.black_use.contains(e.getItem().getTypeId())) {
                         if (!plugin.hasPerm(p, "BlackList.ItemUse."+e.getItem().getTypeId())) {
-                            com.msg(p, "&4You can't do that in creative mode!");
+                            com.msg(p, messages.mainode_restricted);
                             e.setCancelled(true);
                             return;
                         }
@@ -705,7 +705,7 @@ public class CreativePlayerListener implements Listener {
                     if (config.prevent_potion) {
                         if (p.getItemInHand().getTypeId() == 373) {
                             if (!plugin.hasPerm(p, "Preventions.PotionSplash")) {
-                                com.msg(p, "&4You can't do that in creative mode!");
+                                com.msg(p, messages.mainode_restricted);
                                 e.setCancelled(true);
                             }
                         }
@@ -749,7 +749,7 @@ public class CreativePlayerListener implements Listener {
         Communicator com = plugin.getCommunicator();
         
         if (!insql && !incache) {
-            com.msg(p, "&cThis block isn't protected!");
+            com.msg(p, messages.blockmanager_unprotected);
             plugin.mods.remove(p.getName());
             return;
         }
@@ -808,17 +808,17 @@ public class CreativePlayerListener implements Listener {
         if (config.block_ownblock) {
             CreativeBlockData data = manager.isprotected(b, false);
             if (data != null) {
-                com.msg(p, "&cThis block is protected already!");
+                com.msg(p, messages.blockmanager_belongs, data.owner);
             } else {
-                com.msg(p, "&4Block protected successfuly!");
+                com.msg(p, messages.blockmanager_protected);
                 manager.protect(p, b);
             }
         } else
         if (config.block_nodrop) {
             if (manager.isprotected(b, false) != null) {
-                com.msg(p, "&cThis block is protected already!");
+                com.msg(p, messages.blockmanager_already);
             } else {
-                com.msg(p, "&4Block protected successfuly!");
+                com.msg(p, messages.blockmanager_protected);
                 manager.protect(p, b);
             }
         }
@@ -842,20 +842,20 @@ public class CreativePlayerListener implements Listener {
             CreativeBlockData data = manager.isprotected(b, false);
             if (data != null) {
                 if (!data.owner.equalsIgnoreCase(p.getName())) {
-                    com.msg(p, "&7This block belongs to &4{0}", data.owner);
+                    com.msg(p, messages.blockmanager_belongs, data.owner);
                 } else {
-                    com.msg(p, "&4Block removed from the database");
+                    com.msg(p, messages.blockmanager_motha);
                     manager.unprotect(b);
                 }
             } else {
-                com.msg(p, "&cThis block isn't protected!");
+                com.msg(p, messages.blockmanager_unprotected);
             }
         } else
         if (config.block_nodrop) {
             if (manager.isprotected(b, true) != null) {
-                com.msg(p, "&cThis block isn't protected!");
+                com.msg(p, messages.blockmanager_unprotected);
             } else {
-                com.msg(p, "&4Block removed from the database");
+                com.msg(p, messages.blockmanager_motha);
                 manager.unprotect(b);
             }
         }
@@ -872,13 +872,13 @@ public class CreativePlayerListener implements Listener {
         Communicator com = plugin.getCommunicator();
         
         if (config.world_exclude) {
-            com.msg(p, "&cThis world is disabled in the configuration.");
+            com.msg(p, messages.blockmanager_focka);
             plugin.mods.remove(p.getName());
             return false;
         }
         
         if (!manager.isprotectable(b.getWorld(), b.getTypeId())) {
-            com.msg(p, "&cThis block can't be protected!");
+            com.msg(p, messages.blockmanager_excluded);
             plugin.mods.remove(p.getName());
             return false;
         }

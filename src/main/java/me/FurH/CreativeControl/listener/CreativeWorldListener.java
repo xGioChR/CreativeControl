@@ -22,8 +22,6 @@ import me.FurH.CreativeControl.configuration.CreativeMainConfig;
 import me.FurH.CreativeControl.configuration.CreativeMessages;
 import me.FurH.CreativeControl.configuration.CreativeWorldNodes;
 import org.bukkit.GameMode;
-import org.bukkit.Material;
-import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -63,12 +61,10 @@ public class CreativeWorldListener implements Listener {
                     if (!plugin.hasPerm(p, "Preventions.Bonemeal")) {
                         Communicator         com      = plugin.getCommunicator();
                         CreativeMessages     messages = CreativeControl.getMessages();
-                        com.msg(p, "&4You can't do that in creative mode!");
 
-                        for (BlockState b : e.getBlocks()) {
-                            b.getBlock().setType(Material.AIR); 
-                        }
-                        
+                        com.msg(p, messages.mainode_restricted);
+
+                        e.getBlocks().clear();
                         e.setCancelled(true);
                     }
                 }
