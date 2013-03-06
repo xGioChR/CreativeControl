@@ -169,11 +169,7 @@ public class CreativeBlockListener implements Listener {
                 return;
             }
         }
-        
-        if (config.world_nodrop) {
-            return;
-        }
-        
+
         CreativeBlockManager    manager    = CreativeControl.getManager();
 
         Block r = e.getBlockReplacedState().getBlock();

@@ -47,7 +47,6 @@ public class CreativeMainConfig extends Configuration {
 
     public int             cache_capacity    = 15000;
     public int             cache_precache    = 10000;
-    public boolean         cache_dynamic     = false;
 
     public boolean         config_single     = false;
     public boolean         config_conflict   = false;
@@ -92,7 +91,6 @@ public class CreativeMainConfig extends Configuration {
         
         cache_capacity   = getInteger("Cache.MaxCapacity");
         cache_precache   = getInteger("Cache.PreCache");
-        cache_dynamic    = getBoolean("Cache.DynamicBlockType");
         
         config_single    = getBoolean("Configurations.Single");
         config_conflict  = getBoolean("Configurations.Conflict");

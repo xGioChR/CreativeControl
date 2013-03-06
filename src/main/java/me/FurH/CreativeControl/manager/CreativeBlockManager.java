@@ -6,6 +6,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import me.FurH.Core.cache.CoreLRUCache;
 import me.FurH.Core.exceptions.CoreDbException;
 import me.FurH.Core.exceptions.CoreMsgException;
@@ -203,10 +205,37 @@ public class CreativeBlockManager {
     }
 
     public double getTablesSize() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        CreativeSQLDatabase db = CreativeControl.getDb2();
+        double ret = 0;
+        
+        for (World world : Bukkit.getWorlds()) {
+            try {
+                ret += db.getTableSize(db.prefix+"blocks_"+world.getName());
+            } catch (CoreDbException ex) {
+                ex.printStackTrace();
+            } catch (CoreMsgException ex) {
+                ex.printStackTrace();
+            }
+        }
+        
+        return ret;
     }
 
     public double getTablesFree() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        CreativeSQLDatabase db = CreativeControl.getDb2();
+        double ret = 0;
+        
+        for (World world : Bukkit.getWorlds()) {
+            try {
+                ret += db.getTableFree(db.prefix+"blocks_"+world.getName());
+            } catch (CoreDbException ex) {
+                ex.printStackTrace();
+            } catch (CoreMsgException ex) {
+                ex.printStackTrace();
+            }
+        }
+        
+        
+        return ret;
     }
 }

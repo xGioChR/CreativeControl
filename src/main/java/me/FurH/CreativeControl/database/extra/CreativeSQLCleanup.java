@@ -68,11 +68,7 @@ public class CreativeSQLCleanup implements Runnable {
         List<String> tables = new ArrayList<String>();
 
         for (World world : Bukkit.getWorlds()) {
-            tables.add(db.prefix+"blocks_" + world.getName());
-        }
-        
-        for (String table : tables) {
-             cleanup_blocks(table);
+             cleanup_blocks(world);
         }
         
         /* done */
@@ -81,17 +77,17 @@ public class CreativeSQLCleanup implements Runnable {
         lock = false;
     }
     
-    public void cleanup_blocks(String world) {
+    public void cleanup_blocks(World w) {
         Communicator com = plugin.getCommunicator();
         CreativeSQLDatabase db = CreativeControl.getDb2();
         long blocks_start = System.currentTimeMillis();
 
-        String table = db.prefix+"blocks_" + world;
+        String table = db.prefix+"blocks_" + w.getName();
 
         /* move regions table */
         com.msg(p, "&7Cleaning table '&4"+table+"&7' ...");
         
-        WorldServer worldServer = ((CraftWorld)Bukkit.getWorld(world)).getHandle();
+        WorldServer worldServer = ((CraftWorld)w).getHandle();
 
         double blocks_size = 0;
         try {
@@ -137,7 +133,7 @@ public class CreativeSQLCleanup implements Runnable {
                         delete = true;
                     }
                     
-                    String loc = LocationUtils.locationToString(x, y, z, world);
+                    String loc = LocationUtils.locationToString(x, y, z, w.getName());
                     
                     if (!locations.contains(loc)) {
                         locations.add(loc);
