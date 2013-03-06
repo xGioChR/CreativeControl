@@ -21,7 +21,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import me.FurH.Core.CorePlugin;
-import me.FurH.Core.cache.CoreLRUCache;
+import me.FurH.Core.cache.CoreSafeCache;
 import me.FurH.Core.database.CoreSQLDatabase;
 import me.FurH.Core.exceptions.CoreDbException;
 import me.FurH.Core.exceptions.CoreMsgException;
@@ -42,7 +42,7 @@ import org.bukkit.entity.Player;
  * @author FurmigaHumana
  */
 public final class CreativeSQLDatabase extends CoreSQLDatabase {
-    private static CoreLRUCache<String, Integer> owners = new CoreLRUCache<String, Integer>(Bukkit.getMaxPlayers() * 5);
+    private static CoreSafeCache<String, Integer> owners = new CoreSafeCache<String, Integer>(100);
 
     public CreativeSQLDatabase(CorePlugin plugin, String prefix, String engine, String database_host, String database_port, String database_table, String database_user, String database_pass) {
         super(plugin, prefix, engine, database_host, database_port, database_table, database_user, database_pass);
