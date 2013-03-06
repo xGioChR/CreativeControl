@@ -844,7 +844,7 @@ public class CreativePlayerListener implements Listener {
                 if (!data.owner.equalsIgnoreCase(p.getName())) {
                     com.msg(p, messages.blockmanager_belongs, data.owner);
                 } else {
-                    com.msg(p, messages.blockmanager_motha);
+                    com.msg(p, messages.blockmanager_removed);
                     manager.unprotect(b);
                 }
             } else {
@@ -855,7 +855,7 @@ public class CreativePlayerListener implements Listener {
             if (manager.isprotected(b, true) != null) {
                 com.msg(p, messages.blockmanager_unprotected);
             } else {
-                com.msg(p, messages.blockmanager_motha);
+                com.msg(p, messages.blockmanager_removed);
                 manager.unprotect(b);
             }
         }
@@ -872,7 +872,7 @@ public class CreativePlayerListener implements Listener {
         Communicator com = plugin.getCommunicator();
         
         if (config.world_exclude) {
-            com.msg(p, messages.blockmanager_focka);
+            com.msg(p, messages.blockmanager_worldexcluded);
             plugin.mods.remove(p.getName());
             return false;
         }

@@ -39,8 +39,8 @@ public class CreativeMessages extends Configuration {
     public String blockmanager_unprotected          = "BlockManager.unprotected";
     public String blockmanager_already              = "BlockManager.alreadyprotected";
     public String blockmanager_protected            = "BlockManager.blockprotected";
-    public String blockmanager_motha                = "BlockManager.blockunprotected";
-    public String blockmanager_focka                = "BlockManager.worlddisabled";
+    public String blockmanager_removed              = "BlockManager.blockunprotected";
+    public String blockmanager_worldexcluded        = "BlockManager.worlddisabled";
     public String blockmanager_excluded             = "BlockManager.typeexcluded";
 
     public String blockbreak_cantbreak              = "BlockBreak.cantbreak";
@@ -73,8 +73,8 @@ public class CreativeMessages extends Configuration {
         blockmanager_unprotected          = getMessage("BlockManager.unprotected");
         blockmanager_already              = getMessage("BlockManager.alreadyprotected");
         blockmanager_protected            = getMessage("BlockManager.blockprotected");
-        blockmanager_motha                = getMessage("BlockManager.blockunprotected");
-        blockmanager_focka                = getMessage("BlockManager.worlddisabled");
+        blockmanager_removed                = getMessage("BlockManager.blockunprotected");
+        blockmanager_worldexcluded                = getMessage("BlockManager.worlddisabled");
         blockmanager_excluded             = getMessage("BlockManager.typeexcluded");
 
         blockbreak_cantbreak              = getMessage("BlockBreak.cantbreak");
