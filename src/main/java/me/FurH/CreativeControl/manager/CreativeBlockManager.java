@@ -201,4 +201,12 @@ public class CreativeBlockManager {
     public void clear() {
         cache.clear();
     }
+
+    public double getTablesSize() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public double getTablesFree() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

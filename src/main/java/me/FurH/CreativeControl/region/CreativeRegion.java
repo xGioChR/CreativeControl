@@ -26,7 +26,7 @@ import org.bukkit.World;
 public class CreativeRegion {
     public Location start;
     public Location end;
-    public gmType type;
+    public CreativeMode type;
     public String name;
     public World world;
 
@@ -40,5 +40,5 @@ public class CreativeRegion {
                 && z >= start.getBlockZ() && z <= end.getBlockZ();
     }
 
-    public enum gmType { CREATIVE, SURVIVAL; }
+    public enum CreativeMode { CREATIVE, SURVIVAL; }
 }

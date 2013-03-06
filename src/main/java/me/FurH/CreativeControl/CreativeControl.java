@@ -47,7 +47,7 @@ import me.FurH.CreativeControl.manager.CreativeBlockManager;
 import me.FurH.CreativeControl.metrics.CreativeMetrics;
 import me.FurH.CreativeControl.metrics.CreativeMetrics.Graph;
 import me.FurH.CreativeControl.region.CreativeRegion;
-import me.FurH.CreativeControl.region.CreativeRegion.gmType;
+import me.FurH.CreativeControl.region.CreativeRegion.CreativeMode;
 import me.FurH.CreativeControl.region.CreativeRegionManager;
 import me.FurH.CreativeControl.selection.CreativeBlocksSelection;
 import me.FurH.CreativeControl.util.CreativeUtil;
@@ -98,10 +98,7 @@ public class CreativeControl extends CorePlugin {
     public WeakHashMap<Player, Location> right = new WeakHashMap<Player, Location>();
     public WeakHashMap<Player, Location> left = new WeakHashMap<Player, Location>();
 
-    public WeakHashMap<String, String> mods = new WeakHashMap<String, String>();
-    public HashSet<String> modsfastup = new HashSet<String>();
-
-    //public HashSet<UUID> entity = new HashSet<UUID>();
+    public Map<String, Integer> mods = new HashMap<String, Integer>();
     public Map<String, HashSet<UUID>> limits = new HashMap<String, HashSet<UUID>>();
 
     public String currentversion;
@@ -222,10 +219,8 @@ public class CreativeControl extends CorePlugin {
         right.clear();
         left.clear();
         mods.clear();
-        modsfastup.clear();
         data.clear();
         friends.clear();
-        //entity.clear();
         limits.clear();
         
         getLogger().info("[CreativeControl] CreativeControl " + currentversion + " Disabled");
@@ -241,10 +236,8 @@ public class CreativeControl extends CorePlugin {
         right.clear();
         left.clear();
         mods.clear();
-        modsfastup.clear();
         data.clear();
         friends.clear();
-        //entity.clear();
         limits.clear();
         
         messages.load();
@@ -378,6 +371,7 @@ public class CreativeControl extends CorePlugin {
         }
         
         entity.clear();
+        limits.clear();
     }
     
     public static Permission getPermissions() {
@@ -498,7 +492,7 @@ public class CreativeControl extends CorePlugin {
             });
 
             for (CreativeRegion CR : regioner.getAreas()) {
-                if (CR.type == gmType.CREATIVE) {
+                if (CR.type == CreativeMode.CREATIVE) {
                     creative++;
                 } else {
                     survival++;

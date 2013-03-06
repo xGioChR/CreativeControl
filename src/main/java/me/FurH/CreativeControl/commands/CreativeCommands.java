@@ -18,6 +18,8 @@ package me.FurH.CreativeControl.commands;
 
 import com.sk89q.worldedit.bukkit.selections.Selection;
 import java.util.HashSet;
+import me.FurH.Core.exceptions.CoreDbException;
+import me.FurH.Core.util.Utils;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.configuration.CreativeMainConfig;
 import me.FurH.CreativeControl.configuration.CreativeMessages;
@@ -26,7 +28,7 @@ import me.FurH.CreativeControl.database.CreativeSQLDatabase;
 import me.FurH.CreativeControl.database.extra.CreativeSQLCleanup;
 import me.FurH.CreativeControl.database.extra.CreativeSQLMigrator;
 import me.FurH.CreativeControl.manager.CreativeBlockManager;
-import me.FurH.CreativeControl.region.CreativeRegion.gmType;
+import me.FurH.CreativeControl.region.CreativeRegion.CreativeMode;
 import me.FurH.CreativeControl.region.CreativeRegionManager;
 import me.FurH.CreativeControl.selection.CreativeBlocksSelection;
 import me.FurH.CreativeControl.selection.CreativeBlocksSelection.Type;
@@ -51,74 +53,58 @@ public class CreativeCommands implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command cmd, String string, String[] args) {
         CreativeMessages         messages  = CreativeControl.getMessages();
         CreativeControl          plugin    = CreativeControl.getPlugin();
+
         if (args.length <= 0) {
-            msg(sender, "[TAG] &8CreativeControl &4{0} &8by &4FurmigaHumana", plugin.currentversion);
-            msg(sender, messages.commands_type);
+            msg(sender, "&8[&4CreativeControl&8]&7: &8CreativeControl &4{0} &8by &4FurmigaHumana", plugin.currentversion);
+            msg(sender, "&8[&4CreativeControl&8]&7: Type '&4/cc help&7' to see the command list");
             return true;
         } else
         if (args.length > 0) {
             if (args[0].equalsIgnoreCase("tool")) {
-                toolCmd(sender, cmd, string, args);
+                return toolCmd(sender, cmd, string, args);
             } else
             if (args[0].equalsIgnoreCase("status")) {
-                statusCmd(sender, cmd, string, args);
+                return statusCmd(sender, cmd, string, args);
             } else
             if (args[0].equalsIgnoreCase("del")) {
-                delCmd(sender, cmd, string, args);
+                return delCmd(sender, cmd, string, args);
             } else
             if (args[0].equalsIgnoreCase("add")) {
-                addCmd(sender, cmd, string, args);
+                return addCmd(sender, cmd, string, args);
             } else
             if (args[0].equalsIgnoreCase("admin")) {
-                onAdminCommand(sender, cmd, string, args);
+                return onAdminCommand(sender, cmd, string, args);
             } else
             if (args[0].equalsIgnoreCase("check")) {
-                checkCmd(sender, cmd, string, args);
+                return checkCmd(sender, cmd, string, args);
             } else
             if (args[0].equalsIgnoreCase("cleanup")) {
-                cleanupCmd(sender, cmd, string, args);
+                return cleanupCmd(sender, cmd, string, args);
             } else
             if (args[0].equalsIgnoreCase("region")) {
-                regionCmd(sender, cmd, string, args);
+                return regionCmd(sender, cmd, string, args);
             } else
             if (args[0].equalsIgnoreCase("sel")) {
-                selCmd(sender, cmd, string, args);
+                return selCmd(sender, cmd, string, args);
             } else
             if ((args[0].equalsIgnoreCase("friend") || (args[0].equalsIgnoreCase("f")))) {
-                friendCmd(sender, cmd, string, args);
+                return friendCmd(sender, cmd, string, args);
             } else
             if (args[0].equalsIgnoreCase("reload")) {
-                reloadCmd(sender, cmd, string, args);
-            } else {
-                if (!plugin.hasPerm(sender, "Commands.Help")) {
-                    msg(sender, messages.commands_noperm);
-                    return true;
-                } else {
-                    if ((sender instanceof Player)) {
-                        msg(sender, messages.commands_help1);
-                        msg(sender, messages.commands_help2);
-                        msg(sender, messages.commands_help3);
-                        msg(sender, messages.commands_help4);
-                        msg(sender, messages.commands_help5);
-                        msg(sender, messages.commands_help8);
-                        msg(sender, messages.commands_help9);
-                        msg(sender, messages.commands_help10);
-                        msg(sender, messages.commands_help6);
-                        msg(sender, messages.commands_help11);
-                        return true;
-                    } else
-                    if (!(sender instanceof Player)) {
-                        msg(sender, messages.commands_help3);
-                        msg(sender, messages.commands_help4);
-                        msg(sender, messages.commands_help5);
-                        msg(sender, messages.commands_help10);
-                        msg(sender, messages.commands_help11);
-                        msg(sender, messages.commands_help7);
-                        return true;
-                    }
-                }
+                return reloadCmd(sender, cmd, string, args);
             }
         }
+        
+        msg(sender, "&4/cc tool <add/del> &8-&7 Manualy unprotect/protect blocks");
+        msg(sender, "&4/cc status &8-&7 Simple cache and database status");
+        msg(sender, "&4/cc <add/del> &8-&7 Protect/unprotect blocks inside the selection");
+        msg(sender, "&4/cc admin migrator &8-&7 Migrate the database to others types");
+        msg(sender, "&4/cc check <status/player> &8-&7 Get player gamemode data");
+        msg(sender, "&4/cc cleanup <all/type/player/world/corrupt> &8-&7 Clean the database");
+        msg(sender, "&4/cc region <create/remove> &8-&7 Create or remove gamemode regions");
+        msg(sender, "&4/cc sel expand <up/down/ver> &8-&7 Expand the current selection");
+        msg(sender, "&4/cc friend <add/remove/list/allow/transf> &8-&7 Friend list manager");
+        msg(sender, "&4/cc reload &8-&7 Full reload of the plugin");
         return true;
     }
 
@@ -128,1024 +114,664 @@ public class CreativeCommands implements CommandExecutor {
     public boolean onAdminCommand(CommandSender sender, Command cmd, String string, String[] args) {
         CreativeMessages messages = CreativeControl.getMessages();
         CreativeControl plugin = CreativeControl.getPlugin();
+        
         if (!plugin.hasPerm(sender, "Commands.Admin")) {
-            msg(sender, messages.commands_noperm);
+            msg(sender, "&4You dont have permission to use this command!");
             return true;
-        } else {
-            if (args.length > 1) {
-                if (args[1].equalsIgnoreCase("migrator")) {
-                    if (!plugin.hasPerm(sender, "Commands.Admin.Migrator")) {
-                        msg(sender, messages.commands_noperm);
-                        return true;
-                    } else {
-                        if (args.length > 2) {
-                            if (args.length > 3) {
-                                msg(sender, messages.migrator_more1);
-                                msg(sender, messages.migrator_more2);
-                                return true;
-                            } else {
-                                if (args[2].equalsIgnoreCase(">sqlite") || args[2].equalsIgnoreCase(">mysql") || args[2].equalsIgnoreCase(">h2")) {
+        }
 
-                                    CreativeSQLMigrator migrator = null;
+        if (args.length > 2) {
+            if (args[2].equalsIgnoreCase(">sqlite") || args[2].equalsIgnoreCase(">mysql") || args[2].equalsIgnoreCase(">h2")) {
+                CreativeSQLMigrator migrator = null;
 
-                                    if (sender instanceof Player) {
-                                        migrator = new CreativeSQLMigrator(plugin, (Player)sender, args[2]);
-                                    } else {
-                                        migrator = new CreativeSQLMigrator(plugin, null, args[2]);
-                                    }
-
-                                    if (CreativeSQLMigrator.lock) {
-                                        msg(sender, messages.migrator_locked);
-                                        return true;
-                                    } else {
-                                        Bukkit.getScheduler().runTaskAsynchronously(plugin, migrator);
-                                        return true;
-                                    }
-                                } else {
-                                    msg(sender, messages.migrator_more1);
-                                    msg(sender, messages.migrator_more2);
-                                    return true;
-                                }
-                            }
-                        } else {
-                            msg(sender, messages.migrator_more1);
-                            msg(sender, messages.migrator_more2);
-                            return true;
-                        }
-                    }
+                if (sender instanceof Player) {
+                    migrator = new CreativeSQLMigrator(plugin, (Player)sender, args[2]);
                 } else {
-                    msg(sender, messages.migrator_more1);
-                    msg(sender, messages.migrator_more2);
-                    return true;
+                    migrator = new CreativeSQLMigrator(plugin, null, args[2]);
                 }
-            } else {
-                msg(sender, messages.migrator_mysqlsqlite);
-                msg(sender, messages.migrator_sqlitemysql);
+
+                if (CreativeSQLMigrator.lock) {
+                    msg(sender, "&4The migrator is already running!");
+                } else {
+                    Bukkit.getScheduler().runTaskAsynchronously(plugin, migrator);
+                }
+
                 return true;
             }
         }
+
+        msg(sender, "&4/cc admin migrator >sqlite &8-&7 Convert actual database to SQLite");
+        msg(sender, "&4/cc admin migrator >mysql &8-&7 Convert actual database to MySQL");
+        msg(sender, "&4/cc admin migrator >h2 &8-&7 Convert actual database to H2");
+        return true;
     }
 
+    /*
+     * /cc f[0] list[1] [<player>][2]
+     * /cc f[0] add[1] <player>[2]
+     * /cc f[0] remove[1] <player>[2]
+     * /cc f[0] allow[1] <player>[2]
+     * /cc f[0] transfer[1] <player/all>[2] <player>[3]
+     */
     public boolean friendCmd(CommandSender sender, Command cmd, String string, String[] args) {
-        CreativeMessages         messages  = CreativeControl.getMessages();
+        //CreativeMessages         messages  = CreativeControl.getMessages();
         CreativeControl          plugin    = CreativeControl.getPlugin();
         CreativePlayerFriends    friends   = CreativeControl.getFriends();
         CreativeBlocksSelection  selection = CreativeControl.getSelector();
         CreativeSQLDatabase      db        = CreativeControl.getDb2();
 
-        if (!plugin.hasPerm(sender, "Commands.Friend")) {
-            msg(sender, messages.commands_noperm);
-            return false;
-        } else {
-            if (args.length > 1) {
-                if (args[1].equalsIgnoreCase("list")) {
-                    if (!plugin.hasPerm(sender, "Commands.Friend.list")) {
-                        msg(sender, messages.commands_noperm);
-                        return false;
-                    } else {
-                        if (args.length > 2) {
-                            if (args.length > 3) {
-                                msg(sender, messages.commands_flist_usage);
-                                return true;
-                            } else {
-                                if (args[2].equals("?")) {
-                                    msg(sender, messages.commands_flist_help);
-                                    return true;
-                                } else {
-                                    if ((friends.getFriends(args[2]) == null) || (friends.getFriends(args[2]).size() < 0)) {
-                                        msg(sender, messages.commands_flist_nofriends);
-                                        return true;
-                                    } else {
-                                        String list = friends.getFriends(args[2]).toString().replaceAll("\\[", "&4[&7").replaceAll("\\]", "&4]&7").replaceAll("\\,", "&4,&7");
-                                        msg(sender, messages.commands_flist_friends, list);
-                                        return true;
-                                    }
-                                }
-                            }
-                        } else {
-                            if ((friends.getFriends(sender.getName()) == null) || (friends.getFriends(sender.getName()).size() < 0)) {
-                                msg(sender, messages.commands_flist_unofriends);
-                                return true;
-                            } else {
-                                String list = friends.getFriends(sender.getName()).toString().replaceAll("\\[", "&4[&7").replaceAll("\\]", "&4]&7").replaceAll("\\,", "&4,&7");
-                                msg(sender, messages.commands_flist_friends, list);
-                                return true;
-                            }
-                        }
-                    }
-                } else
-                if (args[1].equalsIgnoreCase("add")) {
-                    if (!plugin.hasPerm(sender, "Commands.Friend.add")) {
-                        msg(sender, messages.commands_noperm);
-                        return false;
-                    } else {
-                        if (args.length > 2) {
-                            if (args.length > 3) {
-                                msg(sender, messages.commands_fadd_usage);
-                                return true;
-                            } else {
-                                if (args[2].equals("?")) {
-                                    msg(sender, messages.commands_fadd_help);
-                                    return true;
-                                } else {
-                                    if (friends.getFriends(sender.getName()) == null) {
-                                        HashSet<String> list = CreativeUtil.toStringHashSet(args[2], ", ");
-                                        friends.saveFriends(sender.getName(), list);
-                                        msg(sender, messages.commands_fadd_added, args[2]);
-                                        list.clear(); list = null;
-                                        return true;
-                                    } else {
-                                        HashSet<String> list = friends.getFriends(sender.getName());
-                                        if (list.contains(args[2])) {
-                                            msg(sender, messages.commands_fadd_already, args[2]);
-                                        } else {
-                                            list.add(args[2]);
-                                            friends.saveFriends(sender.getName(), list);
-                                            msg(sender, messages.commands_fadd_added, args[2]);
-                                        }
-                                        list.clear(); list = null;
-                                        return true;
-                                    }
-                                }
-                            }
-                        } else {
-                            msg(sender, messages.commands_fadd_usage);
-                            return true;
-                        }
-                    }
-                } else
-                if (args[1].equalsIgnoreCase("remove")) {
-                    if (!plugin.hasPerm(sender, "Commands.Friend.remove")) {
-                        msg(sender, messages.commands_noperm);
-                        return false;
-                    } else {
-                        if (args.length > 2) {
-                            if (args.length > 3) {
-                                msg(sender, messages.commands_frem_usage);
-                                return true;
-                            } else {
-                                if (args[2].equals("?")) {
-                                    msg(sender, messages.commands_frem_help);
-                                    return true;
-                                } else {
-                                    if (friends.getFriends(sender.getName()) == null) {
-                                        msg(sender, messages.commands_frem_empty, args[2]);
-                                        return true;
-                                    } else {
-                                        HashSet<String> list = friends.getFriends(sender.getName());
-                                        if (list.contains(args[2])) {
-                                            list.remove(args[2]);
-                                            friends.saveFriends(sender.getName(), list);
-                                            msg(sender, messages.commands_frem_removed, args[2]);
-                                        } else {
-                                            msg(sender, messages.commands_frem_notin, args[2]);
-                                        }
-                                        list.clear(); list = null;
-                                    }
-                                }
-                            }
-                        } else {
-                            msg(sender, messages.commands_frem_usage);
-                            return true;
-                        }
-                    }
-                } else
-                if (args[1].equalsIgnoreCase("allow")) {
-                    if (!(sender instanceof Player)) {
-                        msg(sender, messages.commands_nothere);
-                        return false;
-                    } else
-                    if ((sender instanceof Player)) {
-                        if (!plugin.hasPerm(sender, "Commands.Friend.allow")) {
-                            msg(sender, messages.commands_noperm);
-                            return false;
-                        } else {
-                            if (args.length > 2) {
-                                if (args.length > 3) {
-                                    msg(sender, messages.commands_fallow_usage);
-                                    return true;
-                                } else {
-                                    if (args[2].equals("?")) {
-                                        msg(sender, messages.commands_fallow_help);
-                                        return true;
-                                    } else {
-                                        selection.allBlocks(sender, args[2], CreativeBlocksSelection.Type.ALLOW);
-                                        return true;
-                                    }
-                                }
-                            } else {
-                                msg(sender, messages.commands_fallow_usage);
-                                return true;
-                            }
-                        }
-                    }
-                } else
-                if (args[1].equalsIgnoreCase("transfer")) {
-                    if (!(sender instanceof Player)) {
-                        msg(sender, messages.commands_nothere);
-                        return false;
-                    } else
-                    if ((sender instanceof Player)) {
-                        if (!plugin.hasPerm(sender, "Commands.Friend.transfer")) {
-                            msg(sender, messages.commands_noperm);
-                            return false;
-                        } else {
-                            if (args.length > 2) {
-                                if (args.length > 3) {
-                                    if (args.length > 4) {
-                                        msg(sender, messages.commands_ftrans_usage);
-                                        return true;
-                                    } else {
-                                        if (args[2].equals("all")) {
-                                            if (!plugin.hasPerm(sender, "Commands.Friend.transfer.all")) {
-                                                msg(sender, messages.commands_noperm);
-                                                return false;
-                                            } else {
-                                                msg(sender, messages.updater_loading);
+        if (args.length > 3) {
+            if (args[1].equalsIgnoreCase("transfer")) {
+                if (!args[2].equals("all")) {
 
-                                                CreativeBlockManager manager = CreativeControl.getManager();
-                                                int newOwner = db.getPlayerId(args[3].toLowerCase());
-                                                int oldOwner = db.getPlayerId(sender.getName().toLowerCase());
-
-                                                for (World world : Bukkit.getWorlds()) {
-                                                    db.queue("UPDATE `"+db.prefix+"blocks_"+world.getName()+"` SET owner = '"+newOwner+"' WHERE owner = '"+oldOwner+"'");
-                                                }
-
-                                                manager.clear();
-
-                                                msg(sender, messages.commands_cleanup_processed);
-                                                return true;
-                                            }
-                                        } else {
-                                            msg(sender, messages.commands_ftrans_usage);
-                                            return true;
-                                        }
-                                    }
-                                } else {
-                                    if (args[2].equals("?")) {
-                                        msg(sender, messages.commands_ftrans_help);
-                                        return true;
-                                    } else
-                                    if (args[2].equals("all")) {
-                                        msg(sender, messages.commands_ftrans_usage);
-                                        return true;
-                                    } else {
-                                        selection.allBlocks(sender, args[2], CreativeBlocksSelection.Type.TRANSFER);
-                                        return true;
-                                    }
-                                }
-                            } else {
-                                msg(sender, messages.commands_ftrans_usage);
-                                return true;
-                            }
-                        }
+                    if (!plugin.hasPerm(sender, "Commands.Friend.transfer.all")) {
+                        msg(sender, "&4You dont have permission to use this command!");
+                        return true;
                     }
-                } else {
-                    msg(sender, messages.commands_flist_usage);
-                    msg(sender, messages.commands_fadd_usage);
-                    msg(sender, messages.commands_frem_usage);
-                    msg(sender, messages.commands_fallow_usage);
-                    msg(sender, messages.commands_ftrans_usage);
+
+                    msg(sender, "&7Loading...");
+
+                    CreativeBlockManager manager = CreativeControl.getManager();
+                    int newOwner = db.getPlayerId(args[3].toLowerCase());
+                    int oldOwner = db.getPlayerId(sender.getName().toLowerCase());
+
+                    for (World world : Bukkit.getWorlds()) {
+                        db.queue("UPDATE `"+db.prefix+"blocks_"+world.getName()+"` SET owner = '"+newOwner+"' WHERE owner = '"+oldOwner+"'");
+                    }
+
+                    manager.clear();
+
+                    msg(sender, "&7Command executed successfully, however, we can't tell when it will be finished.");
                     return true;
                 }
-            } else {
-                msg(sender, messages.commands_flist_usage);
-                msg(sender, messages.commands_fadd_usage);
-                msg(sender, messages.commands_frem_usage);
-                msg(sender, messages.commands_fallow_usage);
-                msg(sender, messages.commands_ftrans_usage);
+            }
+        } else
+        if (args.length > 2) {
+            if (args[1].equalsIgnoreCase("add")) {
+
+                if (!plugin.hasPerm(sender, "Commands.Friend.add")) {
+                    msg(sender, "&4You dont have permission to use this command!");
+                    return true;
+                }
+                
+                if (friends.getFriends(sender.getName()) == null) {
+                    HashSet<String> list = CreativeUtil.toStringHashSet(args[2], ", ");
+                    
+                    friends.saveFriends(sender.getName(), list);
+                    msg(sender, "&4{0}&7 was added to your friendlist!", args[2]);
+                    
+                    list.clear(); list = null;
+                    return true;
+                } else {
+                    HashSet<String> list = friends.getFriends(sender.getName());
+                    
+                    if (list.contains(args[2])) {
+                        msg(sender, "&4{0}&7 is in your friendlist already!", args[2]);
+                    } else {
+                        list.add(args[2]);
+                        friends.saveFriends(sender.getName(), list);
+                        msg(sender, "&4{0}&7 was added to your friendlist!", args[2]);
+                    }
+                    
+                    list.clear(); list = null;
+                    return true;
+                }
+            } else
+            if (args[1].equalsIgnoreCase("list")) {
+                
+                if (!plugin.hasPerm(sender, "Commands.Friend.list")) {
+                    msg(sender, "&4You dont have permission to use this command!");
+                    return true;
+                }
+                
+                if ((friends.getFriends(sender.getName()) == null) || (friends.getFriends(sender.getName()).isEmpty())) {
+                    msg(sender, "&7Your friendlist is empty!");
+                    return true;
+                } else {
+                    String list = friends.getFriends(sender.getName()).toString().replaceAll("\\[", "&4[&7").replaceAll("\\]", "&4]&7").replaceAll("\\,", "&4,&7");
+                    msg(sender, "&4Friends&8: &7{1}", args[2], list);
+                    return true;
+                }
+            } else
+            if (args[1].equalsIgnoreCase("remove")) {
+                
+                if (!plugin.hasPerm(sender, "Commands.Friend.remove")) {
+                    msg(sender, "&4You dont have permission to use this command!");
+                    return true;
+                }
+
+                if (friends.getFriends(sender.getName()) == null) {
+                    msg(sender, "&7Your friendlist is empty!");
+                    return true;
+                }
+                
+                HashSet<String> list = friends.getFriends(sender.getName());
+                if (list.contains(args[2])) {
+                    list.remove(args[2]);
+                    friends.saveFriends(sender.getName(), list);
+                    msg(sender, "&4{0}&7 has been removed from your friendlist!", args[2]);
+                    return true;
+                } else {
+                    msg(sender, "&4{0}&7 is not in your friendlist!", args[2]);
+                    return true;
+                }
+            } else
+            if (args[1].equalsIgnoreCase("allow")) {
+                
+                if (!(sender instanceof Player)) {
+                    msg(sender, "&4This command can't be used here!");
+                    return false;
+                }
+
+                if (!plugin.hasPerm(sender, "Commands.Friend.allow")) {
+                    msg(sender, "&4You dont have permission to use this command!");
+                    return true;
+                }
+
+                selection.allBlocks(sender, args[2], Type.ALLOW);
                 return true;
+            } else
+            if (args[1].equalsIgnoreCase("transfer")) {
+                
+                if (!(sender instanceof Player)) {
+                    msg(sender, "&4This command can't be used here!");
+                    return false;
+                }
+
+                if (!plugin.hasPerm(sender, "Commands.Friend.transfer")) {
+                    msg(sender, "&4You dont have permission to use this command!");
+                    return true;
+                }
+
+                if (!args[2].equals("all")) {
+                    selection.allBlocks(sender, args[2], Type.TRANSFER);
+                    return true;
+                }
+            }
+        } else
+        if (args.length > 1) {
+            if (args[1].equalsIgnoreCase("list")) {
+                
+                if (!plugin.hasPerm(sender, "Commands.Friend.list")) {
+                    msg(sender, "&4You dont have permission to use this command!");
+                    return true;
+                }
+                
+                if ((friends.getFriends(args[2]) == null) || (friends.getFriends(args[2]).isEmpty())) {
+                    msg(sender, "&4{0}&7 has no friends :(", sender.getName());
+                    return true;
+                } else {
+                    String list = friends.getFriends(args[2]).toString().replaceAll("\\[", "&4[&7").replaceAll("\\]", "&4]&7").replaceAll("\\,", "&4,&7");
+                    msg(sender, "&4Friends&8: &7{1}", list);
+                    return true;
+                }
             }
         }
+
+        msg(sender, "&4/cc f list [<player>] &8-&7 List all player friends");
+        msg(sender, "&4/cc f add <player> &8-&7 Add a new player to your friend list");
+        msg(sender, "&4/cc f remove <player> &8-&7 Remove a player from your friend list");
+        msg(sender, "&4/cc f allow <player> &8-&7 Allow a player in your block selection");
+        msg(sender, "&4/cc f transfer <player/all> [<player>] &8-&7 Transfer the block ownship of all your blocks or from the selection");
         return true;
     }
-    
+
+    /*
+     * /cc check[0] status[1]
+     * /cc check[0] player[1] <player>[2]
+     */
     public boolean checkCmd(CommandSender sender, Command cmd, String string, String[] args) {
         CreativeMessages         messages  = CreativeControl.getMessages();
         CreativeControl          plugin    = CreativeControl.getPlugin();
-        if (!plugin.hasPerm(sender, "Commands.Check")) {
-            msg(sender, messages.commands_noperm);
-            return false;
-        } else {
-            if (args.length > 1) {
-                if (args[1].equalsIgnoreCase("status")) {
-                    if (!plugin.hasPerm(sender, "Commands.Check.status")) {
-                        msg(sender, messages.commands_noperm);
-                        return false;
-                    } else {
-                        if (args.length > 2) {
-                            msg(sender, messages.commands_scheck_help);
-                            return true;
-                        } else {
-                            int creative = 0;
-                            int survival = 0;
 
-                            for (Player players : Bukkit.getOnlinePlayers()) {
-                                if (players.getGameMode().equals(GameMode.CREATIVE)) {
-                                    creative++;
-                                }
-                                if (players.getGameMode().equals(GameMode.SURVIVAL)) {
-                                    survival++;
-                                }
-                            }
-                            msg(sender, messages.commands_scheck_there, survival, creative);
-                            return true;
-                        }
-                    }
-                } else
-                if (args[1].equalsIgnoreCase("player")) {
-                    if (!plugin.hasPerm(sender, "Commands.Check.player")) {
-                        msg(sender, messages.commands_noperm);
-                        return false;
-                    } else {
-                        if (args.length > 2) {
-                            if (args.length > 3) {
-                                msg(sender, messages.commands_pcheck_help);
-                                return true;
-                            } else {
-                                if (args[2].equals("?")) {
-                                    msg(sender, messages.commands_pcheck_help);
-                                    return true;
-                                } else {
-                                    Player player = Bukkit.getPlayer(args[2]);
+        if (args.length > 2) {
+            if (args[1].equalsIgnoreCase("player")) {
 
-                                    if (player != null) {
-                                        if (player.getGameMode().equals(GameMode.SURVIVAL)) {
-                                            msg(sender, messages.commands_pcheck_gm, player.getName(), "survival");
-                                        } else
-                                        if (player.getGameMode().equals(GameMode.CREATIVE)) {
-                                            msg(sender, messages.commands_pcheck_gm, player.getName(), "creative");
-                                        }
-                                    } else {
-                                        msg(sender, messages.commands_pcheck_noton, args[2]);
-                                    }
-                                    return true;
-                                }
-                            }
-                        } else {
-                            msg(sender, messages.commands_pcheck_help);
-                            msg(sender, messages.commands_scheck_more);
-                            return true;
-                        }
-                    }
-                } else {
-                    msg(sender, messages.commands_scheck_help);
-                    msg(sender, messages.commands_pcheck_help);
-                    msg(sender, messages.commands_scheck_more);
+                if (!plugin.hasPerm(sender, "Commands.Check.player")) {
+                    msg(sender, "&4You dont have permission to use this command!");
                     return true;
                 }
-            } else {
-                msg(sender, messages.commands_scheck_help);
-                msg(sender, messages.commands_pcheck_help);
-                msg(sender, messages.commands_scheck_more);
+
+                Player player = Bukkit.getPlayer(args[2]);
+
+                if (player != null) {
+                    msg(sender, "&7{0} has gamemode &4{1}", player.getName(), player.getGameMode().toString().toLowerCase());
+                } else {
+                    msg(sender, "&7{0} &4is not&7 online!", args[2]);
+                }
+
+                return true;
+            }
+        } else
+        if (args.length > 1) {
+            if (args[1].equalsIgnoreCase("status")) {
+                
+                if (!plugin.hasPerm(sender, "Commands.Check.status")) {
+                    msg(sender, "&4You dont have permission to use this command!");
+                    return true;
+                }
+
+                int creative = 0;
+                int survival = 0;
+
+                for (Player players : Bukkit.getOnlinePlayers()) {
+                    if (players.getGameMode().equals(GameMode.CREATIVE)) {
+                        creative++;
+                    }
+                    if (players.getGameMode().equals(GameMode.SURVIVAL)) {
+                        survival++;
+                    }
+                }
+
+                msg(sender, "&7Here are: &4{0}&7 Survival and &4{1}&7 Creative players", survival, creative);
                 return true;
             }
         }
+
+        msg(sender, "&4/cc check status &8-&7 Check the player gamemodes");
+        msg(sender, "&4/cc check player <player> &8-&7 Get the player gamemode");
+        return true;
     }
 
+    /*
+     * /cc add[0] player[1] [<player>][2]
+     */
     public boolean addCmd(CommandSender sender, Command cmd, String string, String[] args) {
         CreativeMessages         messages  = CreativeControl.getMessages();
         CreativeControl          plugin    = CreativeControl.getPlugin();
         CreativeBlocksSelection  selection = CreativeControl.getSelector();
+
         if (!(sender instanceof Player)) {
-            msg(sender, messages.commands_nothere);
+            msg(sender, "&4This command can't be used here!");
             return false;
-        } else
-        if ((sender instanceof Player)) {
-            Player p = (Player) sender;
-            if (!plugin.hasPerm(sender, "Commands.Add")) {
-                msg(sender, messages.commands_noperm);
-                return false;
-            } else {
-                if (args.length > 1) {
-                    if (args[1].equalsIgnoreCase("player")) {
-                        if (!plugin.hasPerm(sender, "Commands.Add.player")) {
-                            msg(sender, messages.commands_noperm);
-                            return false;
-                        } else {
-                            if (args.length > 2) {
-                                if (args.length > 3) {
-                                    msg(sender, messages.commands_padd_help);
-                                    return true;
-                                } else {
-                                    if (args[2].equals("?")) {
-                                        msg(sender, messages.commands_padd_help);
-                                        return true;
-                                    } else {
-                                        selection.allBlocks(sender, args[2], Type.ADD);
-                                        return true;
-                                    }
-                                }
-                            } else {
-                                msg(sender, messages.commands_padd_usage);
-                                msg(sender, messages.commands_padd_more);
-                                return true;
-                            }
-                        }
-                    } else
-                    if (args[1].equals("?")) {
-                        msg(sender, messages.commands_sadd_hep);
-                        return true;
-                    } else {
-                        msg(sender, messages.commands_sadd_usag);
-                        msg(sender, messages.commands_padd_usage);
-                        msg(sender, messages.commands_padd_more);
-                        return true;
-                    }
-                } else {
-                    selection.allBlocks(sender, sender.getName(), Type.ADD);
+        }
+
+        if (args.length > 2) {
+            if (args[1].equalsIgnoreCase("player")) {
+
+                if (!plugin.hasPerm(sender, "Commands.Add.player")) {
+                    msg(sender, "&4You dont have permission to use this command!");
                     return true;
                 }
+
+                selection.allBlocks(sender, args[2], Type.ADD);
+                return true;
             }
         }
-        return false;
+
+        if (!plugin.hasPerm(sender, "Commands.Add")) {
+            msg(sender, "&4You dont have permission to use this command!");
+            return true;
+        }
+        
+        selection.allBlocks(sender, sender.getName(), Type.ADD);
+        return true;
     }
 
+    /*
+     * /cc cleanup[0] all[1]
+     * /cc cleanup[0] corrupt[1]
+     * /cc cleanup[0] type[1] <type>[2]
+     * /cc cleanup[0] player[1] <player>[2]
+     * /cc cleanup[0] world[1] <world>[2]
+     */
     public boolean cleanupCmd(CommandSender sender, Command cmd, String string, String[] args) {
         CreativeMessages         messages  = CreativeControl.getMessages();
         CreativeControl          plugin    = CreativeControl.getPlugin();
         CreativeSQLDatabase      db        = CreativeControl.getDb2();
         CreativeBlockManager     manager   = CreativeControl.getManager();
-        
-        if (!plugin.hasPerm(sender, "Commands.Cleanup")) {
-            msg(sender, messages.commands_noperm);
-            return false;
-        } else {
-            if(args.length > 1) {
-                if (args[1].equalsIgnoreCase("all")) {
-                    if (!plugin.hasPerm(sender, "Commands.Cleanup.all")) {
-                        msg(sender, messages.commands_noperm);
-                        return false;
-                    } else {
-                        if (args.length > 2) {
-                            msg(sender, messages.commands_acleanup_help);
-                            return true;
-                        } else {
 
-                            for (World world : Bukkit.getWorlds()) {
-                                db.queue("DELETE FROM `"+db.prefix+"blocks_"+world.getName()+"`");
-                            }
-
-                            manager.clear();
-                            msg(sender, messages.commands_cleanup_processed);
-                            return true;
-                        }
-                    }
-                } else
-                if (args[1].equalsIgnoreCase("type")) {
-                    if (!plugin.hasPerm(sender, "Commands.Cleanup.type")) {
-                        msg(sender, messages.commands_noperm);
-                        return false;
-                    } else {
-                        if (args.length > 2) {
-                            if (args.length > 3) {
-                                msg(sender, messages.commands_tcleanup_help);
-                                return true;
-                            } else {
-                                if (args[2].equals("?")) {
-                                    msg(sender, messages.commands_tcleanup_help);
-                                    return true;
-                                } else {
-
-                                    for (World world : Bukkit.getWorlds()) {
-                                        db.queue("DELETE FROM `"+db.prefix+"blocks_"+world.getName()+"` WHERE type = '"+args[2]+"'");
-                                    }
-
-                                    msg(sender, messages.commands_cleanup_processed);
-                                    return true;
-                                }
-                            }
-                        } else {
-                            msg(sender, messages.commands_tcleanup_usage);
-                            msg(sender, messages.commands_cleanup_more);
-                            return true;
-                        }
-                    }
-                } else
-                if (args[1].equalsIgnoreCase("player")) {
-                    if (!plugin.hasPerm(sender, "Commands.Cleanup.player")) {
-                        msg(sender, messages.commands_noperm);
-                        return false;
-                    } else {
-                        if (args.length > 2) {
-                            if (args.length > 3) {
-                                msg(sender, messages.commands_pcleanup_help);
-                                return true;
-                            } else {
-                                if (args[2].equals("?")) {
-                                    msg(sender, messages.commands_pcleanup_help);
-                                    return true;
-                                } else {
-
-                                    for (World world : Bukkit.getWorlds()) {
-                                        db.queue("DELETE FROM `"+db.prefix+"blocks_"+world.getName()+"` WHERE owner = '"+db.getPlayerId(args[2])+"'");
-                                    }
-                                    
-                                    msg(sender, messages.commands_cleanup_processed);
-                                    return true;
-                                }
-                            }
-                        } else {
-                            msg(sender, messages.commands_pcleanup_usage);
-                            msg(sender, messages.commands_cleanup_more);
-                            return true;
-                        }
-                    }
-                } else
-                if (args[1].equalsIgnoreCase("world")) {
-                    if (!plugin.hasPerm(sender, "Commands.Cleanup.world")) {
-                        msg(sender, messages.commands_noperm);
-                        return false;
-                    } else {
-                        if (args.length > 2) {
-                            if (args.length > 3) {
-                                msg(sender, messages.commands_wcleanup_help);
-                                return true;
-                            } else {
-                                if (args[2].equals("?")) {
-                                    msg(sender, messages.commands_wcleanup_help);
-                                    return true;
-                                } else {
-
-                                    if (db.hasTable(db.prefix+"blocks_"+args[2])) {
-                                        msg(sender, "&4There is no world called {0}", args[2]);
-                                    } else {
-                                        db.queue("DELETE FROM `"+db.prefix+"blocks_"+args[2]+"`;");
-                                    }
-
-                                    msg(sender, messages.commands_cleanup_processed);
-                                    return true;
-                                }
-                            }
-                        } else {
-                            msg(sender, messages.commands_wcleanup_usage);
-                            msg(sender, messages.commands_cleanup_more);
-                            return true;
-                        }
-                    }
-                } if (args[1].equalsIgnoreCase("corrupt")) {
-                    if (!plugin.hasPerm(sender, "Commands.Cleanup.corrupt")) {
-                        msg(sender, messages.commands_noperm);
-                        return false;
-                    } else {
-                        if (args.length > 2) {
-                            msg(sender, messages.commands_ccleanup_help);
-                            return true;
-                        } else {
-                            CreativeSQLCleanup cleanup = null;
-                            
-                            if (sender instanceof Player) {
-                                cleanup = new CreativeSQLCleanup(CreativeControl.plugin, (Player)sender);
-                            } else {
-                                cleanup = new CreativeSQLCleanup(CreativeControl.plugin, null);
-                            }
-
-                            if (CreativeSQLCleanup.lock) {
-                                msg(sender, messages.cleanup_locked);
-                                return true;
-                            } else {
-                                Bukkit.getScheduler().runTaskAsynchronously(plugin, cleanup);
-                                return true;
-                            }
-                        }
-                    }
-                } else {
-                    msg(sender, messages.commands_acleanup_usage);
-                    msg(sender, messages.commands_pcleanup_usage);
-                    msg(sender, messages.commands_tcleanup_usage);
-                    msg(sender, messages.commands_wcleanup_usage);
-                    msg(sender, messages.commands_ccleanup_usage);
-                    msg(sender, messages.commands_cleanup_more);
+        if (args.length > 2) {
+            if (args[1].equalsIgnoreCase("type")) {
+                
+                if (!plugin.hasPerm(sender, "Commands.Cleanup.type")) {
+                    msg(sender, "&4You dont have permission to use this command!");
                     return true;
                 }
-            } else {
-                msg(sender, messages.commands_acleanup_usage);
-                msg(sender, messages.commands_pcleanup_usage);
-                msg(sender, messages.commands_tcleanup_usage);
-                msg(sender, messages.commands_wcleanup_usage);
-                msg(sender, messages.commands_ccleanup_usage);
-                msg(sender, messages.commands_cleanup_more);
+
+                for (World world : Bukkit.getWorlds()) {
+                    db.queue("DELETE FROM `"+db.prefix+"blocks_"+world.getName()+"` WHERE type = '"+args[2]+"'");
+                }
+                
+                manager.clear();
+
+                msg(sender, "&7Command executed successfully, however, we can't tell when it will be finished.");
+                return true;
+            } else
+            if (args[1].equalsIgnoreCase("player")) {
+                
+                if (!plugin.hasPerm(sender, "Commands.Cleanup.player")) {
+                    msg(sender, "&4You dont have permission to use this command!");
+                    return true;
+                }
+
+                for (World world : Bukkit.getWorlds()) {
+                    db.queue("DELETE FROM `"+db.prefix+"blocks_"+world.getName()+"` WHERE owner = '"+db.getPlayerId(args[2])+"'");
+                }
+
+                msg(sender, "&7Command executed successfully, however, we can't tell when it will be finished.");
+                return true;
+            } else
+            if (args[1].equalsIgnoreCase("world")) {
+                
+                if (!plugin.hasPerm(sender, "Commands.Cleanup.world")) {
+                    msg(sender, "&4You dont have permission to use this command!");
+                    return true;
+                }
+
+                if (db.hasTable(db.prefix+"blocks_"+args[2])) {
+                    msg(sender, "&4There is no world called {0}", args[2]);
+                } else {
+                    try {
+                        db.execute("DROP TABLE `"+db.prefix+"blocks_"+args[2]+"`;");
+                    } catch (CoreDbException ex) { }
+                }
+                
+                manager.clear();
+                db.load();
+
+                msg(sender, "&7Command executed successfully, however, we can't tell when it will be finished.");
                 return true;
             }
+        } else
+        if (args.length > 1) {
+            if (args[1].equalsIgnoreCase("all")) {
+                
+                if (!plugin.hasPerm(sender, "Commands.Cleanup.all")) {
+                    msg(sender, "&4You dont have permission to use this command!");
+                    return true;
+                }
+
+                for (World world : Bukkit.getWorlds()) {
+                    try {
+                        db.execute("DROP TABLE `"+db.prefix+"blocks_"+world.getName()+"`");
+                    } catch (CoreDbException ex) { }
+                }
+
+                manager.clear();
+                db.load();
+
+                manager.clear();
+                msg(sender, "&7Command executed successfully, however, we can't tell when it will be finished.");
+                return true;
+            } else
+            if (args[1].equalsIgnoreCase("corrupt")) {
+
+                if (!plugin.hasPerm(sender, "Commands.Cleanup.corrupt")) {
+                    msg(sender, "&4You dont have permission to use this command!");
+                    return true;
+                }
+
+                CreativeSQLCleanup cleanup = null;
+
+                if (sender instanceof Player) {
+                    cleanup = new CreativeSQLCleanup(CreativeControl.plugin, (Player)sender);
+                } else {
+                    cleanup = new CreativeSQLCleanup(CreativeControl.plugin, null);
+                }
+
+                if (CreativeSQLCleanup.lock) {
+                    msg(sender, messages.cleanup_locked);
+                    return true;
+                } else {
+                    Bukkit.getScheduler().runTaskAsynchronously(plugin, cleanup);
+                    return true;
+                }
+            }
         }
+
+        msg(sender, "&4/cc cleanup all &8-&7 Remove all protections");
+        msg(sender, "&4/cc cleanup corrupt &8-&7 Remove all corrupt protections");
+        msg(sender, "&4/cc cleanup type <typeId> &8-&7 Remove all protections of a type");
+        msg(sender, "&4/cc cleanup player <player> &8-&7 Remove all protections of a player");
+        msg(sender, "&4/cc cleanup world <world> &8-&7 Remove all protections of a world");
+        return true;
     }
 
+    /*
+     * /cc del[0] all[1]
+     * /cc del[0] type[1] <type>[2]
+     * /cc del[0] player[1] <player>[2]
+     */
     public boolean delCmd(CommandSender sender, Command cmd, String string, String[] args) {
         CreativeMessages         messages  = CreativeControl.getMessages();
         CreativeControl          plugin    = CreativeControl.getPlugin();
         CreativeBlocksSelection  selection = CreativeControl.getSelector();
+
         if (!(sender instanceof Player)) {
-            msg(sender, messages.commands_nothere);
-            return false;
-        } else
-        if ((sender instanceof Player)) {
-            Player p = (Player) sender;
-            if (!plugin.hasPerm(sender, "Commands.Del")) {
-                msg(sender, messages.commands_noperm);
-                return false;
-            } else {
-                if (args.length > 1) {
-                    if (args[1].equalsIgnoreCase("all")) {
-                        if (!plugin.hasPerm(sender, "Commands.Del.all")) {
-                            msg(sender, messages.commands_noperm);
-                            return false;
-                        } else {
-                            if (args.length > 2) {
-                                msg(sender, messages.commands_adel_help);
-                                return true;
-                            } else {
-                                selection.allBlocks(sender, sender.getName(), Type.DELALL);
-                                return true;
-                            }
-                        }
-                    } else
-                    if (args[1].equalsIgnoreCase("type")) {
-                        if (!plugin.hasPerm(sender, "Commands.Del.type")) {
-                            msg(sender, messages.commands_noperm);
-                            return false;
-                        } else {
-                            if (args.length > 2) {
-                                if (args.length > 3) {
-                                    msg(sender, messages.commands_tdel_help);
-                                    return true;
-                                } else {
-                                    if (args[2].equals("?")) {
-                                        msg(sender, messages.commands_tdel_help);
-                                        return true;
-                                    } else {
-                                        selection.allBlocks(sender, args[2], Type.DELTYPE);
-                                        return true;
-                                    }
-                                }
-                            } else {
-                                msg(sender, messages.commands_tdel_usage);
-                                msg(sender, messages.commands_del_more);
-                                return true;
-                            }
-                        }
-                    } else
-                    if (args[1].equalsIgnoreCase("player")) {
-                        if (!plugin.hasPerm(sender, "Commands.Del.player")) {
-                            msg(sender, messages.commands_noperm);
-                            return false;
-                        } else {
-                            if (args.length > 2) {
-                                if (args.length > 3) {
-                                    msg(sender, messages.commands_pdel_help);
-                                    return true;
-                                } else {
-                                    if (args[2].equals("?")) {
-                                        msg(sender, messages.commands_pdel_help);
-                                        return true;
-                                    } else {
-                                        selection.allBlocks(sender, args[2], Type.DELPLAYER);
-                                        return true;
-                                    }
-                                }
-                            } else {
-                                msg(sender, messages.commands_pdel_usage);
-                                msg(sender, messages.commands_del_more);
-                                return true;
-                            }
-                        }
-                    } else {
-                        msg(sender, messages.commands_adel_usage);
-                        msg(sender, messages.commands_tdel_usage);
-                        msg(sender, messages.commands_pdel_usage);
-                        msg(sender, messages.commands_del_more);
-                        return true;
-                    }
-                } else {
-                    msg(sender, messages.commands_adel_usage);
-                    msg(sender, messages.commands_tdel_usage);
-                    msg(sender, messages.commands_pdel_usage);
-                    msg(sender, messages.commands_del_more);
-                    return true;
-                }
-            }
+            msg(sender, "&4This command can't be used here!");
+            return true;
         }
-        return false;
-    }
 
-    public boolean selCmd(CommandSender sender, Command cmd, String string, String[] args) {
-        CreativeMessages         messages  = CreativeControl.getMessages();
-        CreativeControl          plugin    = CreativeControl.getPlugin();
-        if (!(sender instanceof Player)) {
-            msg(sender, messages.commands_nothere);
-            return false;
-        } else
-        if ((sender instanceof Player)) {
-            Player p = (Player) sender;
-            if (args.length > 1) {
-                if (args[1].equalsIgnoreCase("expand")) {
-                    if (!plugin.hasPerm(sender, "Commands.Expand")) {
-                        msg(sender, messages.commands_noperm);
-                        return false;
-                    } else {
-                        if (args.length > 2) {
-                            if (args.length > 3) {
-                                if (args.length > 4) {
-                                    msg(sender, messages.commands_sel_more);
-                                    return true;
-                                } else {
-                                    if (args[2].equalsIgnoreCase("up")) {
-                                        if (args[3].equalsIgnoreCase("?")) {
-                                            msg(sender, messages.commands_usel_help);
-                                            msg(sender, messages.commands_sel_more);
-                                            return true;
-                                        } else {
-                                            try {
-                                                int upAdd = Integer.parseInt(args[3]);
-                                                Location up = plugin.right.get(p);
+        if (args.length > 2) {
+            if (args[1].equalsIgnoreCase("type")) {
 
-                                                World world = up.getWorld();
-                                                double x = up.getX();
-                                                double y = up.getY();
-                                                double z = up.getZ();
-
-                                                Location newUp = new Location(world, x, y + upAdd, z);
-                                                plugin.right.remove(p);
-                                                plugin.right.put(p, newUp);
-
-                                                msg(sender, messages.commands_usel_expended, upAdd);
-                                                return true;
-                                            } catch (Exception e) {
-                                                msg(sender, messages.commands_sel_number);
-                                                return true;
-                                            }
-                                        }
-                                    } else
-                                    if (args[2].equalsIgnoreCase("down")) {
-                                        if (args[3].equalsIgnoreCase("?")) {
-                                            msg(sender, messages.commands_dsel_help);
-                                            msg(sender, messages.commands_sel_more);
-                                            return true;
-                                        } else {
-                                            try {
-                                                int downAdd = Integer.parseInt(args[3]);
-                                                Location down = plugin.left.get(p);
-
-                                                World world = down.getWorld();
-                                                double x = down.getX();
-                                                double y = down.getY();
-                                                double z = down.getZ();
-
-                                                Location newDown = new Location(world, x, y - downAdd, z);
-                                                plugin.left.remove(p);
-                                                plugin.left.put(p, newDown);
-
-                                                msg(sender, messages.commands_dsel_expended, downAdd);
-                                                return true;
-                                            } catch (Exception e) {
-                                                msg(sender, messages.commands_sel_number);
-                                                return true;
-                                            }
-                                        }
-                                    }
-                                }
-                            } else {
-                                if (args[2].equalsIgnoreCase("vert")) {
-                                    if (args.length > 3) {
-                                        msg(sender, messages.commands_vsel_help);
-                                        msg(sender, messages.commands_sel_more);
-                                        return true;
-                                    } else {
-                                        Location vright = plugin.right.get(p);
-                                        Location vleft = plugin.right.get(p);
-
-                                        World world = vright.getWorld();
-                                        double x = vright.getX();
-                                        double z = vright.getZ();
-
-                                        World world2 = vleft.getWorld();
-                                        double x2 = vleft.getX();
-                                        double z2 = vleft.getZ();
-
-                                        Location newVRight = new Location(world, x, 256, z);
-                                        Location newVLeft = new Location(world2, x2, 1, z2);
-
-                                        plugin.right.remove(p);
-                                        plugin.right.put(p, newVRight);
-
-                                        plugin.left.remove(p);
-                                        plugin.left.put(p, newVLeft);
-
-                                        msg(sender, messages.commands_vsel_expended);
-                                        return true;
-                                    }
-                                } else {
-                                    msg(sender, messages.commands_usel_usage);
-                                    msg(sender, messages.commands_dsel_usage);
-                                    msg(sender, messages.commands_vsel_usage);
-                                    msg(sender, messages.commands_sel_more);
-                                    return true;
-                                }
-                            }
-                        } else {
-                            msg(sender, messages.commands_usel_usage);
-                            msg(sender, messages.commands_dsel_usage);
-                            msg(sender, messages.commands_vsel_usage);
-                            msg(sender, messages.commands_sel_more);
-                            return true;
-                        }
-                    }
-                } else {
-                    msg(sender, messages.commands_usel_usage);
-                    msg(sender, messages.commands_dsel_usage);
-                    msg(sender, messages.commands_vsel_usage);
-                    msg(sender, messages.commands_sel_more);
+                if (!plugin.hasPerm(sender, "Commands.Del.type")) {
+                    msg(sender, "&4You dont have permission to use this command!");
                     return true;
                 }
-            } else {
-                msg(sender, messages.commands_usel_usage);
-                msg(sender, messages.commands_dsel_usage);
-                msg(sender, messages.commands_vsel_usage);
-                msg(sender, messages.commands_sel_more);
+
+                selection.allBlocks(sender, args[2], Type.DELTYPE);
+                return true;
+            } else
+            if (args[1].equalsIgnoreCase("player")) {
+
+                if (!plugin.hasPerm(sender, "Commands.Del.player")) {
+                    msg(sender, "&4You dont have permission to use this command!");
+                    return true;
+                }
+
+                selection.allBlocks(sender, args[2], Type.DELPLAYER);
+                return true;
+            }
+        } else
+        if (args.length > 1) {
+            if (args[1].equalsIgnoreCase("all")) {
+
+                if (!plugin.hasPerm(sender, "Commands.Del.all")) {
+                    msg(sender, "&4You dont have permission to use this command!");
+                    return true;
+                }
+
+                selection.allBlocks(sender, sender.getName(), Type.DELALL);
                 return true;
             }
         }
+
+        return true;
+    }
+
+    /*
+     * /cc sel[0] expand[1] vert[2]
+     * /cc sel[0] expand[1] up[2] <amount>[3]
+     * /cc sel[0] expand[1] down[2] <amount>[3]
+     */
+    public boolean selCmd(CommandSender sender, Command cmd, String string, String[] args) {
+        CreativeMessages         messages  = CreativeControl.getMessages();
+        CreativeControl          plugin    = CreativeControl.getPlugin();
+
+        if (!(sender instanceof Player)) {
+            msg(sender, "&4This command can't be used here!");
+            return false;
+        }
+        
+        Player p = (Player) sender;
+        if (args.length > 3) {
+            if (args[1].equalsIgnoreCase("expand")) {
+
+                if (!plugin.hasPerm(sender, "Commands.Expand")) {
+                    msg(sender, "&4You dont have permission to use this command!");
+                    return true;
+                }
+
+                if (args[2].equalsIgnoreCase("up")) {
+                    try {
+                        int add = Integer.parseInt(args[3]);
+                        
+                        Location up = plugin.right.get(p);
+                        
+                        if (add + up.getY() > 255) {
+                            up.setY(255);
+                        } else {
+                            up.add(0, add, 0);
+                        }
+                        
+                        plugin.right.put(p, up);
+                        msg(sender, "&7Selection expanded successfuly!");
+                        return true;
+                    } catch (Exception e) {
+                        msg(sender, "&4{0} is not a valid number!", args[3]);
+                        return true;
+                    }
+                } else
+                if (args[2].equalsIgnoreCase("down")) {
+                    try {
+                        int add = Integer.parseInt(args[3]);
+
+                        Location down = plugin.left.get(p);
+                        
+                        if (add - down.getY() < 0) {
+                            down.setY(0);
+                        } else {
+                            down.subtract(0, add, 0);
+                        }
+                        
+                        plugin.left.put(p, down);
+                        msg(sender, "&7Selection expanded successfuly!");
+                        return true;
+                    } catch (Exception e) {
+                        msg(sender, "&4{0} is not a valid number!", args[3]);
+                        return true;
+                    }
+                }
+            }
+        } else
+        if (args.length > 2) {
+            if (args[2].equalsIgnoreCase("vert")) {
+                Location right = plugin.right.get(p);
+                Location left = plugin.right.get(p);
+
+                right.setY(255);
+                left.setY(0);
+
+                plugin.right.put(p, right);
+                plugin.left.put(p, left);
+
+                msg(sender, "&7Selection expanded successfuly!");
+                return true;
+            }
+        }
+
+        msg(sender, "&4/cc sel expand vert &8-&7 Expand the selection from sky to bedrock");
+        msg(sender, "&4/cc sel expand up <amount> &8-&7 Expand the selecion X blocks up");
+        msg(sender, "&4/cc sel expand down <amount> &8-&7 Expand the selection Y block down");
         return true;
     }
     
+    /*
+     * /cc region[0] define[1] creative[2] <name>[3]
+     * /cc region[0] define[1] survival[2] <name>[3]
+     * /cc region[0] remove[1] <name>[3]
+     */
     public boolean regionCmd(CommandSender sender, Command cmd, String string, String[] args) {
         CreativeMessages         messages  = CreativeControl.getMessages();
         CreativeControl          plugin    = CreativeControl.getPlugin();
         CreativeBlocksSelection  selection = CreativeControl.getSelector();
         CreativeMainConfig       main      = CreativeControl.getMainConfig();
+
         if (!(sender instanceof Player)) {
-            msg(sender, messages.commands_nothere);
+            msg(sender, "&4This command can't be used here!");
             return false;
-        } else
-        if ((sender instanceof Player)) {
-            Player p = (Player) sender;
-            Location left = plugin.left.get((Player)sender);
-            Location right = plugin.right.get((Player)sender);
-            if (!plugin.hasPerm(p, "Commands.Region")) {
-                msg(sender, messages.commands_noperm);
-                return false;
-            } else {
-                if (args.length > 1) {
-                    if (args[1].equalsIgnoreCase("define")) {
-                        if (!plugin.hasPerm(sender, "Commands.Region.define")) {
-                            msg(sender, messages.commands_noperm);
-                            return false;
-                        } else {
-                            if (args.length > 2) {
-                                if (args.length > 3) {
-                                    if (args.length > 4) {
-                                        msg(sender, messages.commands_region_define);
-                                        msg(sender, messages.commands_region_more);
-                                        return true;
-                                    } else {
-                                        if (args[2].equalsIgnoreCase("creative")) {
-                                            if (args[3].equalsIgnoreCase("?")) {
-                                                msg(sender, messages.commands_crdefine_help);
-                                                return true;
-                                            } else {
-                                                Location start = null;
-                                                Location end = null;
-                                                
-                                                if (!main.selection_usewe || selection.getSelection((Player)sender) == null) {
-                                                    if ((left == null) || (right == null)) {
-                                                        msg(sender, messages.sel_null);
-                                                        return true;
-                                                    }
-                                                    
-                                                    CreativeSelection sel = new CreativeSelection(left, right);
+        }
 
-                                                    start = sel.getStart();
-                                                    end = sel.getEnd();
-                                                } else {
-                                                    Selection sel = selection.getSelection((Player)sender);
+        Player p = (Player) sender;
+        
+        Location left = plugin.left.get(p);
+        Location right = plugin.right.get(p);
 
-                                                    if (sel == null) {
-                                                        msg(sender, messages.sel_null);
-                                                        return true;
-                                                    }
+        if (args.length > 3) {
+            if (args[1].equalsIgnoreCase("define")) {
 
-                                                    start = sel.getMinimumPoint();
-                                                    end = sel.getMaximumPoint();
-                                                }
+                if (!plugin.hasPerm(sender, "Commands.Region.define")) {
+                    msg(sender, "&4You dont have permission to use this command!");
+                    return true;
+                }
 
-                                                setRegion(gmType.CREATIVE, args[3], start, end);
-                                                
-                                                start = null;
-                                                end = null;
-                                                
-                                                msg(sender, messages.commands_region_created, args[3]);
-                                                return true;
-                                            }
-                                        } else
-                                        if (args[2].equalsIgnoreCase("survival")) {
-                                            if (args[3].equalsIgnoreCase("?")) {
-                                                msg(sender, messages.commands_crdefine_help);
-                                                msg(sender, messages.commands_srdefine_help);
-                                                return true;
-                                            } else {
-                                                Location start = null;
-                                                Location end = null;
-                                                
-                                                if (!main.selection_usewe || selection.getSelection((Player)sender) == null) {
-                                                    if ((left == null) || (right == null)) {
-                                                        msg(sender, messages.sel_null);
-                                                        return true;
-                                                    }
-                                                    
-                                                    CreativeSelection sel = new CreativeSelection(left, right);
+                Location start = null;
+                Location end = null;
 
-                                                    start = sel.getStart();
-                                                    end = sel.getEnd();
-                                                } else {
-                                                    Selection sel = selection.getSelection((Player)sender);
-
-                                                    if (sel == null) {
-                                                        msg(sender, messages.sel_null);
-                                                        return true;
-                                                    }
-
-                                                    start = sel.getMinimumPoint();
-                                                    end = sel.getMaximumPoint();
-                                                }
-
-                                                setRegion(gmType.SURVIVAL, args[3], start, end);
-                                                
-                                                start = null;
-                                                end = null;
-                                                
-                                                msg(sender, messages.commands_region_created, args[3]);
-                                                return true;
-                                            }
-                                        } else {
-                                            msg(sender, messages.commands_crdefine_usage);
-                                            msg(sender, messages.commands_srdefine_usage);
-                                            msg(sender, messages.commands_region_more);
-                                            return true;
-                                        }
-                                    }
-                                } else {
-                                    msg(sender, messages.commands_crdefine_usage);
-                                    msg(sender, messages.commands_srdefine_usage);
-                                    msg(sender, messages.commands_region_more);
-                                    return true;
-                                }
-                            } else {
-                                msg(sender, messages.commands_crdefine_usage);
-                                msg(sender, messages.commands_srdefine_usage);
-                                msg(sender, messages.commands_region_more);
-                                return true;
-                            }
-                        }
-                    } else
-                    if (args[1].equalsIgnoreCase("remove")) {
-                        if (!plugin.hasPerm(sender, "Commands.Region.remove")) {
-                            msg(sender, messages.commands_noperm);
-                            return false;
-                        } else {
-                            if (args.length > 2) {
-                                if (args.length > 3) {
-                                    msg(sender, messages.commands_cremove_usage);
-                                    return true;
-                                } else {
-                                    if (args[2].equalsIgnoreCase("?")) {
-                                        msg(sender, messages.commands_cremove_help);
-                                        return true;
-                                    } else {
-                                        removeRegion(args[2]);
-                                        msg(sender, messages.commands_cremove_sucess);
-                                        return true;
-                                    }
-                                }
-                            } else {
-                                msg(sender, messages.commands_cremove_usage);
-                                msg(sender, messages.commands_region_more);
-                                return true;
-                            }
-                        }
+                if (!main.selection_usewe || selection.getSelection(p) == null) {
+                    if ((left == null) || (right == null)) {
+                        msg(sender, "&4You must select the area first!");
+                        return true;
                     }
+
+                    CreativeSelection sel = new CreativeSelection(left, right);
+
+                    start = sel.getStart();
+                    end = sel.getEnd();
                 } else {
-                    msg(sender, messages.commands_region_more);
+                    Selection sel = selection.getSelection((Player)sender);
+
+                    if (sel == null) {
+                        msg(sender, "&4You must select the area first!");
+                        return true;
+                    }
+
+                    start = sel.getMinimumPoint();
+                    end = sel.getMaximumPoint();
+                }
+                
+                CreativeMode type = null;
+
+                if (args[2].equalsIgnoreCase("creative")) {
+                    type = CreativeMode.CREATIVE;
+                } else if (args[2].equalsIgnoreCase("creative")) {
+                    type = CreativeMode.SURVIVAL;
+                }
+
+                start = null;
+                end = null;
+
+                if (type != null) {
+                    setRegion(type, args[3], start, end);
+                    msg(sender, "&7Region create successfully!");
                     return true;
                 }
             }
+        } else
+        if (args.length > 2) {
+            if (args[1].equalsIgnoreCase("remove")) {
+                
+                if (!plugin.hasPerm(sender, "Commands.Region.remove")) {
+                    msg(sender, "&4You dont have permission to use this command!");
+                    return true;
+                }
+                
+                removeRegion(args[2]);
+                msg(sender, "&7Region removed successfully");
+                return true;
+            }
         }
-        return false;
+
+        msg(sender, "&4/cc region define creative <name> &8-&7 Create a creative region");
+        msg(sender, "&4/cc region define survival <name> &8-&7 Create a survival region");
+        msg(sender, "&4/cc region remove <name> &8-&7 Remove a region");
+        return true;
     }
 
     public boolean reloadCmd(CommandSender sender, Command cmd, String string, String[] args) {
         CreativeMessages         messages  = CreativeControl.getMessages();
         CreativeControl          plugin    = CreativeControl.getPlugin();
+
         if (!plugin.hasPerm(sender, "Commands.Reload")) {
-            msg(sender, messages.commands_noperm);
-            return false;
-        } else {
-            msg(sender, messages.commands_reloading);
-            plugin.reload(sender);
-            msg(sender, messages.commands_reloaded);
-        }
-        if(args.length > 1) {
-            msg(sender, messages.commands_reload_help);
+            msg(sender, "&4You dont have permission to use this command!");
             return true;
         }
+
+        msg(sender, "&7Reloading...");
+        plugin.reload(sender);
+        msg(sender, "&7Reloaded successfuly!");
         return false;
     }
     
@@ -1156,113 +782,85 @@ public class CreativeCommands implements CommandExecutor {
         CreativeBlockManager     manager   = CreativeControl.getManager();
 
         if (!plugin.hasPerm(sender, "Commands.Status")) {
-            msg(sender, messages.commands_noperm);
-            return false;
-        } else {
-            if (args.length > 1) {
-                msg(sender, messages.commands_status_help);
-                return true;
-            } else {
-                msg(sender, messages.commands_status_queue, db.getQueueSize());
-                msg(sender, messages.commands_status_sqlreads, db.getReads());
-                msg(sender, messages.commands_status_sqlwrites, db.getWrites());
-                msg(sender, messages.commands_status_cache, (manager.getCache().size()), manager.getCache().getMaxSize());
-                msg(sender, messages.commands_status_cachereads, (manager.getCache().getReads()));
-                msg(sender, messages.commands_status_cachewrites, (manager.getCache().getWrites()));
-                return true;
-            }
+            msg(sender, "&4You dont have permission to use this command!");
+            return true;
         }
+
+        msg(sender, "&4Queue size&8:&7 {0}", db.getQueueSize());
+        msg(sender, "&4Database reads&8:&7 {0}", db.getReads());
+        msg(sender, "&4Database writes&8:&7 {0}", db.getWrites());
+        msg(sender, "&4Database size&8:&7 {0} / {1}", Utils.getFormatedBytes(manager.getTablesSize()), Utils.getFormatedBytes(manager.getTablesFree()));
+        msg(sender, "&4Blocks protected&8:&7 {0}", manager.getTotal());
+        msg(sender, "&4Cache reads&8:&7 {0}", manager.getCache().getReads());
+        msg(sender, "&4Queue writes&8:&7 {0}", manager.getCache().getWrites());
+        msg(sender, "&4Cache size&8:&7 {0}/{1}", manager.getCache().size(), manager.getCache().getMaxSize());
+        return true;
     }
 
+    /*
+     * /cc tool[0] add[1]
+     * /cc tool[0] del[1]
+     */
     public boolean toolCmd(CommandSender sender, Command cmd, String string, String[] args) {
         CreativeMessages         messages  = CreativeControl.getMessages();
         CreativeControl          plugin    = CreativeControl.getPlugin();
+        
         if (!(sender instanceof Player)) {
-            msg(sender, messages.commands_nothere);
+            msg(sender, "&4This command can't be used here!");
             return false;
-        } else
-        if ((sender instanceof Player)) {
-            Player p = (Player) sender;
-            if (!plugin.hasPerm(p, "Commands.Tool")) {
-                msg(sender, messages.commands_noperm);
-                return false;
-            } else {
-                if (args.length > 0) {
-                    if (args[0].equalsIgnoreCase("tool")) {
-                        if (args.length > 1) {
-                            if (args[1].equalsIgnoreCase("add")) {
-                                if (args.length > 2) {
-                                    msg(sender, messages.commands_atool_help);
-                                    return true;
-                                } else {
-                                    if (!plugin.hasPerm(p, "Commands.Tool.add")) {
-                                        msg(sender, messages.commands_noperm);
-                                        return true;
-                                    } else {
-                                        if (plugin.mods.containsKey(p.getName())) {
-                                            msg(sender, messages.commands_tool_dec);
-                                            plugin.mods.remove(p.getName());
-                                            plugin.modsfastup.remove(p.getName());
-                                            return true;
-                                        } else {
-                                            plugin.mods.put(p.getName(), "Block-Add-Tool");
-                                            plugin.modsfastup.add(p.getName());
-                                            msg(sender, messages.commands_tool_act);
-                                            return true;
-                                        }
-                                    }
-                                }
-                            } else 
-                            if (args[1].equalsIgnoreCase("del")) {
-                                if (args.length > 2) {
-                                    msg(sender, messages.commands_dtool_help);
-                                    return true;
-                                } else {
-                                    if (!plugin.hasPerm(p, "Commands.Tool.del")) {
-                                        msg(sender, messages.commands_noperm);
-                                        return true;
-                                    } else {
-                                        if (plugin.mods.containsKey(p.getName())) {
-                                            msg(sender, messages.commands_tool_dec);
-                                            plugin.mods.remove(p.getName());
-                                            plugin.modsfastup.remove(p.getName());
-                                            return true;
-                                        } else {
-                                            plugin.mods.put(p.getName(), "Block-Del-Tool");
-                                            plugin.modsfastup.add(p.getName());
-                                            msg(sender, messages.commands_tool_act);
-                                            return true;
-                                        }
-                                    }
-                                }
-                            } else {
-                                msg(sender, messages.commands_atool_usage);
-                                msg(sender, messages.commands_dtool_usage);
-                                msg(sender, messages.commands_tool_more);
-                                return true;
-                            }
-                        } else {
-                            msg(sender, messages.commands_atool_usage);
-                            msg(sender, messages.commands_dtool_usage);
-                            msg(sender, messages.commands_tool_more);
-                            return true;
-                        }
-                    }
+        }
+
+        Player p = (Player) sender;
+        if (args.length > 1) {
+            if (args[1].equalsIgnoreCase("add")) {
+
+                if (!plugin.hasPerm(p, "Commands.Tool.add")) {
+                    msg(sender, "&4You dont have permission to use this command!");
+                    return true;
+                }
+
+                if (plugin.mods.containsKey(p.getName())) {
+                    msg(sender, "&7Tool deactivated!");
+                    plugin.mods.remove(p.getName());
+                    return true;
+                } else {
+                    plugin.mods.put(p.getName(), 0);
+                    msg(sender, "&7Touch the block to protect");
+                    return true;
+                }
+            } else 
+            if (args[1].equalsIgnoreCase("del")) {
+
+                if (!plugin.hasPerm(p, "Commands.Tool.del")) {
+                    msg(sender, "&4You dont have permission to use this command!");
+                    return true;
+                }
+
+                if (plugin.mods.containsKey(p.getName())) {
+                    msg(sender, "&7Tool deactivated!");
+                    plugin.mods.remove(p.getName());
+                    return true;
+                } else {
+                    plugin.mods.put(p.getName(), 1);
+                    msg(sender, "&7Touch the block to unprotect");
+                    return true;
                 }
             }
         }
+
+        msg(sender, "&4/cc tool add &8-&7 Manualy protect blocks");
+        msg(sender, "&4/cc tool del &8-&7 Manualy unprotect blocks");
         return true;
     }
     
-    public void setRegion(gmType type, String name, Location start, Location end) {
+    public void setRegion(CreativeMode type, String name, Location start, Location end) {
         CreativeRegionManager    region    = CreativeControl.getRegioner();
         region.addRegion(name, start, end, type.toString());
         region.saveRegion(name, type, start, end);
     }
 
     private void removeRegion(String string) {
-        CreativeRegionManager    region    = CreativeControl.getRegioner();
-        region.deleteRegion(string);
+        CreativeControl.getRegioner().deleteRegion(string);
     }
 
     public void msg(CommandSender sender, String s, Object... objects) {

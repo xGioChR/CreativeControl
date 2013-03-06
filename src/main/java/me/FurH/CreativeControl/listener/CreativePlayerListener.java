@@ -31,7 +31,7 @@ import me.FurH.CreativeControl.integration.worldedit.CreativeWorldEditHook;
 import me.FurH.CreativeControl.manager.CreativeBlockData;
 import me.FurH.CreativeControl.manager.CreativeBlockManager;
 import me.FurH.CreativeControl.region.CreativeRegion;
-import me.FurH.CreativeControl.region.CreativeRegion.gmType;
+import me.FurH.CreativeControl.region.CreativeRegion.CreativeMode;
 import me.FurH.CreativeControl.util.CreativeUtil;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.*;
@@ -383,8 +383,8 @@ public class CreativePlayerListener implements Listener {
                 return; 
             }
 
-            gmType type = region.type;
-            if (type == gmType.CREATIVE) {
+            CreativeMode type = region.type;
+            if (type == CreativeMode.CREATIVE) {
                 if (!plugin.hasPerm(p, "Region.Keep.Survival")) {
                     if (!p.getGameMode().equals(GameMode.CREATIVE)) {
                         com.msg(p, messages.region_cwelcome);
@@ -392,7 +392,7 @@ public class CreativePlayerListener implements Listener {
                     }
                 }
             } else
-            if (type == CreativeRegion.gmType.SURVIVAL) {
+            if (type == CreativeRegion.CreativeMode.SURVIVAL) {
                 if (!p.getGameMode().equals(GameMode.SURVIVAL)) {
                     if (!plugin.hasPerm(p, "Region.Keep.Creative")) {
                         CreativeUtil.getFloor(p);
@@ -625,9 +625,9 @@ public class CreativePlayerListener implements Listener {
             }
         }
         
-        if (plugin.modsfastup.contains(p.getName())) {
-            String data = plugin.mods.get(p.getName());
-            if (data.equals("Block-Add-Tool")) {
+        if (plugin.mods.containsKey(p.getName())) {
+            int id = plugin.mods.get(p.getName());
+            if (id == 0) {
                 if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
                     if (plugin.hasPerm(p, "Utily.Tool.info")) {
                         info(p, i);
@@ -643,7 +643,7 @@ public class CreativePlayerListener implements Listener {
                     }
                 }
             } else 
-            if (data.equals("Block-Del-Tool")) {
+            if (id == 1) {
                 if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
                     if (plugin.hasPerm(p, "Utily.Tool.info")) {
                         info(p, i);
@@ -753,7 +753,6 @@ public class CreativePlayerListener implements Listener {
         if (!insql && !incache) {
             com.msg(p, messages.blockinfo_notprotected);
             plugin.mods.remove(p.getName());
-            plugin.modsfastup.remove(p.getName());
             return;
         }
 
@@ -792,7 +791,6 @@ public class CreativePlayerListener implements Listener {
         com.msg(p, messages.blockinfo_date, CreativeUtil.getDate(Long.parseLong(date)));
         
         plugin.mods.remove(p.getName());
-        plugin.modsfastup.remove(p.getName());
     }
     
     /*
@@ -826,7 +824,6 @@ public class CreativePlayerListener implements Listener {
         }
 
         plugin.mods.remove(p.getName());
-        plugin.modsfastup.remove(p.getName());
     }
     
     /*
@@ -864,7 +861,6 @@ public class CreativePlayerListener implements Listener {
         }
 
         plugin.mods.remove(p.getName());
-        plugin.modsfastup.remove(p.getName());
     }
     
     private boolean is(Player p, Block b) {
@@ -878,14 +874,12 @@ public class CreativePlayerListener implements Listener {
         if (config.world_exclude) {
             com.msg(p, messages.blockinfo_world);
             plugin.mods.remove(p.getName());
-            plugin.modsfastup.remove(p.getName());
             return false;
         }
         
         if (!manager.isprotectable(b.getWorld(), b.getTypeId())) {
             com.msg(p, messages.blockinfo_protectable);
             plugin.mods.remove(p.getName());
-            plugin.modsfastup.remove(p.getName());
             return false;
         }
         
@@ -896,6 +890,7 @@ public class CreativePlayerListener implements Listener {
         CreativeControl plugin = CreativeControl.getPlugin();
         plugin.right.remove(p);
         plugin.left.remove(p);
+        plugin.mods.remove(p.getName());
         CreativePlayerFriends friend = CreativeControl.getFriends();
         friend.uncache(p);
         CreativePlayerData data = CreativeControl.getPlayerData();

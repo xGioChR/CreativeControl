@@ -26,7 +26,7 @@ import me.FurH.Core.location.LocationUtils;
 import me.FurH.Core.util.Communicator;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.database.CreativeSQLDatabase;
-import me.FurH.CreativeControl.region.CreativeRegion.gmType;
+import me.FurH.CreativeControl.region.CreativeRegion.CreativeMode;
 import org.bukkit.Location;
 
 /**
@@ -57,10 +57,10 @@ public class CreativeRegionManager {
         region.end = end;
         
         if (type.equals("CREATIVE")) {
-            region.type = gmType.CREATIVE;
+            region.type = CreativeMode.CREATIVE;
         }
         if (type.equals("SURVIVAL")) {
-            region.type = gmType.SURVIVAL;
+            region.type = CreativeMode.SURVIVAL;
         }
 
         region.name = name;
@@ -162,7 +162,7 @@ public class CreativeRegionManager {
         db.queue("DELETE FROM `"+db.prefix+"regions` WHERE name = '"+name+"'");
     }
 
-    public void saveRegion(String name, gmType type, Location start, Location end) {
+    public void saveRegion(String name, CreativeMode type, Location start, Location end) {
         CreativeSQLDatabase db = CreativeControl.getDb2();
 
         if (!getRegion(name)) {

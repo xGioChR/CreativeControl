@@ -61,6 +61,27 @@ public class CreativeSelection {
         return vector;
     }
     
+    public void expandUpUp(int up) {
+        this.end.add(0, up, 0);
+    }
+    
+    public void contratUpUp(int contrat) {
+        this.end.subtract(0, contrat, 0);
+    } 
+    
+    public void expandUpDown(int up) {
+        this.start.add(0, up, 0);
+    }
+    
+    public void contratUpDown(int contrat) {
+        this.start.subtract(0, contrat, 0);
+    }
+    
+    public void expandVert() {
+        this.start.setY(0);
+        this.end.setY(255);
+    }
+    
     public Location getStart() {
         return start;
     }
