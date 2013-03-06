@@ -63,10 +63,12 @@ public class CreativeWorldListener implements Listener {
                     if (!plugin.hasPerm(p, "Preventions.Bonemeal")) {
                         Communicator         com      = plugin.getCommunicator();
                         CreativeMessages     messages = CreativeControl.getMessages();
-                        com.msg(p, messages.player_cantuse);
+                        com.msg(p, "&4You can't do that in creative mode!");
+
                         for (BlockState b : e.getBlocks()) {
                             b.getBlock().setType(Material.AIR); 
                         }
+                        
                         e.setCancelled(true);
                     }
                 }

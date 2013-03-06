@@ -45,7 +45,7 @@ public class MobArena implements Listener {
 
         if (!p.getGameMode().equals(GameMode.SURVIVAL)) {
             if (!plugin.hasPerm(p, "Integration.MobArena")) {
-                com.msg(p, messages.mobarena_changegm);
+                com.msg(p, "&4You can't join the arena while in creative mode!");
                 e.setCancelled(true);
             }
         }

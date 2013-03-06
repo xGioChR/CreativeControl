@@ -76,7 +76,7 @@ public class CreativeMoveListener implements Listener {
             if (type == CreativeMode.CREATIVE) {
                 if (!plugin.hasPerm(p, "Region.Keep.Survival")) {
                     if (!p.getGameMode().equals(GameMode.CREATIVE)) {
-                        com.msg(p, messages.region_cwelcome);
+                        com.msg(p, "&7You have entered in a creative region!", region.name);
                         p.setGameMode(GameMode.CREATIVE);
                         was = type;
                     }
@@ -86,7 +86,7 @@ public class CreativeMoveListener implements Listener {
                 if (!p.getGameMode().equals(GameMode.SURVIVAL)) {
                     if (!plugin.hasPerm(p, "Region.Keep.Creative")) {
                         CreativeUtil.getFloor(p);
-                        com.msg(p, messages.region_swelcome);
+                        com.msg(p, "&7You have entered in a survival region!", region.name);
                         p.setGameMode(GameMode.SURVIVAL);
                         was = type;
                     }
@@ -97,11 +97,11 @@ public class CreativeMoveListener implements Listener {
                 if (config.world_creative) {
                     if (!p.getGameMode().equals(GameMode.CREATIVE)) {
                         if (was == CreativeMode.CREATIVE) {
-                            com.msg(p, messages.region_cleave);
+                            com.msg(p, "&7You have left a creative region!", region.name);
                             p.setGameMode(GameMode.CREATIVE);
                         } else
                         if (was == CreativeMode.SURVIVAL) {
-                            com.msg(p, messages.region_sleave);
+                            com.msg(p, "&7You have left a survival region!", region.name);
                             p.setGameMode(GameMode.CREATIVE);
                         } else {
                             p.setGameMode(GameMode.CREATIVE);
@@ -112,11 +112,11 @@ public class CreativeMoveListener implements Listener {
                     if (!p.getGameMode().equals(GameMode.SURVIVAL)) {
                         CreativeUtil.getFloor(p);
                         if (was == CreativeMode.CREATIVE) {
-                            com.msg(p, messages.region_cleave);
+                            com.msg(p, "&7You have left a creative region!", region.name);
                             p.setGameMode(GameMode.SURVIVAL);
                         } else
                         if (was == CreativeMode.SURVIVAL) {
-                            com.msg(p, messages.region_sleave);
+                            com.msg(p, "&7You have left a survival region!", region.name);
                             p.setGameMode(GameMode.SURVIVAL);
                         } else {
                             p.setGameMode(GameMode.SURVIVAL);

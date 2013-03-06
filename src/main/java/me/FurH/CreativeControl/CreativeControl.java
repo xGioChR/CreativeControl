@@ -115,7 +115,7 @@ public class CreativeControl extends CorePlugin {
 
         messages.updateConfig();
         
-        getCommunicator().setTag(messages.prefix_tag);
+        //getCommunicator().setTag(messages.prefix_tag);
 
         log("[TAG] Initializing configurations...");
         mainconfig = new CreativeMainConfig(this);

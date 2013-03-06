@@ -54,7 +54,7 @@ public class CreativeBlocksSelection {
         
         if (!plugin.hasPerm(sender, "Commands.Use.others")) {
             if ((!args.equalsIgnoreCase(sender.getName()))) {
-                com.msg(sender, messages.allblocks_othername);
+                com.msg(sender, "&4You dont have permission to use this command!");
                 return true;
             }
         }
@@ -62,7 +62,7 @@ public class CreativeBlocksSelection {
         int area = 0;
         if (!main.selection_usewe || getSelection((Player)sender) == null) {
             if (!plugin.left.containsKey((Player)sender) && !plugin.right.containsKey((Player)sender)) {
-                com.msg(sender, messages.allblocks_selnull);
+                com.msg(sender, "&4You must select the area first!");
                 return true;
             }
         
@@ -75,7 +75,7 @@ public class CreativeBlocksSelection {
             Selection sel = getSelection((Player)sender);
             
             if (sel == null) {
-                com.msg(sender, messages.allblocks_selnull);
+                com.msg(sender, "&4You must select the area first!");
                 return true;
             }
             
@@ -84,13 +84,12 @@ public class CreativeBlocksSelection {
             max = sel.getMaximumPoint();
         }
 
-        com.msg(sender, messages.allblocks_selsize, area);
-        com.msg(sender, messages.allblocks_while);
-        
-        final CreativeWorldNodes config = CreativeControl.getWorldNodes(min.getWorld());
+        com.msg(sender, "&4{0}&7 blocks selected!", area);
+        com.msg(sender, "&7This may take a while...");
 
-        long startTimer = System.currentTimeMillis();
+        final long startTimer = System.currentTimeMillis();
         final Player player = (Player) sender;
+
         Thread t = new Thread() {
             @Override
             public void run() {
@@ -197,13 +196,14 @@ public class CreativeBlocksSelection {
                         }
                     }
                 }
+                
+                elapsedTime = (System.currentTimeMillis() - startTimer);
+                com.msg(player, "&7All blocks processed in &4{0}&7 ms", elapsedTime);
             }
         };
         t.setPriority(4);
         t.start();
-
-        elapsedTime = (System.currentTimeMillis() - startTimer);
-        com.msg(sender, messages.allblocks_processed, elapsedTime);
+        
         return true;
     }
     

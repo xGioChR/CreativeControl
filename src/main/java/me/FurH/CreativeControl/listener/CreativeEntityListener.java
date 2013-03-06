@@ -75,7 +75,7 @@ public class CreativeEntityListener implements Listener {
                 int total = entities.size();
 
                 if (limit > 0 && total >= limit) {
-                    com.msg(p, messages.entity_vehicle);
+                    com.msg(p, "&7You reach the limit of vehicles, destroy the old ones!");
                     vehicle.remove();
                 } else {
                     entities.add(vehicle.getUniqueId());
@@ -192,19 +192,19 @@ public class CreativeEntityListener implements Listener {
         if (p.getGameMode().equals(GameMode.CREATIVE)) {
             if (((entity instanceof StorageMinecart)) || ((entity instanceof PoweredMinecart))) {
                 if (config.prevent_mcstore && !plugin.hasPerm(p, "Preventions.MineCartStorage")) {
-                    com.msg(p, messages.player_cantuse2);
+                    com.msg(p, "&4You can't do that in creative mode!");
                     e.setCancelled(true);
                 }
             } else
             if (entity instanceof Villager) {
                 if (config.prevent_villager && !plugin.hasPerm(p, "Preventions.InteractVillagers")) {
-                    com.msg(p, messages.player_cantdo);
+                    com.msg(p, "&4You can't do that in creative mode!");
                     e.setCancelled(true);
                 }
             } else
             if (entity instanceof ItemFrame) {
                 if (config.prevent_frame && !plugin.hasPerm(p, "Preventions.ItemFrame")) {
-                    com.msg(p, messages.player_cantdo);
+                    com.msg(p, "&4You can't do that in creative mode!");
                     e.setCancelled(true);
                 }
             }
@@ -258,7 +258,7 @@ public class CreativeEntityListener implements Listener {
                 if (config.prevent_pvp) {
                     if (attacker.getGameMode().equals(GameMode.CREATIVE)) {
                         if (!plugin.hasPerm(attacker, "Preventions.PvP")) {
-                            com.msg(attacker, messages.entity_pvp);
+                            com.msg(attacker, "&4You can't do that in creative mode!");
                             e.setCancelled(true);
                         }
                     }
@@ -269,7 +269,7 @@ public class CreativeEntityListener implements Listener {
                 if (config.prevent_mobs) {
                     if (attacker.getGameMode().equals(GameMode.CREATIVE)) {
                         if (!plugin.hasPerm(attacker, "Preventions.Mobs")) {
-                            com.msg(attacker, messages.entity_mobs, e.getEntityType().toString().toLowerCase().replace("_", " "));
+                            com.msg(attacker, "&4You can't do that in creative mode!");
                             e.setCancelled(true);
                         }
                     }
@@ -282,7 +282,7 @@ public class CreativeEntityListener implements Listener {
                     if (config.prevent_pvp) {
                         if (attacker.getGameMode().equals(GameMode.CREATIVE)) {
                             if (!plugin.hasPerm(attacker, "Preventions.PvP")) {
-                                com.msg(attacker, messages.entity_pvp);
+                                com.msg(attacker, "&4You can't do that in creative mode!");
                                 e.setCancelled(true);
                             }
                         }
@@ -293,7 +293,7 @@ public class CreativeEntityListener implements Listener {
                     if (config.prevent_mobs) {
                         if (attacker.getGameMode().equals(GameMode.CREATIVE)) {
                             if (!plugin.hasPerm(attacker, "Preventions.Mobs")) {
-                                com.msg(attacker, messages.entity_mobs, e.getEntityType().toString().toLowerCase().replace("_", " "));
+                                com.msg(attacker, "&4You can't do that in creative mode!");
                                 e.setCancelled(true);
                             }
                         }

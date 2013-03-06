@@ -227,7 +227,7 @@ public class CreativeMiscListener implements Listener {
                     } else {
                         Communicator         com      = CreativeControl.plugin.getCommunicator();
                         CreativeMessages     messages = CreativeControl.getMessages();
-                        com.msg(p, messages.blocks_pertence, data.owner);
+                        com.msg(p, "&7This block belongs to &4{0}", data.owner);
                         e.setCancelled(true);
                     }
                 }  
@@ -272,7 +272,7 @@ public class CreativeMiscListener implements Listener {
                             } else {
                                 Communicator         com      = CreativeControl.plugin.getCommunicator();
                                 CreativeMessages     messages = CreativeControl.getMessages();
-                                com.msg(p, messages.blocks_pertence, data.owner);
+                                com.msg(p, "&7This block belongs to &4{0}", data.owner);
                                 e.setCancelled(true);
                             }
                         }
