@@ -29,7 +29,7 @@ public class CreativeMessages extends Configuration {
         super(plugin);
     }
     
-    public String prefix_tag                     = "prefix.tag";
+    /*public String prefix_tag                     = "prefix.tag";
     public String prefix_small                   = "prefix.small";
     
     public String allblocks_othername            = "ingame.selection.otherName";
@@ -253,10 +253,10 @@ public class CreativeMessages extends Configuration {
     public String migrator_loaded                = "Commands.Migrator.Loaded";
     public String migrator_converted             = "Commands.Migrator.Converted";
     public String migrator_duplicated            = "Commands.Migrator.Duplicated";
-    public String migrator_done                  = "Commands.Migrator.Done";
+    public String migrator_done                  = "Commands.Migrator.Done";*/
 
     public void load() {
-        prefix_tag                     = getMessage("prefix.tag");
+        /*prefix_tag                     = getMessage("prefix.tag");
         prefix_small                   = getMessage("prefix.small");
 
         allblocks_othername            = getMessage("ingame.selection.otherName");
@@ -479,6 +479,6 @@ public class CreativeMessages extends Configuration {
         migrator_loaded                = getMessage("Commands.Migrator.Loaded");
         migrator_converted             = getMessage("Commands.Migrator.Converted");
         migrator_duplicated            = getMessage("Commands.Migrator.Duplicated");
-        migrator_done                  = getMessage("Commands.Migrator.Done");
+        migrator_done                  = getMessage("Commands.Migrator.Done");*/
     }
 }

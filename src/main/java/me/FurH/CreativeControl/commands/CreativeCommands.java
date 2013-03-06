@@ -511,7 +511,7 @@ public class CreativeCommands implements CommandExecutor {
                 }
 
                 if (CreativeSQLCleanup.lock) {
-                    msg(sender, messages.cleanup_locked);
+                    msg(sender, "&4The cleanup is already running!");
                     return true;
                 } else {
                     Bukkit.getScheduler().runTaskAsynchronously(plugin, cleanup);
