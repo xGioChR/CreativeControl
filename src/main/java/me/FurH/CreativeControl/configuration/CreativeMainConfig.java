@@ -38,6 +38,7 @@ public class CreativeMainConfig extends Configuration {
     public String          database_prefix   = "cc_";
 
     public boolean         perm_enabled      = false;
+    public boolean         perm_move         = false;
     public String          perm_from         = "MemberSurvival";
     public String          perm_to           = "MemberCreative";
 
@@ -54,9 +55,7 @@ public class CreativeMainConfig extends Configuration {
     public boolean         config_auto       = true;
 
     public boolean         updater_enabled   = true;
-        
-    public boolean         perm_ophas        = false;
-    
+
     public boolean         selection_usewe   = false;
     public int             selection_tool    = 369;
     
@@ -82,6 +81,7 @@ public class CreativeMainConfig extends Configuration {
         database_prefix  = getString("Database.prefix");
         
         perm_enabled     = getBoolean("Permissions.Enabled");
+        perm_move        = getBoolean("Permissions.Move");
         perm_from        = getString("Permissions.MoveFrom");
         perm_to          = getString("Permissions.MoveTo");
     
@@ -98,9 +98,7 @@ public class CreativeMainConfig extends Configuration {
         config_auto      = getBoolean("Configurations.AutoWrite");
         
         updater_enabled  = getBoolean("Updater.Enabled");
-        
-        perm_ophas       = getBoolean("Permissions.OpHasPerm");
-        
+                
         selection_usewe  = getBoolean("Selection.UseWorldEdit");
         selection_tool   = getInteger("Selection.Tool");
         

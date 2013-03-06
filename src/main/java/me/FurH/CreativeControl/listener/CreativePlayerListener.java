@@ -90,6 +90,9 @@ public class CreativePlayerListener implements Listener {
                 if (newgm.equals(GameMode.CREATIVE)) {
                     for (String group : permissions.getPlayerGroups(player)) {
                         if (group.equalsIgnoreCase(config.perm_from)) {
+                            if (config.perm_move) {
+                                permissions.playerRemoveGroup(player, config.perm_from);
+                            }
                             permissions.playerAddGroup(player, config.perm_to);
                             break;
                         }
@@ -97,6 +100,9 @@ public class CreativePlayerListener implements Listener {
                 } else {
                     if (permissions.playerInGroup(player, config.perm_to)) {
                         permissions.playerRemoveGroup(player, config.perm_to);
+                        if (config.perm_move) {
+                            permissions.playerAddGroup(player, config.perm_from);
+                        }
                     }
                 }
             }

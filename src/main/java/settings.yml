@@ -18,12 +18,12 @@ Database:
 Permissions:
   ## Enabled, if true, this system will be used
   Enabled: false
+  ## Move, if true, the player will be removed from its original group and added to the creative group
+  Move: false
   ## MoveFrom, the group that will be affected when the player change his gamemode
   MoveFrom: MembersSurvival
   ## MoveTo, the group that the player will be added when he change his gamemode to creative
   MoveTo: MembersCreative
-  ## Op have all permissions?
-  OpHasPerm: true
 
 ## if you have an larger server with tons of creative players placing/breaking blocks, you should increase the "count", decrease the "sleep" and "each"
 Queue:
