@@ -65,8 +65,6 @@ public class CreativeSQLCleanup implements Runnable {
         com.msg(p, "&7Initializing... ");
 
         /* move blocks */
-        List<String> tables = new ArrayList<String>();
-
         for (World world : Bukkit.getWorlds()) {
              cleanup_blocks(world);
         }
@@ -143,7 +141,7 @@ public class CreativeSQLCleanup implements Runnable {
                     }
 
                     if (delete) {
-                        db.execute("DELETE FROM `"+table+"` WHERE x = '" + x + "' AND z = '" + z + "' AND y = '" + y + "' AND time = '"+rs.getInt("time")+"';");
+                        db.execute("DELETE FROM `"+table+"` WHERE x = '" + x + "' AND z = '" + z + "' AND y = '" + y + "' AND time = '"+rs.getString("time")+"';");
                         blocks_removed++;
                     }
 
