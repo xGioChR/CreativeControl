@@ -29,9 +29,71 @@ public class CreativeMessages extends Configuration {
         super(plugin);
     }
     
-    /*public String prefix_tag                     = "prefix.tag";*/
+    public String prefix_tag                        = "prefix.tag";
+    
+    public String messages_restricted               = "MainNode.restricted";
+    
+    public String blockplace_cantplace              = "BlockPlace.cantplace";
+    
+    public String blockmanager_belongs              = "BlockManager.belongsto";
+    public String blockmanager_unprotected          = "BlockManager.unprotected";
+    public String blockmanager_already              = "BlockManager.alreadyprotected";
+    public String blockmanager_protected            = "BlockManager.blockprotected";
+    public String blockmanager_motha                = "BlockManager.blockunprotected";
+    public String blockmanager_focka                = "BlockManager.worlddisabled";
+    public String blockmanager_excluded             = "BlockManager.typeexcluded";
+
+    public String blockbreak_cantbreak              = "BlockBreak.cantbreak";
+    public String blockbreak_survival               = "BlockBreak.nosurvival";
+    public String blockbreak_creativeblock          = "BlockBreak.creativeblock";
+    
+    public String limits_vehicles                   = "Limits.vehicles";
+    
+    public String region_welcome_creative           = "Regions.welcome_creative";
+    public String region_welcome_survival           = "Regions.welcome_survival";
+    public String region_farewell_creative          = "Regions.farewell_creative";
+    public String region_farewell_survival          = "Regions.farewell_survival";
+    public String region_creative_unallowed         = "Regions.creative_unallowed";
+    public String region_survival_unallowed         = "Regions.survival_unallowed";
+    
+    public String blacklist_commands                = "BlackList.commands";
+    
+    public String selection_first                   = "Selection.first_point";
+    public String selection_second                  = "Selection.second_point";
 
     public void load() {
-        
+
+        prefix_tag                        = getMessage("prefix.tag");
+    
+        messages_restricted               = getMessage("MainNode.restricted");
+    
+        blockplace_cantplace              = getMessage("BlockPlace.cantplace");
+    
+        blockmanager_belongs              = getMessage("BlockManager.belongsto");
+        blockmanager_unprotected          = getMessage("BlockManager.unprotected");
+        blockmanager_already              = getMessage("BlockManager.alreadyprotected");
+        blockmanager_protected            = getMessage("BlockManager.blockprotected");
+        blockmanager_motha                = getMessage("BlockManager.blockunprotected");
+        blockmanager_focka                = getMessage("BlockManager.worlddisabled");
+        blockmanager_excluded             = getMessage("BlockManager.typeexcluded");
+
+        blockbreak_cantbreak              = getMessage("BlockBreak.cantbreak");
+        blockbreak_survival               = getMessage("BlockBreak.nosurvival");
+        blockbreak_creativeblock          = getMessage("BlockBreak.creativeblock");
+    
+        limits_vehicles                   = getMessage("Limits.vehicles");
+    
+        region_welcome_creative           = getMessage("Regions.welcome_creative");
+        region_welcome_survival           = getMessage("Regions.welcome_survival");
+        region_farewell_creative          = getMessage("Regions.farewell_creative");
+        region_farewell_survival          = getMessage("Regions.farewell_survival");
+        region_creative_unallowed         = getMessage("Regions.creative_unallowed");
+        region_survival_unallowed         = getMessage("Regions.survival_unallowed");
+    
+        blacklist_commands                = getMessage("BlackList.commands");
+    
+        selection_first                   = getMessage("Selection.first_point");
+        selection_second                  = getMessage("Selection.second_point");
+
     }
 }

@@ -429,7 +429,6 @@ public class CreativePlayerListener implements Listener {
                     @Override
                     public void run() {
                         Communicator          com      = plugin.getCommunicator();
-                        CreativeMessages      messages = CreativeControl.getMessages();
                         com.msg(p, "&7New Version Found: &4{0}&7 (You have: &4{1}&7)", plugin.newversion, plugin.currentversion);
                         com.msg(p, "&7Visit:&4 http://bit.ly/creativecontrol");
                     }

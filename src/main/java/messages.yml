@@ -1,0 +1,46 @@
+## This is the CreativeControl Messages File.
+## You can translate everything before the ":"
+## Also, everything between "{}" will be replaced by something...
+## You can use any color codes. e.g &1 &k ...
+## Don't forgot to share your translation back with us!
+prefix:
+  ## tag, used to replace the [TAG] in the messages
+  tag: "&8[&3CreativeControl&8]&7:&f"
+
+MainNode:
+  restricted: "&4You can't do that in creative mode!"
+
+BlockPlace:
+  cantplace: "&7You can't place this block in creative mode!"
+
+BlockManager:
+  belongsto: "&7This block belongs to &4{0}"
+  unprotected: "&cThis block is not protected!"
+  alreadyprotected: "&cThis block is already protected!"
+  blockprotected: "&4Block protected successfuly!"
+  blockunprotected: "&4Block removed from the database"
+  worlddisabled: "&cThis world is disabled in the configuration."
+  typeexcluded: "&cThis block can't be protected!"
+
+BlockBreak:
+  cantbreak: "&7You can't break this block in creative mode!"
+  nosurvival: "&7This block can't be broken in survival mode!"
+  creativeblock: "&7That was a creative block, therefore was not dropped."
+
+Limits:
+  vehicles: "&7You reach the limit of vehicles, destroy the old ones!"
+
+Regions:
+  welcome_creative: "&7You have entered in a creative region!"
+  welcome_survival: "&7You have entered in a survival region!"
+  farewell_creative: "&7You have left a creative region!"
+  farewell_survival: "&7You have left a survival region!"
+  creative_unallowed: "&7Creative mode is not allowed in this world!"
+  survival_unallowed: "&7Survival mode is not allowed in this world!"
+
+BlackList:
+  commands: "&4You can't use this command in creative mode!"
+  
+Selection:
+  first_point: "&7First point selected! (&4{0}&7,&4 {1}&7,&4 {2}&7)"
+  second_point: "&7Second point selected! (&4{0}&7,&4 {1}&7,&4 {2}&7)"

@@ -117,7 +117,6 @@ public class CreativeBlockListener implements Listener {
              */
             if ((config.black_place != null) && (config.black_place.contains(b.getTypeId()))) {
                 if (!plugin.hasPerm(p, "BlackList.BlockPlace." + b.getTypeId())) {
-                    String blockName = b.getType().toString().toLowerCase().replace("_", " ");
                     com.msg(p, "&7You can't place this block in creative mode!");
                     e.setCancelled(true);
                     return;
@@ -307,7 +306,6 @@ public class CreativeBlockListener implements Listener {
              */
             if ((config.black_break != null) && (config.black_break.contains(b.getTypeId()))) {
                 if (!plugin.hasPerm(p, "BlackList.BlockBreak" + b.getTypeId())) {
-                    String blockName = b.getType().toString().toLowerCase().replace("_", " ");
                     com.msg(p, "&7You can't break this block in creative mode!");
                     e.setCancelled(true);
                     return;
