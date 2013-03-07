@@ -18,7 +18,6 @@ package me.FurH.CreativeControl.integration.worldedit;
 
 import com.sk89q.worldedit.bukkit.selections.Selection;
 import me.FurH.CreativeControl.CreativeControl;
-import me.FurH.CreativeControl.configuration.CreativeWorldNodes;
 import me.FurH.CreativeControl.manager.CreativeBlockManager;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -29,7 +28,6 @@ import org.bukkit.entity.Player;
  *
  * @author FurmigaHumana
  */
-@Deprecated
 public class CreativeWorldEditHook {
 
     public Selection getSelection(Player p) {
@@ -38,7 +36,6 @@ public class CreativeWorldEditHook {
         return select;
     }
     
-    @Deprecated
     public void saveBlocks(Selection select, final Player p) {
         if (select == null) { return; }
         final Location max = select.getMaximumPoint();
@@ -65,7 +62,6 @@ public class CreativeWorldEditHook {
         t.start();
     }
 
-    @Deprecated
     public void delBlocks(Selection select, final Player p) {
         if (select == null) { return; }
         final Location max = select.getMaximumPoint();
