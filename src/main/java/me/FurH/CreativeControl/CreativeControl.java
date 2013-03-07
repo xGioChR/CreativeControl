@@ -92,7 +92,7 @@ public class CreativeControl extends CorePlugin {
     private static CreativeMessages messages;
     private static Consumer lbconsumer = null;
     private static CreativeWorldConfig worldconfig;
-    
+
     private static Permission permissions;
 
     public WeakHashMap<Player, Location> right = new WeakHashMap<Player, Location>();
@@ -113,8 +113,6 @@ public class CreativeControl extends CorePlugin {
         messages = new CreativeMessages(this);
         messages.load();
 
-        messages.updateConfig();
-
         getCommunicator().setTag(messages.prefix_tag);
 
         log("[TAG] Initializing configurations...");
@@ -129,7 +127,7 @@ public class CreativeControl extends CorePlugin {
         } else {
             worldconfig.load(getServer().getWorlds().get(0));
         }
-        
+
         mainconfig.updateConfig();
 
         getCommunicator().setDebug(mainconfig.com_debugcons);
