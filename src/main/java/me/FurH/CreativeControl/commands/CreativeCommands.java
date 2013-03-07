@@ -154,7 +154,7 @@ public class CreativeCommands implements CommandExecutor {
      * /cc f[0] transfer[1] <player/all>[2] <player>[3]
      */
     public boolean friendCmd(CommandSender sender, Command cmd, String string, String[] args) {
-        //CreativeMessages         messages  = CreativeControl.getMessages();
+        CreativeMessages         messages  = CreativeControl.getMessages();
         CreativeControl          plugin    = CreativeControl.getPlugin();
         CreativePlayerFriends    friends   = CreativeControl.getFriends();
         CreativeBlocksSelection  selection = CreativeControl.getSelector();
