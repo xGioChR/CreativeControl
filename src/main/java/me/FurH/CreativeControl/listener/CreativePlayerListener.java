@@ -75,7 +75,9 @@ public class CreativePlayerListener implements Listener {
                 view.close();
                 if (plugin.isLoggedIn(player)) {
                     CreativePlayerData    data     = CreativeControl.getPlayerData();
-                    data.process(player, newgm, oldgm);
+                    if (!data.process(player, newgm, oldgm)) {
+                        e.setCancelled(true);
+                    }
                 } else {
                     e.setCancelled(true);
                     return;
