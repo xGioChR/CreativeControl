@@ -29,20 +29,21 @@ import org.bukkit.entity.Player;
  *
  * @author FurmigaHumana
  */
+@Deprecated
 public class CreativeWorldEditHook {
-    
+
     public Selection getSelection(Player p) {
         CreativeControl plugin = CreativeControl.getPlugin();
         Selection select = plugin.getWorldEdit().getSelection(p);
         return select;
     }
     
+    @Deprecated
     public void saveBlocks(Selection select, final Player p) {
         if (select == null) { return; }
         final Location max = select.getMaximumPoint();
         final Location min = select.getMinimumPoint();
         final World world = max.getWorld();
-        final CreativeWorldNodes nodes = CreativeControl.getWorldNodes(world);
         Thread t = new Thread() {
             @Override
             public void run() {
@@ -59,16 +60,17 @@ public class CreativeWorldEditHook {
                 interrupt();
             }
         };
-        t.setPriority(4);
+        t.setName("CreativeControl WorldEdit Hook");
+        t.setPriority(1);
         t.start();
     }
 
+    @Deprecated
     public void delBlocks(Selection select, final Player p) {
         if (select == null) { return; }
         final Location max = select.getMaximumPoint();
         final Location min = select.getMinimumPoint();
         final World world = max.getWorld();
-        final CreativeWorldNodes nodes = CreativeControl.getWorldNodes(world);
         Thread t = new Thread() {
             @Override
             public void run() {
@@ -85,7 +87,8 @@ public class CreativeWorldEditHook {
                 interrupt();
             }
         };
-        t.setPriority(4);
+        t.setName("CreativeControl WorldEdit Hook");
+        t.setPriority(1);
         t.start();
     }
 }

@@ -45,17 +45,18 @@ public class CreativePlayerData {
         creative_cache.clear();
         survival_cache.clear();
     }
-    
+
     public void clear(String player) {
         adventurer_cache.remove(player);
         creative_cache.remove(player);
         survival_cache.remove(player);
     }
     
-    public void process(Player player, GameMode newgm, GameMode oldgm) {
+    public boolean process(Player player, GameMode newgm, GameMode oldgm) {
         if (save(player, oldgm)) {
-            restore(player, newgm);
+            return restore(player, newgm);
         }
+        return false;
     }
     
     public boolean save(Player p, GameMode gm) {
@@ -76,6 +77,7 @@ public class CreativePlayerData {
                     db.execute(query);
                 } catch (CoreDbException ex) {
                     CreativeControl.plugin.getCommunicator().error(Thread.currentThread(), ex, ex.getMessage());
+                    return false;
                 }
                 
                 return true;
@@ -92,6 +94,7 @@ public class CreativePlayerData {
                     db.execute(query);
                 } catch (CoreDbException ex) {
                     CreativeControl.plugin.getCommunicator().error(Thread.currentThread(), ex, ex.getMessage());
+                    return false;
                 }
                 
                 return true;
@@ -113,6 +116,7 @@ public class CreativePlayerData {
                     db.execute(query);
                 } catch (CoreDbException ex) {
                     CreativeControl.plugin.getCommunicator().error(Thread.currentThread(), ex, ex.getMessage());
+                    return false;
                 }
 
                 return true;
@@ -128,6 +132,7 @@ public class CreativePlayerData {
                     db.execute(query);
                 } catch (CoreDbException ex) {
                     CreativeControl.plugin.getCommunicator().error(Thread.currentThread(), ex, ex.getMessage());
+                    return false;
                 }
 
                 return true;
@@ -149,6 +154,7 @@ public class CreativePlayerData {
                     db.execute(query);
                 } catch (CoreDbException ex) {
                     CreativeControl.plugin.getCommunicator().error(Thread.currentThread(), ex, ex.getMessage());
+                    return false;
                 }
                 
                 return true;
@@ -165,13 +171,13 @@ public class CreativePlayerData {
                     db.execute(query);
                 } catch (CoreDbException ex) {
                     CreativeControl.plugin.getCommunicator().error(Thread.currentThread(), ex, ex.getMessage());
+                    return false;
                 }
                 
                 return true;
             }
-        } else {
-            return false;
         }
+        return false;
     }
     
     public CreativePlayerCache newCache(Player p, CreativePlayerCache cache) {
@@ -185,19 +191,20 @@ public class CreativePlayerData {
         return cache;
     }
 
-    public void restore(Player p, GameMode gm) {        
+    public boolean restore(Player p, GameMode gm) {        
         if (gm.equals(GameMode.ADVENTURE)) {
             CreativePlayerCache cache = hasAdv(p.getName());
-            restore(p, cache);
+            return restore(p, cache);
         } else
         if (gm.equals(GameMode.CREATIVE)) {
             CreativePlayerCache cache = hasCre(p.getName());
-            restore(p, cache);
+            return restore(p, cache);
         } else
         if (gm.equals(GameMode.SURVIVAL)) {
             CreativePlayerCache cache = hasSur(p.getName());
-            restore(p, cache);
+            return restore(p, cache);
         }
+        return false;
     }
     
     public CreativePlayerCache hasAdv(String player) {
@@ -317,7 +324,7 @@ public class CreativePlayerData {
         return cache;
     }
     
-    private void restore(Player p, CreativePlayerCache cache) {
+    private boolean restore(Player p, CreativePlayerCache cache) {
         if (cache == null) { cache = new CreativePlayerCache(); }
         
         p.getInventory().setArmorContents(cache.armor);
@@ -338,6 +345,7 @@ public class CreativePlayerData {
         }
         
         p.getInventory().setContents(cache.items);
+        return true;
     }
 
     private String toListString(ItemStack[] armor) {

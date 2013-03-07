@@ -50,7 +50,15 @@ public final class CreativeSQLDatabase extends CoreSQLDatabase {
     }
     
     public void protect(Player player, Block block) {
-        queue("INSERT INTO `"+prefix+"blocks_"+block.getWorld().getName()+"` (owner, x, y, z, type, allowed, time) VALUES ('"+getPlayerId(player.getName()) + "', '" + block.getX() + "', '" + block.getY() + "', '" + block.getZ() + "', '" + block.getTypeId() + "', '" + null + "', '" + System.currentTimeMillis() + "');");
+        protect(player.getName(), block);
+    }
+
+    public void update(CreativeBlockData data, Block block) {
+        queue("UPDATE `"+prefix+"blocks_"+block.getWorld().getName()+"` SET `allowed` = '"+data.allowed+"', `owner` = '"+getPlayerId(data.owner)+"' WHERE x = '" + block.getX() + "' AND z = '" + block.getZ() + "' AND y = '" + block.getY() + "';");
+    }
+    
+    public void protect(String player, Block block) {
+        queue("INSERT INTO `"+prefix+"blocks_"+block.getWorld().getName()+"` (owner, x, y, z, type, allowed, time) VALUES ('"+getPlayerId(player) + "', '" + block.getX() + "', '" + block.getY() + "', '" + block.getZ() + "', '" + block.getTypeId() + "', '" + null + "', '" + System.currentTimeMillis() + "');");
     }
     
     public void unprotect(Block block) {

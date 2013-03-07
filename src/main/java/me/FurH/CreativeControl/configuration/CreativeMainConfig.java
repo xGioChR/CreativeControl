@@ -35,15 +35,15 @@ public class CreativeMainConfig extends Configuration {
     public String          database_user     = "root";
     public String          database_pass     = "123";
     public String          database_table    = "minecraft";
-    public String          database_prefix   = "cc_";
+    public String          database_prefix   = "crcr_";
 
     public boolean         perm_enabled      = false;
     public boolean         perm_move         = false;
     public String          perm_from         = "MemberSurvival";
     public String          perm_to           = "MemberCreative";
 
-    public long            queue_each        = 100;
-    public int             queue_count       = 300;
+    public long            queue_each        = 50;
+    public int             queue_count       = 50;
     public int             queue_sleep       = 5000;
 
     public int             cache_capacity    = 15000;
@@ -52,7 +52,6 @@ public class CreativeMainConfig extends Configuration {
     public boolean         config_single     = false;
     public boolean         config_conflict   = false;
     public boolean         config_friend     = false;
-    public boolean         config_auto       = true;
 
     public boolean         updater_enabled   = true;
 
@@ -95,7 +94,6 @@ public class CreativeMainConfig extends Configuration {
         config_single    = getBoolean("Configurations.Single");
         config_conflict  = getBoolean("Configurations.Conflict");
         config_friend    = getBoolean("Configurations.FriendSystem");
-        config_auto      = getBoolean("Configurations.AutoWrite");
         
         updater_enabled  = getBoolean("Updater.Enabled");
                 

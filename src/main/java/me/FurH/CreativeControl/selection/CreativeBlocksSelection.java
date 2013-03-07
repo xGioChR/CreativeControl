@@ -18,6 +18,7 @@ package me.FurH.CreativeControl.selection;
 
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.bukkit.selections.Selection;
+import java.util.HashSet;
 import me.FurH.Core.util.Communicator;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.configuration.CreativeMainConfig;
@@ -113,7 +114,7 @@ public class CreativeBlocksSelection {
                                             manager.unprotect(block);
                                         }
                                     }
-                                }
+                                } else
                                 if (wconfig.block_nodrop) {
                                     if (plugin.hasPerm(player, "Command.NoDrop")) {
                                         manager.unprotect(block);
@@ -123,88 +124,110 @@ public class CreativeBlocksSelection {
                             if (type == Type.DELPLAYER) {
                                 if (wconfig.block_ownblock) {
                                     if (args.equalsIgnoreCase(player.getName())) {
-                                        //manager.delPlayer(args, block);
-                                    } else {
-                                        if (plugin.hasPerm(player, "OwnBlock.DelPlayer")) {
-                                            //manager.delPlayer(args, block);
-                                        }
+                                        delPlayer(args, block);
+                                    } else if (plugin.hasPerm(player, "OwnBlock.DelPlayer")) {
+                                        delPlayer(args, block);
                                     }
-                                }
-
+                                } else
                                 if (wconfig.block_nodrop) {
                                     if (plugin.hasPerm(player, "Command.NoDrop")) {
-                                        //manager.delPlayer(args, block);
+                                        delPlayer(args, block);
                                     }
                                 }
                             } else
                             if (type == Type.DELTYPE) {
                                 if (wconfig.block_ownblock) {
-                                    /*CreativeBlockData data = manager.getBlock(block);
+                                    CreativeBlockData data = manager.isprotected(block, true);
                                     if (data != null) {
-                                        if (manager.isOwner(player, data.owner)) {
-                                            manager.delType(args, block);
+                                        if (data.owner.equalsIgnoreCase(player.getName())) {
+                                            delType(args, block);
                                         }
-                                    }*/
-                                }
+                                    }
+                                } else
                                 if (wconfig.block_nodrop) {
                                     if (plugin.hasPerm(player, "Command.NoDrop")) {
-                                        //manager.delType(args, block);
+                                        delType(args, block);
                                     }
                                 }
                             } else
                             if (type == Type.ADD) {
-                                //CreativeBlockData data = manager.getBlock(block);
-                                //if (data == null) {
-                                    //manager.addBlock(args, block, wconfig.block_nodrop);
-                                //}
+                                CreativeBlockData data = manager.isprotected(block, true);
+                                if (data == null) {
+                                    manager.protect(args, block);
+                                }
                             } else
                             if (type == Type.ALLOW) {
-                                /*CreativeBlockData data = manager.getBlock(block);
+                                CreativeBlockData data = manager.isprotected(block, false);
                                 if (data != null) {
-                                    if (manager.isAllowed(player, block, data)) {
+                                    if (data.owner.equalsIgnoreCase(player.getName())) {
                                         String mod = args.toLowerCase();
                                         HashSet<String> als = new HashSet<String>();
-                                        
+
                                         if (data.allowed != null) {
                                             als = data.allowed;
                                         }
-                                        
+
                                         if (mod.startsWith("-")) {
                                             mod = mod.substring(1);
                                             if (als.contains(mod)) {
                                                 als.remove(mod);
-                                                manager.update(block.getLocation(), data.owner, als);
                                             }
                                         } else {
                                             if (!als.contains(mod)) {
                                                 als.add(mod);
-                                                manager.update(block.getLocation(), data.owner, als);
                                             }
                                         }
+
+                                        manager.update(data, block);
                                     }
-                                }*/
+                                }
                             } else
                             if (type == Type.TRANSFER) {
-                                /*CreativeBlockData data = manager.getBlock(block);
+                                CreativeBlockData data = manager.isprotected(block, true);
                                 if (data != null) {
-                                    if (manager.isOwner(player, data.owner)) {
-                                        manager.delBlock(block);
-                                        manager.addBlock(args, block, wconfig.block_nodrop);
+                                    if (data.owner.equalsIgnoreCase(player.getName())) {
+                                        data.owner = args;
+                                        manager.update(data, block);
                                     }
-                                }*/
+                                }
                             }
                         }
                     }
                 }
-                
+
                 elapsedTime = (System.currentTimeMillis() - startTimer);
                 com.msg(player, "&7All blocks processed in &4{0}&7 ms", elapsedTime);
             }
         };
-        t.setPriority(4);
+        t.setName("CreativeControl Selection Thread");
+        t.setPriority(1);
         t.start();
         
         return true;
+    }
+    
+    public void delPlayer(String args, Block block) {
+        CreativeBlockManager manager = CreativeControl.getManager();
+        CreativeBlockData data = manager.isprotected(block, true);
+
+        if (data != null) {
+            if (data.owner.equalsIgnoreCase(args)) {
+                manager.unprotect(block);
+            }
+        }
+    }
+
+    public void delType(String args, Block block) {
+        CreativeBlockManager manager = CreativeControl.getManager();
+        try {
+            int type = Integer.parseInt(args);
+            if (block.getTypeId() == type) {
+                manager.unprotect(block);
+            }
+        } catch (Exception ex) {
+            Communicator com        = CreativeControl.plugin.getCommunicator();
+            com.error(Thread.currentThread(), ex, "[TAG] {0} is not a valid number!", args);
+        }
     }
     
     public Selection getSelection(Player p) {

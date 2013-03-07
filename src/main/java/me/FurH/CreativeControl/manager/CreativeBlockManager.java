@@ -6,8 +6,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import me.FurH.Core.cache.CoreLRUCache;
 import me.FurH.Core.exceptions.CoreDbException;
 import me.FurH.Core.exceptions.CoreMsgException;
@@ -73,12 +71,16 @@ public class CreativeBlockManager {
     }
 
     public void protect(Player p, Block b) {
+        protect(p.getName(), b);
+    }
+    
+    public void protect(String player, Block b) {
         if (isprotectable(b.getWorld(), b.getTypeId())) {
 
-            CreativeBlockData data = new CreativeBlockData(p.getName(), b.getTypeId(), null);
+            CreativeBlockData data = new CreativeBlockData(player, b.getTypeId(), null);
             cache.put(LocationUtils.locationToString(b.getLocation()), data);
 
-            CreativeControl.getDb2().protect(p, b);
+            CreativeControl.getDb2().protect(player, b);
         }
     }
     
@@ -166,6 +168,22 @@ public class CreativeBlockManager {
         }
         
         return total;
+    }
+
+    public void update(CreativeBlockData data, Block block) {
+        CreativeSQLDatabase  db         = CreativeControl.getDb2();
+
+        if (data == null) {
+            return;
+        }
+        
+        if (data.allowed == null || data.allowed.isEmpty()) {
+            data.allowed = null; db.update(data, block);
+        } else {
+            db.update(data, block);
+        }
+        
+        cache.put(LocationUtils.locationToString(block.getLocation()), data);
     }
     
     public CreativeBlockData isprotected(Block block, boolean nodrop) {

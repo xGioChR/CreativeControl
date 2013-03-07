@@ -19,9 +19,7 @@ package me.FurH.CreativeControl.database.extra;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import me.FurH.Core.exceptions.CoreDbException;
 import me.FurH.Core.exceptions.CoreMsgException;
 import me.FurH.Core.location.LocationUtils;
@@ -58,8 +56,6 @@ public class CreativeSQLCleanup implements Runnable {
         
         lock = true;
         long start = System.currentTimeMillis();
-
-        CreativeSQLDatabase db = CreativeControl.getDb2();
         
         Communicator com = plugin.getCommunicator();
         com.msg(p, "&7Initializing... ");

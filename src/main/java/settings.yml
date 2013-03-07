@@ -47,8 +47,6 @@ Configurations:
   Conflict: true
   ## FriendSystem, if true, the friend system will be enabled, this may take a bit of resources, just a bit.
   FriendSystem: false
-  ## AutoWrite, if true, config updates will be automactialy written to this file
-  AutoWrite: true
 
 Updater:
   ## Check for updates?
@@ -57,7 +55,7 @@ Updater:
 Selection:
   ## UseWorldEdit, if true, worldedit will be used to make selections.
   UseWorldEdit: true
-  ## The Item ID used to select regions
+  ## The Item ID used to select regions, if UseWorldEdit is false
   Tool: 369
 
 Events:
