@@ -377,6 +377,25 @@ public class CreativeControl extends CorePlugin {
         limits.clear();
     }
     
+    public void clear(Player player) {
+        HashSet<UUID> entity = limits.get(player.getName());
+
+        if (entity == null) {
+            return;
+        }
+
+        for (World w : Bukkit.getWorlds()) {
+            for (Entity x : w.getEntities()) {
+                if (entity.contains(x.getUniqueId())) {
+                    x.remove();
+                }
+            }
+        }
+
+        entity.clear();
+        limits.remove(player.getName());
+    }
+    
     public static Permission getPermissions() {
         return permissions;
     }

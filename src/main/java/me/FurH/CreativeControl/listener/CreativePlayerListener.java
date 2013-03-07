@@ -578,7 +578,6 @@ public class CreativePlayerListener implements Listener {
         Player p = e.getPlayer();
         Block i = e.getClickedBlock();
         World world = p.getWorld();
-        String ItemName = p.getItemInHand().getType().toString().toLowerCase().replace("_", " ");
         
         CreativeMessages      messages = CreativeControl.getMessages();
         CreativeControl       plugin   = CreativeControl.getPlugin();
@@ -894,6 +893,7 @@ public class CreativePlayerListener implements Listener {
 
     private void cleanup(Player p) {
         CreativeControl plugin = CreativeControl.getPlugin();
+        plugin.clear(p);
         plugin.right.remove(p);
         plugin.left.remove(p);
         plugin.mods.remove(p.getName());
