@@ -456,19 +456,23 @@ public class CreativeControl extends CorePlugin {
     }
 
     public void setupLogBlock() {
-        PluginManager pm = getServer().getPluginManager();
-        Plugin x = pm.getPlugin("LogBlock");
-        if (x != null) {
+        Plugin logblock = Bukkit.getPluginManager().getPlugin("LogBlock");
+        if (logblock != null) {
             log("[TAG] LogBlock hooked as logging plugin");
-            lbconsumer = ((LogBlock)x).getConsumer();
+            lbconsumer = ((LogBlock)logblock).getConsumer();
         }
     }
     
     private boolean setupPermissions() {
-        RegisteredServiceProvider<Permission> permissionProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.permission.Permission.class);
-        if (permissionProvider != null) {
-            permissions = permissionProvider.getProvider();
+        Plugin vault = Bukkit.getPluginManager().getPlugin("Vault");
+
+        if (vault != null) {
+            RegisteredServiceProvider<Permission> permissionProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.permission.Permission.class);
+            if (permissionProvider != null) {
+                permissions = permissionProvider.getProvider();
+            }
         }
+
         return (permissions != null);
     }
 
