@@ -19,7 +19,7 @@ package me.FurH.CreativeControl.data;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import me.FurH.Core.cache.CoreLRUCache;
+import me.FurH.Core.cache.CoreSafeCache;
 import me.FurH.Core.exceptions.CoreDbException;
 import me.FurH.Core.exceptions.CoreMsgException;
 import me.FurH.Core.inventory.InvUtils;
@@ -36,9 +36,9 @@ import org.bukkit.inventory.ItemStack;
  * @author FurmigaHumana
  */
 public class CreativePlayerData {
-    public CoreLRUCache<String, CreativePlayerCache> adventurer_cache = new CoreLRUCache<String, CreativePlayerCache>(1000);
-    public CoreLRUCache<String, CreativePlayerCache> creative_cache = new CoreLRUCache<String, CreativePlayerCache>(1000);
-    public CoreLRUCache<String, CreativePlayerCache> survival_cache = new CoreLRUCache<String, CreativePlayerCache>(1000);
+    public CoreSafeCache<String, CreativePlayerCache> adventurer_cache = new CoreSafeCache<String, CreativePlayerCache>(1000);
+    public CoreSafeCache<String, CreativePlayerCache> creative_cache = new CoreSafeCache<String, CreativePlayerCache>(1000);
+    public CoreSafeCache<String, CreativePlayerCache> survival_cache = new CoreSafeCache<String, CreativePlayerCache>(1000);
 
     public void clear() {
         adventurer_cache.clear();
@@ -349,7 +349,14 @@ public class CreativePlayerData {
     }
 
     private String toListString(ItemStack[] armor) {
-        return InvUtils.toListString(armor);
+
+        try {
+            return InvUtils.toListString(armor);
+        } catch (CoreMsgException ex) {
+            CreativeControl.plugin.getCommunicator().error(Thread.currentThread(), ex, ex.getMessage());
+        }
+
+        return null;
     }
 
     private ItemStack[] toArrayStack(String string) {

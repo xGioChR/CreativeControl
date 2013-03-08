@@ -18,7 +18,7 @@ Database:
 Permissions:
   ## Enabled, if true, this system will be used
   Enabled: false
-  ## Move, if true, the player will be removed from its original group and added to the creative group
+  ## Move, if true, the player will be removed from his original group and added to the creative group
   Move: false
   ## MoveFrom, the group that will be affected when the player change his gamemode
   MoveFrom: MembersSurvival
