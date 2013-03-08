@@ -19,6 +19,8 @@ package me.FurH.CreativeControl.data;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import me.FurH.Core.cache.CoreSafeCache;
 import me.FurH.Core.exceptions.CoreDbException;
 import me.FurH.Core.exceptions.CoreMsgException;
@@ -349,24 +351,26 @@ public class CreativePlayerData {
     }
 
     private String toListString(ItemStack[] armor) {
+        String ret = null;
 
         try {
-            return InvUtils.toListString(armor);
+            ret = InvUtils.toListString(armor);
         } catch (CoreMsgException ex) {
             CreativeControl.plugin.getCommunicator().error(Thread.currentThread(), ex, ex.getMessage());
         }
 
-        return null;
+        return ret;
     }
 
     private ItemStack[] toArrayStack(String string) {
+        ItemStack[] ret = null;
 
         try {
-            return InvUtils.toArrayStack(string);
+            ret = InvUtils.toArrayStack(string);
         } catch (CoreMsgException ex) {
             CreativeControl.plugin.getCommunicator().error(Thread.currentThread(), ex, ex.getMessage());
         }
-        
-        return null;
+
+        return ret;
     }
 }
