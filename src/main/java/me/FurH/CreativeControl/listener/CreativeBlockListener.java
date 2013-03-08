@@ -17,7 +17,9 @@
 package me.FurH.CreativeControl.listener;
 
 import de.diddiz.LogBlock.Consumer;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import me.FurH.Core.blocks.BlockUtils;
 import me.FurH.Core.util.Communicator;
 import me.FurH.CreativeControl.CreativeControl;
@@ -311,8 +313,7 @@ public class CreativeBlockListener implements Listener {
         }
                 
         if (config.block_nodrop) {
-            HashSet<Block> attached = new HashSet<Block>();
-            attached.add(b);
+            List<Block> attached = new ArrayList<Block>();
 
             if (config.block_attach) {
                 
@@ -323,6 +324,7 @@ public class CreativeBlockListener implements Listener {
                 attached.addAll(BlockUtils.getAttachedBlock(b));
             }
             
+            attached.add(b);
             for (Block block : attached) {
                 CreativeBlockData data = manager.isprotected(block, false);
 
