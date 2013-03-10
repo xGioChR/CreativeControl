@@ -304,7 +304,7 @@ public class CreativeBlockListener implements Listener {
              * Block Break BlackList
              */
             if ((config.black_break != null) && (config.black_break.contains(b.getTypeId()))) {
-                if (!plugin.hasPerm(p, "BlackList.BlockBreak" + b.getTypeId())) {
+                if (!plugin.hasPerm(p, "BlackList.BlockBreak." + b.getTypeId())) {
                     com.msg(p, messages.blockbreak_cantbreak);
                     e.setCancelled(true);
                     return;
@@ -353,30 +353,6 @@ public class CreativeBlockListener implements Listener {
                         process(config, e, block, p);
                     }
                 }
-            }
-        }
-    }
-    
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
-    public void onBlockPhysics(BlockPhysicsEvent e) {
-        if (e.isCancelled()) { return; }
-        
-        Block block = e.getBlock();
-        World world = block.getWorld();
-        
-        CreativeWorldNodes      config     = CreativeControl.getWorldNodes(world);
-        CreativeBlockManager    manager    = CreativeControl.getManager();
-        
-        if (!config.block_physics) {
-            return;
-        }
-
-        CreativeBlockData data = manager.isprotected(block, false);
-        if (data != null) {
-            if (config.block_nodrop) {
-                block.setType(Material.AIR);
-            } else if (config.block_ownblock) {
-                e.setCancelled(true);
             }
         }
     }
