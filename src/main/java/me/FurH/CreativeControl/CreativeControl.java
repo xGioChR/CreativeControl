@@ -238,11 +238,15 @@ public class CreativeControl extends CorePlugin {
         friends.clear();
         limits.clear();
         
+        messages.unload();
+        mainconfig.unload();
+        worldconfig.unload();
+        
         messages.load();
         mainconfig.load();
 
         worldconfig.clear();
-        
+
         if (!mainconfig.config_single) {
             for (World w : getServer().getWorlds()) { worldconfig.load(w); }
         } else {

@@ -18,7 +18,6 @@ package me.FurH.CreativeControl.listener;
 
 import de.diddiz.LogBlock.Consumer;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import me.FurH.Core.blocks.BlockUtils;
 import me.FurH.Core.util.Communicator;
@@ -40,7 +39,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -216,6 +214,10 @@ public class CreativeBlockListener implements Listener {
                     }
                 }
             }
+            
+            if (config.block_physics && isPhysics(b)) {
+                b.setTypeIdAndData(b.getTypeId(), b.getData(), false);
+            }
 
             if (p.getGameMode().equals(GameMode.CREATIVE)) {
                 if (!plugin.hasPerm(p, "OwnBlock.DontSave")) {
@@ -311,20 +313,35 @@ public class CreativeBlockListener implements Listener {
                 }
             }
         }
-                
-        if (config.block_nodrop) {
-            List<Block> attached = new ArrayList<Block>();
+        
+        List<Block> attached = new ArrayList<Block>();
 
+        if (config.block_nodrop || config.block_ownblock) {
+            
             if (config.block_attach) {
-                
-                if (b.getRelative(BlockFace.UP).getType() == Material.SAND || b.getRelative(BlockFace.UP).getType() == Material.GRAVEL) {
+
+                if (!config.block_physics && isPhysics(b.getRelative(BlockFace.UP))) {
                     attached.add(b.getRelative(BlockFace.UP));
                 }
                 
                 attached.addAll(BlockUtils.getAttachedBlock(b));
             }
             
+            if (config.block_physics) {
+                int tick = 256; // safe-guard
+
+                Block physics = b.getRelative(BlockFace.UP);
+                while (tick > 0 && isPhysics(physics)) {
+                    attached.add(physics);
+                    physics = physics.getRelative(BlockFace.UP);
+                    tick--; 
+                }
+            }
+
             attached.add(b);
+        }
+
+        if (config.block_nodrop) {
             for (Block block : attached) {
                 CreativeBlockData data = manager.isprotected(block, false);
 
@@ -334,13 +351,6 @@ public class CreativeBlockListener implements Listener {
             }
         } else
         if (config.block_ownblock) {
-            HashSet<Block> attached = new HashSet<Block>();
-            attached.add(b);
-
-            if (config.block_attach) {
-                attached.addAll(BlockUtils.getAttachedBlock(b));
-            }
-
             for (Block block : attached) {
                 CreativeBlockData data = manager.isprotected(block, false);
 
@@ -356,7 +366,7 @@ public class CreativeBlockListener implements Listener {
             }
         }
     }
-    
+
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void onPistonExtend(BlockPistonExtendEvent e) {
         if (e.isCancelled()) { return; }
@@ -405,6 +415,10 @@ public class CreativeBlockListener implements Listener {
         }
     }
     
+    private boolean isPhysics(Block block) {
+        return block.getType() == Material.SAND || block.getType() == Material.GRAVEL || block.getType() == Material.CACTUS || block.getType() == Material.SUGAR_CANE_BLOCK;
+    }
+    
     public void logBlock(Player p, Block b) {
         Consumer                consumer   = CreativeControl.getConsumer();
         if (consumer != null) {
@@ -429,7 +443,7 @@ public class CreativeBlockListener implements Listener {
             manager.unprotect(b);
             logBlock(p, b);
             e.setExpToDrop(0);
-            b.setType(Material.AIR);
+            b.setTypeId(0, false);
 
             if (!p.getGameMode().equals(GameMode.CREATIVE)) {
                 com.msg(p, messages.blockbreak_creativeblock);
