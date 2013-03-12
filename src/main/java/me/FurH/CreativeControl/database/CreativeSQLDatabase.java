@@ -42,7 +42,7 @@ import org.bukkit.entity.Player;
  * @author FurmigaHumana
  */
 public final class CreativeSQLDatabase extends CoreSQLDatabase {
-    private static CoreSafeCache<String, Integer> owners = new CoreSafeCache<String, Integer>(100);
+    private static CoreSafeCache<String, Integer> owners = new CoreSafeCache<String, Integer>();
 
     public CreativeSQLDatabase(CorePlugin plugin, String prefix, String engine, String database_host, String database_port, String database_table, String database_user, String database_pass) {
         super(plugin, prefix, engine, database_host, database_port, database_table, database_user, database_pass);

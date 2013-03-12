@@ -27,7 +27,7 @@ import org.bukkit.World;
  * @author FurmigaHumana
  */
 public class CreativeWorldConfig extends Configuration {
-    private CoreSafeCache<String, CreativeWorldNodes> config_cache = new CoreSafeCache<String, CreativeWorldNodes>(100);
+    private CoreSafeCache<String, CreativeWorldNodes> config_cache = new CoreSafeCache<String, CreativeWorldNodes>();
     private CreativeWorldNodes nodes = new CreativeWorldNodes();
 
     public CreativeWorldConfig(CorePlugin plugin) {
