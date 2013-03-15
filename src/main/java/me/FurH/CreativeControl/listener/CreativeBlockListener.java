@@ -55,7 +55,7 @@ public class CreativeBlockListener implements Listener {
      * Block Place Module
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void onBlockPlace(BlockPlaceEvent e) {        
+    public void onBlockPlace(BlockPlaceEvent e) {
         Player p = e.getPlayer();
         Block b = e.getBlockPlaced();
         World world = p.getWorld();
