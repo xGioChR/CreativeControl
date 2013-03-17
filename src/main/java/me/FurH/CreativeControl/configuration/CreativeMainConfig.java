@@ -18,6 +18,7 @@ package me.FurH.CreativeControl.configuration;
 
 import me.FurH.Core.CorePlugin;
 import me.FurH.Core.configuration.Configuration;
+import org.bukkit.Bukkit;
 
 /**
  *
@@ -98,6 +99,11 @@ public class CreativeMainConfig extends Configuration {
         updater_enabled  = getBoolean("Updater.Enabled");
                 
         selection_usewe  = getBoolean("Selection.UseWorldEdit");
+        
+        if (Bukkit.getPluginManager().getPlugin("WorldEdit") == null) {
+            selection_usewe = false;
+        }
+        
         selection_tool   = getInteger("Selection.Tool");
         
         events_move      = getBoolean("Events.PlayerMove");
