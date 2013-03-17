@@ -40,6 +40,7 @@ import me.FurH.CreativeControl.database.CreativeSQLDatabase;
 import me.FurH.CreativeControl.database.extra.CreativeSQLUpdater;
 import me.FurH.CreativeControl.integration.AuthMe;
 import me.FurH.CreativeControl.integration.MobArena;
+import me.FurH.CreativeControl.integration.SurvivalGames;
 import me.FurH.CreativeControl.integration.worldedit.CreativeWorldEditHook;
 import me.FurH.CreativeControl.integration.xAuth;
 import me.FurH.CreativeControl.listener.*;
@@ -306,6 +307,14 @@ public class CreativeControl extends CorePlugin {
             if (p.isEnabled()) {
                 log("[TAG] MobArena support enabled!");
                 pm.registerEvents(new MobArena(), this);
+            }
+        }
+
+        p = pm.getPlugin("SurvivalGames");
+        if (p != null) {
+            if (p.isEnabled()) {
+                log("[TAG] SurvivalGames support enabled!");
+                pm.registerEvents(new SurvivalGames(), this);
             }
         }
         
