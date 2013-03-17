@@ -38,19 +38,18 @@ public class CreativeUtil {
      * return true if the first line of the sign is listed as a economy sign
      */
     public static boolean isEconomySign(org.bukkit.block.Sign sign) {
-        String line1 = sign.getLine(0).replaceAll(" ", "_");
+        String line1 = removeCodes(sign.getLine(0).replaceAll(" ", "_"));
+        String line2 = removeCodes(sign.getLine(1).replaceAll(" ", "_"));
+        String line3 = removeCodes(sign.getLine(2).replaceAll(" ", "_"));
+        String line4 = removeCodes(sign.getLine(3).replaceAll(" ", "_"));
 
         CreativeWorldNodes config = CreativeControl.getWorldNodes(sign.getWorld());
-        
-        if (line1.contains("§")) {
-            line1 = line1.replaceAll("§([0-9a-fk-or])", "");
-        }
 
-        if (config.black_sign.contains(line1.toLowerCase().replaceAll("[^a-zA-Z0-9]", ""))) {
-            return true;
-        } else {
-            return false;
-        }
+        return config.black_sign.contains(line1) || config.black_sign.contains(line2) || config.black_sign.contains(line3) || config.black_sign.contains(line4);
+    }
+
+    private static String removeCodes(String line) {
+        return line.toLowerCase().replaceAll("§([0-9a-fk-or])", "").replaceAll("[^a-zA-Z0-9]", "");
     }
 
     /*

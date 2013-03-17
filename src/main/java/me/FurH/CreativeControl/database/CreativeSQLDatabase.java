@@ -54,15 +54,27 @@ public final class CreativeSQLDatabase extends CoreSQLDatabase {
     }
 
     public void update(CreativeBlockData data, Block block) {
-        queue("UPDATE `"+prefix+"blocks_"+block.getWorld().getName()+"` SET `allowed` = '"+data.allowed+"', `owner` = '"+getPlayerId(data.owner)+"' WHERE x = '" + block.getX() + "' AND z = '" + block.getZ() + "' AND y = '" + block.getY() + "';");
+        update(data, block.getWorld().getName(), block.getX(), block.getY(), block.getZ());
+    }
+    
+    public void update(CreativeBlockData data, String world, int x, int y, int z) {
+        queue("UPDATE `"+prefix+"blocks_"+world+"` SET `allowed` = '"+data.allowed+"', `owner` = '"+getPlayerId(data.owner)+"' WHERE x = '" + x + "' AND z = '" + y + "' AND y = '" + z + "';");
     }
     
     public void protect(String player, Block block) {
-        queue("INSERT INTO `"+prefix+"blocks_"+block.getWorld().getName()+"` (owner, x, y, z, type, allowed, time) VALUES ('"+getPlayerId(player) + "', '" + block.getX() + "', '" + block.getY() + "', '" + block.getZ() + "', '" + block.getTypeId() + "', '" + null + "', '" + System.currentTimeMillis() + "');");
+        protect(player, block.getWorld().getName(), block.getX(), block.getY(), block.getZ(), block.getTypeId());
+    }
+    
+    public void protect(String player, String world, int x, int y, int z, int type) {
+        queue("INSERT INTO `"+prefix+"blocks_"+world+"` (owner, x, y, z, type, allowed, time) VALUES ('"+getPlayerId(player) + "', '" + x + "', '" + y + "', '" + z + "', '" + type + "', '" + null + "', '" + System.currentTimeMillis() + "');");
     }
     
     public void unprotect(Block block) {
-        queue("DELETE FROM `"+prefix+"blocks_"+block.getWorld().getName()+"` WHERE x = '" + block.getX() + "' AND z = '" + block.getZ() + "' AND y = '" + block.getY() + "';");
+        unprotect(block.getWorld().getName(), block.getX(), block.getY(), block.getZ());
+    }
+
+    public void unprotect(String world, int x, int y, int z) {
+        queue("DELETE FROM `"+prefix+"blocks_"+world+"` WHERE x = '" + x + "' AND z = '" + y + "' AND y = '" + z + "';");
     }
     
     public CreativeBlockData getFullData(Location block) {
@@ -106,6 +118,10 @@ public final class CreativeSQLDatabase extends CoreSQLDatabase {
     }
     
     public CreativeBlockData isprotected(Block block, boolean nodrop) {
+        return null;
+    }
+    
+    public CreativeBlockData isprotected(String world, int x, int y, int z, int type, boolean nodrop) {
         
         Communicator com = CreativeControl.plugin.getCommunicator();
         CreativeBlockData data = null;
@@ -114,9 +130,9 @@ public final class CreativeSQLDatabase extends CoreSQLDatabase {
         
         try {
             if (nodrop) {
-                ps = getQuery("SELECT owner, type, allowed FROM `"+prefix+"blocks_"+block.getWorld().getName()+"` WHERE x = '" + block.getX() + "' AND z = '" + block.getZ() + "' AND y = '" + block.getY() + "';");
+                ps = getQuery("SELECT owner, type, allowed FROM `"+prefix+"blocks_"+world+"` WHERE x = '" + x + "' AND z = '" + z + "' AND y = '" + y + "';");
             } else {
-                ps = getQuery("SELECT type FROM `"+prefix+"blocks_"+block.getWorld().getName()+"` WHERE x = '" + block.getX() + "' AND z = '" + block.getZ() + "' AND y = '" + block.getY() + "';");
+                ps = getQuery("SELECT type FROM `"+prefix+"blocks_"+world+"` WHERE x = '" + x + "' AND z = '" + z + "' AND y = '" + y + "';");
             }
 
             rs = ps.getResultSet();
@@ -128,7 +144,7 @@ public final class CreativeSQLDatabase extends CoreSQLDatabase {
                     data = new CreativeBlockData(rs.getInt("type"));
                 }
             } else if (CreativeSQLUpdater.lock) {
-                ps = getQuery("SELECT owner, type, allowed FROM `"+prefix+"blocks` WHERE location = "+LocationUtils.locationToString2(block.getLocation())+"';");
+                ps = getQuery("SELECT owner, type, allowed FROM `"+prefix+"blocks` WHERE location = "+LocationUtils.locationToString2(world, x, y, z)+"';");
                 rs = ps.getResultSet();
 
                 if (rs.next()) {
@@ -150,7 +166,7 @@ public final class CreativeSQLDatabase extends CoreSQLDatabase {
             }
         }
 
-        if (data != null && data.type != block.getTypeId()) {
+        if (data != null && data.type != type) {
             data = null;
         }
         

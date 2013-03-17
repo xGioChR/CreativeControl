@@ -94,8 +94,8 @@ public class CreativeSelection {
         Location min = start;
         Location max = end;
 
-        return (int)((max.getX() - min.getX() + 1) *
-                     (max.getY() - min.getY() + 1) *
-                     (max.getZ() - min.getZ() + 1));
+        return ((max.getBlockX() - min.getBlockX() + 1) *
+                (max.getBlockY() - min.getBlockY() + 1) *
+                (max.getBlockZ() - min.getBlockZ() + 1));
     }
 }

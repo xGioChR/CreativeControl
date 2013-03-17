@@ -19,9 +19,11 @@ package me.FurH.CreativeControl.integration.worldedit;
 import com.sk89q.worldedit.bukkit.selections.Selection;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.manager.CreativeBlockManager;
+import net.minecraft.server.v1_5_R1.WorldServer;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.craftbukkit.v1_5_R1.CraftWorld;
 import org.bukkit.entity.Player;
 
 /**
@@ -41,16 +43,20 @@ public class CreativeWorldEditHook {
         final Location max = select.getMaximumPoint();
         final Location min = select.getMinimumPoint();
         final World world = max.getWorld();
+        final WorldServer worldServer = ((CraftWorld)world).getHandle();
+        
         Thread t = new Thread() {
             @Override
             public void run() {
                 for (int x = min.getBlockX(); x <= max.getBlockX(); x++) {
                     for (int y = min.getBlockY(); y <= max.getBlockY(); y++) {
                         for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
-                            Location loc = new Location(world, x, y, z);
-                            Block b = world.getBlockAt(loc);
+                            
+                            int id = worldServer.getTypeId(x, y, z);
+                            if (id == 0) { continue; }
+                            
                             CreativeBlockManager manager = CreativeControl.getManager();
-                            manager.protect(p, b);
+                            manager.protect(p.getName(), world, x, y, z, id);
                         }
                     }
                 }
@@ -67,16 +73,20 @@ public class CreativeWorldEditHook {
         final Location max = select.getMaximumPoint();
         final Location min = select.getMinimumPoint();
         final World world = max.getWorld();
+        final WorldServer worldServer = ((CraftWorld)world).getHandle();
+        
         Thread t = new Thread() {
             @Override
             public void run() {
                 for (int x = min.getBlockX(); x <= max.getBlockX(); x++) {
                     for (int y = min.getBlockY(); y <= max.getBlockY(); y++) {
                         for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
-                            Location loc = new Location(world, x, y, z);
-                            Block b = world.getBlockAt(loc);
+                            
+                            int id = worldServer.getTypeId(x, y, z);
+                            if (id == 0) { continue; }
+                            
                             CreativeBlockManager manager = CreativeControl.getManager();
-                            manager.protect(p, b);
+                            manager.unprotect(world, x, y, z, id);
                         }
                     }
                 }

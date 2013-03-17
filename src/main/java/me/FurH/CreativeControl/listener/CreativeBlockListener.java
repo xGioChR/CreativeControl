@@ -377,7 +377,7 @@ public class CreativeBlockListener implements Listener {
         
         if (config.block_pistons) {
             for (Block b : e.getBlocks()) {
-                if (b.getType() == Material.AIR) { return; }
+                if (b.getType() == Material.AIR) { continue; }
                 if (manager.isprotected(b, true) != null) {
                     e.setCancelled(true);
                     break;

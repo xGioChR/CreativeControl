@@ -63,10 +63,14 @@ public class CreativeBlockManager {
     }
     
     public void unprotect(Block b) {
-        if (isprotectable(b.getWorld(), b.getTypeId())) {
-            cache.remove(LocationUtils.locationToString(b.getLocation()));
+        unprotect(b.getWorld(), b.getX(), b.getY(), b.getZ(), b.getTypeId());
+    }
+    
+    public void unprotect(World world, int x, int y, int z, int type) {
+        if (isprotectable(world, type)) {
+            cache.remove(LocationUtils.locationToString(x, y, z, world.getName()));
 
-            CreativeControl.getDb2().unprotect(b);
+            CreativeControl.getDb2().unprotect(world.getName(), x, y, z);
         }
     }
 
@@ -75,12 +79,16 @@ public class CreativeBlockManager {
     }
     
     public void protect(String player, Block b) {
-        if (isprotectable(b.getWorld(), b.getTypeId())) {
+        protect(player, b.getWorld(), b.getX(), b.getY(), b.getZ(), b.getTypeId());
+    }
+    
+    public void protect(String owner, World world, int x, int y, int z, int type) {
+        if (isprotectable(world, type)) {
 
-            CreativeBlockData data = new CreativeBlockData(player, b.getTypeId(), null);
-            cache.put(LocationUtils.locationToString(b.getLocation()), data);
+            CreativeBlockData data = new CreativeBlockData(owner, type, null);
+            cache.put(LocationUtils.locationToString(x, y, z, world.getName()), data);
 
-            CreativeControl.getDb2().protect(player, b);
+            CreativeControl.getDb2().protect(owner, world.getName(), x, y, z, type);
         }
     }
     
@@ -171,6 +179,10 @@ public class CreativeBlockManager {
     }
 
     public void update(CreativeBlockData data, Block block) {
+        update(data, block.getWorld(), block.getX(), block.getY(), block.getZ());
+    }
+    
+    public void update(CreativeBlockData data, World world, int x, int y, int z) {
         CreativeSQLDatabase  db         = CreativeControl.getDb2();
 
         if (data == null) {
@@ -178,27 +190,31 @@ public class CreativeBlockManager {
         }
         
         if (data.allowed == null || data.allowed.isEmpty()) {
-            data.allowed = null; db.update(data, block);
+            data.allowed = null; db.update(data, world.getName(), x, y, z);
         } else {
-            db.update(data, block);
+            db.update(data, world.getName(), x, y, z);
         }
         
-        cache.put(LocationUtils.locationToString(block.getLocation()), data);
+        cache.put(LocationUtils.locationToString(x, y, z, world.getName()), data);
     }
     
     public CreativeBlockData isprotected(Block block, boolean nodrop) {
+        return isprotected(block.getWorld(), block.getX(), block.getY(), block.getZ(), block.getTypeId(), nodrop);
+    }
+    
+    public CreativeBlockData isprotected(World world, int x, int y, int z, int type, boolean nodrop) {
         
-        if (!isprotectable(block.getWorld(), block.getTypeId())) {
+        if (!isprotectable(world, type)) {
             return null;
         }
         
-        String key = LocationUtils.locationToString(block.getLocation());
+        String key = LocationUtils.locationToString(x, y, z, world.getName());
 
         if (cache.containsKey(key)) {
             return cache.get(key);
         }
 
-        CreativeBlockData data = CreativeControl.getDb2().isprotected(block, nodrop);
+        CreativeBlockData data = CreativeControl.getDb2().isprotected(world.getName(), x, y, z, type, nodrop);
         cache.put(key, data);
 
         return data;
