@@ -75,6 +75,11 @@ public class CreativeWorldConfig extends Configuration {
         x.block_worledit        = getBoolean(w, "BlockProtection.WorldEdit");
         x.block_ownblock        = getBoolean(w, "BlockProtection.OwnBlocks");
         x.block_nodrop          = getBoolean(w, "BlockProtection.NoDrop");
+        
+        if (x.block_ownblock && x.block_nodrop) {
+            x.block_nodrop = false;
+        }  
+        
         x.block_explosion       = getBoolean(w, "BlockProtection.Explosions");
         x.block_creative        = getBoolean(w, "BlockProtection.CreativeOnly");
         x.block_pistons         = getBoolean(w, "BlockProtection.Pistons");
