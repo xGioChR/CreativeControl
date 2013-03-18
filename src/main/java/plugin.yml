@@ -3,9 +3,269 @@ version: 5.8.1
 author: FurmigaHumana
 description: Keep yours creatives in the line!
 main: me.FurH.CreativeControl.CreativeControl
-softdepend: ['Vault', 'WorldEdit', 'LogBlock', 'AuthMe', 'xAuth', 'MobArena', 'Multiverse-Inventories', 'FCoreLib', 'SurvivalGames']
+softdepend: ['Vault', 'WorldEdit', 'LogBlock', 'AuthMe', 'xAuth', 'MobArena', 'Multiverse-Inventories', 'FCoreLib', 'SurvivalGames', 'PermissionsEx', 'GroupManager']
 commands:
   creativecontrol:
     aliases: [cc, ccontrol]
     description: CreativeControl Commands
     usage: /creativecontrol help
+permissions:
+  CreativeControl.Commands.*:
+    children:
+      CreativeControl.Commands.Admin: true
+      CreativeControl.Commands.Friend.transfer.all: true
+      CreativeControl.Commands.Friend.add: true
+      CreativeControl.Commands.Friend.list: true
+      CreativeControl.Commands.Friend.remove: true
+      CreativeControl.Commands.Friend.allow: true
+      CreativeControl.Commands.Friend.transfer: true
+      CreativeControl.Commands.Friend.list: true
+      CreativeControl.Commands.Check.player: true
+      CreativeControl.Commands.Check.status: true
+      CreativeControl.Commands.Add.player: true
+      CreativeControl.Commands.Add: true
+      CreativeControl.Commands.Cleanup.type: true
+      CreativeControl.Commands.Cleanup.player: true
+      CreativeControl.Commands.Cleanup.world: true
+      CreativeControl.Commands.Cleanup.all: true
+      CreativeControl.Commands.Cleanup.corrupt: true
+      CreativeControl.Commands.Del.type: true
+      CreativeControl.Commands.Del.player: true
+      CreativeControl.Commands.Del.all: true
+      CreativeControl.Commands.Expand: true
+      CreativeControl.Commands.Region.define: true
+      CreativeControl.Commands.Region.remove: true
+      CreativeControl.Commands.Reload: true
+      CreativeControl.Commands.Status: true
+      CreativeControl.Commands.Tool.add: true
+      CreativeControl.Commands.Tool.del: true
+      CreativeControl.Commands.NoDrop: true
+      CreativeControl.Commands.Use.others: true
+  
+  CreativeControl.Commands.Friend.*:
+    children:
+      CreativeControl.Commands.Friend.transfer.all: true
+      CreativeControl.Commands.Friend.add: true
+      CreativeControl.Commands.Friend.list: true
+      CreativeControl.Commands.Friend.remove: true
+      CreativeControl.Commands.Friend.allow: true
+      CreativeControl.Commands.Friend.transfer: true
+      CreativeControl.Commands.Friend.list: true
+
+  CreativeControl.Commands.Check.*:
+    children:
+      CreativeControl.Commands.Check.player: true
+      CreativeControl.Commands.Check.status: true
+
+  CreativeControl.Commands.Add.*:
+    children:
+      CreativeControl.Commands.Add.player: true
+      CreativeControl.Commands.Add: true
+
+  CreativeControl.Commands.Cleanup.*:
+    children:
+      CreativeControl.Commands.Cleanup.type: true
+      CreativeControl.Commands.Cleanup.player: true
+      CreativeControl.Commands.Cleanup.world: true
+      CreativeControl.Commands.Cleanup.all: true
+      CreativeControl.Commands.Cleanup.corrupt: true
+
+  CreativeControl.Commands.Del.*:
+    children:
+      CreativeControl.Commands.Del.type: true
+      CreativeControl.Commands.Del.player: true
+      CreativeControl.Commands.Del.all: true
+
+  CreativeControl.Commands.Region.*:
+    children:
+      CreativeControl.Commands.Region.define: true
+      CreativeControl.Commands.Region.remove: true
+
+  CreativeControl.Commands.Tool.*:
+    children:
+      CreativeControl.Commands.Tool.add: true
+      CreativeControl.Commands.Tool.del: true
+
+  CreativeControl.OwnBlock.*:
+    children:
+      CreativeControl.OwnBlock.DelPlayer: true
+      CreativeControl.OwnBlock.Bypass: true
+
+  CreativeControl.Preventions.*:
+    children:
+      CreativeControl.Preventions.Bonemeal: true
+      CreativeControl.Preventions.PotionSplash: true
+      CreativeControl.Preventions.Eggs: true
+      CreativeControl.Preventions.Eggs: true
+      CreativeControl.Preventions.ItemDrop: true
+      CreativeControl.Preventions.Pickup: true
+      CreativeControl.Preventions.StackLimit: true
+      CreativeControl.Preventions.InventoryInteract: true
+      CreativeControl.Preventions.InventoryOpen: true
+      CreativeControl.Preventions.PotionSplash: true
+      CreativeControl.Preventions.Mobs: true
+      CreativeControl.Preventions.PvP: true
+      CreativeControl.Preventions.Target: true
+      CreativeControl.Preventions.ItemFrame: true
+      CreativeControl.Preventions.MineCartStorage: true
+      CreativeControl.Preventions.MobsDrop: true
+      CreativeControl.Preventions.InteractVillagers: true
+
+  CreativeControl.BlackList.*:
+    children:
+      CreativeControl.BlackList.ItemUse.*: true
+      CreativeControl.BlackList.ItemInteract.*: true
+      CreativeControl.BlackList.EconomySigns: true
+      CreativeControl.BlackList.Inventory: true
+
+  CreativeControl.Utily.*:
+    children:
+      CreativeControl.Utily.Tool.del: true
+      CreativeControl.Utily.Tool.info: true
+      CreativeControl.Utily.Tool.add: true
+      CreativeControl.Utily.Selection: true
+
+  CreativeControl.Region.*:
+    children:
+      CreativeControl.Region.Keep.Creative: true
+      CreativeControl.Region.Keep.Survival: true
+
+  CreativeControl.Commands.Admin:
+    default: op
+
+  CreativeControl.Commands.Friend.transfer.all:
+    default: op
+  CreativeControl.Commands.Friend.add:
+    default: op
+  CreativeControl.Commands.Friend.list:
+    default: op
+  CreativeControl.Commands.Friend.remove:
+    default: op
+  CreativeControl.Commands.Friend.allow:
+    default: op
+  CreativeControl.Commands.Friend.transfer:
+    default: op
+  CreativeControl.Commands.Friend.list:
+    default: op
+
+  CreativeControl.Commands.Check.player:
+    default: op
+  CreativeControl.Commands.Check.status:
+    default: op
+
+  CreativeControl.Commands.Add.player:
+    default: op
+  CreativeControl.Commands.Add:
+    default: op
+
+  CreativeControl.Commands.Cleanup.type:
+    default: op
+  CreativeControl.Commands.Cleanup.player:
+    default: op
+  CreativeControl.Commands.Cleanup.world:
+    default: op
+  CreativeControl.Commands.Cleanup.all:
+    default: op
+  CreativeControl.Commands.Cleanup.corrupt:
+    default: op
+
+  CreativeControl.Commands.Del.type:
+    default: op
+  CreativeControl.Commands.Del.player:
+    default: op
+  CreativeControl.Commands.Del.all:
+    default: op
+
+  CreativeControl.Commands.Expand:
+    default: op
+
+  CreativeControl.Commands.Region.define:
+    default: op
+  CreativeControl.Commands.Region.remove:
+    default: op
+
+  CreativeControl.Commands.Reload:
+    default: op
+
+  CreativeControl.Commands.Status:
+    default: op
+
+  CreativeControl.Commands.Tool.add:
+    default: op
+  CreativeControl.Commands.Tool.del:
+    default: op
+
+  CreativeControl.Commands.NoDrop:
+    default: op
+
+  CreativeControl.Commands.Use.others:
+    default: op
+
+  CreativeControl.OwnBlock.DelPlayer:
+    default: op
+  CreativeControl.OwnBlock.Bypass:
+    default: op
+
+  CreativeControl.Preventions.Bonemeal:
+    default: op
+  CreativeControl.Preventions.PotionSplash:
+    default: op
+  CreativeControl.Preventions.Eggs:
+    default: op
+  CreativeControl.Preventions.Eggs:
+    default: op
+  CreativeControl.Preventions.ItemDrop:
+    default: op
+  CreativeControl.Preventions.Pickup:
+    default: op
+  CreativeControl.Preventions.StackLimit:
+    default: op
+  CreativeControl.Preventions.InventoryInteract:
+    default: op
+  CreativeControl.Preventions.InventoryOpen:
+    default: op
+  CreativeControl.Preventions.PotionSplash:
+    default: op
+  CreativeControl.Preventions.Mobs:
+    default: op
+  CreativeControl.Preventions.PvP:
+    default: op
+  CreativeControl.Preventions.Target:
+    default: op
+  CreativeControl.Preventions.ItemFrame:
+    default: op
+  CreativeControl.Preventions.MineCartStorage:
+    default: op
+  CreativeControl.Preventions.MobsDrop:
+    default: op
+  CreativeControl.Preventions.InteractVillagers:
+    default: op
+
+  CreativeControl.BlackList.ItemUse.<id>:
+    default: op
+  CreativeControl.BlackList.ItemInteract.<id>:
+    default: op
+  CreativeControl.BlackList.EconomySigns:
+    default: op
+  CreativeControl.BlackList.Inventory:
+    default: op
+
+  CreativeControl.Utily.Tool.del:
+    default: op
+  CreativeControl.Utily.Tool.info:
+    default: op
+  CreativeControl.Utily.Tool.add:
+    default: op
+  CreativeControl.Utily.Selection:
+    default: op
+
+  CreativeControl.World.Keep:
+    default: op
+
+  CreativeControl.Updater.Broadcast:
+    default: op
+
+  CreativeControl.Region.Keep.Creative:
+    default: op
+  CreativeControl.Region.Keep.Survival:
+    default: op

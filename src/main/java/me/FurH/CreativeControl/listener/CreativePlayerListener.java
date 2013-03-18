@@ -86,7 +86,7 @@ public class CreativePlayerListener implements Listener {
         }
         
         if (config.perm_enabled) {
-            Permission permissions = CreativeControl.getPermissions();
+            Permission permissions = CreativeControl.getPermissions().getVault();
             
             if (permissions != null) {
                 if (newgm.equals(GameMode.CREATIVE)) {

@@ -47,12 +47,12 @@ import me.FurH.CreativeControl.listener.*;
 import me.FurH.CreativeControl.manager.CreativeBlockManager;
 import me.FurH.CreativeControl.metrics.CreativeMetrics;
 import me.FurH.CreativeControl.metrics.CreativeMetrics.Graph;
+import me.FurH.CreativeControl.permissions.CreativePermissions;
 import me.FurH.CreativeControl.region.CreativeRegion;
 import me.FurH.CreativeControl.region.CreativeRegion.CreativeMode;
 import me.FurH.CreativeControl.region.CreativeRegionManager;
 import me.FurH.CreativeControl.selection.CreativeBlocksSelection;
 import me.FurH.CreativeControl.util.CreativeUtil;
-import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -64,7 +64,6 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.RegisteredServiceProvider;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -94,7 +93,7 @@ public class CreativeControl extends CorePlugin {
     private static Consumer lbconsumer = null;
     private static CreativeWorldConfig worldconfig;
 
-    private static Permission permissions;
+    private static CreativePermissions permissions;
 
     public WeakHashMap<Player, Location> right = new WeakHashMap<Player, Location>();
     public WeakHashMap<Player, Location> left = new WeakHashMap<Player, Location>();
@@ -141,6 +140,7 @@ public class CreativeControl extends CorePlugin {
         friends = new CreativePlayerFriends();
         data = new CreativePlayerData();
         worldedit = new CreativeWorldEditHook();
+        permissions = new CreativePermissions();
 
         database = new CreativeSQLDatabase(this, mainconfig.database_prefix, mainconfig.database_type, mainconfig.database_host, mainconfig.database_port, mainconfig.database_table, mainconfig.database_user, mainconfig.database_pass);
 
@@ -175,9 +175,7 @@ public class CreativeControl extends CorePlugin {
 
         setupLogBlock();
         
-        if (setupPermissions()) {
-            log("[TAG] Vault hooked as permissions plugin");
-        }
+        permissions.setup();
 
         log("[TAG] Cached {0} protections", manager.preCache());
         log("[TAG] Loaded {0} regions", regioner.loadRegions());
@@ -342,10 +340,7 @@ public class CreativeControl extends CorePlugin {
 
     @Override
     public boolean hasPerm(CommandSender sender, String node) {
-        if (permissions != null) {
-            return permissions.has(sender, "CreativeControl." + node);
-        }
-        return sender.hasPermission("CreativeControl." + node);
+        return ((sender instanceof Player)) ? permissions.hasPerm((Player)sender, node) : true;
     }
     
     public String removeVehicle(UUID uuid) {
@@ -407,7 +402,7 @@ public class CreativeControl extends CorePlugin {
         limits.remove(player.getName());
     }
     
-    public static Permission getPermissions() {
+    public static CreativePermissions getPermissions() {
         return permissions;
     }
     
@@ -474,19 +469,6 @@ public class CreativeControl extends CorePlugin {
             log("[TAG] LogBlock hooked as logging plugin");
             lbconsumer = ((LogBlock)logblock).getConsumer();
         }
-    }
-    
-    private boolean setupPermissions() {
-        Plugin vault = Bukkit.getPluginManager().getPlugin("Vault");
-
-        if (vault != null) {
-            RegisteredServiceProvider<Permission> permissionProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.permission.Permission.class);
-            if (permissionProvider != null) {
-                permissions = permissionProvider.getProvider();
-            }
-        }
-
-        return (permissions != null);
     }
 
     public WorldEditPlugin getWorldEdit() {

@@ -115,7 +115,7 @@ public class CreativeBlocksSelection {
                                     }
                                 } else
                                 if (wconfig.block_nodrop) {
-                                    if (plugin.hasPerm(player, "Command.NoDrop")) {
+                                    if (plugin.hasPerm(player, "Commands.NoDrop")) {
                                         manager.unprotect(world, x, y, z, id);
                                     }
                                 }
@@ -129,7 +129,7 @@ public class CreativeBlocksSelection {
                                     }
                                 } else
                                 if (wconfig.block_nodrop) {
-                                    if (plugin.hasPerm(player, "Command.NoDrop")) {
+                                    if (plugin.hasPerm(player, "Commands.NoDrop")) {
                                         delPlayer(args, world, x, y, z, id);
                                     }
                                 }
@@ -144,7 +144,7 @@ public class CreativeBlocksSelection {
                                     }
                                 } else
                                 if (wconfig.block_nodrop) {
-                                    if (plugin.hasPerm(player, "Command.NoDrop")) {
+                                    if (plugin.hasPerm(player, "Commands.NoDrop")) {
                                         delType(args, world, x, y, z, id);
                                     }
                                 }
