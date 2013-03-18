@@ -443,7 +443,7 @@ public class CreativeBlockListener implements Listener {
             manager.unprotect(b);
             logBlock(p, b);
             e.setExpToDrop(0);
-            b.setTypeId(0, false);
+            b.setType(Material.AIR);
 
             if (!p.getGameMode().equals(GameMode.CREATIVE)) {
                 com.msg(p, messages.blockbreak_creativeblock);
