@@ -355,7 +355,7 @@ public class CreativeBlockListener implements Listener {
                 CreativeBlockData data = manager.isprotected(block, false);
 
                 if (data != null) {
-                    if (manager.isAllowed(p, data)) {
+                    if (!manager.isAllowed(p, data)) {
                         com.msg(p, messages.blockmanager_belongs, data.owner);
                         e.setCancelled(true);
                         break;
