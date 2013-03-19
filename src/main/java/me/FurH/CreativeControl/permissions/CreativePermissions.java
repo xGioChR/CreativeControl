@@ -16,26 +16,13 @@ import org.bukkit.plugin.RegisteredServiceProvider;
  */
 public class CreativePermissions {
 
-    private CreativePermissionsInterface handler;
     private Permission vault;
 
     public void setup() {
         Communicator com = CreativeControl.plugin.getCommunicator();
         PluginManager pm = Bukkit.getPluginManager();
 
-        Plugin plugin = pm.getPlugin("GroupManager");
-        if (plugin != null && plugin.isEnabled()) {
-            handler = new CreativeGroupManager(plugin);
-            com.log("[TAG] GroupManager hooked as permissions plugin");
-        }
-
-        plugin = pm.getPlugin("PermissionsEx");
-        if (plugin != null && plugin.isEnabled()) {
-            handler = new CreativePexManager();
-            com.log("[TAG] PermissionsEx hooked as permissions plugin");
-        }
-
-        plugin = Bukkit.getPluginManager().getPlugin("Vault");
+        Plugin plugin = pm.getPlugin("Vault");
         if (plugin != null && plugin.isEnabled()) {
             RegisteredServiceProvider<Permission> permissionProvider = Bukkit.getServicesManager().getRegistration(net.milkbowl.vault.permission.Permission.class);
             if (permissionProvider != null) {
@@ -44,13 +31,8 @@ public class CreativePermissions {
             }
         }
     }
-    
+
     public boolean hasPerm(Player player, String node) {
-
-        if (handler != null) {
-            return handler.hasPerm(player, node);
-        }
-
         return player.hasPermission(node);
     }
     

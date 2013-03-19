@@ -340,7 +340,7 @@ public class CreativeControl extends CorePlugin {
 
     @Override
     public boolean hasPerm(CommandSender sender, String node) {
-        return ((sender instanceof Player)) ? permissions.hasPerm((Player)sender, node) : true;
+        return ((sender instanceof Player)) ? permissions.hasPerm((Player)sender, "CreativeControl."+node) : true;
     }
     
     public String removeVehicle(UUID uuid) {
