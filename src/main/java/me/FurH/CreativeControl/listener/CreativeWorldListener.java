@@ -27,6 +27,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.world.StructureGrowEvent;
+import org.bukkit.event.world.WorldInitEvent;
 import org.bukkit.event.world.WorldLoadEvent;
 
 /**
@@ -35,13 +36,20 @@ import org.bukkit.event.world.WorldLoadEvent;
  */
 public class CreativeWorldListener implements Listener {
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
+    public void onWorldInit(WorldInitEvent e) {
+        CreativeControl.getDb2().load(null, e.getWorld().getName(), null);
+    }
+    
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onWorldLoad(WorldLoadEvent e) {
         CreativeMainConfig   main     = CreativeControl.getMainConfig();
+
         if (!main.config_single) {
-            CreativeControl.getDb2().load(null, e.getWorld().getName(), null);
             CreativeControl.getWorldConfig().load(e.getWorld());
         }
+
+        CreativeControl.getDb2().load(null, e.getWorld().getName(), null);
     }
     
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
