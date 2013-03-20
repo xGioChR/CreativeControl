@@ -117,7 +117,7 @@ public class CreativeBlockListener implements Listener {
              * Block Place BlackList
              */
             if ((config.black_place != null) && (config.black_place.contains(b.getTypeId()))) {
-                if (!plugin.hasPerm(p, "BlackList.BlockPlace." + b.getTypeId())) {
+                if (!plugin.hasPerm(p, "BlackList.BlockPlace") && !plugin.hasPerm(p, "BlackList.BlockPlace." + b.getTypeId())) {
                     com.msg(p, messages.blockplace_cantplace);
                     e.setCancelled(true);
                     return;
@@ -306,7 +306,7 @@ public class CreativeBlockListener implements Listener {
              * Block Break BlackList
              */
             if ((config.black_break != null) && (config.black_break.contains(b.getTypeId()))) {
-                if (!plugin.hasPerm(p, "BlackList.BlockBreak." + b.getTypeId())) {
+                if (!plugin.hasPerm(p, "BlackList.BlockBreak") && !plugin.hasPerm(p, "BlackList.BlockBreak." + b.getTypeId())) {
                     com.msg(p, messages.blockbreak_cantbreak);
                     e.setCancelled(true);
                     return;

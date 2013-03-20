@@ -274,6 +274,11 @@ permissions:
     default: op
   CreativeControl.OwnBlock.Bypass:
     default: op
+  CreativeControl.OwnBlock.DontSave:
+    default: op
+
+  CreativeControl.NoDrop.DontSave:
+    default: op
 
   CreativeControl.Preventions.Bonemeal:
     default: op
@@ -309,10 +314,30 @@ permissions:
     default: op
   CreativeControl.Preventions.InteractVillagers:
     default: op
-
-  CreativeControl.BlackList.ItemUse.<id>:
+  CreativeControl.Preventions.Wither:
     default: op
-  CreativeControl.BlackList.ItemInteract.<id>:
+  CreativeControl.Preventions.SnowGolem:
+    default: op
+  CreativeControl.Preventions.IronGolem:
+    default: op
+  CreativeControl.Preventions.BreakBedRock:
+    default: op
+
+  CreativeControl.BlackList.BlockBreak:
+    default: op
+  CreativeControl.BlackList.BlockBreak.*:
+    default: op
+  CreativeControl.BlackList.BlockPlace:
+    default: op
+  CreativeControl.BlackList.BlockPlace.*:
+    default: op
+  CreativeControl.BlackList.ItemUse:
+    default: op
+  CreativeControl.BlackList.ItemUse.*:
+    default: op
+  CreativeControl.BlackList.ItemInteract:
+    default: op
+  CreativeControl.BlackList.ItemInteract.*:
     default: op
   CreativeControl.BlackList.EconomySigns:
     default: op
