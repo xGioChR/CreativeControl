@@ -172,6 +172,14 @@ permissions:
       CreativeControl.Preventions.MobsDrop: true
       CreativeControl.Preventions.InteractVillagers: true
 
+  CreativeControl.BlackList.ItemUse:
+    children:
+      CreativeControl.BlackList.ItemUse.*: true
+
+  CreativeControl.BlackList.ItemInteract:
+    children:
+      CreativeControl.BlackList.ItemInteract.*: true
+
   CreativeControl.BlackList.*:
     children:
       CreativeControl.BlackList.ItemUse.*: true
