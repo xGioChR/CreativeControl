@@ -59,7 +59,7 @@ import org.bukkit.inventory.ItemStack;
  */
 public class CreativePlayerListener implements Listener {
 
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void onPlayerGameModeChange(PlayerGameModeChangeEvent e) {
         if (e.isCancelled()) { return; }
                 
@@ -481,7 +481,7 @@ public class CreativePlayerListener implements Listener {
     /*
      * Player Pickup Item Module
      */
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onPlayerPickupItem(PlayerPickupItemEvent e) {
         if (e.isCancelled()) { return; }
                 
@@ -508,7 +508,7 @@ public class CreativePlayerListener implements Listener {
     /*
      * Player Drops Item Module
      */
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onPlayerDropItem(PlayerDropItemEvent e) {
         if (e.isCancelled()) { return; }
                 
@@ -574,7 +574,7 @@ public class CreativePlayerListener implements Listener {
     /*
      * Player interact section
      */
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onPlayerInteract(PlayerInteractEvent e) {
         
         Player p = e.getPlayer();

@@ -367,7 +367,7 @@ public class CreativeBlockListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onPistonExtend(BlockPistonExtendEvent e) {
         if (e.isCancelled()) { return; }
         
@@ -386,7 +386,7 @@ public class CreativeBlockListener implements Listener {
         }
     }
     
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onPistonRetract(BlockPistonRetractEvent e) {
         if (e.isCancelled()) { return; }
                 

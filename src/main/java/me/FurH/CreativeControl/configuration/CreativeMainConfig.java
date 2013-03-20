@@ -61,7 +61,7 @@ public class CreativeMainConfig extends Configuration {
     
     public boolean         events_move       = false;
     public boolean         events_misc       = false;
-    
+
     public boolean         data_inventory    = true;
     public boolean         data_status       = true;
     public boolean         data_teleport     = false;
@@ -108,7 +108,7 @@ public class CreativeMainConfig extends Configuration {
         
         events_move      = getBoolean("Events.PlayerMove");
         events_misc      = getBoolean("Events.MiscProtection");
-        
+                
         data_inventory   = getBoolean("PlayerData.Inventory");
         data_status      = getBoolean("PlayerData.Status");
         data_teleport    = getBoolean("PlayerData.Teleport");

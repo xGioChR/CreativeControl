@@ -150,7 +150,7 @@ public class CreativeEntityListener implements Listener {
     /*
      * Anti Target Module
      */
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onEntityTarget(EntityTargetEvent e) {
         if (e.isCancelled())  { return; }
 
@@ -176,7 +176,7 @@ public class CreativeEntityListener implements Listener {
     /*
      * Anti MineCart Storage Module
      */
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onPlayerInteractEntity(PlayerInteractEntityEvent e) {
         Player p = e.getPlayer();
         World world = p.getWorld();
@@ -240,7 +240,7 @@ public class CreativeEntityListener implements Listener {
     /*
      * Anti PvP/Mob Damage Module
      */
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onEntityDamage(EntityDamageEvent event) {
         
         if ((event instanceof EntityDamageByEntityEvent)) {
