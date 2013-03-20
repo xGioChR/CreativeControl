@@ -671,7 +671,7 @@ public class CreativePlayerListener implements Listener {
         if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
             if (p.getGameMode().equals(GameMode.CREATIVE)) {
                 if (config.black_interact.contains(i.getTypeId())) {
-                    if (!plugin.hasPerm(p, "BlackList.ItemInteract."+i.getTypeId())) {
+                    if (!plugin.hasPerm(p, "BlackList.ItemInteract") || !plugin.hasPerm(p, "BlackList.ItemInteract."+i.getTypeId())) {
                         com.msg(p, messages.mainode_restricted);
                         e.setCancelled(true);
                         return;
@@ -702,7 +702,7 @@ public class CreativePlayerListener implements Listener {
                     }
                     
                     if (config.black_use.contains(e.getItem().getTypeId())) {
-                        if (!plugin.hasPerm(p, "BlackList.ItemUse."+e.getItem().getTypeId())) {
+                        if (!plugin.hasPerm(p, "BlackList.ItemUse") || !plugin.hasPerm(p, "BlackList.ItemUse."+e.getItem().getTypeId())) {
                             com.msg(p, messages.mainode_restricted);
                             e.setCancelled(true);
                             return;
