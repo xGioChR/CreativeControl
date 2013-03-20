@@ -224,12 +224,12 @@ public class CreativeCommands implements CommandExecutor {
                     return true;
                 }
                 
-                if ((friends.getFriends(sender.getName()) == null) || (friends.getFriends(sender.getName()).isEmpty())) {
-                    msg(sender, "&7Your friendlist is empty!");
+                if ((friends.getFriends(args[2]) == null) || (friends.getFriends(args[2]).isEmpty())) {
+                    msg(sender, "&4{0}&7 has no friends :(", args[2]);
                     return true;
                 } else {
-                    String list = friends.getFriends(sender.getName()).toString().replaceAll("\\[", "&4[&7").replaceAll("\\]", "&4]&7").replaceAll("\\,", "&4,&7");
-                    msg(sender, "&4Friends&8: &7{1}", args[2], list);
+                    String list = friends.getFriends(args[2]).toString().replaceAll("\\[", "&4[&7").replaceAll("\\]", "&4]&7").replaceAll("\\,", "&4,&7");
+                    msg(sender, "&4{0}'s &7friends&8: &7{1}", args[2], list);
                     return true;
                 }
             } else
@@ -297,12 +297,12 @@ public class CreativeCommands implements CommandExecutor {
                     return true;
                 }
                 
-                if ((friends.getFriends(args[2]) == null) || (friends.getFriends(args[2]).isEmpty())) {
-                    msg(sender, "&4{0}&7 has no friends :(", sender.getName());
+                if ((friends.getFriends(sender.getName()) == null) || (friends.getFriends(sender.getName()).isEmpty())) {
+                    msg(sender, "&7Your friendlist is empty!");
                     return true;
                 } else {
-                    String list = friends.getFriends(args[2]).toString().replaceAll("\\[", "&4[&7").replaceAll("\\]", "&4]&7").replaceAll("\\,", "&4,&7");
-                    msg(sender, "&4Friends&8: &7{1}", list);
+                    String list = friends.getFriends(sender.getName()).toString().replaceAll("\\[", "&4[&7").replaceAll("\\]", "&4]&7").replaceAll("\\,", "&4,&7");
+                    msg(sender, "&7You friends&8: &7{1}", sender.getName(), list);
                     return true;
                 }
             }
