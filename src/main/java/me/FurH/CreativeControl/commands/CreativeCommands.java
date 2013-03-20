@@ -730,9 +730,6 @@ public class CreativeCommands implements CommandExecutor {
                     type = CreativeMode.SURVIVAL;
                 }
 
-                start = null;
-                end = null;
-
                 if (type != null) {
                     setRegion(type, args[3], start, end);
                     msg(sender, "&7Region create successfully!");
