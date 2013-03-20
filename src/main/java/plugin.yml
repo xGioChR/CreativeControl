@@ -59,8 +59,8 @@ permissions:
       CreativeControl.Preventions.MineCartStorage: true
       CreativeControl.Preventions.MobsDrop: true
       CreativeControl.Preventions.InteractVillagers: true
-      CreativeControl.BlackList.ItemUse.<id>: true
-      CreativeControl.BlackList.ItemInteract.<id>: true
+      CreativeControl.BlackList.ItemUse: true
+      CreativeControl.BlackList.ItemInteract: true
       CreativeControl.BlackList.EconomySigns: true
       CreativeControl.BlackList.Inventory: true
       CreativeControl.Utily.Tool.del: true
@@ -71,6 +71,13 @@ permissions:
       CreativeControl.Updater.Broadcast: true
       CreativeControl.Region.Keep.Creative: true
       CreativeControl.Region.Keep.Survival: true
+      CreativeControl.Preventions.Wither: true
+      CreativeControl.Preventions.SnowGolem: true
+      CreativeControl.Preventions.IronGolem: true
+      CreativeControl.Preventions.BreakBedRock: true
+      CreativeControl.BlackList.BlockBreak: true
+      CreativeControl.BlackList.BlockPlace: true
+
   CreativeControl.Commands.*:
     children:
       CreativeControl.Commands.Admin: true
@@ -151,6 +158,7 @@ permissions:
     children:
       CreativeControl.OwnBlock.DelPlayer: true
       CreativeControl.OwnBlock.Bypass: true
+      CreativeControl.OwnBlock.DontSave: true
 
   CreativeControl.Preventions.*:
     children:
@@ -171,21 +179,19 @@ permissions:
       CreativeControl.Preventions.MineCartStorage: true
       CreativeControl.Preventions.MobsDrop: true
       CreativeControl.Preventions.InteractVillagers: true
-
-  CreativeControl.BlackList.ItemUse:
-    children:
-      CreativeControl.BlackList.ItemUse.*: true
-
-  CreativeControl.BlackList.ItemInteract:
-    children:
-      CreativeControl.BlackList.ItemInteract.*: true
+      CreativeControl.Preventions.Wither: true
+      CreativeControl.Preventions.SnowGolem: true
+      CreativeControl.Preventions.IronGolem: true
+      CreativeControl.Preventions.BreakBedRock: true
 
   CreativeControl.BlackList.*:
     children:
-      CreativeControl.BlackList.ItemUse.*: true
-      CreativeControl.BlackList.ItemInteract.*: true
+      CreativeControl.BlackList.ItemUse: true
+      CreativeControl.BlackList.ItemInteract: true
       CreativeControl.BlackList.EconomySigns: true
       CreativeControl.BlackList.Inventory: true
+      CreativeControl.BlackList.BlockPlace: true
+      CreativeControl.BlackList.BlockBreak: true
 
   CreativeControl.Utily.*:
     children:
