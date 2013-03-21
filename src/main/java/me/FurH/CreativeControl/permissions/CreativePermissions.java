@@ -2,6 +2,7 @@ package me.FurH.CreativeControl.permissions;
 
 import me.FurH.Core.util.Communicator;
 import me.FurH.CreativeControl.CreativeControl;
+import me.FurH.CreativeControl.configuration.CreativeMainConfig;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -40,6 +41,11 @@ public class CreativePermissions {
     }
 
     public boolean hasPerm(Player player, String node) {
+        CreativeMainConfig config = CreativeControl.getMainConfig();
+
+        if (player.isOp() && config.perm_ophas) {
+            return true;
+        }
 
         if (handler != null) {
             return handler.hasPerm(player, node);
