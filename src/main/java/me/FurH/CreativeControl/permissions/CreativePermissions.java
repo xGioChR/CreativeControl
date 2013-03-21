@@ -32,6 +32,7 @@ public class CreativePermissions {
             }
         }
 
+        plugin = pm.getPlugin("GroupManager");
         if (plugin != null && plugin.isEnabled()) {
             handler = new CreativeGroupManager(plugin);
             com.log("[TAG] GroupManager hooked as permissions plugin");
@@ -39,7 +40,7 @@ public class CreativePermissions {
     }
 
     public boolean hasPerm(Player player, String node) {
-        
+
         if (handler != null) {
             return handler.hasPerm(player, node);
         }

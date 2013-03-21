@@ -86,7 +86,7 @@ public class CreativeMainConfig extends Configuration {
         perm_from        = getString("Permissions.MoveFrom");
         perm_to          = getString("Permissions.MoveTo");
         perm_ophas       = getBoolean("Permissions.OpHasPerm");
-    
+
         queue_each       = getLong("Queue.each");
         queue_count      = getInteger("Queue.count");
         queue_sleep      = getInteger("Queue.sleep");
