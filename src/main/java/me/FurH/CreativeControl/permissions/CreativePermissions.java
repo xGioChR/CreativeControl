@@ -17,6 +17,7 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 public class CreativePermissions {
 
     private Permission vault;
+    private CreativePermissionsInterface handler;
 
     public void setup() {
         Communicator com = CreativeControl.plugin.getCommunicator();
@@ -30,9 +31,19 @@ public class CreativePermissions {
                 com.log("[TAG] Vault hooked as permissions plugin");
             }
         }
+
+        if (plugin != null && plugin.isEnabled()) {
+            handler = new CreativeGroupManager(plugin);
+            com.log("[TAG] GroupManager hooked as permissions plugin");
+        }
     }
 
     public boolean hasPerm(Player player, String node) {
+        
+        if (handler != null) {
+            return handler.hasPerm(player, node);
+        }
+        
         return player.hasPermission(node);
     }
     

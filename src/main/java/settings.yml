@@ -24,6 +24,8 @@ Permissions:
   MoveFrom: MembersSurvival
   ## MoveTo, the group that the player will be added when he change his gamemode to creative
   MoveTo: MembersCreative
+  ## OpHasPerm, if true, ops will have all the permissions and will not be checked by your permissions plugin
+  OpHasPerm: true
 
 ## if you have an larger server with tons of creative players placing/breaking blocks, you should increase the "count" and decrease the "sleep" and "each"
 Queue:

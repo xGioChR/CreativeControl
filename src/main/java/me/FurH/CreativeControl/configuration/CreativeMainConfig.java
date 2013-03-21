@@ -42,6 +42,7 @@ public class CreativeMainConfig extends Configuration {
     public boolean         perm_move         = false;
     public String          perm_from         = "MemberSurvival";
     public String          perm_to           = "MemberCreative";
+    public boolean         perm_ophas        = true;
 
     public long            queue_each        = 50;
     public int             queue_count       = 50;
@@ -84,6 +85,7 @@ public class CreativeMainConfig extends Configuration {
         perm_move        = getBoolean("Permissions.Move");
         perm_from        = getString("Permissions.MoveFrom");
         perm_to          = getString("Permissions.MoveTo");
+        perm_ophas       = getBoolean("Permissions.OpHasPerm");
     
         queue_each       = getLong("Queue.each");
         queue_count      = getInteger("Queue.count");
