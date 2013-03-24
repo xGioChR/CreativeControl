@@ -16,7 +16,6 @@
 
 package me.FurH.CreativeControl.listener;
 
-import com.sk89q.worldedit.bukkit.selections.Selection;
 import java.util.ArrayList;
 import me.FurH.Core.cache.CoreLRUCache;
 import me.FurH.Core.location.LocationUtils;
@@ -27,7 +26,6 @@ import me.FurH.CreativeControl.configuration.CreativeMessages;
 import me.FurH.CreativeControl.configuration.CreativeWorldNodes;
 import me.FurH.CreativeControl.data.CreativePlayerData;
 import me.FurH.CreativeControl.data.friend.CreativePlayerFriends;
-import me.FurH.CreativeControl.integration.worldedit.CreativeWorldEditHook;
 import me.FurH.CreativeControl.manager.CreativeBlockData;
 import me.FurH.CreativeControl.manager.CreativeBlockManager;
 import me.FurH.CreativeControl.region.CreativeRegion;
@@ -140,22 +138,6 @@ public class CreativePlayerListener implements Listener {
                         e.setCancelled(true);
                         return;
                     }
-                }
-            }
-        }
-        
-        if (config.block_worledit) {
-            if (plugin.getWorldEdit() != null) {
-                CreativeWorldEditHook weh      = CreativeControl.getWorldEditHook();
-                Selection select = plugin.getWorldEdit().getSelection(p);
-                if (msg.startsWith("//set")) {
-                    weh.saveBlocks(select, p);
-                } else
-                if (msg.startsWith("//undo")) {
-                    weh.delBlocks(select, p);
-                } else
-                if (msg.startsWith("//redo")) {
-                    weh.saveBlocks(select, p);
                 }
             }
         }

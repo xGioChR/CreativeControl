@@ -80,8 +80,8 @@ public class CreativeSQLCleanup implements Runnable {
 
         /* move regions table */
         com.msg(p, "&7Cleaning table '&4"+table+"&7' ...");
-        
-        WorldServer worldServer = ((CraftWorld)w).getHandle();
+
+        final WorldServer worldServer = ((CraftWorld)w).getHandle();
 
         double blocks_size = 0;
         try {

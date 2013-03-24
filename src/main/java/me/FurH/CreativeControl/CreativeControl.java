@@ -41,7 +41,7 @@ import me.FurH.CreativeControl.database.extra.CreativeSQLUpdater;
 import me.FurH.CreativeControl.integration.AuthMe;
 import me.FurH.CreativeControl.integration.MobArena;
 import me.FurH.CreativeControl.integration.SurvivalGames;
-import me.FurH.CreativeControl.integration.worldedit.CreativeWorldEditHook;
+import me.FurH.CreativeControl.integration.worldedit.CreativeEditSessionFactory;
 import me.FurH.CreativeControl.integration.xAuth;
 import me.FurH.CreativeControl.listener.*;
 import me.FurH.CreativeControl.manager.CreativeBlockManager;
@@ -86,7 +86,6 @@ public class CreativeControl extends CorePlugin {
     private static CreativeRegionManager regioner;
     private static CreativeBlockManager manager;
     private static CreativePlayerData data;
-    private static CreativeWorldEditHook worldedit;
     private static CreativePlayerFriends friends;
     private static CreativeMainConfig mainconfig;
     private static CreativeMessages messages;
@@ -139,7 +138,6 @@ public class CreativeControl extends CorePlugin {
         manager = new CreativeBlockManager();
         friends = new CreativePlayerFriends();
         data = new CreativePlayerData();
-        worldedit = new CreativeWorldEditHook();
         permissions = new CreativePermissions();
 
         database = new CreativeSQLDatabase(this, mainconfig.database_prefix, mainconfig.database_type, mainconfig.database_host, mainconfig.database_port, mainconfig.database_table, mainconfig.database_user, mainconfig.database_pass);
@@ -174,6 +172,7 @@ public class CreativeControl extends CorePlugin {
         getCommand("creativecontrol").setExecutor(cc);
 
         setupLogBlock();
+        setupWorldEdit();
         
         permissions.setup();
 
@@ -450,11 +449,7 @@ public class CreativeControl extends CorePlugin {
     public static CreativePlayerData getPlayerData() { 
         return data; 
     }
-    
-    public static CreativeWorldEditHook getWorldEditHook() { 
-        return worldedit; 
-    }
-    
+
     public static CreativeMessages getMessages() {
         return messages;
     }
@@ -471,6 +466,13 @@ public class CreativeControl extends CorePlugin {
         }
     }
 
+    public void setupWorldEdit() {
+        Plugin we = Bukkit.getPluginManager().getPlugin("WorldEdit");
+        if (we != null && we.isEnabled()) {
+            CreativeEditSessionFactory.setup();
+        }
+    }
+    
     public WorldEditPlugin getWorldEdit() {
         PluginManager pm = getServer().getPluginManager();
         Plugin wex = pm.getPlugin("WorldEdit");

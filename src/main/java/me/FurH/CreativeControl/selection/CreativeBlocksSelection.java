@@ -90,9 +90,10 @@ public class CreativeBlocksSelection {
 
         final long startTimer = System.currentTimeMillis();
         final Player player = (Player) sender;
-        final World world = min.getWorld();
-        final WorldServer worldServer = ((CraftWorld)world).getHandle();
-        
+        final World w = min.getWorld();
+
+        final WorldServer worldServer = ((CraftWorld)w).getHandle();
+
         Thread t = new Thread() {
             @Override
             public void run() {
@@ -103,60 +104,60 @@ public class CreativeBlocksSelection {
                             int id = worldServer.getTypeId(x, y, z);
                             if (id == 0) { continue; }
 
-                            CreativeWorldNodes wconfig = CreativeControl.getWorldNodes(world);
+                            CreativeWorldNodes wconfig = CreativeControl.getWorldNodes(w);
 
                             if (type == Type.DELALL) {
                                 if (wconfig.block_ownblock) {
-                                    CreativeBlockData data = manager.isprotected(world, x, y, z, id, true);
+                                    CreativeBlockData data = manager.isprotected(w, x, y, z, id, true);
                                     if (data != null) {
                                         if (data.owner.equalsIgnoreCase(args)) {
-                                            manager.unprotect(world, x, y, z, id);
+                                            manager.unprotect(w, x, y, z, id);
                                         }
                                     }
                                 } else
                                 if (wconfig.block_nodrop) {
                                     if (plugin.hasPerm(player, "Commands.NoDrop")) {
-                                        manager.unprotect(world, x, y, z, id);
+                                        manager.unprotect(w, x, y, z, id);
                                     }
                                 }
                             } else
                             if (type == Type.DELPLAYER) {
                                 if (wconfig.block_ownblock) {
                                     if (args.equalsIgnoreCase(player.getName())) {
-                                        delPlayer(args, world, x, y, z, id);
+                                        delPlayer(args, w, x, y, z, id);
                                     } else if (plugin.hasPerm(player, "OwnBlock.DelPlayer")) {
-                                        delPlayer(args, world, x, y, z, id);
+                                        delPlayer(args, w, x, y, z, id);
                                     }
                                 } else
                                 if (wconfig.block_nodrop) {
                                     if (plugin.hasPerm(player, "Commands.NoDrop")) {
-                                        delPlayer(args, world, x, y, z, id);
+                                        delPlayer(args, w, x, y, z, id);
                                     }
                                 }
                             } else
                             if (type == Type.DELTYPE) {
                                 if (wconfig.block_ownblock) {
-                                    CreativeBlockData data = manager.isprotected(world, x, y, z, id, true);
+                                    CreativeBlockData data = manager.isprotected(w, x, y, z, id, true);
                                     if (data != null) {
                                         if (data.owner.equalsIgnoreCase(player.getName())) {
-                                            delType(args, world, x, y, z, id);
+                                            delType(args, w, x, y, z, id);
                                         }
                                     }
                                 } else
                                 if (wconfig.block_nodrop) {
                                     if (plugin.hasPerm(player, "Commands.NoDrop")) {
-                                        delType(args, world, x, y, z, id);
+                                        delType(args, w, x, y, z, id);
                                     }
                                 }
                             } else
                             if (type == Type.ADD) {
-                                CreativeBlockData data = manager.isprotected(world, x, y, z, id, true);
+                                CreativeBlockData data = manager.isprotected(w, x, y, z, id, true);
                                 if (data == null) {
-                                    manager.protect(args, world, x, y, z, id);
+                                    manager.protect(args, w, x, y, z, id);
                                 }
                             } else
                             if (type == Type.ALLOW) {
-                                CreativeBlockData data = manager.isprotected(world, x, y, z, id, false);
+                                CreativeBlockData data = manager.isprotected(w, x, y, z, id, false);
                                 if (data != null) {
                                     if (data.owner.equalsIgnoreCase(player.getName())) {
                                         String mod = args.toLowerCase();
@@ -177,16 +178,16 @@ public class CreativeBlocksSelection {
                                             }
                                         }
 
-                                        manager.update(data, world, x, y, z);
+                                        manager.update(data, w, x, y, z);
                                     }
                                 }
                             } else
                             if (type == Type.TRANSFER) {
-                                CreativeBlockData data = manager.isprotected(world, x, y, z, id, true);
+                                CreativeBlockData data = manager.isprotected(w, x, y, z, id, true);
                                 if (data != null) {
                                     if (data.owner.equalsIgnoreCase(player.getName())) {
                                         data.owner = args;
-                                        manager.update(data, world, x, y, z);
+                                        manager.update(data, w, x, y, z);
                                     }
                                 }
                             }
