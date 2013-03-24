@@ -321,11 +321,15 @@ public class CreativeControl extends CorePlugin {
                 if (mainconfig.config_conflict) {
                     mainconfig.data_inventory = false;
                     mainconfig.data_status = false;
-                    log("[TAG] ***************************************************");
-                    log("[TAG] Multiverse-Inventories Detected!!");
-                    log("[TAG] Per-GameMode inventories will be disabled by this plugin");
-                    log("[TAG] Use the multiverse inventories manager!");
-                    log("[TAG] ***************************************************");   
+                    int anoy = 5;
+                    while (anoy > 0) {
+                        log("[TAG] ***************************************************");
+                        log("[TAG] Multiverse-Inventories Detected!!");
+                        log("[TAG] Per-GameMode inventories will be disabled by this plugin");
+                        log("[TAG] Use the multiverse inventories manager!");
+                        log("[TAG] ***************************************************");   
+                        anoy--;
+                    }
                 } else {
                     log("[TAG] ***************************************************");
                     log("[TAG] Multiverse-Inventories Detected!!");
