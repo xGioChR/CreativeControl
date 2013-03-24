@@ -64,7 +64,7 @@ public class CreativeBlockManager {
             return true;
         }
         
-        if (data != null && data.allowed.contains(p.getName())) {
+        if (data.allowed != null && data.allowed.contains(p.getName())) {
             return true;
         }
         
