@@ -60,7 +60,7 @@ public class CreativeBlockManager {
             return true;
         }
         
-        if (data.owner.equalsIgnoreCase(p.getName())) {
+        if (data.owner != null && data.owner.equalsIgnoreCase(p.getName())) {
             return true;
         }
         
