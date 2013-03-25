@@ -795,7 +795,7 @@ public class CreativePlayerListener implements Listener {
         Communicator com = plugin.getCommunicator();
 
         if (config.block_ownblock) {
-            CreativeBlockData data = manager.isprotected(b, false);
+            CreativeBlockData data = manager.isprotected(b, true);
             if (data != null) {
                 com.msg(p, messages.blockmanager_belongs, data.owner);
             } else {
@@ -828,7 +828,7 @@ public class CreativePlayerListener implements Listener {
         Communicator com = plugin.getCommunicator();
 
         if (config.block_ownblock) {
-            CreativeBlockData data = manager.isprotected(b, false);
+            CreativeBlockData data = manager.isprotected(b, true);
             if (data != null) {
                 if (!data.owner.equalsIgnoreCase(p.getName())) {
                     com.msg(p, messages.blockmanager_belongs, data.owner);

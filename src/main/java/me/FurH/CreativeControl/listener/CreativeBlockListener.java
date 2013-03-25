@@ -352,7 +352,7 @@ public class CreativeBlockListener implements Listener {
         } else
         if (config.block_ownblock) {
             for (Block block : attached) {
-                CreativeBlockData data = manager.isprotected(block, false);
+                CreativeBlockData data = manager.isprotected(block, true);
 
                 if (data != null) {
                     if (!manager.isAllowed(p, data)) {

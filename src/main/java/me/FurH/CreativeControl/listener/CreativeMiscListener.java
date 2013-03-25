@@ -220,9 +220,9 @@ public class CreativeMiscListener implements Listener {
         if (config.misc_liquid) {
             CreativeBlockManager manager  = CreativeControl.getManager();
             if (config.block_ownblock) {
-                CreativeBlockData data = manager.isprotected(b, false);
+                CreativeBlockData data = manager.isprotected(b, true);
                 if (data != null) {
-                    if (data.owner.equalsIgnoreCase(p.getName()) || data.allowed.contains(p.getName()) || CreativeControl.plugin.hasPerm(p, "OwnBlock.Bypass")) {
+                    if (manager.isAllowed(p, data)) {
                         manager.unprotect(b);
                     } else {
                         Communicator         com      = CreativeControl.plugin.getCommunicator();
@@ -261,7 +261,7 @@ public class CreativeMiscListener implements Listener {
                     if (config.block_ownblock) {
                         CreativeBlockData data = manager.isprotected(bDown, true);
                         if (data != null) {
-                            if (data.owner.equalsIgnoreCase(p.getName()) || data.allowed.contains(p.getName()) || CreativeControl.plugin.hasPerm(p, "OwnBlock.Bypass")) {
+                            if (manager.isAllowed(p, data)) {
                                 if (bucket == Material.WATER_BUCKET) {
                                     b.setType(Material.STATIONARY_WATER);
                                 } else

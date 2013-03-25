@@ -55,6 +55,10 @@ public class CreativeBlockManager {
     }
 
     public boolean isAllowed(Player p, CreativeBlockData data) {
+
+        if (data == null) {
+            return true;
+        }
         
         if (data.owner.equalsIgnoreCase(p.getName())) {
             return true;
