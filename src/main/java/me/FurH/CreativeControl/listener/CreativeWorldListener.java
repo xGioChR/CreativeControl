@@ -22,6 +22,7 @@ import me.FurH.CreativeControl.configuration.CreativeMainConfig;
 import me.FurH.CreativeControl.configuration.CreativeMessages;
 import me.FurH.CreativeControl.configuration.CreativeWorldNodes;
 import org.bukkit.GameMode;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -38,18 +39,22 @@ public class CreativeWorldListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onWorldInit(WorldInitEvent e) {
-        CreativeControl.getDb2().load(null, e.getWorld().getName(), null);
+        loadWorld(e.getWorld());
     }
     
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onWorldLoad(WorldLoadEvent e) {
+        loadWorld(e.getWorld());
+    }
+    
+    public void loadWorld(World world) {
         CreativeMainConfig   main     = CreativeControl.getMainConfig();
 
         if (!main.config_single) {
-            CreativeControl.getWorldConfig().load(e.getWorld());
+            CreativeControl.getWorldConfig().load(world);
         }
 
-        CreativeControl.getDb2().load(null, e.getWorld().getName(), null);
+        CreativeControl.getDb2().load(null, world.getName(), null);
     }
     
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)

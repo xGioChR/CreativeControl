@@ -69,8 +69,10 @@ public class CreativePlayerListener implements Listener {
         CreativeControl       plugin   = CreativeControl.getPlugin();
         if (config.data_inventory) {
             if (!plugin.hasPerm(player, "Data.Status")) {
+
                 InventoryView view = player.getOpenInventory();
                 view.close();
+
                 if (plugin.isLoggedIn(player)) {
                     CreativePlayerData    data     = CreativeControl.getPlayerData();
                     if (!data.process(player, newgm, oldgm)) {
@@ -115,9 +117,8 @@ public class CreativePlayerListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onPlayerCommand(PlayerCommandPreprocessEvent e) {
         if (e.isCancelled()) { return; }
-                
+
         Player p = e.getPlayer();
-        String msg = e.getMessage().toLowerCase();
         World world = p.getWorld();
 
         /*
@@ -129,16 +130,21 @@ public class CreativePlayerListener implements Listener {
         if (config.world_exclude) { return; }
         
         if (p.getGameMode().equals(GameMode.CREATIVE)) {
-            if (!plugin.hasPerm(p, "BlackList.Commands")) {
-                for (String cmd : msg.split(" ")) {
-                    if (config.black_cmds.contains(cmd)) {
-                        Communicator          com      = plugin.getCommunicator();
-                        CreativeMessages      messages = CreativeControl.getMessages();
-                        com.msg(p, messages.blacklist_commands);
-                        e.setCancelled(true);
-                        return;
-                    }
-                }
+
+            if (config.black_cmds.isEmpty()) {
+                return;
+            }
+
+            String cmd = e.getMessage().toLowerCase();
+            if (cmd.contains(" ")) {
+                cmd = cmd.split(" ")[0];
+            }
+
+            if (!plugin.hasPerm(p, "BlackList.Commands") && !plugin.hasPerm(p, "BlackList.Commands."+cmd)) {
+                Communicator          com      = plugin.getCommunicator();
+                CreativeMessages      messages = CreativeControl.getMessages();
+                com.msg(p, messages.blacklist_commands);
+                e.setCancelled(true);
             }
         }
     }
