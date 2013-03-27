@@ -126,7 +126,9 @@ public class CreativePlayerListener implements Listener {
          */
         CreativeControl       plugin   = CreativeControl.getPlugin();
         CreativeWorldNodes config = CreativeControl.getWorldNodes(world);
-        
+        Communicator          com      = plugin.getCommunicator();
+        CreativeMessages      messages = CreativeControl.getMessages();
+
         if (config.world_exclude) { return; }
         
         if (p.getGameMode().equals(GameMode.CREATIVE)) {
@@ -141,8 +143,6 @@ public class CreativePlayerListener implements Listener {
             }
 
             if (!plugin.hasPerm(p, "BlackList.Commands") && !plugin.hasPerm(p, "BlackList.Commands."+cmd)) {
-                Communicator          com      = plugin.getCommunicator();
-                CreativeMessages      messages = CreativeControl.getMessages();
                 com.msg(p, messages.blacklist_commands);
                 e.setCancelled(true);
             }
@@ -204,22 +204,38 @@ public class CreativePlayerListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onInventoryClose(InventoryCloseEvent e) {
         if (!(e.getPlayer() instanceof Player)) { return; }
-                
-        Player p = (Player)e.getPlayer();
+
+        onPlayerInventory((Player) e.getPlayer());
+    }
+
+    private void onPlayerInventory(Player p) {
         World world = p.getWorld();
         
         CreativeWorldNodes config = CreativeControl.getWorldNodes(world);
+        CreativeControl       plugin   = CreativeControl.getPlugin();
         
-        if (config.world_exclude) { return; }
-        if (p.getGameMode().equals(GameMode.CREATIVE)) {
-            CreativeControl       plugin   = CreativeControl.getPlugin();
-            if (!plugin.hasPerm(p, "BlackList.Inventory")) {
-                for (ItemStack item : p.getInventory().getContents()) {
-                    if (item != null) {
-                        if (config.black_inventory.contains(item.getTypeId())) {
-                            p.getInventory().remove(item);
-                        }
-                    }
+        if (config.world_exclude) {
+            return;
+        }
+        
+        if (!p.getGameMode().equals(GameMode.CREATIVE)) {
+            return;
+        }
+        
+        int limitAmount = config.prevent_stacklimit;
+
+        boolean blackList = plugin.hasPerm(p, "BlackList.Inventory");
+        boolean stackLimit = plugin.hasPerm(p, "Preventions.StackLimit");
+
+        for (ItemStack item : p.getInventory().getContents()) {
+            if (item != null) {
+
+                if (config.black_inventory.contains(item.getTypeId())) {
+                    p.getInventory().remove(item);
+                }
+
+                if (limitAmount > 0 && item.getAmount() > limitAmount) {
+                    item.setAmount(limitAmount);
                 }
             }
         }
@@ -285,56 +301,7 @@ public class CreativePlayerListener implements Listener {
             }
 
             if (e.getInventory().getType() == InventoryType.PLAYER) {
-                if (!plugin.hasPerm(p, "Preventions.StackLimit")) {
-                    int stacklimit = config.prevent_stacklimit;
-                    ItemStack current = e.getCurrentItem();
-                    if (current != null) {
-                        if (current.getAmount() > stacklimit) {
-                            current.setAmount(stacklimit);
-                        }
-                    }
-
-                    ItemStack cursor = e.getCursor();
-                    if (cursor != null) {
-                        if (cursor.getAmount() > stacklimit) {
-                            cursor.setAmount(stacklimit);
-                        }
-                    }
-
-                    for (ItemStack item : p.getInventory().getContents()) {
-                        if (item != null) {
-                            if (item.getAmount() > stacklimit) {
-                                item.setAmount(stacklimit);
-                            }
-                        }
-                    }
-                }
-
-                if (!plugin.hasPerm(p, "BlackList.Inventory")) {
-                    ItemStack current = e.getCurrentItem();
-                    if (current != null) {
-                        if (config.black_inventory.contains(current.getTypeId())) {
-                            p.getInventory().remove(current);
-                            e.setCancelled(true);
-                        }
-                    }
-
-                    ItemStack cursor = e.getCursor();
-                    if (cursor != null) {
-                        if (config.black_inventory.contains(cursor.getTypeId())) {
-                            p.getInventory().remove(cursor);
-                            e.setCancelled(true);
-                        }
-                    }
-
-                    for (ItemStack item : p.getInventory().getContents()) {
-                        if (item != null) {
-                            if (config.black_inventory.contains(item.getTypeId())) {
-                                p.getInventory().remove(item);
-                            }
-                        }
-                    }
-                }
+                onPlayerInventory(p);
             }
         }
     }
@@ -520,15 +487,6 @@ public class CreativePlayerListener implements Listener {
                     e.getItemDrop().remove();
                 }
             }
-            if (!plugin.hasPerm(p, "BlackList.Inventory")) {
-                for (ItemStack item : p.getInventory().getContents()) {
-                    if (item != null) {
-                        if (config.black_inventory.contains(item.getTypeId())) {
-                            p.getInventory().remove(item);
-                        }
-                    }
-                }
-            }
         }
     }
     
@@ -576,15 +534,6 @@ public class CreativePlayerListener implements Listener {
         CreativeMainConfig    main     = CreativeControl.getMainConfig();
 
         if (p.getGameMode().equals(GameMode.CREATIVE)) {
-            if (!plugin.hasPerm(p, "BlackList.Inventory")) {
-                for (ItemStack item : p.getInventory().getContents()) {
-                    if (item != null) {
-                        if (config.black_inventory.contains(item.getTypeId())) {
-                            p.getInventory().remove(item);
-                        }
-                    }
-                }
-            }
             if (i != null) {
                 if (i.getType() == Material.WALL_SIGN || i.getType() == Material.SIGN_POST) {
                     Sign sign = (Sign)i.getState();
