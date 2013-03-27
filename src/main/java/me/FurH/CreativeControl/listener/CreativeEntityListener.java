@@ -190,6 +190,7 @@ public class CreativeEntityListener implements Listener {
         if (config.world_exclude) { return; }
         
         if (p.getGameMode().equals(GameMode.CREATIVE)) {
+            // TODO: Figure it out
             if (((entity instanceof StorageMinecart)) || ((entity instanceof PoweredMinecart))) {
                 if (config.prevent_mcstore && !plugin.hasPerm(p, "Preventions.MineCartStorage")) {
                     com.msg(p, messages.mainode_restricted);
