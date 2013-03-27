@@ -31,9 +31,9 @@ public class CreativeRegion {
     public World world;
 
     public boolean contains(Location loc) {
-        double x = loc.getBlockX();
-        double y = loc.getBlockY();
-        double z = loc.getBlockZ();
+        int x = loc.getBlockX();
+        int y = loc.getBlockY();
+        int z = loc.getBlockZ();
 
         return x >= start.getBlockX() && x <= end.getBlockX()
                 && y >= start.getBlockY() && y <= end.getBlockY()

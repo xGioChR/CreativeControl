@@ -33,7 +33,7 @@ import org.bukkit.entity.Player;
  * @author FurmigaHumana
  */
 public class CreativeUtil {
- 
+
     /*
      * return true if the first line of the sign is listed as a economy sign
      */
@@ -47,7 +47,7 @@ public class CreativeUtil {
 
         return config.black_sign.contains(line1) || config.black_sign.contains(line2) || config.black_sign.contains(line3) || config.black_sign.contains(line4);
     }
-
+    
     private static String removeCodes(String line) {
         return line.toLowerCase().replaceAll("§([0-9a-fk-or])", "").replaceAll("[^a-zA-Z0-9]", "");
     }
@@ -122,7 +122,7 @@ public class CreativeUtil {
         Location newloc = new Location(loc.getWorld(), loc.getX(), b1.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
         player.teleport(newloc);
     }
-    
+
     public static String getSimpleDate(long date) {
         return new SimpleDateFormat("dd-MM-yyyy-HH-mm-ss").format(date);
     }
