@@ -92,23 +92,9 @@ public class CreativeBlockListener implements Listener {
          */
         CreativeMainConfig      main       = CreativeControl.getMainConfig();
         if (!main.events_move) {
-            if (config.world_changegm) {
-                if (p.getGameMode().equals(GameMode.CREATIVE)) {
-                    if ((!config.world_creative) && (!plugin.hasPerm(p, "World.Keep"))) {
-                        com.msg(p, messages.region_creative_unallowed);
-                        p.setGameMode(GameMode.SURVIVAL);
-                        e.setCancelled(true);
-                        return;
-                    }
-                } else 
-                if (p.getGameMode().equals(GameMode.SURVIVAL)) {
-                    if ((config.world_creative) && (!plugin.hasPerm(p, "World.Keep"))) {
-                        com.msg(p, messages.region_survival_unallowed);
-                        p.setGameMode(GameMode.CREATIVE);
-                        e.setCancelled(true);
-                        return;
-                    }
-                }
+            if (CreativePlayerListener.onPlayerWorldChange(p)) {
+                e.setCancelled(true);
+                return;
             }
         }
         
@@ -268,23 +254,9 @@ public class CreativeBlockListener implements Listener {
          */
         CreativeMainConfig      main       = CreativeControl.getMainConfig();
         if (!main.events_move) {
-            if (config.world_changegm) {
-                if (p.getGameMode().equals(GameMode.CREATIVE)) {
-                    if ((!config.world_creative) && (!plugin.hasPerm(p, "World.Keep"))) {
-                        com.msg(p, messages.region_creative_unallowed);
-                        p.setGameMode(GameMode.SURVIVAL);
-                        e.setCancelled(true);
-                        return;
-                    }
-                } else 
-                if (p.getGameMode().equals(GameMode.SURVIVAL)) {
-                    if ((config.world_creative) && (!plugin.hasPerm(p, "World.Keep"))) {
-                        com.msg(p, messages.region_survival_unallowed);
-                        p.setGameMode(GameMode.CREATIVE);
-                        e.setCancelled(true);
-                        return;
-                    }
-                }
+            if (CreativePlayerListener.onPlayerWorldChange(p)) {
+                e.setCancelled(true);
+                return;
             }
         }
 

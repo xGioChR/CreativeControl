@@ -406,31 +406,35 @@ public class CreativePlayerListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onPlayerChangedWorld(PlayerChangedWorldEvent e) {
+        onPlayerWorldChange(e.getPlayer());
+    }
 
-        Player p = e.getPlayer();
-        World world = p.getWorld();
+    public static boolean onPlayerWorldChange(Player p) {
+        CreativeWorldNodes config = CreativeControl.getWorldNodes(p.getWorld());
+        
+        CreativeControl       plugin   = CreativeControl.getPlugin();
+        Communicator          com      = plugin.getCommunicator();
+        CreativeMessages      messages = CreativeControl.getMessages();
 
-        /*
-         * Gamemode Handler
-         */
-        CreativeWorldNodes config = CreativeControl.getWorldNodes(world);
         if (config.world_changegm) {
-            CreativeControl       plugin   = CreativeControl.getPlugin();
-            Communicator          com      = plugin.getCommunicator();
-            CreativeMessages      messages = CreativeControl.getMessages();
+
             if (p.getGameMode().equals(GameMode.CREATIVE)) {
                 if ((!config.world_creative) && (!plugin.hasPerm(p, "World.Keep"))) {
                     com.msg(p, messages.region_creative_unallowed);
                     p.setGameMode(GameMode.SURVIVAL);
+                    return true;
                 }
             } else 
             if (p.getGameMode().equals(GameMode.SURVIVAL)) {
                 if ((config.world_creative) && (!plugin.hasPerm(p, "World.Keep"))) {
                     com.msg(p, messages.region_survival_unallowed);
                     p.setGameMode(GameMode.CREATIVE);
+                    return true;
                 }
             }
         }
+        
+        return false;
     }
 
     /*
