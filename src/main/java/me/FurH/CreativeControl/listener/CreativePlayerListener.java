@@ -268,20 +268,23 @@ public class CreativePlayerListener implements Listener {
         if (e.isCancelled()) { return; }
         
         HumanEntity entity = e.getPlayer();
-        if (!(entity instanceof Player)) { return; }
-        
+        if (!(entity instanceof Player)) {
+            return;
+        }
+
         Player p = (Player)entity;
         World world = p.getWorld();
-        
-        CreativeMessages     messages   = CreativeControl.getMessages();
-        CreativeWorldNodes config = CreativeControl.getWorldNodes(world);
-        
-        if (config.world_exclude) { return; }
+
+        CreativeMessages        messages    = CreativeControl.getMessages();
+        CreativeWorldNodes      config      = CreativeControl.getWorldNodes(world);
+        CreativeControl         plugin      = CreativeControl.getPlugin();
+        Communicator            com         = plugin.getCommunicator();
+
+        if (config.world_exclude) {
+            return;
+        }
 
         if (p.getGameMode().equals(GameMode.CREATIVE)) {
-            CreativeControl       plugin   = CreativeControl.getPlugin();
-            Communicator          com      = plugin.getCommunicator();
-
             if (config.prevent_invinteract) {
                 if (!plugin.hasPerm(p, "Preventions.InventoryOpen")) {
                     com.msg(p, messages.mainode_restricted);
@@ -298,20 +301,25 @@ public class CreativePlayerListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onInventoryClick(InventoryClickEvent e) {
         if (e.isCancelled()) { return; }
-        if (!(e.getWhoClicked() instanceof Player)) { return; }
-                
+        
+        if (!(e.getWhoClicked() instanceof Player)) {
+            return;
+        }
+
         Player p = (Player)e.getWhoClicked();
         World world = p.getWorld();
 
         CreativeWorldNodes config = CreativeControl.getWorldNodes(world);
+        CreativeControl       plugin   = CreativeControl.getPlugin();
         
-        if (config.world_exclude) { return; }
-        
+        if (config.world_exclude) {
+            return;
+        }
+
         if (p.getGameMode().equals(GameMode.CREATIVE)) {
-            CreativeControl       plugin   = CreativeControl.getPlugin();
+
             if (config.prevent_invinteract) {
-                if (!plugin.hasPerm(p, "Preventions.InventoryInteract")) {
-                    int slot = e.getRawSlot();
+                if (!plugin.hasPerm(p, "Preventions.InventoryInteract")) { int slot = e.getRawSlot();
                     if (e.getInventory().getType() == InventoryType.PLAYER) {
                         if (!((slot >= 36) && (slot <= 44))) {
                             e.setCancelled(true);
@@ -348,42 +356,31 @@ public class CreativePlayerListener implements Listener {
     public void onPlayerTeleport(PlayerTeleportEvent e) {
         if (e.isCancelled()) { return; }
 
-        Player p = e.getPlayer();
-        World world = p.getWorld();
-        Location loc = p.getLocation();
+        CreativeWorldNodes config = CreativeControl.getWorldNodes(e.getTo().getWorld());
 
-        CreativeWorldNodes config = CreativeControl.getWorldNodes(world);
+        if (config.world_exclude) {
+            return;
+        }
 
-        if (config.world_exclude) { return; }
+        processRegion(e.getPlayer(), e.getTo());
+    }
+    
+    public static void processRegion(Player p, Location to) {
 
-        CreativeMessages     messages   = CreativeControl.getMessages();
-        CreativeControl      plugin     = CreativeControl.getPlugin();
-        Communicator         com        = plugin.getCommunicator();
+        CreativeMessages        messages    = CreativeControl.getMessages();
+        CreativeControl         plugin      = CreativeControl.getPlugin();
+        Communicator            com         = plugin.getCommunicator();
+        CreativeRegion          region      = CreativeControl.getRegioner().getRegion(to);
         
-        CreativeRegion region = CreativeControl.getRegioner().getRegion(loc);
-        if (region != null) {
-            World w = region.start.getWorld();
-            
-            if (w != world) { 
-                return; 
-            }
+        if (region == null) {
+            return;
+        }
 
-            GameMode type = region.gamemode;
-            if (type == GameMode.CREATIVE) {
-                if (!plugin.hasPerm(p, "Region.Keep.Survival")) {
-                    if (!p.getGameMode().equals(GameMode.CREATIVE)) {
-                        com.msg(p, messages.region_welcome_creative, region.name);
-                        p.setGameMode(GameMode.CREATIVE);
-                    }
-                }
-            } else
-            if (type == GameMode.SURVIVAL) {
-                if (!p.getGameMode().equals(GameMode.SURVIVAL)) {
-                    if (!plugin.hasPerm(p, "Region.Keep.Creative")) {
-                        PlayerUtils.toSafeLocation(p);
-                        com.msg(p, messages.region_welcome_survival, region.name);
-                        p.setGameMode(GameMode.SURVIVAL);
-                    }
+        if (region.gamemode != null) {
+            if (!plugin.hasPerm(p, "Region.KeepGameMode")) {
+                if (!p.getGameMode().equals(region.gamemode)) {
+                    com.msg(p, messages.region_welcome, region.gamemode.toString().toLowerCase());
+                    p.setGameMode(region.gamemode);
                 }
             }
         }
@@ -394,10 +391,12 @@ public class CreativePlayerListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onPlayerJoin(PlayerJoinEvent e) {
-                
-        final Player p = e.getPlayer();
-        final CreativeControl       plugin   = CreativeControl.getPlugin();
         
+        final Player p = e.getPlayer();
+
+        final CreativeControl       plugin   = CreativeControl.getPlugin();
+        final Communicator          com      = plugin.getCommunicator();
+
         if (CreativeControl.getMainConfig().data_teleport) {
             PlayerUtils.toSafeLocation(p);
         }
@@ -413,7 +412,6 @@ public class CreativePlayerListener implements Listener {
                 Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
                     @Override
                     public void run() {
-                        Communicator          com      = plugin.getCommunicator();
                         com.msg(p, "&7New Version Found: &4{0}&7 (You have: &4{1}&7)", plugin.newversion, plugin.currentversion);
                         com.msg(p, "&7Visit:&4 http://bit.ly/creativecontrol");
                     }
@@ -432,24 +430,23 @@ public class CreativePlayerListener implements Listener {
     }
 
     public static boolean onPlayerWorldChange(Player p) {
-        CreativeWorldNodes config = CreativeControl.getWorldNodes(p.getWorld());
-        
-        CreativeControl       plugin   = CreativeControl.getPlugin();
-        Communicator          com      = plugin.getCommunicator();
-        CreativeMessages      messages = CreativeControl.getMessages();
+
+        CreativeWorldNodes      config      = CreativeControl.getWorldNodes(p.getWorld());
+        CreativeControl         plugin      = CreativeControl.getPlugin();
+        Communicator            com         = plugin.getCommunicator();
+        CreativeMessages        messages    = CreativeControl.getMessages();
 
         if (config.world_changegm) {
-
             if (p.getGameMode().equals(GameMode.CREATIVE)) {
                 if ((!config.world_creative) && (!plugin.hasPerm(p, "World.Keep"))) {
-                    com.msg(p, messages.region_creative_unallowed);
+                    com.msg(p, messages.region_unallowed, p.getGameMode().toString().toLowerCase());
                     p.setGameMode(GameMode.SURVIVAL);
                     return true;
                 }
             } else 
             if (p.getGameMode().equals(GameMode.SURVIVAL)) {
                 if ((config.world_creative) && (!plugin.hasPerm(p, "World.Keep"))) {
-                    com.msg(p, messages.region_survival_unallowed);
+                    com.msg(p, messages.region_unallowed, p.getGameMode().toString().toLowerCase());
                     p.setGameMode(GameMode.CREATIVE);
                     return true;
                 }
@@ -524,14 +521,17 @@ public class CreativePlayerListener implements Listener {
 
         Player p = e.getPlayer();
         World world = p.getWorld();
-        
-        CreativeWorldNodes config = CreativeControl.getWorldNodes(world);
-        
-        if (config.world_exclude) { return; }
+
+        CreativeWorldNodes      config      = CreativeControl.getWorldNodes(world);
+        CreativeControl         plugin      = CreativeControl.getPlugin();
+
+        if (config.world_exclude) {
+            return;
+        }
         
         if (p.getGameMode().equals(GameMode.CREATIVE)) {
             if (config.prevent_eggs) {
-                CreativeControl       plugin   = CreativeControl.getPlugin();
+                
                 if (!plugin.hasPerm(p, "Preventions.Eggs")) {
                     Communicator          com      = plugin.getCommunicator();
                     CreativeMessages      messages = CreativeControl.getMessages();

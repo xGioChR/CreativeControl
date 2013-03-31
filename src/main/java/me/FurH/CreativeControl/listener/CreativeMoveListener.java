@@ -76,7 +76,7 @@ public class CreativeMoveListener implements Listener {
             if (type == GameMode.CREATIVE) {
                 if (!plugin.hasPerm(p, "Region.Keep.Survival")) {
                     if (!p.getGameMode().equals(GameMode.CREATIVE)) {
-                        com.msg(p, messages.region_welcome_creative, region.name);
+                        com.msg(p, messages.region_welcome, type.toString().toLowerCase());
                         p.setGameMode(GameMode.CREATIVE);
                         was = type;
                     }
@@ -86,7 +86,7 @@ public class CreativeMoveListener implements Listener {
                 if (!p.getGameMode().equals(GameMode.SURVIVAL)) {
                     if (!plugin.hasPerm(p, "Region.Keep.Creative")) {
                         PlayerUtils.toSafeLocation(p);
-                        com.msg(p, messages.region_welcome_survival, region.name);
+                        com.msg(p, messages.region_welcome, type.toString().toLowerCase());
                         p.setGameMode(GameMode.SURVIVAL);
                         was = type;
                     }
@@ -97,11 +97,11 @@ public class CreativeMoveListener implements Listener {
                 if (config.world_creative) {
                     if (!p.getGameMode().equals(GameMode.CREATIVE)) {
                         if (was == GameMode.CREATIVE) {
-                            com.msg(p, messages.region_farewell_creative);
+                            com.msg(p, messages.region_farewell); // Not Done Yet
                             p.setGameMode(GameMode.CREATIVE);
                         } else
                         if (was == GameMode.SURVIVAL) {
-                            com.msg(p, messages.region_farewell_survival);
+                            com.msg(p, messages.region_farewell);
                             p.setGameMode(GameMode.CREATIVE);
                         } else {
                             p.setGameMode(GameMode.CREATIVE);
@@ -112,11 +112,11 @@ public class CreativeMoveListener implements Listener {
                     if (!p.getGameMode().equals(GameMode.SURVIVAL)) {
                         PlayerUtils.toSafeLocation(p);
                         if (was == GameMode.CREATIVE) {
-                            com.msg(p, messages.region_farewell_creative);
+                            com.msg(p, messages.region_farewell);
                             p.setGameMode(GameMode.SURVIVAL);
                         } else
                         if (was == GameMode.SURVIVAL) {
-                            com.msg(p, messages.region_farewell_survival);
+                            com.msg(p, messages.region_farewell);
                             p.setGameMode(GameMode.SURVIVAL);
                         } else {
                             p.setGameMode(GameMode.SURVIVAL);

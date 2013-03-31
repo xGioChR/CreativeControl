@@ -49,12 +49,9 @@ public class CreativeMessages extends Configuration {
     
     public String limits_vehicles                   = "Limits.vehicles";
     
-    public String region_welcome_creative           = "Regions.welcome_creative";
-    public String region_welcome_survival           = "Regions.welcome_survival";
-    public String region_farewell_creative          = "Regions.farewell_creative";
-    public String region_farewell_survival          = "Regions.farewell_survival";
-    public String region_creative_unallowed         = "Regions.creative_unallowed";
-    public String region_survival_unallowed         = "Regions.survival_unallowed";
+    public String region_welcome                    = "Regions.welcome";
+    public String region_farewell                   = "Regions.farewell";
+    public String region_unallowed                  = "Regions.survival";
     public String region_cant_change                = "Regions.cant_here";
     
     public String blacklist_commands                = "BlackList.commands";
@@ -84,12 +81,9 @@ public class CreativeMessages extends Configuration {
     
         limits_vehicles                   = getMessage("Limits.vehicles");
     
-        region_welcome_creative           = getMessage("Regions.welcome_creative");
-        region_welcome_survival           = getMessage("Regions.welcome_survival");
-        region_farewell_creative          = getMessage("Regions.farewell_creative");
-        region_farewell_survival          = getMessage("Regions.farewell_survival");
-        region_creative_unallowed         = getMessage("Regions.creative_unallowed");
-        region_survival_unallowed         = getMessage("Regions.survival_unallowed");
+        region_welcome                    = getMessage("Regions.welcome");
+        region_farewell                   = getMessage("Regions.farewell");
+        region_unallowed                  = getMessage("Regions.unallowed");
         region_cant_change                = getMessage("Regions.cant_here");
     
         blacklist_commands                = getMessage("BlackList.commands");
