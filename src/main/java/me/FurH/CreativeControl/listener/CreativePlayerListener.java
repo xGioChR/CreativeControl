@@ -140,12 +140,14 @@ public class CreativePlayerListener implements Listener {
         /*
          * Command Black List
          */
-        CreativeControl       plugin   = CreativeControl.getPlugin();
-        CreativeWorldNodes config = CreativeControl.getWorldNodes(world);
-        Communicator          com      = plugin.getCommunicator();
-        CreativeMessages      messages = CreativeControl.getMessages();
+        CreativeControl         plugin      = CreativeControl.getPlugin();
+        CreativeWorldNodes      config      = CreativeControl.getWorldNodes(world);
+        Communicator            com         = plugin.getCommunicator();
+        CreativeMessages        messages    = CreativeControl.getMessages();
 
-        if (config.world_exclude) { return; }
+        if (config.world_exclude) {
+            return;
+        }
         
         if (p.getGameMode().equals(GameMode.CREATIVE)) {
 
@@ -177,12 +179,14 @@ public class CreativePlayerListener implements Listener {
         /*
          * Clear drops on creative death
          */
-        CreativeWorldNodes config = CreativeControl.getWorldNodes(world);
+        CreativeWorldNodes      config      = CreativeControl.getWorldNodes(world);
+        CreativeControl         plugin      = CreativeControl.getPlugin();
         
-        if (config.world_exclude) { return; }
-        
+        if (config.world_exclude) {
+            return;
+        }
+
         if ((p.getGameMode().equals(GameMode.CREATIVE)) && (config.prevent_drops)) {
-            CreativeControl       plugin   = CreativeControl.getPlugin();
             if (!plugin.hasPerm(p, "Preventions.ClearDrops")) {
                 e.getDrops().clear();
             }
@@ -202,12 +206,14 @@ public class CreativePlayerListener implements Listener {
         /*
          * Prevent Creative Player Enchant Items
          */
-        CreativeWorldNodes config = CreativeControl.getWorldNodes(world);
+        CreativeWorldNodes      config      = CreativeControl.getWorldNodes(world);
+        CreativeControl         plugin      = CreativeControl.getPlugin();
         
-        if (config.world_exclude) { return; }
-        
+        if (config.world_exclude) {
+            return;
+        }
+
         if (p.getGameMode().equals(GameMode.CREATIVE)) {
-            CreativeControl       plugin   = CreativeControl.getPlugin();
             if ((!plugin.hasPerm(p, "Preventions.Enchantments")) && (config.prevent_enchant)) {
                 e.setCancelled(true);
             }
@@ -226,9 +232,9 @@ public class CreativePlayerListener implements Listener {
 
     private void onPlayerInventory(Player p) {
         World world = p.getWorld();
-        
-        CreativeWorldNodes config = CreativeControl.getWorldNodes(world);
-        CreativeControl       plugin   = CreativeControl.getPlugin();
+
+        CreativeWorldNodes      config      = CreativeControl.getWorldNodes(world);
+        CreativeControl         plugin      = CreativeControl.getPlugin();
         
         if (config.world_exclude) {
             return;
@@ -246,11 +252,11 @@ public class CreativePlayerListener implements Listener {
         for (ItemStack item : p.getInventory().getContents()) {
             if (item != null) {
 
-                if (config.black_inventory.contains(item.getTypeId())) {
+                if (config.black_inventory.contains(item.getTypeId()) && !blackList) {
                     p.getInventory().remove(item);
                 }
 
-                if (limitAmount > 0 && item.getAmount() > limitAmount) {
+                if (limitAmount > 0 && item.getAmount() > limitAmount && !stackLimit) {
                     item.setAmount(limitAmount);
                 }
             }
