@@ -41,12 +41,12 @@ public class CreativeWorldListener implements Listener {
     public void onWorldInit(WorldInitEvent e) {
         loadWorld(e.getWorld());
     }
-    
+
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onWorldLoad(WorldLoadEvent e) {
         loadWorld(e.getWorld());
     }
-    
+
     public void loadWorld(World world) {
         CreativeMainConfig   main     = CreativeControl.getMainConfig();
 
@@ -61,26 +61,28 @@ public class CreativeWorldListener implements Listener {
     public void onStructureGrown(StructureGrowEvent e) {
         if (e.isCancelled()) { return; }
 
-        CreativeWorldNodes config = CreativeControl.getWorldNodes(e.getWorld());
+        CreativeWorldNodes      config      = CreativeControl.getWorldNodes(e.getWorld());
+        CreativeControl         plugin      = CreativeControl.getPlugin();
+        Communicator            com         = plugin.getCommunicator();
+        CreativeMessages        messages    = CreativeControl.getMessages();
 
-        if (config.world_exclude) { return; }
-        
+        if (config.world_exclude) {
+            return;
+        }
+
         Player p = e.getPlayer();
+        if (!e.isFromBonemeal()) {
+            return;
+        }
 
-        if (e.isFromBonemeal()) {
-            if (p.getGameMode().equals(GameMode.CREATIVE)) {
-                if (config.prevent_bonemeal) {
-                    CreativeControl      plugin   = CreativeControl.getPlugin();
-                    if (!plugin.hasPerm(p, "Preventions.Bonemeal")) {
-                        Communicator         com      = plugin.getCommunicator();
-                        CreativeMessages     messages = CreativeControl.getMessages();
+        if (!p.getGameMode().equals(GameMode.CREATIVE)) {
+            return;
+        }
 
-                        com.msg(p, messages.mainode_restricted);
-
-                        e.getBlocks().clear();
-                        e.setCancelled(true);
-                    }
-                }
+        if (config.prevent_bonemeal) {
+            if (!plugin.hasPerm(p, "Preventions.Bonemeal")) {
+                com.msg(p, messages.mainode_restricted);
+                e.setCancelled(true);
             }
         }
     }
