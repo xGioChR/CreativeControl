@@ -16,6 +16,7 @@
 
 package me.FurH.CreativeControl.region;
 
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.World;
 
@@ -26,7 +27,7 @@ import org.bukkit.World;
 public class CreativeRegion {
     public Location start;
     public Location end;
-    public CreativeMode type;
+    public GameMode gamemode;
     public String name;
     public World world;
 
@@ -39,6 +40,4 @@ public class CreativeRegion {
                 && y >= start.getBlockY() && y <= end.getBlockY()
                 && z >= start.getBlockZ() && z <= end.getBlockZ();
     }
-
-    public enum CreativeMode { CREATIVE, SURVIVAL; }
 }

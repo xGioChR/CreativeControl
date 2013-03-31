@@ -28,7 +28,6 @@ import me.FurH.CreativeControl.database.CreativeSQLDatabase;
 import me.FurH.CreativeControl.database.extra.CreativeSQLCleanup;
 import me.FurH.CreativeControl.database.extra.CreativeSQLMigrator;
 import me.FurH.CreativeControl.manager.CreativeBlockManager;
-import me.FurH.CreativeControl.region.CreativeRegion.CreativeMode;
 import me.FurH.CreativeControl.region.CreativeRegionManager;
 import me.FurH.CreativeControl.selection.CreativeBlocksSelection;
 import me.FurH.CreativeControl.selection.CreativeBlocksSelection.Type;
@@ -722,17 +721,22 @@ public class CreativeCommands implements CommandExecutor {
                     end = sel.getMaximumPoint();
                 }
                 
-                CreativeMode type = null;
+                GameMode type = null;
 
                 if (args[2].equalsIgnoreCase("creative")) {
-                    type = CreativeMode.CREATIVE;
-                } else if (args[2].equalsIgnoreCase("survival")) {
-                    type = CreativeMode.SURVIVAL;
+                    type = GameMode.CREATIVE;
+                } else if (args[2].equalsIgnoreCase("adventure")) {
+                    type = GameMode.ADVENTURE;
+                } else if (args[2].equalsIgnoreCase("adventure")) {
+                    type = GameMode.SURVIVAL;
                 }
 
                 if (type != null) {
                     setRegion(type, args[3], start, end);
-                    msg(sender, "&7Region create successfully!");
+                    msg(sender, "&4{0} &7region created successfully!", type);
+                    return true;
+                } else {
+                    msg(sender, "&4{0} is not a valid gamemode!", type);
                     return true;
                 }
             }
@@ -850,7 +854,7 @@ public class CreativeCommands implements CommandExecutor {
         return true;
     }
     
-    public void setRegion(CreativeMode type, String name, Location start, Location end) {
+    public void setRegion(GameMode type, String name, Location start, Location end) {
         CreativeRegionManager    region    = CreativeControl.getRegioner();
         region.addRegion(name, start, end, type.toString());
         region.saveRegion(name, type, start, end);

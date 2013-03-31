@@ -49,11 +49,11 @@ import me.FurH.CreativeControl.metrics.CreativeMetrics;
 import me.FurH.CreativeControl.metrics.CreativeMetrics.Graph;
 import me.FurH.CreativeControl.permissions.CreativePermissions;
 import me.FurH.CreativeControl.region.CreativeRegion;
-import me.FurH.CreativeControl.region.CreativeRegion.CreativeMode;
 import me.FurH.CreativeControl.region.CreativeRegionManager;
 import me.FurH.CreativeControl.selection.CreativeBlocksSelection;
 import me.FurH.CreativeControl.util.CreativeUtil;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.CommandExecutor;
@@ -517,7 +517,7 @@ public class CreativeControl extends CorePlugin {
             });
 
             for (CreativeRegion CR : regioner.getAreas()) {
-                if (CR.type == CreativeMode.CREATIVE) {
+                if (CR.gamemode == GameMode.CREATIVE) {
                     creative++;
                 } else {
                     survival++;

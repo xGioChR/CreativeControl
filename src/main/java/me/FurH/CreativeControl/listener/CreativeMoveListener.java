@@ -21,7 +21,6 @@ import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.configuration.CreativeMessages;
 import me.FurH.CreativeControl.configuration.CreativeWorldNodes;
 import me.FurH.CreativeControl.region.CreativeRegion;
-import me.FurH.CreativeControl.region.CreativeRegion.CreativeMode;
 import me.FurH.CreativeControl.util.CreativeUtil;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -37,7 +36,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
  * @author FurmigaHumana
  */
 public class CreativeMoveListener implements Listener {
-    private CreativeMode was;
+    private GameMode was; // TODO: Deprecated
 
     /*
      * Player Move Region Module
@@ -72,8 +71,8 @@ public class CreativeMoveListener implements Listener {
                 return; 
             }
 
-            CreativeMode type = region.type;
-            if (type == CreativeMode.CREATIVE) {
+            GameMode type = region.gamemode;
+            if (type == GameMode.CREATIVE) {
                 if (!plugin.hasPerm(p, "Region.Keep.Survival")) {
                     if (!p.getGameMode().equals(GameMode.CREATIVE)) {
                         com.msg(p, messages.region_welcome_creative, region.name);
@@ -82,7 +81,7 @@ public class CreativeMoveListener implements Listener {
                     }
                 }
             } else
-            if (type == CreativeRegion.CreativeMode.SURVIVAL) {
+            if (type == GameMode.SURVIVAL) {
                 if (!p.getGameMode().equals(GameMode.SURVIVAL)) {
                     if (!plugin.hasPerm(p, "Region.Keep.Creative")) {
                         CreativeUtil.getFloor(p);
@@ -96,11 +95,11 @@ public class CreativeMoveListener implements Listener {
             if (!plugin.hasPerm(p, "World.Keep")) {
                 if (config.world_creative) {
                     if (!p.getGameMode().equals(GameMode.CREATIVE)) {
-                        if (was == CreativeMode.CREATIVE) {
+                        if (was == GameMode.CREATIVE) {
                             com.msg(p, messages.region_farewell_creative);
                             p.setGameMode(GameMode.CREATIVE);
                         } else
-                        if (was == CreativeMode.SURVIVAL) {
+                        if (was == GameMode.SURVIVAL) {
                             com.msg(p, messages.region_farewell_survival);
                             p.setGameMode(GameMode.CREATIVE);
                         } else {
@@ -111,11 +110,11 @@ public class CreativeMoveListener implements Listener {
                 if (!config.world_creative) {
                     if (!p.getGameMode().equals(GameMode.SURVIVAL)) {
                         CreativeUtil.getFloor(p);
-                        if (was == CreativeMode.CREATIVE) {
+                        if (was == GameMode.CREATIVE) {
                             com.msg(p, messages.region_farewell_creative);
                             p.setGameMode(GameMode.SURVIVAL);
                         } else
-                        if (was == CreativeMode.SURVIVAL) {
+                        if (was == GameMode.SURVIVAL) {
                             com.msg(p, messages.region_farewell_survival);
                             p.setGameMode(GameMode.SURVIVAL);
                         } else {

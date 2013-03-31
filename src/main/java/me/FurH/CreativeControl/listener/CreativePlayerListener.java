@@ -29,7 +29,6 @@ import me.FurH.CreativeControl.data.friend.CreativePlayerFriends;
 import me.FurH.CreativeControl.manager.CreativeBlockData;
 import me.FurH.CreativeControl.manager.CreativeBlockManager;
 import me.FurH.CreativeControl.region.CreativeRegion;
-import me.FurH.CreativeControl.region.CreativeRegion.CreativeMode;
 import me.FurH.CreativeControl.util.CreativeUtil;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.*;
@@ -346,8 +345,8 @@ public class CreativePlayerListener implements Listener {
                 return; 
             }
 
-            CreativeMode type = region.type;
-            if (type == CreativeMode.CREATIVE) {
+            GameMode type = region.gamemode;
+            if (type == GameMode.CREATIVE) {
                 if (!plugin.hasPerm(p, "Region.Keep.Survival")) {
                     if (!p.getGameMode().equals(GameMode.CREATIVE)) {
                         com.msg(p, messages.region_welcome_creative, region.name);
@@ -355,7 +354,7 @@ public class CreativePlayerListener implements Listener {
                     }
                 }
             } else
-            if (type == CreativeRegion.CreativeMode.SURVIVAL) {
+            if (type == GameMode.SURVIVAL) {
                 if (!p.getGameMode().equals(GameMode.SURVIVAL)) {
                     if (!plugin.hasPerm(p, "Region.Keep.Creative")) {
                         CreativeUtil.getFloor(p);
