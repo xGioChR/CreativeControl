@@ -16,6 +16,7 @@
 
 package me.FurH.CreativeControl.listener;
 
+import me.FurH.Core.player.PlayerUtils;
 import me.FurH.Core.util.Communicator;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.configuration.CreativeMessages;
@@ -84,7 +85,7 @@ public class CreativeMoveListener implements Listener {
             if (type == GameMode.SURVIVAL) {
                 if (!p.getGameMode().equals(GameMode.SURVIVAL)) {
                     if (!plugin.hasPerm(p, "Region.Keep.Creative")) {
-                        CreativeUtil.getFloor(p);
+                        PlayerUtils.toSafeLocation(p);
                         com.msg(p, messages.region_welcome_survival, region.name);
                         p.setGameMode(GameMode.SURVIVAL);
                         was = type;
@@ -109,7 +110,7 @@ public class CreativeMoveListener implements Listener {
                 } else
                 if (!config.world_creative) {
                     if (!p.getGameMode().equals(GameMode.SURVIVAL)) {
-                        CreativeUtil.getFloor(p);
+                        PlayerUtils.toSafeLocation(p);
                         if (was == GameMode.CREATIVE) {
                             com.msg(p, messages.region_farewell_creative);
                             p.setGameMode(GameMode.SURVIVAL);

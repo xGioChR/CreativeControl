@@ -19,6 +19,7 @@ package me.FurH.CreativeControl.listener;
 import java.util.ArrayList;
 import me.FurH.Core.cache.CoreLRUCache;
 import me.FurH.Core.location.LocationUtils;
+import me.FurH.Core.player.PlayerUtils;
 import me.FurH.Core.util.Communicator;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.configuration.CreativeMainConfig;
@@ -357,7 +358,7 @@ public class CreativePlayerListener implements Listener {
             if (type == GameMode.SURVIVAL) {
                 if (!p.getGameMode().equals(GameMode.SURVIVAL)) {
                     if (!plugin.hasPerm(p, "Region.Keep.Creative")) {
-                        CreativeUtil.getFloor(p);
+                        PlayerUtils.toSafeLocation(p);
                         com.msg(p, messages.region_welcome_survival, region.name);
                         p.setGameMode(GameMode.SURVIVAL);
                     }
@@ -376,7 +377,7 @@ public class CreativePlayerListener implements Listener {
         final CreativeControl       plugin   = CreativeControl.getPlugin();
         
         if (CreativeControl.getMainConfig().data_teleport) {
-            CreativeUtil.getFloor(p);
+            PlayerUtils.toSafeLocation(p);
         }
         
         if (CreativeControl.getMainConfig().data_survival) {

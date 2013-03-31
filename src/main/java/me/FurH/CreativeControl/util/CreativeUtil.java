@@ -17,6 +17,7 @@
 package me.FurH.CreativeControl.util;
 
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.HashSet;
 import me.FurH.Core.exceptions.CoreMsgException;
 import me.FurH.Core.list.CollectionUtils;
@@ -103,24 +104,6 @@ public class CreativeUtil {
         }
         
         return 0;
-    }
-    
-    public static void getFloor(Player player) {
-        Location loc = player.getLocation();
-        Block b1 = loc.getBlock().getRelative(BlockFace.DOWN);
-
-        if (b1.getType() != Material.AIR) {
-            return;
-        }
-
-        int limit = 256;
-        while (b1.getType() != Material.AIR && limit > 0) {
-            b1 = loc.getWorld().getBlockAt(loc.getBlockX(), loc.getBlockY() - 1, loc.getBlockZ());
-            limit--;
-        }
-
-        Location newloc = new Location(loc.getWorld(), loc.getX(), b1.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
-        player.teleport(newloc);
     }
 
     public static String getSimpleDate(long date) {
