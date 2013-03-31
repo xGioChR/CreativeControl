@@ -726,7 +726,7 @@ public class CreativeCommands implements CommandExecutor {
 
                 if (args[2].equalsIgnoreCase("creative")) {
                     type = CreativeMode.CREATIVE;
-                } else if (args[2].equalsIgnoreCase("creative")) {
+                } else if (args[2].equalsIgnoreCase("survival")) {
                     type = CreativeMode.SURVIVAL;
                 }
 
