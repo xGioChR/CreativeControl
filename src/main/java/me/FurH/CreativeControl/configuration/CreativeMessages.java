@@ -55,6 +55,7 @@ public class CreativeMessages extends Configuration {
     public String region_farewell_survival          = "Regions.farewell_survival";
     public String region_creative_unallowed         = "Regions.creative_unallowed";
     public String region_survival_unallowed         = "Regions.survival_unallowed";
+    public String region_cant_change                = "Regions.cant_here";
     
     public String blacklist_commands                = "BlackList.commands";
     
@@ -89,6 +90,7 @@ public class CreativeMessages extends Configuration {
         region_farewell_survival          = getMessage("Regions.farewell_survival");
         region_creative_unallowed         = getMessage("Regions.creative_unallowed");
         region_survival_unallowed         = getMessage("Regions.survival_unallowed");
+        region_cant_change                = getMessage("Regions.cant_here");
     
         blacklist_commands                = getMessage("BlackList.commands");
     

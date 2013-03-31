@@ -39,6 +39,7 @@ Regions:
   farewell_survival: "&7You have left a survival region!"
   creative_unallowed: "&7Creative mode is not allowed in this world!"
   survival_unallowed: "&7Survival mode is not allowed in this world!"
+  cant_here: "&4You can't change your gamemode here!"
 
 BlackList:
   commands: "&4You can't use this command in creative mode!"

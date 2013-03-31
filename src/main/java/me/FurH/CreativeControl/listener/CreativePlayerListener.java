@@ -30,6 +30,7 @@ import me.FurH.CreativeControl.data.friend.CreativePlayerFriends;
 import me.FurH.CreativeControl.manager.CreativeBlockData;
 import me.FurH.CreativeControl.manager.CreativeBlockManager;
 import me.FurH.CreativeControl.region.CreativeRegion;
+import me.FurH.CreativeControl.region.CreativeRegionManager;
 import me.FurH.CreativeControl.util.CreativeUtil;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.*;
@@ -65,8 +66,14 @@ public class CreativePlayerListener implements Listener {
         GameMode newgm = e.getNewGameMode();
         GameMode oldgm = player.getGameMode();
 
-        CreativeMainConfig    config   = CreativeControl.getMainConfig();
-        CreativeControl       plugin   = CreativeControl.getPlugin();
+        CreativeMainConfig      config      = CreativeControl.getMainConfig();
+        CreativeControl         plugin      = CreativeControl.getPlugin();
+        CreativePlayerData      data        = CreativeControl.getPlayerData();
+        CreativeRegionManager   manager     = CreativeControl.getRegioner();
+        CreativeRegion          region      = manager.getRegion(player.getLocation());
+        Communicator            com         = plugin.getCommunicator();
+        CreativeMessages        messages    = CreativeControl.getMessages();
+
         if (config.data_inventory) {
             if (!plugin.hasPerm(player, "Data.Status")) {
 
@@ -74,14 +81,14 @@ public class CreativePlayerListener implements Listener {
                 view.close();
 
                 if (plugin.isLoggedIn(player)) {
-                    CreativePlayerData    data     = CreativeControl.getPlayerData();
                     if (!data.process(player, newgm, oldgm)) {
                         e.setCancelled(true);
                     }
-                } else {
-                    e.setCancelled(true);
                     return;
                 }
+                
+                e.setCancelled(true);
+                return;
             }
         }
         
@@ -106,6 +113,15 @@ public class CreativePlayerListener implements Listener {
                             permissions.playerAddGroup(player, config.perm_from);
                         }
                     }
+                }
+            }
+        }
+
+        if (region != null) {
+            if (!newgm.equals(region.gamemode)) {
+                if (plugin.hasPerm(player, "Region.Change")) {
+                    com.msg(player, messages.region_cant_change);
+                    e.setCancelled(true);
                 }
             }
         }
