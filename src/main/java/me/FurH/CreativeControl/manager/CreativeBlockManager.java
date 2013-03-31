@@ -55,7 +55,7 @@ public class CreativeBlockManager {
     }
 
     public boolean isAllowed(Player p, CreativeBlockData data) {
-
+        
         if (data == null) {
             return true;
         }
@@ -208,12 +208,12 @@ public class CreativeBlockManager {
         if (data == null) {
             return;
         }
-        
+
         if (data.allowed == null || data.allowed.isEmpty()) {
-            data.allowed = null; db.update(data, world.getName(), x, y, z);
-        } else {
-            db.update(data, world.getName(), x, y, z);
+            data.allowed = null;
         }
+
+        db.update(data, world.getName(), x, y, z);
         
         cache.put(LocationUtils.locationToString(x, y, z, world.getName()), data);
     }
