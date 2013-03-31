@@ -17,17 +17,11 @@
 package me.FurH.CreativeControl.util;
 
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.HashSet;
 import me.FurH.Core.exceptions.CoreMsgException;
 import me.FurH.Core.list.CollectionUtils;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.configuration.CreativeWorldNodes;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
-import org.bukkit.entity.Player;
 
 /**
  *
@@ -48,7 +42,7 @@ public class CreativeUtil {
 
         return config.black_sign.contains(line1) || config.black_sign.contains(line2) || config.black_sign.contains(line3) || config.black_sign.contains(line4);
     }
-    
+
     private static String removeCodes(String line) {
         return line.toLowerCase().replaceAll("§([0-9a-fk-or])", "").replaceAll("[^a-zA-Z0-9]", "");
     }

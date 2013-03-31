@@ -55,19 +55,17 @@ public class CreativeRegionManager {
         CreativeRegion region = new CreativeRegion();
         region.start = start;
         region.end = end;
-        
-        if (type.equals("CREATIVE")) {
+
+        if (type.equalsIgnoreCase("CREATIVE")) {
             region.gamemode = GameMode.CREATIVE;
         } else
-        if (type.equals("ADVENTURE")) {
+        if (type.equalsIgnoreCase("ADVENTURE")) {
             region.gamemode = GameMode.ADVENTURE;
         } else {
             region.gamemode = GameMode.SURVIVAL;
         }
 
         region.name = name;
-        region.world = start.getWorld();
-
         areas.add(region);
     }
     
@@ -119,7 +117,7 @@ public class CreativeRegionManager {
         }
         return total;
     }
-    
+
     public boolean getRegion(String name) {
         Communicator com    = CreativeControl.plugin.getCommunicator();
         CreativeSQLDatabase db = CreativeControl.getDb2();

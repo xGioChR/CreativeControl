@@ -340,7 +340,7 @@ public class CreativePlayerListener implements Listener {
         
         CreativeRegion region = CreativeControl.getRegioner().getRegion(loc);
         if (region != null) {
-            World w = region.world;
+            World w = region.start.getWorld();
             
             if (w != world) { 
                 return; 

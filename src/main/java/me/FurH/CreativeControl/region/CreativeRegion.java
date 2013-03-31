@@ -29,7 +29,6 @@ public class CreativeRegion {
     public Location end;
     public GameMode gamemode;
     public String name;
-    public World world;
 
     public boolean contains(Location loc) {
         int x = loc.getBlockX();
