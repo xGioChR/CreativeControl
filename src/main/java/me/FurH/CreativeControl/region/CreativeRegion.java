@@ -18,7 +18,6 @@ package me.FurH.CreativeControl.region;
 
 import org.bukkit.GameMode;
 import org.bukkit.Location;
-import org.bukkit.World;
 
 /**
  *

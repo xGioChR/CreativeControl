@@ -68,15 +68,6 @@ public class CreativeRegionManager {
         region.name = name;
         areas.add(region);
     }
-    
-    public void removeRegion(String name) {
-        for (CreativeRegion region: areas) {
-            if (region.name.equalsIgnoreCase(name)) {
-                areas.remove(region);
-                break;
-            }
-        }
-    }
 
     public int loadRegions() {
         Communicator com    = CreativeControl.plugin.getCommunicator();
@@ -157,19 +148,28 @@ public class CreativeRegionManager {
     public void deleteRegion(String name) {
         CreativeSQLDatabase db = CreativeControl.getDb2();
 
-        removeRegion(name);
-
+        deleteRegionCache(name);
+        
         db.queue("DELETE FROM `"+db.prefix+"regions` WHERE name = '"+name+"'");
     }
 
+    public void deleteRegionCache(String name) {
+        for (CreativeRegion region: areas) {
+            if (region.name.equalsIgnoreCase(name)) {
+                areas.remove(region);
+            }
+        }
+    }
+    
     public void saveRegion(String name, GameMode type, Location start, Location end) {
         CreativeSQLDatabase db = CreativeControl.getDb2();
+
+        deleteRegionCache(name);
 
         if (!getRegion(name)) {
             addRegion(name, start, end, type.toString());
             db.queue("INSERT INTO `"+db.prefix+"regions` (name, start, end, type) VALUES ('"+name+"', '"+LocationUtils.locationToString2(start)+"', '"+LocationUtils.locationToString2(end)+"', '"+type.toString()+"')");
         } else {
-            removeRegion(name);
             addRegion(name, start, end, type.toString());
             db.queue("UPDATE `"+db.prefix+"regions` SET start = '"+LocationUtils.locationToString2(start)+"', end = '"+LocationUtils.locationToString2(end)+"', type = '"+type.toString()+"' WHERE name = '"+name+"'");
         }
