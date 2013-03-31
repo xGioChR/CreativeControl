@@ -97,11 +97,11 @@ public class CreativeMoveListener implements Listener {
                 if (config.world_creative) {
                     if (!p.getGameMode().equals(GameMode.CREATIVE)) {
                         if (was == CreativeMode.CREATIVE) {
-                            com.msg(p, messages.region_farewell_creative, region.name);
+                            com.msg(p, messages.region_farewell_creative);
                             p.setGameMode(GameMode.CREATIVE);
                         } else
                         if (was == CreativeMode.SURVIVAL) {
-                            com.msg(p, messages.region_farewell_survival, region.name);
+                            com.msg(p, messages.region_farewell_survival);
                             p.setGameMode(GameMode.CREATIVE);
                         } else {
                             p.setGameMode(GameMode.CREATIVE);
@@ -112,11 +112,11 @@ public class CreativeMoveListener implements Listener {
                     if (!p.getGameMode().equals(GameMode.SURVIVAL)) {
                         CreativeUtil.getFloor(p);
                         if (was == CreativeMode.CREATIVE) {
-                            com.msg(p, messages.region_farewell_creative, region.name);
+                            com.msg(p, messages.region_farewell_creative);
                             p.setGameMode(GameMode.SURVIVAL);
                         } else
                         if (was == CreativeMode.SURVIVAL) {
-                            com.msg(p, messages.region_farewell_survival, region.name);
+                            com.msg(p, messages.region_farewell_survival);
                             p.setGameMode(GameMode.SURVIVAL);
                         } else {
                             p.setGameMode(GameMode.SURVIVAL);
