@@ -56,6 +56,8 @@ public class CreativeBlockListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockPlace(BlockPlaceEvent e) {
+        if (e.isCancelled()) { return; }
+        
         Player p = e.getPlayer();
         Block b = e.getBlockPlaced();
         World world = p.getWorld();
@@ -68,24 +70,9 @@ public class CreativeBlockListener implements Listener {
         /*
          * Excluded Worlds
          */
-        if (config.world_exclude) { return; }
-        
-        if (p.getGameMode().equals(GameMode.CREATIVE)) {
-            if (e.isCancelled()) {
-                if (e.getBlockAgainst().getType() == Material.WALL_SIGN || e.getBlockAgainst().getType() == Material.SIGN_POST) {
-                    Sign sign = (Sign)e.getBlockAgainst().getState();
-                    if (CreativeUtil.isEconomySign(sign)) {
-                        if (!plugin.hasPerm(p, "BlackList.EconomySigns")) {
-                            com.msg(p, messages.mainode_restricted);
-                            e.setCancelled(true);
-                            return;
-                        }
-                    }
-                }
-            }
+        if (config.world_exclude) {
+            return;
         }
-        
-        if (e.isCancelled()) { return; }
 
         /*
          * Gamemode Handler
@@ -219,6 +206,8 @@ public class CreativeBlockListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent e) {
+        if (e.isCancelled()) { return; }
+
         Player p = e.getPlayer();
         Block b = e.getBlock();
         World world = b.getWorld();
@@ -232,23 +221,7 @@ public class CreativeBlockListener implements Listener {
         if (config.world_exclude) {
             return;
         }
-        
-        if (p.getGameMode().equals(GameMode.CREATIVE)) {
-            if (e.isCancelled()) {
-                if (b.getType() == Material.WALL_SIGN || b.getType() == Material.SIGN_POST) {
-                    Sign sign = (Sign)b.getState();
-                    if (CreativeUtil.isEconomySign(sign)) {
-                        if (!plugin.hasPerm(p, "BlackList.EconomySigns")) {
-                            com.msg(p, messages.mainode_restricted);
-                            e.setCancelled(true);
-                            return;
-                        }
-                    }
-                }
-            }
-        }
-        
-        if (e.isCancelled()) { return; }
+
         /*
          * Gamemode Handler
          */
@@ -344,15 +317,21 @@ public class CreativeBlockListener implements Listener {
         if (e.isCancelled()) { return; }
         
         World world = e.getBlock().getWorld();
-        CreativeBlockManager    manager    = CreativeControl.getManager();
-        CreativeWorldNodes config = CreativeControl.getWorldNodes(world);
+
+        CreativeBlockManager    manager     = CreativeControl.getManager();
+        CreativeWorldNodes      config      = CreativeControl.getWorldNodes(world);
+
+        if (config.world_exclude) {
+            return;
+        }
         
         if (config.block_pistons) {
             for (Block b : e.getBlocks()) {
-                if (b.getType() == Material.AIR) { continue; }
-                if (manager.isprotected(b, true) != null) {
-                    e.setCancelled(true);
-                    break;
+                if (b.getType() != Material.AIR) {
+                    if (manager.isprotected(b, true) != null) {
+                        e.setCancelled(true);
+                        break;
+                    }
                 }
             }
         }
@@ -361,15 +340,23 @@ public class CreativeBlockListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onPistonRetract(BlockPistonRetractEvent e) {
         if (e.isCancelled()) { return; }
-                
+
         Block b = e.getBlock();
         World world = b.getWorld();
 
-        if (b.getType() == Material.AIR) { return; }
-        if (!e.isSticky()) { return; }
+        if (b.getType() == Material.AIR) {
+            return;
+        }
+
+        if (!e.isSticky()) {
+            return;
+        }
         
         CreativeWorldNodes config = CreativeControl.getWorldNodes(world);
-        
+        if (config.world_exclude) {
+            return;
+        }
+
         if (config.block_pistons) {
             BlockFace direction = null;
             MaterialData data = b.getState().getData();
