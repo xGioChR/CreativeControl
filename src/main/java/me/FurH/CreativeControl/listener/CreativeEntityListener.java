@@ -29,7 +29,15 @@ import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.entity.*;
+import org.bukkit.entity.Creature;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.ItemFrame;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
+import org.bukkit.entity.Vehicle;
+import org.bukkit.entity.Villager;
+import org.bukkit.entity.minecart.PoweredMinecart;
+import org.bukkit.entity.minecart.StorageMinecart;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -55,13 +63,17 @@ public class CreativeEntityListener implements Listener {
         }
 
         Player p = waiting.remove(0);
-        if (p == null) { return; }
+        if (p == null) {
+            return;
+        }
 
         Communicator         com        = plugin.getCommunicator();
         CreativeMessages     messages   = CreativeControl.getMessages();
         CreativeWorldNodes   config     = CreativeControl.getWorldNodes(vehicle.getWorld());
 
-        if (config.world_exclude) { return; }
+        if (config.world_exclude) {
+            return;
+        }
 
         if (config.prevent_vehicle) {
             if (!plugin.hasPerm(p, "Preventions.Vehicle")) {
@@ -90,15 +102,20 @@ public class CreativeEntityListener implements Listener {
         Entity entity = e.getAttacker();
         Vehicle vehicle = e.getVehicle();
         
-        if (!(entity instanceof Player)) { return; }
+        if (!(entity instanceof Player)) {
+            return;
+        }
 
         CreativeWorldNodes config = CreativeControl.getWorldNodes(vehicle.getWorld());
         CreativeControl plugin = CreativeControl.getPlugin();
 
-        if (config.world_exclude) { return; }
+        if (config.world_exclude) {
+            return;
+        }
 
         if (config.prevent_vehicle) {
             String master = plugin.removeVehicle(vehicle.getUniqueId());
+
             if (master == null) {
                 return;
             }
@@ -114,10 +131,12 @@ public class CreativeEntityListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onEntityExplode(EntityExplodeEvent e) {
         if (e.isCancelled()) { return; }
-        CreativeWorldNodes config = CreativeControl.getWorldNodes(e.getLocation().getWorld());
-
-        if (config.world_exclude) { return; }
         
+        CreativeWorldNodes config = CreativeControl.getWorldNodes(e.getLocation().getWorld());
+        if (config.world_exclude) {
+            return;
+        }
+
         List<Block> oldList = new ArrayList<Block>();
         oldList.addAll(e.blockList());
         
@@ -154,18 +173,22 @@ public class CreativeEntityListener implements Listener {
     public void onEntityTarget(EntityTargetEvent e) {
         if (e.isCancelled())  { return; }
 
-        if (!(e.getTarget() instanceof Player)) { return; }
+        if (!(e.getTarget() instanceof Player)) {
+            return;
+        }
         
         Player p = (Player)e.getTarget();
         World world = p.getWorld();
         
-        CreativeWorldNodes config = CreativeControl.getWorldNodes(world);
-        
-        if (config.world_exclude) { return; }
-        
+        CreativeWorldNodes      config      = CreativeControl.getWorldNodes(world);
+        CreativeControl         plugin      = CreativeControl.getPlugin();
+
+        if (config.world_exclude) {
+            return;
+        }
+
         if (config.prevent_target) {
             if (p.getGameMode().equals(GameMode.CREATIVE)) {
-                CreativeControl      plugin     = CreativeControl.getPlugin();
                 if (!plugin.hasPerm(p, "Preventions.Target")) {
                     e.setCancelled(true);
                 }
@@ -178,6 +201,8 @@ public class CreativeEntityListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onPlayerInteractEntity(PlayerInteractEntityEvent e) {
+        if (e.isCancelled()) { return; }
+
         Player p = e.getPlayer();
         World world = p.getWorld();
         Entity entity = e.getRightClicked();
@@ -187,10 +212,11 @@ public class CreativeEntityListener implements Listener {
         CreativeWorldNodes   config     = CreativeControl.getWorldNodes(world);
         Communicator         com        = plugin.getCommunicator();
         
-        if (config.world_exclude) { return; }
-        
+        if (config.world_exclude) {
+            return;
+        }
+
         if (p.getGameMode().equals(GameMode.CREATIVE)) {
-            // TODO: Figure it out
             if (((entity instanceof StorageMinecart)) || ((entity instanceof PoweredMinecart))) {
                 if (config.prevent_mcstore && !plugin.hasPerm(p, "Preventions.MineCartStorage")) {
                     com.msg(p, messages.mainode_restricted);
@@ -223,10 +249,13 @@ public class CreativeEntityListener implements Listener {
             World world = p.getWorld();
             
             if (p.getGameMode().equals(GameMode.CREATIVE)) {
-                CreativeControl      plugin     = CreativeControl.getPlugin();
-                CreativeWorldNodes config = CreativeControl.getWorldNodes(world);
                 
-                if (config.world_exclude) { return; }
+                CreativeControl         plugin      = CreativeControl.getPlugin();
+                CreativeWorldNodes      config      = CreativeControl.getWorldNodes(world);
+                
+                if (config.world_exclude) {
+                    return;
+                }
                 
                 if (config.prevent_mobsdrop && !plugin.hasPerm(p, "Preventions.MobsDrop")) {
                     if ((e.getEntity() instanceof Creature)) {
@@ -247,12 +276,14 @@ public class CreativeEntityListener implements Listener {
         if ((event instanceof EntityDamageByEntityEvent)) {
             EntityDamageByEntityEvent e = (EntityDamageByEntityEvent)event;
 
-            CreativeWorldNodes config = CreativeControl.getWorldNodes(e.getDamager().getWorld());
-            CreativeMessages     messages   = CreativeControl.getMessages();
-            CreativeControl      plugin     = CreativeControl.getPlugin();
-            Communicator         com        = plugin.getCommunicator();
+            CreativeWorldNodes      config      = CreativeControl.getWorldNodes(e.getDamager().getWorld());
+            CreativeMessages        messages    = CreativeControl.getMessages();
+            CreativeControl         plugin      = CreativeControl.getPlugin();
+            Communicator            com         = plugin.getCommunicator();
 
-            if (config.world_exclude) { return; }
+            if (config.world_exclude) {
+                return;
+            }
             
             if (((e.getDamager() instanceof Player)) && ((e.getEntity() instanceof Player))) { //Player versus Player
                 Player attacker = (Player)e.getDamager();
