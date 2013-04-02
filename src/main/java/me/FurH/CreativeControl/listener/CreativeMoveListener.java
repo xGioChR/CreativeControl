@@ -22,7 +22,6 @@ import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.configuration.CreativeMessages;
 import me.FurH.CreativeControl.configuration.CreativeWorldNodes;
 import me.FurH.CreativeControl.region.CreativeRegion;
-import me.FurH.CreativeControl.util.CreativeUtil;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -37,7 +36,6 @@ import org.bukkit.event.player.PlayerMoveEvent;
  * @author FurmigaHumana
  */
 public class CreativeMoveListener implements Listener {
-    private GameMode was; // TODO: Deprecated
 
     /*
      * Player Move Region Module
@@ -56,14 +54,15 @@ public class CreativeMoveListener implements Listener {
         World world = p.getWorld();
         Location loc = p.getLocation();
 
-        CreativeWorldNodes config = CreativeControl.getWorldNodes(world);
+        CreativeWorldNodes      config      = CreativeControl.getWorldNodes(world);
+        CreativeMessages        messages    = CreativeControl.getMessages();
+        CreativeControl         plugin      = CreativeControl.getPlugin();
+        Communicator            com         = plugin.getCommunicator();
 
-        if (config.world_exclude) { return; }
+        if (config.world_exclude) {
+            return;
+        }
 
-        CreativeMessages     messages   = CreativeControl.getMessages();
-        CreativeControl      plugin     = CreativeControl.getPlugin();
-        Communicator         com        = plugin.getCommunicator();
-        
         CreativeRegion region = CreativeControl.getRegioner().getRegion(loc);
         if (region != null) {
             World w = region.start.getWorld();
@@ -73,12 +72,13 @@ public class CreativeMoveListener implements Listener {
             }
 
             GameMode type = region.gamemode;
+            String typeName = type.toString().toLowerCase();
+            
             if (type == GameMode.CREATIVE) {
                 if (!plugin.hasPerm(p, "Region.Keep.Survival")) {
                     if (!p.getGameMode().equals(GameMode.CREATIVE)) {
-                        com.msg(p, messages.region_welcome, type.toString().toLowerCase());
+                        com.msg(p, messages.region_welcome, typeName);
                         p.setGameMode(GameMode.CREATIVE);
-                        was = type;
                     }
                 }
             } else
@@ -86,9 +86,8 @@ public class CreativeMoveListener implements Listener {
                 if (!p.getGameMode().equals(GameMode.SURVIVAL)) {
                     if (!plugin.hasPerm(p, "Region.Keep.Creative")) {
                         PlayerUtils.toSafeLocation(p);
-                        com.msg(p, messages.region_welcome, type.toString().toLowerCase());
+                        com.msg(p, messages.region_welcome, typeName);
                         p.setGameMode(GameMode.SURVIVAL);
-                        was = type;
                     }
                 }
             }
@@ -96,31 +95,15 @@ public class CreativeMoveListener implements Listener {
             if (!plugin.hasPerm(p, "World.Keep")) {
                 if (config.world_creative) {
                     if (!p.getGameMode().equals(GameMode.CREATIVE)) {
-                        if (was == GameMode.CREATIVE) {
-                            com.msg(p, messages.region_farewell); // Not Done Yet
-                            p.setGameMode(GameMode.CREATIVE);
-                        } else
-                        if (was == GameMode.SURVIVAL) {
-                            com.msg(p, messages.region_farewell);
-                            p.setGameMode(GameMode.CREATIVE);
-                        } else {
-                            p.setGameMode(GameMode.CREATIVE);
-                        }
+                        com.msg(p, messages.region_farewell);
+                        p.setGameMode(GameMode.CREATIVE);
                     }
                 } else
                 if (!config.world_creative) {
                     if (!p.getGameMode().equals(GameMode.SURVIVAL)) {
                         PlayerUtils.toSafeLocation(p);
-                        if (was == GameMode.CREATIVE) {
-                            com.msg(p, messages.region_farewell);
-                            p.setGameMode(GameMode.SURVIVAL);
-                        } else
-                        if (was == GameMode.SURVIVAL) {
-                            com.msg(p, messages.region_farewell);
-                            p.setGameMode(GameMode.SURVIVAL);
-                        } else {
-                            p.setGameMode(GameMode.SURVIVAL);
-                        }
+                        com.msg(p, messages.region_farewell);
+                        p.setGameMode(GameMode.SURVIVAL);
                     }
                 }
             }

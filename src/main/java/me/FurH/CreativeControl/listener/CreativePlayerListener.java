@@ -159,10 +159,12 @@ public class CreativePlayerListener implements Listener {
             if (cmd.contains(" ")) {
                 cmd = cmd.split(" ")[0];
             }
-
-            if (!plugin.hasPerm(p, "BlackList.Commands") && !plugin.hasPerm(p, "BlackList.Commands."+cmd)) {
-                com.msg(p, messages.blacklist_commands);
-                e.setCancelled(true);
+            
+            if (config.black_cmds.contains(cmd)) {
+                if (!plugin.hasPerm(p, "BlackList.Commands") && !plugin.hasPerm(p, "BlackList.Commands."+cmd)) {
+                    com.msg(p, messages.blacklist_commands);
+                    e.setCancelled(true);
+                }
             }
         }
     }

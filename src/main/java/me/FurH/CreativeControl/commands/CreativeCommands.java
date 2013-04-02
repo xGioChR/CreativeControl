@@ -727,16 +727,16 @@ public class CreativeCommands implements CommandExecutor {
                     type = GameMode.CREATIVE;
                 } else if (args[2].equalsIgnoreCase("adventure")) {
                     type = GameMode.ADVENTURE;
-                } else if (args[2].equalsIgnoreCase("adventure")) {
+                } else if (args[2].equalsIgnoreCase("survival")) {
                     type = GameMode.SURVIVAL;
                 }
 
                 if (type != null) {
                     setRegion(type, args[3], start, end);
-                    msg(sender, "&4{0} &7region created successfully!", type);
+                    msg(sender, "&4{0} &7region created successfully!", type.toString().toLowerCase());
                     return true;
                 } else {
-                    msg(sender, "&4{0} is not a valid gamemode!", type);
+                    msg(sender, "&4{0} is not a valid gamemode!", args[2]);
                     return true;
                 }
             }
