@@ -23,10 +23,20 @@ import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.bags.BlockBag;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.bukkit.BukkitWorld;
+import de.diddiz.LogBlock.Consumer;
+import de.diddiz.LogBlock.Logging;
+import de.diddiz.LogBlock.config.Config;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.configuration.CreativeWorldNodes;
 import me.FurH.CreativeControl.manager.CreativeBlockManager;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.Sign;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginManager;
 
 /**
  *
@@ -35,7 +45,13 @@ import org.bukkit.World;
 public class CreativeEditSession extends EditSession {
 
     private LocalPlayer player;
+    private EditSession session;
 
+    public CreativeEditSession(EditSession session) {
+        super(null, -1);
+        this.session = session;
+    }
+    
     public CreativeEditSession(LocalWorld world, int maxBlocks, LocalPlayer player) {
         super(world, maxBlocks);
         this.player = player;
@@ -59,9 +75,19 @@ public class CreativeEditSession extends EditSession {
         CreativeBlockManager manager = CreativeControl.getManager();
         
         int oldType = w.getBlockTypeIdAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
-        boolean success = super.rawSetBlock(pt, block);  // TODO: Compatibility with other plugins
+        byte oldData = w.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()).getData();
+
+        BlockState oldState = null;
+        if (oldType == Material.SIGN_POST.getId() || oldType == Material.SIGN.getId()) {
+            oldState = w.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()).getState();
+        }
+        
+        boolean success = super.rawSetBlock(pt, block);
 
         if (success) {
+
+            logBlock(pt, block, oldType, oldData, oldState);
+
             if (!config.world_exclude && config.block_worledit) {
                 int newType = block.getType();
                 
@@ -76,5 +102,29 @@ public class CreativeEditSession extends EditSession {
         }
 
         return success;
+    }
+    
+    public void logBlock(Vector pt, BaseBlock block, int typeBefore, byte dataBefore, BlockState stateBefore) {
+        Consumer consumer = CreativeControl.getLogBlock();
+        
+        if (consumer != null) {
+            Location location = new Location(((BukkitWorld) player.getWorld()).getWorld(), pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
+            
+            if (Config.isLogging(location.getWorld().getName(), Logging.SIGNTEXT) && (typeBefore == Material.SIGN_POST.getId() || typeBefore == Material.SIGN.getId())) {
+                consumer.queueSignBreak(player.getName(), (Sign) stateBefore);
+                if (block.getType() != Material.AIR.getId()) {
+                    consumer.queueBlockPlace(player.getName(), location, block.getType(), (byte) block.getData());
+                }
+            } else {
+                if (dataBefore != 0) {
+                    consumer.queueBlockBreak(player.getName(), location, typeBefore, dataBefore);
+                    if (block.getType() != Material.AIR.getId()) {
+                        consumer.queueBlockPlace(player.getName(), location, block.getType(), (byte) block.getData());
+                    }
+                } else {
+                    consumer.queueBlock(player.getName(), location, typeBefore, block.getType(), (byte) block.getData());
+                }
+            }
+        }
     }
 }

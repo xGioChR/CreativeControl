@@ -27,13 +27,11 @@ import me.FurH.CreativeControl.configuration.CreativeMessages;
 import me.FurH.CreativeControl.configuration.CreativeWorldNodes;
 import me.FurH.CreativeControl.manager.CreativeBlockData;
 import me.FurH.CreativeControl.manager.CreativeBlockManager;
-import me.FurH.CreativeControl.util.CreativeUtil;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -379,7 +377,7 @@ public class CreativeBlockListener implements Listener {
     }
     
     public void logBlock(Player p, Block b) {
-        Consumer                consumer   = CreativeControl.getConsumer();
+        Consumer                consumer   = CreativeControl.getLogBlock();
         if (consumer != null) {
             consumer.queueBlockBreak(p.getName(), b.getState());
         }

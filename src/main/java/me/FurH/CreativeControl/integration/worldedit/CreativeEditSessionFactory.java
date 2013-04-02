@@ -28,7 +28,7 @@ import com.sk89q.worldedit.bags.BlockBag;
  * @author FurmigaHumana
  */
 public class CreativeEditSessionFactory extends EditSessionFactory {
-
+    
     @Override
     public EditSession getEditSession(LocalWorld world, int maxBlocks, LocalPlayer player) {
         return new CreativeEditSession(world, maxBlocks, player);
@@ -40,6 +40,6 @@ public class CreativeEditSessionFactory extends EditSessionFactory {
     }
 
     public static void setup() {
-        WorldEdit.getInstance().setEditSessionFactory(new CreativeEditSessionFactory()); // TODO: Compatibility with other plugins
+        WorldEdit.getInstance().setEditSessionFactory(new CreativeEditSessionFactory());
     }
 }

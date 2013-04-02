@@ -458,7 +458,7 @@ public class CreativeControl extends CorePlugin {
         return messages;
     }
     
-    public static Consumer getConsumer() { 
+    public static Consumer getLogBlock() { 
         return lbconsumer; 
     }
 
