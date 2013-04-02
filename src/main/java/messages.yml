@@ -33,7 +33,7 @@ Limits:
 
 Regions:
   welcome: "&7You have entered in a &4{0}&7 region!"
-  farewell: "&7You have left a creative region!"
+  farewell: "&7You have left a &4{0}&7 region!"
   unallowed: "&4{0}&7 mode is not allowed in this world!"
   cant_here: "&4You can't change your gamemode here!"
 

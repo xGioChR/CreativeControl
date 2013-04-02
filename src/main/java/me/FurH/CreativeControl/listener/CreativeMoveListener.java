@@ -52,7 +52,7 @@ public class CreativeMoveListener implements Listener {
                 
         Player p = e.getPlayer();
         World world = p.getWorld();
-        Location loc = p.getLocation();
+        Location loc = e.getTo();
 
         CreativeWorldNodes      config      = CreativeControl.getWorldNodes(world);
         CreativeMessages        messages    = CreativeControl.getMessages();
@@ -64,6 +64,7 @@ public class CreativeMoveListener implements Listener {
         }
 
         CreativeRegion region = CreativeControl.getRegioner().getRegion(loc);
+        
         if (region != null) {
             World w = region.start.getWorld();
             
@@ -74,38 +75,24 @@ public class CreativeMoveListener implements Listener {
             GameMode type = region.gamemode;
             String typeName = type.toString().toLowerCase();
             
-            if (type == GameMode.CREATIVE) {
-                if (!plugin.hasPerm(p, "Region.Keep.Survival")) {
-                    if (!p.getGameMode().equals(GameMode.CREATIVE)) {
-                        com.msg(p, messages.region_welcome, typeName);
-                        p.setGameMode(GameMode.CREATIVE);
-                    }
-                }
-            } else
-            if (type == GameMode.SURVIVAL) {
-                if (!p.getGameMode().equals(GameMode.SURVIVAL)) {
-                    if (!plugin.hasPerm(p, "Region.Keep.Creative")) {
-                        PlayerUtils.toSafeLocation(p);
-                        com.msg(p, messages.region_welcome, typeName);
-                        p.setGameMode(GameMode.SURVIVAL);
-                    }
+            if (!p.getGameMode().equals(type)) {
+                if (!plugin.hasPerm(p, "Region.Keep.Region")) {
+                    com.msg(p, messages.region_welcome, typeName);
+                    p.setGameMode(type);
                 }
             }
-        } else {
+            
+        } else if (!p.getGameMode().equals(config.world_gamemode)) {
             if (!plugin.hasPerm(p, "World.Keep")) {
-                if (config.world_creative) {
-                    if (!p.getGameMode().equals(GameMode.CREATIVE)) {
-                        com.msg(p, messages.region_farewell);
-                        p.setGameMode(GameMode.CREATIVE);
-                    }
-                } else
-                if (!config.world_creative) {
-                    if (!p.getGameMode().equals(GameMode.SURVIVAL)) {
-                        PlayerUtils.toSafeLocation(p);
-                        com.msg(p, messages.region_farewell);
-                        p.setGameMode(GameMode.SURVIVAL);
-                    }
+                
+                region = CreativeControl.getRegioner().getRegion(e.getFrom());
+                PlayerUtils.toSafeLocation(p);
+                
+                if (region != null) {
+                    com.msg(p, messages.region_farewell, region.gamemode.toString().toLowerCase());
                 }
+                
+                p.setGameMode(config.world_gamemode);
             }
         }
     }

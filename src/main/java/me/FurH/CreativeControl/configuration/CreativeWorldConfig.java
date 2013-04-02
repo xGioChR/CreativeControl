@@ -20,6 +20,7 @@ import me.FurH.Core.CorePlugin;
 import me.FurH.Core.cache.CoreSafeCache;
 import me.FurH.Core.configuration.Configuration;
 import me.FurH.CreativeControl.CreativeControl;
+import org.bukkit.GameMode;
 import org.bukkit.World;
 
 /**
@@ -54,7 +55,16 @@ public class CreativeWorldConfig extends Configuration {
         
         CreativeWorldNodes x = new CreativeWorldNodes();
 
-        x.world_creative        = getBoolean(w, "World.Creative");
+        String gamemode         = getString(w, "World.GameMode");
+        if (gamemode.equalsIgnoreCase("CREATIVE")) {
+            x.world_gamemode        = GameMode.CREATIVE;
+        } else
+        if (gamemode.equalsIgnoreCase("ADVENTURE")) {
+            x.world_gamemode        = GameMode.ADVENTURE;
+        } else {
+            x.world_gamemode        = GameMode.SURVIVAL;
+        }
+        
         x.world_exclude         = getBoolean(w, "World.Exclude");
         x.world_changegm        = getBoolean(w, "World.ChangeGameMode");
 

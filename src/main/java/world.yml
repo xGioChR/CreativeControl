@@ -1,9 +1,9 @@
 World:
-  ## Creative, if true, players will be unabled to have survival in this world, if false, players will be unable to have creative in this world unless if he have permission.
-  Creative: false
+  ## GameMode, the main gamemode of this world, options are SURVIVAL, CREATIVE or ADVENTURE.
+  GameMode: SURVIVAL
   ## Exclude, if true, this plugin will ignore this world, it means that any protections will be effective in this world.
   Exclude: false
-  ## ChangeGameMode, if true, this plugin will handle the gamemode per world, the option above (Creative) will be used.
+  ## ChangeGameMode, if true, this plugin will handle the gamemode per world, the option GameMode will be used.
   ChangeGameMode: false
 
 ## Obs: Use Block ID Only, ID:DATA is not supported yet, [] means the list is empty

@@ -24,6 +24,7 @@ import me.FurH.Core.util.Communicator;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.configuration.CreativeMainConfig;
 import me.FurH.CreativeControl.configuration.CreativeMessages;
+import me.FurH.CreativeControl.configuration.CreativeWorldConfig;
 import me.FurH.CreativeControl.configuration.CreativeWorldNodes;
 import me.FurH.CreativeControl.data.CreativePlayerData;
 import me.FurH.CreativeControl.data.friend.CreativePlayerFriends;
@@ -73,6 +74,7 @@ public class CreativePlayerListener implements Listener {
         CreativeRegion          region      = manager.getRegion(player.getLocation());
         Communicator            com         = plugin.getCommunicator();
         CreativeMessages        messages    = CreativeControl.getMessages();
+        CreativeWorldNodes      wconfig     = CreativeControl.getWorldConfig().get(player.getWorld());
 
         if (config.data_inventory) {
             if (!plugin.hasPerm(player, "Data.Status")) {
@@ -83,12 +85,9 @@ public class CreativePlayerListener implements Listener {
                 if (plugin.isLoggedIn(player)) {
                     if (!data.process(player, newgm, oldgm)) {
                         e.setCancelled(true);
+                        return;
                     }
-                    return;
                 }
-                
-                e.setCancelled(true);
-                return;
             }
         }
         
@@ -118,8 +117,8 @@ public class CreativePlayerListener implements Listener {
         }
 
         if (region != null) {
-            if (!newgm.equals(region.gamemode)) {
-                if (plugin.hasPerm(player, "Region.Change")) {
+            if (!newgm.equals(region.gamemode) && !newgm.equals(wconfig.world_gamemode)) {
+                if (!plugin.hasPerm(player, "Region.Change")) {
                     com.msg(player, messages.region_cant_change);
                     e.setCancelled(true);
                 }
@@ -439,17 +438,11 @@ public class CreativePlayerListener implements Listener {
         CreativeMessages        messages    = CreativeControl.getMessages();
 
         if (config.world_changegm) {
-            if (p.getGameMode().equals(GameMode.CREATIVE)) {
-                if ((!config.world_creative) && (!plugin.hasPerm(p, "World.Keep"))) {
+            if (!p.getGameMode().equals(config.world_gamemode)) {
+                if (!plugin.hasPerm(p, "World.Keep")) {
+                    PlayerUtils.toSafeLocation(p);
                     com.msg(p, messages.region_unallowed, p.getGameMode().toString().toLowerCase());
-                    p.setGameMode(GameMode.SURVIVAL);
-                    return true;
-                }
-            } else 
-            if (p.getGameMode().equals(GameMode.SURVIVAL)) {
-                if ((config.world_creative) && (!plugin.hasPerm(p, "World.Keep"))) {
-                    com.msg(p, messages.region_unallowed, p.getGameMode().toString().toLowerCase());
-                    p.setGameMode(GameMode.CREATIVE);
+                    p.setGameMode(config.world_gamemode);
                     return true;
                 }
             }
