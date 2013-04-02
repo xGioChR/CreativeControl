@@ -69,6 +69,7 @@ public class CreativeWorldConfig extends Configuration {
         x.world_changegm        = getBoolean(w, "World.ChangeGameMode");
 
         x.black_cmds            = getStringAsStringSet(w, "BlackList.Commands");
+        x.black_s_cmds          = getStringAsStringSet(w, "BlackList.SurvivalCommands");
         x.black_place           = getStringAsIntegerSet(w, "BlackList.BlockPlace");
         x.black_break           = getStringAsIntegerSet(w, "BlackList.BlockBreak");
         x.black_use             = getStringAsIntegerSet(w, "BlackList.ItemUse");

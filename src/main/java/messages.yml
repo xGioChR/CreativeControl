@@ -38,7 +38,7 @@ Regions:
   cant_here: "&4You can't change your gamemode here!"
 
 BlackList:
-  commands: "&4You can't use this command in creative mode!"
+  commands: "&4You can't use this command in {0} mode!"
   
 Selection:
   first_point: "&7First point selected! (&4{0}&7,&4 {1}&7,&4 {2}&7)"

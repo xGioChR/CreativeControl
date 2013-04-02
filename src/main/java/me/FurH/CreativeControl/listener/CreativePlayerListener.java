@@ -24,7 +24,6 @@ import me.FurH.Core.util.Communicator;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.configuration.CreativeMainConfig;
 import me.FurH.CreativeControl.configuration.CreativeMessages;
-import me.FurH.CreativeControl.configuration.CreativeWorldConfig;
 import me.FurH.CreativeControl.configuration.CreativeWorldNodes;
 import me.FurH.CreativeControl.data.CreativePlayerData;
 import me.FurH.CreativeControl.data.friend.CreativePlayerFriends;
@@ -150,20 +149,33 @@ public class CreativePlayerListener implements Listener {
             return;
         }
         
+        String cmd = e.getMessage().toLowerCase();
+        if (cmd.contains(" ")) {
+            cmd = cmd.split(" ")[0];
+        }
+        
         if (p.getGameMode().equals(GameMode.CREATIVE)) {
 
             if (config.black_cmds.isEmpty()) {
                 return;
             }
-
-            String cmd = e.getMessage().toLowerCase();
-            if (cmd.contains(" ")) {
-                cmd = cmd.split(" ")[0];
-            }
             
             if (config.black_cmds.contains(cmd)) {
                 if (!plugin.hasPerm(p, "BlackList.Commands") && !plugin.hasPerm(p, "BlackList.Commands."+cmd)) {
-                    com.msg(p, messages.blacklist_commands);
+                    com.msg(p, messages.blacklist_commands, p.getGameMode().toString().toLowerCase());
+                    e.setCancelled(true);
+                }
+            }
+            
+        } else {
+            
+            if (config.black_s_cmds.isEmpty()) {
+                return;
+            }
+
+            if (config.black_s_cmds.contains(cmd)) {
+                if (!plugin.hasPerm(p, "BlackList.SurvivalCommands") && !plugin.hasPerm(p, "BlackList.SurvivalCommands."+cmd)) {
+                    com.msg(p, messages.blacklist_commands, p.getGameMode().toString().toLowerCase());
                     e.setCancelled(true);
                 }
             }
