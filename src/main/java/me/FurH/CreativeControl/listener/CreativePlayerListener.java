@@ -122,6 +122,27 @@ public class CreativePlayerListener implements Listener {
                 if (!plugin.hasPerm(player, "Region.Change")) {
                     com.msg(player, messages.region_cant_change);
                     e.setCancelled(true);
+                    return;
+                }
+            }
+        }
+        
+        if (newgm.equals(GameMode.CREATIVE)) {
+            if (!plugin.hasPerm(player, "CreativeArmor.Change")) {
+                if (config.armor_helmet != null) {
+                    player.getInventory().setHelmet(config.armor_helmet);
+                }
+                
+                if (config.armor_chest != null) {
+                    player.getInventory().setChestplate(config.armor_chest);
+                }
+                
+                if (config.armor_leggs != null) {
+                    player.getInventory().setLeggings(config.armor_leggs);
+                }
+                
+                if (config.armor_boots != null) {
+                    player.getInventory().setBoots(config.armor_boots);
                 }
             }
         }

@@ -18,7 +18,9 @@ package me.FurH.CreativeControl.configuration;
 
 import me.FurH.Core.CorePlugin;
 import me.FurH.Core.configuration.Configuration;
+import me.FurH.Core.inventory.InvUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.inventory.ItemStack;
 
 /**
  *
@@ -68,6 +70,11 @@ public class CreativeMainConfig extends Configuration {
     public boolean         data_teleport     = false;
     public boolean         data_survival     = false;
     
+    public ItemStack       armor_helmet      = null;
+    public ItemStack       armor_chest       = null;
+    public ItemStack       armor_leggs       = null;
+    public ItemStack       armor_boots       = null;
+    
     public boolean         com_quiet         = false;
     public boolean         com_debugcons     = false;
     public boolean         com_debugstack    = true;
@@ -115,6 +122,11 @@ public class CreativeMainConfig extends Configuration {
         data_status      = getBoolean("PlayerData.Status");
         data_teleport    = getBoolean("PlayerData.Teleport");
         data_survival    = getBoolean("PlayerData.SetSurvival");
+        
+        armor_helmet     = InvUtils.stringToItemStack(getString("CreativeArmor.Helmet"));
+        armor_chest      = InvUtils.stringToItemStack(getString("CreativeArmor.Chestplate"));
+        armor_leggs      = InvUtils.stringToItemStack(getString("CreativeArmor.Leggings"));
+        armor_boots      = InvUtils.stringToItemStack(getString("CreativeArmor.Boots"));
         
         com_quiet        = getBoolean("Communicator.Quiet");
         com_debugcons    = getBoolean("Debug.Console");

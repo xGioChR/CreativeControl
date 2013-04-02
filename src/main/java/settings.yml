@@ -75,6 +75,17 @@ PlayerData:
   Teleport: false
   ## SetSurvival, if true, the player will be set to survival on login (ATTENTTION: THIS MAY GLITCH WITH AUTH PLUGINS)
   SetSurvival: false
+  
+## This section will define the armor to set on every creative player, for advanced options, while wearing the armor type /cc set armor.
+CreativeArmor:
+  ## Helmet, the player helmet
+  Helmet: 0
+  ## Chestplate, the player chestplate
+  Chestplate: 0
+  ## Leggings, the player leggings
+  Leggings: 0
+  ## Boots, the player boots
+  Boots: 0
 
 Communicator:
   ## Quiet, if true, any messages will be displayed

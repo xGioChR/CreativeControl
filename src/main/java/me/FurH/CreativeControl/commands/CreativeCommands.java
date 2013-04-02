@@ -20,6 +20,7 @@ import com.sk89q.worldedit.bukkit.selections.Selection;
 import java.util.HashSet;
 import me.FurH.Core.exceptions.CoreDbException;
 import me.FurH.Core.exceptions.CoreMsgException;
+import me.FurH.Core.inventory.InvUtils;
 import me.FurH.Core.util.Utils;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.configuration.CreativeMainConfig;
@@ -92,6 +93,9 @@ public class CreativeCommands implements CommandExecutor {
             } else
             if (args[0].equalsIgnoreCase("reload")) {
                 return reloadCmd(sender, cmd, string, args);
+            } else
+            if (args[0].equalsIgnoreCase("set")) {
+                return onSetArmorCommand(sender, cmd, string, args);
             }
         }
         
@@ -105,6 +109,46 @@ public class CreativeCommands implements CommandExecutor {
         msg(sender, "&4/cc sel expand <up/down/ver> &8-&7 Expand the current selection");
         msg(sender, "&4/cc friend <add/remove/list/allow/transf> &8-&7 Friend list manager");
         msg(sender, "&4/cc reload &8-&7 Full reload of the plugin");
+        return true;
+    }
+    
+    /*
+     * /cc set[0] armor[1]
+     */
+    public boolean onSetArmorCommand(CommandSender sender, Command cmd, String string, String[] args) {
+
+        CreativeMessages    messages    = CreativeControl.getMessages();
+        CreativeControl     plugin      = CreativeControl.getPlugin();
+        CreativeMainConfig  config      = CreativeControl.getMainConfig();
+
+        if (!(sender instanceof Player)) {
+            msg(sender, "&4This command can't be used here!");
+            return false;
+        }
+        
+        if (!plugin.hasPerm(sender, "Commands.SetArmor")) {
+            msg(sender, "&4You dont have permission to use this command!");
+            return true;
+        }
+        
+        if (args.length > 1) {
+            if (args[1].equalsIgnoreCase("armor")) {
+                Player p = (Player)sender;
+
+                config.set(config.getSettingsFile(), "CreativeArmor.Helmet", InvUtils.itemStackToString(p.getInventory().getHelmet()));
+                config.set(config.getSettingsFile(), "CreativeArmor.Chestplate", InvUtils.itemStackToString(p.getInventory().getChestplate()));
+                config.set(config.getSettingsFile(), "CreativeArmor.Leggings", InvUtils.itemStackToString(p.getInventory().getLeggings()));
+                config.set(config.getSettingsFile(), "CreativeArmor.Boots", InvUtils.itemStackToString(p.getInventory().getBoots()));
+
+                config.updateConfig();
+                config.load();
+                
+                msg(sender, "&7Creative armor defined as your current armor");
+                return true;
+            }
+        }
+        
+        msg(sender, "&4/cc set armor &8-&7 Set your current armor as the creative armor");
         return true;
     }
 
