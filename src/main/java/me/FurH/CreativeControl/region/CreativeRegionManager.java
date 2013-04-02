@@ -19,7 +19,9 @@ package me.FurH.CreativeControl.region;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import me.FurH.Core.exceptions.CoreDbException;
 import me.FurH.Core.exceptions.CoreMsgException;
 import me.FurH.Core.location.LocationUtils;
@@ -41,7 +43,7 @@ public class CreativeRegionManager {
     }
 
     public CreativeRegion getRegion(Location loc) {
-        
+
         for (CreativeRegion region : areas) {
             if (region.contains(loc)) {
                 return region;
@@ -154,11 +156,16 @@ public class CreativeRegionManager {
     }
 
     public void deleteRegionCache(String name) {
+        List<CreativeRegion> remove = new ArrayList<CreativeRegion>();
+        
         for (CreativeRegion region: areas) {
             if (region.name.equalsIgnoreCase(name)) {
-                areas.remove(region);
+                remove.add(region);
             }
         }
+        
+        areas.removeAll(remove);
+        remove.clear();
     }
     
     public void saveRegion(String name, GameMode type, Location start, Location end) {
