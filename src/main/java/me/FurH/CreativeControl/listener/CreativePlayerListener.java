@@ -63,13 +63,13 @@ public class CreativePlayerListener implements Listener {
     public void onPlayerGameModeChange(PlayerGameModeChangeEvent e) {
         if (e.isCancelled()) { return; }
                 
-        Player player = e.getPlayer();
-        GameMode newgm = e.getNewGameMode();
-        GameMode oldgm = player.getGameMode();
+        final Player player = e.getPlayer();
+        final GameMode newgm = e.getNewGameMode();
+        final GameMode oldgm = player.getGameMode();
 
         CreativeMainConfig      config      = CreativeControl.getMainConfig();
-        CreativeControl         plugin      = CreativeControl.getPlugin();
-        CreativePlayerData      data        = CreativeControl.getPlayerData();
+        final CreativeControl         plugin      = CreativeControl.getPlugin();
+        final CreativePlayerData      data        = CreativeControl.getPlayerData();
         CreativeRegionManager   manager     = CreativeControl.getRegioner();
         CreativeRegion          region      = manager.getRegion(player.getLocation());
         Communicator            com         = plugin.getCommunicator();
@@ -82,12 +82,14 @@ public class CreativePlayerListener implements Listener {
                 InventoryView view = player.getOpenInventory();
                 view.close();
 
-                if (plugin.isLoggedIn(player)) {
-                    if (!data.process(player, newgm, oldgm)) {
-                        e.setCancelled(true);
-                        return;
+                Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
+                    @Override
+                    public void run() {
+                        if (plugin.isLoggedIn(player)) {
+                            data.process(player, newgm, oldgm);
+                        }
                     }
-                }
+                }, 1L);
             }
         }
         
