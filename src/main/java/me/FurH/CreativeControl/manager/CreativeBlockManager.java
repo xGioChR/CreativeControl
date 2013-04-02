@@ -235,7 +235,10 @@ public class CreativeBlockManager {
         }
 
         CreativeBlockData data = CreativeControl.getDb2().isprotected(world.getName(), x, y, z, type, nodrop);
-        cache.put(key, data);
+        
+        if (data != null) {
+            cache.put(key, data);
+        }
 
         return data;
     }
