@@ -126,7 +126,7 @@ public class CreativePlayerListener implements Listener {
             }
         }
     }
-    
+
     /*
      * Player Command Module
      */
@@ -309,8 +309,8 @@ public class CreativePlayerListener implements Listener {
         Player p = (Player)e.getWhoClicked();
         World world = p.getWorld();
 
-        CreativeWorldNodes config = CreativeControl.getWorldNodes(world);
-        CreativeControl       plugin   = CreativeControl.getPlugin();
+        CreativeWorldNodes      config      = CreativeControl.getWorldNodes(world);
+        CreativeControl         plugin      = CreativeControl.getPlugin();
         
         if (config.world_exclude) {
             return;
@@ -469,13 +469,15 @@ public class CreativePlayerListener implements Listener {
         /*
         * Item Pickup prevent
         */
-        CreativeWorldNodes config = CreativeControl.getWorldNodes(world);
-
-        if (config.world_exclude) { return; }
+        CreativeWorldNodes      config      = CreativeControl.getWorldNodes(world);
+        CreativeControl         plugin      = CreativeControl.getPlugin();
+        
+        if (config.world_exclude) {
+            return;
+        }
 
         if (p.getGameMode().equals(GameMode.CREATIVE)) {
             if (config.prevent_pickup) {
-                CreativeControl       plugin   = CreativeControl.getPlugin();
                 if (!plugin.hasPerm(p, "Preventions.Pickup")) {
                     e.setCancelled(true);
                 }
@@ -496,16 +498,18 @@ public class CreativePlayerListener implements Listener {
         /*
         * Item drop prevent
         */
-        CreativeWorldNodes config = CreativeControl.getWorldNodes(world);
-        CreativeControl plugin = CreativeControl.getPlugin();
-        
-        if (config.world_exclude) { return; }
+        CreativeWorldNodes      config      = CreativeControl.getWorldNodes(world);
+        CreativeControl         plugin      = CreativeControl.getPlugin();
+        Communicator            com         = plugin.getCommunicator();
+        CreativeMessages        messages    = CreativeControl.getMessages();
+                    
+        if (config.world_exclude) {
+            return;
+        }
         
         if (p.getGameMode().equals(GameMode.CREATIVE)) {
             if (config.prevent_drop) {
                 if (!plugin.hasPerm(p, "Preventions.ItemDrop")) {
-                    Communicator          com      = plugin.getCommunicator();
-                    CreativeMessages      messages = CreativeControl.getMessages();
                     com.msg(p, messages.mainode_restricted);
                     e.getItemDrop().remove();
                 }
@@ -524,21 +528,17 @@ public class CreativePlayerListener implements Listener {
 
         CreativeWorldNodes      config      = CreativeControl.getWorldNodes(world);
         CreativeControl         plugin      = CreativeControl.getPlugin();
+        Communicator            com         = plugin.getCommunicator();
+        CreativeMessages        messages    = CreativeControl.getMessages();
 
         if (config.world_exclude) {
             return;
         }
-        
-        if (p.getGameMode().equals(GameMode.CREATIVE)) {
-            if (config.prevent_eggs) {
-                
-                if (!plugin.hasPerm(p, "Preventions.Eggs")) {
-                    Communicator          com      = plugin.getCommunicator();
-                    CreativeMessages      messages = CreativeControl.getMessages();
-                    com.msg(p, messages.mainode_restricted);
-                    e.setHatching(false);
-                    e.setNumHatches((byte)0);
-                }
+
+        if (p.getGameMode().equals(GameMode.CREATIVE) && config.prevent_eggs) {
+            if (!plugin.hasPerm(p, "Preventions.Eggs")) {
+                com.msg(p, messages.mainode_restricted);
+                e.setHatching(false); e.setNumHatches((byte)0);
             }
         }
     }
@@ -558,19 +558,11 @@ public class CreativePlayerListener implements Listener {
         Communicator          com      = plugin.getCommunicator();
         CreativeWorldNodes    config   = CreativeControl.getWorldNodes(world);
         CreativeMainConfig    main     = CreativeControl.getMainConfig();
-
-        if (p.getGameMode().equals(GameMode.CREATIVE)) {
-            if (i != null) {
-                if (i.getType() == Material.WALL_SIGN || i.getType() == Material.SIGN_POST) {
-                    Sign sign = (Sign)i.getState();
-                    if (CreativeUtil.isEconomySign(sign)) {
-                        if (!plugin.hasPerm(p, "BlackList.EconomySigns")) {
-                            com.msg(p, messages.mainode_restricted);
-                            e.setCancelled(true);
-                            return;
-                        }
-                    }
-                }
+        
+        if (e.getAction() == Action.RIGHT_CLICK_BLOCK || e.getAction() == Action.LEFT_CLICK_BLOCK) {
+            if (processEconomySign(p, i)) {
+                e.setCancelled(true);
+                return;
             }
         }
 
@@ -629,7 +621,9 @@ public class CreativePlayerListener implements Listener {
             }
         }
 
-        if (config.world_exclude) { return; }
+        if (config.world_exclude) {
+            return;
+        }
 
         if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
             if (p.getGameMode().equals(GameMode.CREATIVE)) {
@@ -683,6 +677,29 @@ public class CreativePlayerListener implements Listener {
                 }
             }
         }
+    }
+    
+    public static boolean processEconomySign(Player p, Block block) {
+
+        CreativeControl     plugin      = CreativeControl.getPlugin();
+        Communicator        com         = plugin.getCommunicator();
+        CreativeMessages    messages    = CreativeControl.getMessages();
+
+        if (p.getGameMode().equals(GameMode.CREATIVE)) {
+            if (block != null) {
+                if (block.getType() == Material.WALL_SIGN || block.getType() == Material.SIGN_POST) {
+                    Sign sign = (Sign)block.getState();
+                    if (CreativeUtil.isEconomySign(sign)) {
+                        if (!plugin.hasPerm(p, "BlackList.EconomySigns")) {
+                            com.msg(p, messages.mainode_restricted);
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        
+        return false;
     }
 
     /*
