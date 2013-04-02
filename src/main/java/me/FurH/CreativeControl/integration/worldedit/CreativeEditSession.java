@@ -45,13 +45,7 @@ import org.bukkit.block.Sign;
 public class CreativeEditSession extends EditSession {
 
     private LocalPlayer player;
-    private EditSession session;
 
-    public CreativeEditSession(EditSession session) {
-        super(null, -1);
-        this.session = session;
-    }
-    
     public CreativeEditSession(LocalWorld world, int maxBlocks, LocalPlayer player) {
         super(world, maxBlocks);
         this.player = player;
@@ -81,7 +75,7 @@ public class CreativeEditSession extends EditSession {
         if (oldType == Material.SIGN_POST.getId() || oldType == Material.SIGN.getId()) {
             oldState = w.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()).getState();
         }
-        
+
         boolean success = super.rawSetBlock(pt, block);
 
         if (success) {
