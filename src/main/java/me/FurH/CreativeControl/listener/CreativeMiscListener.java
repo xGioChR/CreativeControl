@@ -17,7 +17,7 @@
 package me.FurH.CreativeControl.listener;
 
 import java.util.Arrays;
-import java.util.List;
+import java.util.HashSet;
 import me.FurH.Core.util.Communicator;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.configuration.CreativeMessages;
@@ -54,13 +54,18 @@ public class CreativeMiscListener implements Listener {
         if (e.isCancelled()) { return; }
         
         if ((e.getEntity() instanceof TNTPrimed)) {
+
             TNTPrimed tnt = (TNTPrimed)e.getEntity();
             Block b = tnt.getLocation().getBlock();
+
             CreativeWorldNodes config = CreativeControl.getWorldNodes(b.getWorld());
-            
-            if (config.world_exclude) { return; }
+
+            if (config.world_exclude) {
+                return;
+            }
             
             CreativeBlockManager manager  = CreativeControl.getManager();
+
             if (config.misc_tnt) {
                 if (manager.isprotected(b, true) != null) {
                     removeIgnition(b);
@@ -72,7 +77,8 @@ public class CreativeMiscListener implements Listener {
     }
     
     private void removeIgnition(Block b) {
-        List<Integer> BLOCKS2 = Arrays.asList(new Integer[]{10, 11, 27, 28, 51, 69, 70, 72, 73, 74, 75, 76, 77, 55, 331, 356});
+        HashSet<Integer> blocks = new HashSet<Integer>(Arrays.asList(new Integer[]{10, 11, 27, 28, 51, 69, 70, 72, 73, 74, 75, 76, 77, 55, 331, 356}));
+        
         int x = b.getX(); int y = b.getY(); int z = b.getZ(); int radius = 2;
         int minX = x - radius; int minY = y - radius; int minZ = z - radius;
         int maxX = x + radius; int maxY = y + radius; int maxZ = z + radius;
@@ -81,10 +87,10 @@ public class CreativeMiscListener implements Listener {
             for (int counterY = minY; counterY < maxY; counterY++) {
                 for (int counterZ = minZ; counterZ < maxZ; counterZ++) {
                     Block block = b.getWorld().getBlockAt(counterX, counterY, counterZ);
-                    if (BLOCKS2.contains(block.getTypeId())) {
+                    if (blocks.contains(block.getTypeId())) {
                         CreativeBlockManager manager  = CreativeControl.getManager();
                         manager.unprotect(block);
-                        block.setType(Material.AIR);
+                        block.breakNaturally();
                     }
                 }
             }
@@ -101,7 +107,9 @@ public class CreativeMiscListener implements Listener {
 
         CreativeWorldNodes config = CreativeControl.getWorldNodes(b.getWorld());
         
-        if (config.world_exclude) { return; }
+        if (config.world_exclude) {
+            return;
+        }
         
         if (config.misc_fire) {
             CreativeBlockManager manager  = CreativeControl.getManager();
@@ -117,11 +125,13 @@ public class CreativeMiscListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onBlockBurn(BlockBurnEvent e) {
         if (e.isCancelled()) { return; }
+        
         Block b = e.getBlock();
-        
         CreativeWorldNodes config = CreativeControl.getWorldNodes(b.getWorld());
-        
-        if (config.world_exclude) { return; }
+
+        if (config.world_exclude) {
+            return;
+        }
         
         if (config.misc_fire) {
             CreativeBlockManager manager  = CreativeControl.getManager();
@@ -161,7 +171,9 @@ public class CreativeMiscListener implements Listener {
         
         CreativeWorldNodes config = CreativeControl.getWorldNodes(b.getWorld());
         
-        if (config.world_exclude) { return; }
+        if (config.world_exclude) {
+            return;
+        }
         
         if (type == Material.ICE) {
             if (config.misc_ice) {
@@ -179,11 +191,13 @@ public class CreativeMiscListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onBlockFromTo(BlockFromToEvent e) {
         if (e.isCancelled()) { return; }
-        Block b = e.getBlock();
         
+        Block b = e.getBlock();
         CreativeWorldNodes config = CreativeControl.getWorldNodes(b.getWorld());
         
-        if (config.world_exclude) { return; }
+        if (config.world_exclude) {
+            return;
+        }
         
         if (config.misc_liquid) {
             CreativeBlockManager manager  = CreativeControl.getManager();
@@ -215,7 +229,9 @@ public class CreativeMiscListener implements Listener {
         
         CreativeWorldNodes config = CreativeControl.getWorldNodes(b.getWorld());
         
-        if (config.world_exclude) { return; }
+        if (config.world_exclude) {
+            return;
+        }
         
         if (config.misc_liquid) {
             CreativeBlockManager manager  = CreativeControl.getManager();
