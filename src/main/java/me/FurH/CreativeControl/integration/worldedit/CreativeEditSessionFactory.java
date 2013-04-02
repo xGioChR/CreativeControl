@@ -22,6 +22,8 @@ import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.bags.BlockBag;
+import me.FurH.CreativeControl.CreativeControl;
+import org.bukkit.Bukkit;
 
 /**
  *
@@ -40,6 +42,11 @@ public class CreativeEditSessionFactory extends EditSessionFactory {
     }
 
     public static void setup() {
-        WorldEdit.getInstance().setEditSessionFactory(new CreativeEditSessionFactory());
+        Bukkit.getScheduler().runTaskLater(CreativeControl.getPlugin(), new Runnable() {
+            @Override
+            public void run() {
+                WorldEdit.getInstance().setEditSessionFactory(new CreativeEditSessionFactory());
+            }
+        }, 1L);
     }
 }

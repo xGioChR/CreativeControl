@@ -52,6 +52,8 @@ import me.FurH.CreativeControl.region.CreativeRegion;
 import me.FurH.CreativeControl.region.CreativeRegionManager;
 import me.FurH.CreativeControl.selection.CreativeBlocksSelection;
 import me.FurH.CreativeControl.util.CreativeUtil;
+import me.botsko.prism.Prism;
+import me.botsko.prism.actionlibs.ActionRecorder;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -91,7 +93,8 @@ public class CreativeControl extends CorePlugin {
     private static CreativeMessages messages;
     private static Consumer lbconsumer = null;
     private static CreativeWorldConfig worldconfig;
-
+    private static boolean prismEnabled;
+    
     private static CreativePermissions permissions;
 
     public WeakHashMap<Player, Location> right = new WeakHashMap<Player, Location>();
@@ -173,6 +176,7 @@ public class CreativeControl extends CorePlugin {
 
         setupLogBlock();
         setupWorldEdit();
+        setupPrism();
         
         permissions.setup();
 
@@ -462,11 +466,23 @@ public class CreativeControl extends CorePlugin {
         return lbconsumer; 
     }
 
+    public static boolean getPrism() {
+        return prismEnabled;
+    }
+    
     public void setupLogBlock() {
         Plugin logblock = Bukkit.getPluginManager().getPlugin("LogBlock");
         if (logblock != null) {
             log("[TAG] LogBlock hooked as logging plugin");
             lbconsumer = ((LogBlock)logblock).getConsumer();
+        }
+    }
+    
+    public void setupPrism() {
+        Plugin prism = Bukkit.getPluginManager().getPlugin("Prism");
+        if (prism != null) {
+            log("[TAG] Prism hooked as logging plugin");
+            prismEnabled = true;
         }
     }
 

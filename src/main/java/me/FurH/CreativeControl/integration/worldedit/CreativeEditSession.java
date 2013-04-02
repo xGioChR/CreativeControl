@@ -29,14 +29,14 @@ import de.diddiz.LogBlock.config.Config;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.configuration.CreativeWorldNodes;
 import me.FurH.CreativeControl.manager.CreativeBlockManager;
+import me.botsko.prism.Prism;
+import me.botsko.prism.actionlibs.ActionFactory;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.PluginManager;
 
 /**
  *
@@ -87,6 +87,7 @@ public class CreativeEditSession extends EditSession {
         if (success) {
 
             logBlock(pt, block, oldType, oldData, oldState);
+            prism(pt, block, oldType, oldData);
 
             if (!config.world_exclude && config.block_worledit) {
                 int newType = block.getType();
@@ -104,10 +105,27 @@ public class CreativeEditSession extends EditSession {
         return success;
     }
     
+    public void prism(Vector pt, BaseBlock block, int typeBefore, byte dataBefore) {
+        if (CreativeControl.getPrism()) {
+            
+            if (!Prism.config.getBoolean("prism.tracking.world-edit")) {
+                return;
+            }
+            
+            Location loc = new Location(Bukkit.getWorld(player.getWorld().getName()), pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
+            Prism.actionsRecorder.addToQueue(ActionFactory.create("world-edit", loc, typeBefore, dataBefore, loc.getBlock().getTypeId(), loc.getBlock().getData(), player.getName()));
+        }
+    }
+    
     public void logBlock(Vector pt, BaseBlock block, int typeBefore, byte dataBefore, BlockState stateBefore) {
         Consumer consumer = CreativeControl.getLogBlock();
         
         if (consumer != null) {
+            
+            if (!(Config.isLogging(player.getWorld().getName(), Logging.WORLDEDIT))) {
+                return;
+            }
+            
             Location location = new Location(((BukkitWorld) player.getWorld()).getWorld(), pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
             
             if (Config.isLogging(location.getWorld().getName(), Logging.SIGNTEXT) && (typeBefore == Material.SIGN_POST.getId() || typeBefore == Material.SIGN.getId())) {
