@@ -66,14 +66,14 @@ public class CreativePlayerListener implements Listener {
         final GameMode newgm = e.getNewGameMode();
         final GameMode oldgm = player.getGameMode();
 
-        CreativeMainConfig      config      = CreativeControl.getMainConfig();
-        final CreativeControl         plugin      = CreativeControl.getPlugin();
-        final CreativePlayerData      data        = CreativeControl.getPlayerData();
-        CreativeRegionManager   manager     = CreativeControl.getRegioner();
-        CreativeRegion          region      = manager.getRegion(player.getLocation());
-        Communicator            com         = plugin.getCommunicator();
-        CreativeMessages        messages    = CreativeControl.getMessages();
-        CreativeWorldNodes      wconfig     = CreativeControl.getWorldConfig().get(player.getWorld());
+        CreativeMainConfig          config      = CreativeControl.getMainConfig();
+        final CreativeControl       plugin      = CreativeControl.getPlugin();
+        final CreativePlayerData    data        = CreativeControl.getPlayerData();
+        CreativeRegionManager       manager     = CreativeControl.getRegioner();
+        CreativeRegion              region      = manager.getRegion(player.getLocation());
+        Communicator                com         = plugin.getCommunicator();
+        CreativeMessages            messages    = CreativeControl.getMessages();
+        CreativeWorldNodes          wconfig     = CreativeControl.getWorldConfig().get(player.getWorld());
 
         if (config.data_inventory) {
             if (!plugin.hasPerm(player, "Data.Status")) {
@@ -123,26 +123,6 @@ public class CreativePlayerListener implements Listener {
                     com.msg(player, messages.region_cant_change);
                     e.setCancelled(true);
                     return;
-                }
-            }
-        }
-        
-        if (newgm.equals(GameMode.CREATIVE)) {
-            if (!plugin.hasPerm(player, "CreativeArmor.Change")) {
-                if (config.armor_helmet != null) {
-                    player.getInventory().setHelmet(config.armor_helmet);
-                }
-                
-                if (config.armor_chest != null) {
-                    player.getInventory().setChestplate(config.armor_chest);
-                }
-                
-                if (config.armor_leggs != null) {
-                    player.getInventory().setLeggings(config.armor_leggs);
-                }
-                
-                if (config.armor_boots != null) {
-                    player.getInventory().setBoots(config.armor_boots);
                 }
             }
         }

@@ -197,6 +197,25 @@ public class CreativePlayerData {
         } else
         if (gm.equals(GameMode.CREATIVE)) {
             CreativePlayerCache cache = hasCre(p.getName());
+            CreativeMainConfig config = CreativeControl.getMainConfig();
+            
+            if (config.armor_helmet != null) {
+                p.getInventory().setHelmet(config.armor_helmet);
+            }
+
+            if (config.armor_chest != null) {
+                p.getInventory().setChestplate(config.armor_chest);
+            }
+
+            if (config.armor_leggs != null) {
+                p.getInventory().setLeggings(config.armor_leggs);
+            }
+
+            if (config.armor_boots != null) {
+                p.getInventory().setBoots(config.armor_boots);
+            }
+
+            cache.armor = p.getInventory().getArmorContents();
             return restore(p, cache);
         } else
         if (gm.equals(GameMode.SURVIVAL)) {
