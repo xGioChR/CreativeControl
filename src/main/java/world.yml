@@ -10,6 +10,8 @@ World:
 BlackList:
   ## Commands, list here all commands to disallow creative players to use.
   Commands: /buy, /sell, /logout
+  ## SurvivalCommands, list here, all commands to disallow survival players to use.
+  SurvivalCommands: /i, /item, /give
   ## BlockPlace, list here, all block ids that creative players will be unable to place.
   BlockPlace: 8, 9, 10, 11, 46, 51, 52, 79
   ## BlockBreak, list here, all block ids that creative players will be unable to break.

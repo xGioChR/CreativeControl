@@ -76,7 +76,7 @@ public class CreativeMoveListener implements Listener {
             String typeName = type.toString().toLowerCase();
             
             if (!p.getGameMode().equals(type)) {
-                if (!plugin.hasPerm(p, "Region.Keep.Region")) {
+                if (!plugin.hasPerm(p, "Region.Keep")) {
                     com.msg(p, messages.region_welcome, typeName);
                     p.setGameMode(type);
                 }

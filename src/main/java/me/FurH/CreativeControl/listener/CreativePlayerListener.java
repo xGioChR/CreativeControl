@@ -378,7 +378,7 @@ public class CreativePlayerListener implements Listener {
         }
 
         if (region.gamemode != null) {
-            if (!plugin.hasPerm(p, "Region.KeepGameMode")) {
+            if (!plugin.hasPerm(p, "Region.Keep")) {
                 if (!p.getGameMode().equals(region.gamemode)) {
                     com.msg(p, messages.region_welcome, region.gamemode.toString().toLowerCase());
                     p.setGameMode(region.gamemode);
