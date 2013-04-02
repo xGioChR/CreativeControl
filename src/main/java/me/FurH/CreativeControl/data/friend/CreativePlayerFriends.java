@@ -19,8 +19,10 @@ package me.FurH.CreativeControl.data.friend;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashSet;
-import me.FurH.Core.cache.CoreLRUCache;
+import java.util.List;
+import me.FurH.Core.cache.CoreSafeCache;
 import me.FurH.Core.exceptions.CoreDbException;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.database.CreativeSQLDatabase;
@@ -32,7 +34,7 @@ import org.bukkit.entity.Player;
  * @author FurmigaHumana
  */
 public class CreativePlayerFriends {
-    private CoreLRUCache<String, HashSet<String>> hascache = new CoreLRUCache<String, HashSet<String>>(500);
+    private CoreSafeCache<String, HashSet<String>> hascache = new CoreSafeCache<String, HashSet<String>>();
     
     public void uncache(Player p) {
         hascache.remove(p.getName().toLowerCase());
@@ -47,13 +49,16 @@ public class CreativePlayerFriends {
         
         hascache.put(player, friends);
 
-        String query = "UPDATE `"+db.prefix+"friends` SET friends = '"+friends.toString()+"' WHERE player = '"+db.getPlayerId(player.toLowerCase())+"'";
-        
+        List<String> newFriends = new ArrayList<String>(friends);
+        String query = "UPDATE `"+db.prefix+"friends` SET friends = '"+newFriends+"' WHERE player = '"+db.getPlayerId(player.toLowerCase())+"'";
+
         try {
             db.execute(query);
         } catch (CoreDbException ex) {
             CreativeControl.plugin.getCommunicator().error(Thread.currentThread(), ex, ex.getMessage());
         }
+
+        newFriends.clear();
     }
     
     public HashSet<String> getFriends(String player) {
@@ -72,7 +77,7 @@ public class CreativePlayerFriends {
                     friends = CreativeUtil.toStringHashSet(rs.getString("friends"), ", ");
                 } else {
                     friends = new HashSet<String>();
-                    db.execute("INSERT INTO `"+db.prefix+"friends` (player, friends) VALUES ('"+ db.getPlayerId(player.toLowerCase()) +"', '"+ friends.toString() +"');");
+                    db.execute("INSERT INTO `"+db.prefix+"friends` (player, friends) VALUES ('"+ db.getPlayerId(player.toLowerCase()) +"', '[]');");
                 }
 
                 hascache.put(player, friends);
