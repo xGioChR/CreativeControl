@@ -59,7 +59,7 @@ public class CreativeEditSession extends EditSession {
         CreativeBlockManager manager = CreativeControl.getManager();
         
         int oldType = w.getBlockTypeIdAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
-        boolean success = super.rawSetBlock(pt, block);
+        boolean success = super.rawSetBlock(pt, block);  // TODO: Compatibility with other plugins
 
         if (success) {
             if (!config.world_exclude && config.block_worledit) {

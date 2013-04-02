@@ -40,6 +40,6 @@ public class CreativeEditSessionFactory extends EditSessionFactory {
     }
 
     public static void setup() {
-        WorldEdit.getInstance().setEditSessionFactory(new CreativeEditSessionFactory());
+        WorldEdit.getInstance().setEditSessionFactory(new CreativeEditSessionFactory()); // TODO: Compatibility with other plugins
     }
 }
