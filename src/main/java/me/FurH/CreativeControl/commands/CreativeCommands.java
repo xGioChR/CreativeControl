@@ -19,6 +19,7 @@ package me.FurH.CreativeControl.commands;
 import com.sk89q.worldedit.bukkit.selections.Selection;
 import java.util.HashSet;
 import me.FurH.Core.exceptions.CoreDbException;
+import me.FurH.Core.exceptions.CoreMsgException;
 import me.FurH.Core.util.Utils;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.configuration.CreativeMainConfig;
@@ -791,6 +792,9 @@ public class CreativeCommands implements CommandExecutor {
         msg(sender, "&4Database reads&8:&7 {0}", db.getReads());
         msg(sender, "&4Database writes&8:&7 {0}", db.getWrites());
         msg(sender, "&4Database size&8:&7 {0} / {1}", Utils.getFormatedBytes(manager.getTablesSize()), Utils.getFormatedBytes(manager.getTablesFree()));
+        try {
+            msg(sender, "&4Database type&8:&7 {0}, &4ping&8:&7 {1} ms", db.type, db.ping() > 0 ? db.ping() : "<1");
+        } catch (CoreMsgException ex) { }
         msg(sender, "&4Blocks protected&8:&7 {0}", manager.getTotal());
         msg(sender, "&4Cache reads&8:&7 {0}", manager.getCache().getReads());
         msg(sender, "&4Queue writes&8:&7 {0}", manager.getCache().getWrites());
