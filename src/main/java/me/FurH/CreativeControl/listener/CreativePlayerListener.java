@@ -699,7 +699,7 @@ public class CreativePlayerListener implements Listener {
             if (block != null) {
                 if (block.getType() == Material.WALL_SIGN || block.getType() == Material.SIGN_POST) {
                     Sign sign = (Sign)block.getState();
-                    if (CreativeUtil.isEconomySign(sign)) {
+                    if (CreativeUtil.isBlackListedSign(sign)) {
                         if (!plugin.hasPerm(p, "BlackList.EconomySigns")) {
                             com.msg(p, messages.mainode_restricted);
                             return true;

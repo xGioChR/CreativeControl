@@ -32,7 +32,7 @@ public class CreativeUtil {
     /*
      * return true if the first line of the sign is listed as a economy sign
      */
-    public static boolean isEconomySign(org.bukkit.block.Sign sign) {
+    public static boolean isBlackListedSign(org.bukkit.block.Sign sign) {
         String line1 = removeCodes(sign.getLine(0).replaceAll(" ", "_"));
         String line2 = removeCodes(sign.getLine(1).replaceAll(" ", "_"));
         String line3 = removeCodes(sign.getLine(2).replaceAll(" ", "_"));

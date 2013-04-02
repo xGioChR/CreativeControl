@@ -75,7 +75,7 @@ public class CreativeWorldConfig extends Configuration {
         x.black_use             = getStringAsIntegerSet(w, "BlackList.ItemUse");
         x.black_interact        = getStringAsIntegerSet(w, "BlackList.ItemInteract");
         x.black_inventory       = getStringAsIntegerSet(w, "BlackList.Inventory");
-        x.black_sign            = getStringAsStringSet(w, "BlackList.EconomySigns");
+        x.black_sign            = getStringAsStringSet(w, "BlackList.SignText");
         x.black_sign_all        = false;
         
         x.misc_tnt              = getBoolean(w, "MiscProtection.NoTNTExplosion");
