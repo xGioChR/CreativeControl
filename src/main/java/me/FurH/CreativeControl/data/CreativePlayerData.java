@@ -27,6 +27,7 @@ import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.configuration.CreativeMainConfig;
 import me.FurH.CreativeControl.database.CreativeSQLDatabase;
 import org.bukkit.GameMode;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -197,25 +198,12 @@ public class CreativePlayerData {
         } else
         if (gm.equals(GameMode.CREATIVE)) {
             CreativePlayerCache cache = hasCre(p.getName());
-            CreativeMainConfig config = CreativeControl.getMainConfig();
-            
-            if (config.armor_helmet != null) {
-                p.getInventory().setHelmet(config.armor_helmet);
+
+            ItemStack[] armor = setCreativeArmor(p);
+            if (armor != null) {
+                cache.armor = armor;
             }
 
-            if (config.armor_chest != null) {
-                p.getInventory().setChestplate(config.armor_chest);
-            }
-
-            if (config.armor_leggs != null) {
-                p.getInventory().setLeggings(config.armor_leggs);
-            }
-
-            if (config.armor_boots != null) {
-                p.getInventory().setBoots(config.armor_boots);
-            }
-
-            cache.armor = p.getInventory().getArmorContents();
             return restore(p, cache);
         } else
         if (gm.equals(GameMode.SURVIVAL)) {
@@ -223,6 +211,41 @@ public class CreativePlayerData {
             return restore(p, cache);
         }
         return false;
+    }
+    
+    private ItemStack[] setCreativeArmor(Player p) {
+
+        if (p == null) {
+            return null;
+        }
+
+        if (p.getInventory() == null) {
+            return null;
+        }
+
+        if (p.getInventory().getArmorContents() == null) {
+            return null;
+        }
+        
+        CreativeMainConfig config = CreativeControl.getMainConfig();
+
+        if (config.armor_helmet != null && config.armor_helmet.getType() != Material.AIR) {
+            p.getInventory().setHelmet(config.armor_helmet);
+        }
+
+        if (config.armor_chest != null && config.armor_chest.getType() != Material.AIR) {
+            p.getInventory().setChestplate(config.armor_chest);
+        }
+
+        if (config.armor_leggs != null && config.armor_leggs.getType() != Material.AIR) {
+            p.getInventory().setLeggings(config.armor_leggs);
+        }
+
+        if (config.armor_boots != null && config.armor_boots.getType() != Material.AIR) {
+            p.getInventory().setBoots(config.armor_boots);
+        }
+        
+        return p.getInventory().getArmorContents();
     }
     
     public CreativePlayerCache hasAdv(String player) {
