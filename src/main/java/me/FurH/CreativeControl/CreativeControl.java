@@ -20,15 +20,14 @@ import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import de.diddiz.LogBlock.Consumer;
 import de.diddiz.LogBlock.LogBlock;
 import java.io.IOException;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.UUID;
 import java.util.WeakHashMap;
-import javax.xml.parsers.DocumentBuilderFactory;
 import me.FurH.Core.CorePlugin;
 import me.FurH.Core.exceptions.CoreDbException;
+import me.FurH.Core.updater.CoreUpdater;
 import me.FurH.CreativeControl.commands.CreativeCommands;
 import me.FurH.CreativeControl.configuration.CreativeMainConfig;
 import me.FurH.CreativeControl.configuration.CreativeMessages;
@@ -51,7 +50,6 @@ import me.FurH.CreativeControl.permissions.CreativePermissions;
 import me.FurH.CreativeControl.region.CreativeRegion;
 import me.FurH.CreativeControl.region.CreativeRegionManager;
 import me.FurH.CreativeControl.selection.CreativeBlocksSelection;
-import me.FurH.CreativeControl.util.CreativeUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -62,12 +60,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 /**
  *
@@ -101,14 +94,13 @@ public class CreativeControl extends CorePlugin {
     public Map<String, Integer> mods = new HashMap<String, Integer>();
     public Map<String, HashSet<UUID>> limits = new HashMap<String, HashSet<UUID>>();
 
-    public String currentversion;
-    public String newversion;
-
-    public boolean hasUpdate;
+    public CoreUpdater updater;
 
     @Override
     public void onEnable() {
         plugin = this;
+        
+        updater = new CoreUpdater(this, "http://dev.bukkit.org/server-mods/creativecontrol/");
 
         messages = new CreativeMessages(this);
         messages.load();
@@ -182,12 +174,8 @@ public class CreativeControl extends CorePlugin {
         log("[TAG] Loaded {0} regions", regioner.loadRegions());
         log("[TAG] {0} blocks protected", manager.getTotal());
 
-        PluginDescriptionFile version = getDescription();
-        currentversion = "v"+version.getVersion();
-        log("[CreativeControl] CreativeControl " + currentversion + " Enabled");
-
         if (mainconfig.updater_enabled) {
-            updateThread();
+            updater.setup();
         }
 
         startMetrics();
@@ -200,6 +188,8 @@ public class CreativeControl extends CorePlugin {
         } catch (CoreDbException ex) {
             getCommunicator().error(Thread.currentThread(), ex, ex.getMessage());
         }
+        
+        logEnable();
     }
     
     @Override
@@ -221,8 +211,9 @@ public class CreativeControl extends CorePlugin {
         friends.clear();
         limits.clear();
         
-        getLogger().info("[CreativeControl] CreativeControl " + currentversion + " Disabled");
         getServer().getScheduler().cancelTasks(this);
+        
+        logDisable();
     }
     
     public void reload(CommandSender sender) {
@@ -613,45 +604,5 @@ public class CreativeControl extends CorePlugin {
             metrics.start();
         } catch (IOException e) {
         }
-    }
-    
-    public void updateThread() {
-        Bukkit.getScheduler().runTaskTimerAsynchronously(this, new Runnable() {
-            @Override
-            public void run() {
-                newversion = getVersion(currentversion);
-                
-                double nv = CreativeUtil.toDouble(newversion.replaceAll("[^0-9]", ""));
-                double od = CreativeUtil.toDouble(currentversion.replaceAll("[^0-9]", ""));
-
-                if (od < nv) {
-                    log("New Version Found: {0} (You have: {1})", newversion, currentversion);
-                    log("Visit: http://bit.ly/creativecontrol/");
-                    hasUpdate = true;
-                }
-            }
-        }, 100, 21600 * 20);
-    }
-    
-    public String getVersion(String current) {
-        try {	
-            URL url = new URL("http://dev.bukkit.org/server-mods/creativecontrol/files.rss");
-            Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(url.openConnection().getInputStream());
-            doc.getDocumentElement().normalize();
-            NodeList nodes = doc.getElementsByTagName("item");
-            Node firstNode = nodes.item(0);
-            if (firstNode != null) {
-                if (firstNode.getNodeType() == 1) {
-                    Element firstElement = (Element)firstNode;
-                    NodeList firstElementTagName = firstElement.getElementsByTagName("title");
-                    Element firstNameElement = (Element) firstElementTagName.item(0);
-                    NodeList firstNodes = firstNameElement.getChildNodes();
-                    return firstNodes.item(0).getNodeValue();
-                }
-            }
-        } catch (Exception e) {
-            return current;
-        }
-        return current;
     }
 }

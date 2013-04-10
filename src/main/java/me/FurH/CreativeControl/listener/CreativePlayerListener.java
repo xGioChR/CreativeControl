@@ -422,14 +422,13 @@ public class CreativePlayerListener implements Listener {
                 p.setGameMode(GameMode.SURVIVAL);
             }
         }
-        
-        if (plugin.hasUpdate) {
+
+        if (plugin.updater.isUpdateAvailable()) {
             if (plugin.hasPerm(p, "Updater.Broadcast")) {
                 Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
                     @Override
                     public void run() {
-                        com.msg(p, "&7New Version Found: &4{0}&7 (You have: &4{1}&7)", plugin.newversion, plugin.currentversion);
-                        com.msg(p, "&7Visit:&4 http://bit.ly/creativecontrol");
+                        plugin.updater.announce(p);
                     }
                 }, 40L);
             }

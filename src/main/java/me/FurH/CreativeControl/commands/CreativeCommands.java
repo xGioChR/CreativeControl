@@ -56,7 +56,7 @@ public class CreativeCommands implements CommandExecutor {
         CreativeControl          plugin    = CreativeControl.getPlugin();
 
         if (args.length <= 0) {
-            msg(sender, "&8[&4CreativeControl&8]&7: &8CreativeControl &4{0} &8by &4FurmigaHumana", plugin.currentversion);
+            msg(sender, "&8[&4CreativeControl&8]&7: &8CreativeControl &4{0} &8by &4FurmigaHumana", plugin.getDescription().getVersion());
             msg(sender, "&8[&4CreativeControl&8]&7: Type '&4/cc help&7' to see the command list");
             return true;
         } else
