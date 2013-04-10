@@ -191,7 +191,7 @@ public class CreativeControl extends CorePlugin {
         
         logEnable();
     }
-    
+
     @Override
     public void onDisable() {
 
