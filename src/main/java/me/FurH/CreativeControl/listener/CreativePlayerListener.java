@@ -17,6 +17,7 @@
 package me.FurH.CreativeControl.listener;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import me.FurH.Core.cache.CoreLRUCache;
 import me.FurH.Core.location.LocationUtils;
 import me.FurH.Core.player.PlayerUtils;
@@ -57,6 +58,8 @@ import org.bukkit.inventory.ItemStack;
  * @author FurmigaHumana
  */
 public class CreativePlayerListener implements Listener {
+    
+    private HashSet<String> process = new HashSet<String>();
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void onPlayerGameModeChange(PlayerGameModeChangeEvent e) {
@@ -122,7 +125,6 @@ public class CreativePlayerListener implements Listener {
                 if (!plugin.hasPerm(player, "Region.Change")) {
                     com.msg(player, messages.region_cant_change);
                     e.setCancelled(true);
-                    return;
                 }
             }
         }
@@ -441,10 +443,10 @@ public class CreativePlayerListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onPlayerChangedWorld(PlayerChangedWorldEvent e) {
-        onPlayerWorldChange(e.getPlayer());
+        onPlayerWorldChange(e.getPlayer(), true);
     }
 
-    public static boolean onPlayerWorldChange(Player p) {
+    public static boolean onPlayerWorldChange(Player p, boolean force) {
 
         CreativeWorldNodes      config      = CreativeControl.getWorldNodes(p.getWorld());
         CreativeControl         plugin      = CreativeControl.getPlugin();
@@ -453,7 +455,7 @@ public class CreativePlayerListener implements Listener {
 
         if (config.world_changegm) {
             if (!p.getGameMode().equals(config.world_gamemode)) {
-                if (!plugin.hasPerm(p, "World.Keep")) {
+                if (!force && !plugin.hasPerm(p, "World.Keep")) {
                     PlayerUtils.toSafeLocation(p);
                     com.msg(p, messages.region_unallowed, p.getGameMode().toString().toLowerCase());
                     p.setGameMode(config.world_gamemode);

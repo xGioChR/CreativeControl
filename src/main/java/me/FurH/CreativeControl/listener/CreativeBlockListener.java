@@ -77,7 +77,7 @@ public class CreativeBlockListener implements Listener {
          */
         CreativeMainConfig      main       = CreativeControl.getMainConfig();
         if (!main.events_move) {
-            if (CreativePlayerListener.onPlayerWorldChange(p)) {
+            if (CreativePlayerListener.onPlayerWorldChange(p, false)) {
                 e.setCancelled(true);
                 return;
             }
@@ -225,7 +225,7 @@ public class CreativeBlockListener implements Listener {
          */
         CreativeMainConfig      main       = CreativeControl.getMainConfig();
         if (!main.events_move) {
-            if (CreativePlayerListener.onPlayerWorldChange(p)) {
+            if (CreativePlayerListener.onPlayerWorldChange(p, false)) {
                 e.setCancelled(true);
                 return;
             }
