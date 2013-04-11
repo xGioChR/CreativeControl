@@ -59,7 +59,7 @@ import org.bukkit.inventory.ItemStack;
  */
 public class CreativePlayerListener implements Listener {
     
-    private HashSet<String> process = new HashSet<String>();
+    public static HashSet<String> process = new HashSet<String>();
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void onPlayerGameModeChange(PlayerGameModeChangeEvent e) {
@@ -80,16 +80,21 @@ public class CreativePlayerListener implements Listener {
 
         if (config.data_inventory) {
             if (!plugin.hasPerm(player, "Data.Status")) {
-
-                InventoryView view = player.getOpenInventory();
-                view.close();
-
+                
+                process.add(player.getName());
+                
                 Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
                     @Override
                     public void run() {
+
+                        InventoryView view = player.getOpenInventory();
+                        view.close();
+
                         if (plugin.isLoggedIn(player)) {
                             data.process(player, newgm, oldgm);
                         }
+                        
+                        process.remove(player.getName());
                     }
                 }, 1L);
             }
@@ -301,6 +306,11 @@ public class CreativePlayerListener implements Listener {
         if (config.world_exclude) {
             return;
         }
+        
+        if (process.contains(p.getName())) {
+            e.setCancelled(true);
+            return;
+        }
 
         if (p.getGameMode().equals(GameMode.CREATIVE)) {
             if (config.prevent_invinteract) {
@@ -329,8 +339,13 @@ public class CreativePlayerListener implements Listener {
 
         CreativeWorldNodes      config      = CreativeControl.getWorldNodes(world);
         CreativeControl         plugin      = CreativeControl.getPlugin();
-        
+
         if (config.world_exclude) {
+            return;
+        }
+
+        if (process.contains(p.getName())) {
+            e.setCancelled(true);
             return;
         }
 
@@ -413,7 +428,6 @@ public class CreativePlayerListener implements Listener {
         final Player p = e.getPlayer();
 
         final CreativeControl       plugin   = CreativeControl.getPlugin();
-        final Communicator          com      = plugin.getCommunicator();
 
         if (CreativeControl.getMainConfig().data_teleport) {
             PlayerUtils.toSafeLocation(p);
@@ -455,7 +469,7 @@ public class CreativePlayerListener implements Listener {
 
         if (config.world_changegm) {
             if (!p.getGameMode().equals(config.world_gamemode)) {
-                if (!force && !plugin.hasPerm(p, "World.Keep")) {
+                if (!plugin.hasPerm(p, "World.Keep") && !force) {
                     PlayerUtils.toSafeLocation(p);
                     com.msg(p, messages.region_unallowed, p.getGameMode().toString().toLowerCase());
                     p.setGameMode(config.world_gamemode);
@@ -505,7 +519,7 @@ public class CreativePlayerListener implements Listener {
                 
         Player p = e.getPlayer();
         World world = p.getWorld();
-        
+
         /*
         * Item drop prevent
         */
@@ -515,6 +529,11 @@ public class CreativePlayerListener implements Listener {
         CreativeMessages        messages    = CreativeControl.getMessages();
                     
         if (config.world_exclude) {
+            return;
+        }
+        
+        if (process.contains(p.getName())) {
+            e.setCancelled(true);
             return;
         }
         
@@ -894,5 +913,6 @@ public class CreativePlayerListener implements Listener {
         friend.uncache(p);
         CreativePlayerData data = CreativeControl.getPlayerData();
         data.clear(p.getName());
+        process.remove(p.getName());
     }
 }

@@ -71,6 +71,11 @@ public class CreativeBlockListener implements Listener {
         if (config.world_exclude) {
             return;
         }
+        
+        if (CreativePlayerListener.process.contains(p.getName())) {
+            e.setCancelled(true);
+            return;
+        }
 
         /*
          * Gamemode Handler
