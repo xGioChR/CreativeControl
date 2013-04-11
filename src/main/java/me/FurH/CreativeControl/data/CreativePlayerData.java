@@ -200,7 +200,7 @@ public class CreativePlayerData {
             CreativePlayerCache cache = hasCre(p.getName());
 
             ItemStack[] armor = setCreativeArmor(p);
-            if (armor != null) {
+            if (armor != null && cache != null) {
                 cache.armor = armor;
             }
 
