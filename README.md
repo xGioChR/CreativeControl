@@ -16,5 +16,3 @@ CreativeControl
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 Required Library: https://dl.dropboxusercontent.com/u/55730138/FCoreLib.jar
-
-hu3
