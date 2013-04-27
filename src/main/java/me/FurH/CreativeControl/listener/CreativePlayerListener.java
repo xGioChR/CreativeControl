@@ -18,11 +18,13 @@ package me.FurH.CreativeControl.listener;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import me.FurH.Core.cache.CoreLRUCache;
 import me.FurH.Core.location.LocationUtils;
 import me.FurH.Core.player.PlayerUtils;
 import me.FurH.Core.util.Communicator;
 import me.FurH.CreativeControl.CreativeControl;
+import me.FurH.CreativeControl.blacklist.CreativeItemStack;
 import me.FurH.CreativeControl.configuration.CreativeMainConfig;
 import me.FurH.CreativeControl.configuration.CreativeMessages;
 import me.FurH.CreativeControl.configuration.CreativeWorldNodes;
@@ -272,11 +274,15 @@ public class CreativePlayerListener implements Listener {
         boolean blackList = plugin.hasPerm(p, "BlackList.Inventory");
         boolean stackLimit = plugin.hasPerm(p, "Preventions.StackLimit");
 
+        List<ItemStack> toRemove = new ArrayList<ItemStack>();
+        
         for (ItemStack item : p.getInventory().getContents()) {
             if (item != null) {
 
-                if (config.black_inventory.contains(item.getTypeId()) && !blackList) {
-                    p.getInventory().remove(item);
+                CreativeItemStack itemStack = new CreativeItemStack(item.getTypeId(), item.getData().getData());
+
+                if (config.black_inventory.contains(itemStack) && !blackList) {
+                    toRemove.add(item);
                 }
 
                 if (limitAmount > 0 && item.getAmount() > limitAmount && !stackLimit) {
@@ -284,6 +290,13 @@ public class CreativePlayerListener implements Listener {
                 }
             }
         }
+        
+        for (ItemStack stack : toRemove) {
+            p.getInventory().remove(stack);
+        }
+        
+        p.updateInventory();
+        toRemove.clear();
     }
     
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
@@ -658,16 +671,23 @@ public class CreativePlayerListener implements Listener {
         if (config.world_exclude) {
             return;
         }
+        
+        
 
         if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
             if (p.getGameMode().equals(GameMode.CREATIVE)) {
-                if (config.black_interact.contains(i.getTypeId())) {
-                    if (!plugin.hasPerm(p, "BlackList.ItemInteract") && !plugin.hasPerm(p, "BlackList.ItemInteract."+i.getTypeId())) {
+                
+                CreativeItemStack itemStack = new CreativeItemStack(i.getTypeId(), i.getData());
+                
+                if (config.black_interact.contains(itemStack)) {
+                    if (!plugin.hasPerm(p, "BlackList.ItemInteract."+i.getTypeId())) {
                         com.msg(p, messages.mainode_restricted);
                         e.setCancelled(true);
                         return;
                     }
                 }
+                
+                
             }
         }
         
@@ -692,8 +712,10 @@ public class CreativePlayerListener implements Listener {
                         }
                     }
                     
-                    if (config.black_use.contains(e.getItem().getTypeId())) {
-                        if (!plugin.hasPerm(p, "BlackList.ItemUse") && !plugin.hasPerm(p, "BlackList.ItemUse."+e.getItem().getTypeId())) {
+                    CreativeItemStack itemStack = new CreativeItemStack(e.getItem().getTypeId(), e.getItem().getData().getData());
+                    
+                    if (config.black_use.contains(itemStack)) {
+                        if (!plugin.hasPerm(p, "BlackList.ItemUse."+e.getItem().getTypeId())) {
                             com.msg(p, messages.mainode_restricted);
                             e.setCancelled(true);
                             return;

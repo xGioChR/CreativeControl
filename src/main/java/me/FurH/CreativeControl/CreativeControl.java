@@ -28,6 +28,7 @@ import java.util.WeakHashMap;
 import me.FurH.Core.CorePlugin;
 import me.FurH.Core.exceptions.CoreDbException;
 import me.FurH.Core.updater.CoreUpdater;
+import me.FurH.CreativeControl.blacklist.CreativeBlackList;
 import me.FurH.CreativeControl.commands.CreativeCommands;
 import me.FurH.CreativeControl.configuration.CreativeMainConfig;
 import me.FurH.CreativeControl.configuration.CreativeMessages;
@@ -85,6 +86,7 @@ public class CreativeControl extends CorePlugin {
     private static Consumer lbconsumer = null;
     private static CreativeWorldConfig worldconfig;
     private static boolean prismEnabled;
+    private static CreativeBlackList blacklist;
     
     private static CreativePermissions permissions;
 
@@ -106,7 +108,8 @@ public class CreativeControl extends CorePlugin {
         messages.load();
 
         getCommunicator().setTag(messages.prefix_tag);
-
+        blacklist = new CreativeBlackList();
+        
         log("[TAG] Initializing configurations...");
         mainconfig = new CreativeMainConfig(this);
         mainconfig.load();
@@ -397,6 +400,10 @@ public class CreativeControl extends CorePlugin {
 
         entity.clear();
         limits.remove(player.getName());
+    }
+    
+    public static CreativeBlackList getBlackList() {
+        return blacklist;
     }
     
     public static CreativePermissions getPermissions() {

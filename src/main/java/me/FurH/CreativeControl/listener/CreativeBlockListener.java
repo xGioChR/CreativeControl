@@ -22,6 +22,7 @@ import java.util.List;
 import me.FurH.Core.blocks.BlockUtils;
 import me.FurH.Core.util.Communicator;
 import me.FurH.CreativeControl.CreativeControl;
+import me.FurH.CreativeControl.blacklist.CreativeItemStack;
 import me.FurH.CreativeControl.configuration.CreativeMainConfig;
 import me.FurH.CreativeControl.configuration.CreativeMessages;
 import me.FurH.CreativeControl.configuration.CreativeWorldNodes;
@@ -92,8 +93,11 @@ public class CreativeBlockListener implements Listener {
             /*
              * Block Place BlackList
              */
-            if ((config.black_place != null) && (config.black_place.contains(b.getTypeId()))) {
-                if (!plugin.hasPerm(p, "BlackList.BlockPlace") && !plugin.hasPerm(p, "BlackList.BlockPlace." + b.getTypeId())) {
+            
+            CreativeItemStack itemStack = new CreativeItemStack(b.getTypeId(), b.getData());
+
+            if (!config.black_place.isEmpty() && (config.black_place.contains(itemStack))) {
+                if (!plugin.hasPerm(p, "BlackList.BlockPlace." + b.getTypeId())) {
                     com.msg(p, messages.blockplace_cantplace);
                     e.setCancelled(true);
                     return;
@@ -253,8 +257,10 @@ public class CreativeBlockListener implements Listener {
             /*
              * Block Break BlackList
              */
-            if ((config.black_break != null) && (config.black_break.contains(b.getTypeId()))) {
-                if (!plugin.hasPerm(p, "BlackList.BlockBreak") && !plugin.hasPerm(p, "BlackList.BlockBreak." + b.getTypeId())) {
+            CreativeItemStack itemStack = new CreativeItemStack(b.getTypeId(), b.getData());
+            
+            if (!config.black_break.isEmpty() && config.black_break.contains(itemStack)) {
+                if (!plugin.hasPerm(p, "BlackList.BlockBreak." + b.getTypeId())) {
                     com.msg(p, messages.blockbreak_cantbreak);
                     e.setCancelled(true);
                     return;

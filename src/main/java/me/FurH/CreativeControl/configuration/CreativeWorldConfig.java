@@ -20,6 +20,7 @@ import me.FurH.Core.CorePlugin;
 import me.FurH.Core.cache.CoreSafeCache;
 import me.FurH.Core.configuration.Configuration;
 import me.FurH.CreativeControl.CreativeControl;
+import me.FurH.CreativeControl.blacklist.CreativeBlackList;
 import org.bukkit.GameMode;
 import org.bukkit.World;
 
@@ -53,6 +54,7 @@ public class CreativeWorldConfig extends Configuration {
     public void load(World w) {
         CreativeMainConfig   main   = CreativeControl.getMainConfig();
         
+        CreativeBlackList blacklist = CreativeControl.getBlackList();
         CreativeWorldNodes x = new CreativeWorldNodes();
 
         String gamemode         = getString(w, "World.GameMode");
@@ -70,11 +72,13 @@ public class CreativeWorldConfig extends Configuration {
 
         x.black_cmds            = getStringAsStringSet(w, "BlackList.Commands");
         x.black_s_cmds          = getStringAsStringSet(w, "BlackList.SurvivalCommands");
-        x.black_place           = getStringAsIntegerSet(w, "BlackList.BlockPlace");
-        x.black_break           = getStringAsIntegerSet(w, "BlackList.BlockBreak");
-        x.black_use             = getStringAsIntegerSet(w, "BlackList.ItemUse");
-        x.black_interact        = getStringAsIntegerSet(w, "BlackList.ItemInteract");
-        x.black_inventory       = getStringAsIntegerSet(w, "BlackList.Inventory");
+        
+        x.black_place           = blacklist.buildHashSet(getStringAsStringSet(w, "BlackList.BlockPlace"));
+        x.black_break           = blacklist.buildHashSet(getStringAsStringSet(w, "BlackList.BlockBreak"));
+        x.black_use             = blacklist.buildHashSet(getStringAsStringSet(w, "BlackList.ItemUse"));
+        x.black_interact        = blacklist.buildHashSet(getStringAsStringSet(w, "BlackList.ItemInteract"));
+        x.black_inventory       = blacklist.buildHashSet(getStringAsStringSet(w, "BlackList.Inventory"));
+        
         x.black_sign            = getStringAsStringSet(w, "BlackList.SignText");
         x.black_sign_all        = false;
         
@@ -98,7 +102,7 @@ public class CreativeWorldConfig extends Configuration {
         x.block_against         = getBoolean(w, "BlockProtection.BlockAgainst");
         x.block_attach          = getBoolean(w, "BlockProtection.CheckAttached");
         x.block_invert          = getBoolean(w, "BlockProtection.inverted");
-        x.block_exclude         = getStringAsIntegerSet(w, "BlockProtection.exclude");
+        x.block_exclude         = blacklist.buildHashSet(getStringAsStringSet(w, "BlockProtection.exclude"));
 
         x.prevent_drop          = getBoolean(w, "Preventions.ItemDrop");
         x.prevent_pickup        = getBoolean(w, "Preventions.ItemPickup");

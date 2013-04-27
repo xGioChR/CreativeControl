@@ -6,20 +6,19 @@ World:
   ## ChangeGameMode, if true, this plugin will handle the gamemode per world, the option GameMode will be used.
   ChangeGameMode: false
 
-## Obs: Use Block ID Only, ID:DATA is not supported yet, [] means the list is empty
 BlackList:
   ## Commands, list here all commands to disallow creative players to use.
   Commands: /buy, /sell, /logout
   ## SurvivalCommands, list here, all commands to disallow survival players to use.
   SurvivalCommands: []
   ## BlockPlace, list here, all block ids that creative players will be unable to place.
-  BlockPlace: 8, 9, 10, 11, 46, 51, 52, 79
+  BlockPlace: 8, 9, 10, 11, 46, 51, 52, 79:0
   ## BlockBreak, list here, all block ids that creative players will be unable to break.
   BlockBreak: []
   ## ItemUse, list here, all block/item ids that creative players will be unable to use, this means right and left click.
-  ItemUse: 259, 326, 327, 384, 385, 389
+  ItemUse: 259, 326, 327, 384, 385, 389:0
   ## ItemInteract, list here, all block/item ids that creative players will be unable to interact with, this means right click only.
-  ItemInteract: 23, 54, 58, 61, 62, 84, 116, 117, 130, 145
+  ItemInteract: 23, 54:0, 58, 61, 62, 84, 116:0, 117, 130, 145
   ## Inventory, list here, all block/item ids that will be automatically removed from creative players inventories.
   Inventory: []
   ## SignText, list here, the line of all signs that creative players will be unable to interact with.
