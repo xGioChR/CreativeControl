@@ -22,6 +22,7 @@ import java.util.List;
 import me.FurH.Core.blocks.BlockUtils;
 import me.FurH.Core.util.Communicator;
 import me.FurH.CreativeControl.CreativeControl;
+import me.FurH.CreativeControl.blacklist.CreativeBlackList;
 import me.FurH.CreativeControl.blacklist.CreativeItemStack;
 import me.FurH.CreativeControl.configuration.CreativeMainConfig;
 import me.FurH.CreativeControl.configuration.CreativeMessages;
@@ -65,6 +66,7 @@ public class CreativeBlockListener implements Listener {
         CreativeControl         plugin     = CreativeControl.getPlugin();
         CreativeWorldNodes      config     = CreativeControl.getWorldNodes(world);
         Communicator            com        = plugin.getCommunicator();
+        CreativeBlackList       blacklist  = CreativeControl.getBlackList();
 
         /*
          * Excluded Worlds
@@ -96,7 +98,7 @@ public class CreativeBlockListener implements Listener {
             
             CreativeItemStack itemStack = new CreativeItemStack(b.getTypeId(), b.getData());
 
-            if (!config.black_place.isEmpty() && (config.black_place.contains(itemStack))) {
+            if (!config.black_place.isEmpty() && (blacklist.isBlackListed(config.black_place, itemStack))) {
                 if (!plugin.hasPerm(p, "BlackList.BlockPlace." + b.getTypeId())) {
                     com.msg(p, messages.blockplace_cantplace);
                     e.setCancelled(true);
@@ -224,6 +226,7 @@ public class CreativeBlockListener implements Listener {
         CreativeWorldNodes      config     = CreativeControl.getWorldNodes(world);
         CreativeBlockManager    manager    = CreativeControl.getManager();
         Communicator            com        = plugin.getCommunicator();
+        CreativeBlackList       blacklist  = CreativeControl.getBlackList();
 
         if (config.world_exclude) {
             return;
@@ -259,7 +262,7 @@ public class CreativeBlockListener implements Listener {
              */
             CreativeItemStack itemStack = new CreativeItemStack(b.getTypeId(), b.getData());
             
-            if (!config.black_break.isEmpty() && config.black_break.contains(itemStack)) {
+            if (!config.black_break.isEmpty() && blacklist.isBlackListed(config.black_break, itemStack)) {
                 if (!plugin.hasPerm(p, "BlackList.BlockBreak." + b.getTypeId())) {
                     com.msg(p, messages.blockbreak_cantbreak);
                     e.setCancelled(true);

@@ -23,16 +23,16 @@ public class CreativeItemStack {
         }
 
         CreativeItemStack stack = (CreativeItemStack)object;
-        
+
         if (stack.type != type) {
             return false;
         }
-        
-        if (data == -1 || stack.data == data) {
+
+        if (data == -1) {
             return true;
         }
-        
-        return false;
+
+        return data == stack.data;
     }
 
     @Override
@@ -41,8 +41,7 @@ public class CreativeItemStack {
         
         hash = 17 * hash + this.type;
         hash = 17 * hash + this.data;
-        
+
         return hash;
     }
-    
 }

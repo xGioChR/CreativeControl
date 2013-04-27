@@ -9,6 +9,21 @@ import java.util.HashSet;
  */
 public class CreativeBlackList {
 
+    public boolean isBlackListed(HashSet<CreativeItemStack> source, CreativeItemStack check) {
+
+        if (source.contains(check)) {
+            return true;
+        }
+
+        for (CreativeItemStack item : source) {
+            if (item.equals(check)) {
+                source.add(check); return true;
+            }
+        }
+
+        return false;
+    }
+    
     public HashSet<CreativeItemStack> buildHashSet(HashSet<String> source) {
         HashSet<CreativeItemStack> ret = new HashSet<CreativeItemStack>();
         

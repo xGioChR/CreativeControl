@@ -24,6 +24,7 @@ import me.FurH.Core.location.LocationUtils;
 import me.FurH.Core.player.PlayerUtils;
 import me.FurH.Core.util.Communicator;
 import me.FurH.CreativeControl.CreativeControl;
+import me.FurH.CreativeControl.blacklist.CreativeBlackList;
 import me.FurH.CreativeControl.blacklist.CreativeItemStack;
 import me.FurH.CreativeControl.configuration.CreativeMainConfig;
 import me.FurH.CreativeControl.configuration.CreativeMessages;
@@ -266,6 +267,7 @@ public class CreativePlayerListener implements Listener {
 
         CreativeWorldNodes      config      = CreativeControl.getWorldNodes(world);
         CreativeControl         plugin      = CreativeControl.getPlugin();
+        CreativeBlackList       blacklist   = CreativeControl.getBlackList();
         
         if (config.world_exclude) {
             return;
@@ -287,7 +289,7 @@ public class CreativePlayerListener implements Listener {
 
                 CreativeItemStack itemStack = new CreativeItemStack(item.getTypeId(), item.getData().getData());
 
-                if (config.black_inventory.contains(itemStack) && !blackList) {
+                if (blacklist.isBlackListed(config.black_inventory, itemStack) && !blackList) {
                     toRemove.add(item);
                 }
 
@@ -611,6 +613,7 @@ public class CreativePlayerListener implements Listener {
         Communicator          com      = plugin.getCommunicator();
         CreativeWorldNodes    config   = CreativeControl.getWorldNodes(world);
         CreativeMainConfig    main     = CreativeControl.getMainConfig();
+        CreativeBlackList     blacklist= CreativeControl.getBlackList();
         
         if (e.getAction() == Action.RIGHT_CLICK_BLOCK || e.getAction() == Action.LEFT_CLICK_BLOCK) {
             if (processEconomySign(p, i)) {
@@ -689,7 +692,7 @@ public class CreativePlayerListener implements Listener {
                 
                 CreativeItemStack itemStack = new CreativeItemStack(i.getTypeId(), i.getData());
                 
-                if (config.black_interact.contains(itemStack)) {
+                if (blacklist.isBlackListed(config.black_interact, itemStack)) {
                     if (!plugin.hasPerm(p, "BlackList.ItemInteract."+i.getTypeId())) {
                         com.msg(p, messages.mainode_restricted);
                         e.setCancelled(true);
