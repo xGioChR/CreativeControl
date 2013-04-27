@@ -80,6 +80,12 @@ public class CreativePlayerListener implements Listener {
         CreativeMessages            messages    = CreativeControl.getMessages();
         CreativeWorldNodes          wconfig     = CreativeControl.getWorldConfig().get(player.getWorld());
 
+        if (!newgm.equals(GameMode.CREATIVE)) {
+            if (player.getHealth() <= 0) {
+                player.setHealth(20);
+            }
+        }
+        
         if (config.data_inventory) {
             if (!plugin.hasPerm(player, "Data.Status")) {
                 
