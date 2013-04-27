@@ -108,3 +108,5 @@ Preventions:
   StackLimit: 1
   ## InventoryOpen, if true, creative players will be unable to open any inventory apart from the creative inventory.
   InventoryOpen: false
+  
+## End of the file ~>

@@ -93,3 +93,5 @@ Debug:
   Console: false
   ## Stack, if true, common errors will be printed by full [leave it true C:]
   Stack: true
+  
+## End of the file ~>
