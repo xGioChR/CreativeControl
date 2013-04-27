@@ -479,21 +479,25 @@ public class CreativePlayerListener implements Listener {
         onPlayerWorldChange(e.getPlayer(), true);
     }
 
-    public static boolean onPlayerWorldChange(Player p, boolean force) {
+    public static boolean onPlayerWorldChange(Player p, boolean blocks) {
 
         CreativeWorldNodes      config      = CreativeControl.getWorldNodes(p.getWorld());
         CreativeControl         plugin      = CreativeControl.getPlugin();
         Communicator            com         = plugin.getCommunicator();
         CreativeMessages        messages    = CreativeControl.getMessages();
-
+        
         if (config.world_changegm) {
             if (!p.getGameMode().equals(config.world_gamemode)) {
-                if (!plugin.hasPerm(p, "World.Keep") && !force) {
-                    PlayerUtils.toSafeLocation(p);
-                    com.msg(p, messages.region_unallowed, p.getGameMode().toString().toLowerCase());
-                    p.setGameMode(config.world_gamemode);
-                    return true;
+                
+                if (plugin.hasPerm(p, "World.Keep") && !blocks) {
+                    return false;
                 }
+                
+                PlayerUtils.toSafeLocation(p);
+                com.msg(p, messages.region_unallowed, p.getGameMode().toString().toLowerCase());
+                p.setGameMode(config.world_gamemode);
+                
+                return true;
             }
         }
         
