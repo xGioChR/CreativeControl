@@ -27,14 +27,11 @@ Permissions:
   ## OpHasPerm, if true, ops will have all the permissions and will not be checked by your permissions plugin
   OpHasPerm: false
 
-## if you have an larger server with tons of creative players placing/breaking blocks, you should increase the "count" and decrease the "sleep" and "each"
 Queue:
-  ## each, set here, the time in milliseconds to wait after each execution. (1000 = 1 second)
-  each: 50
-  ## count, set here, the number of queries to run after make a bigger pause
-  count: 50
-  ## sleep, set here, the time in milliseconds to wait after the count being reached. (1000 = 1 second)
-  sleep: 5000
+  ## Threads, the number of threads to be use to process the database
+  Threads: 1
+  ## Speed, the speed of the queue, if your server is taking too long to shutdown, increase this option.
+  Speed: 0.1
 
 Cache:
   ## MaxCapacity, the maximum cache capacity, higher this value is, better will be the performance, but also the memory usage will increase.
