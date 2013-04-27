@@ -19,7 +19,7 @@ public class CreativeBlackList {
             }
             
             if (!string.contains(":")) {
-                ret.add(new CreativeItemStack(Integer.parseInt(string), (byte) -1));
+                ret.add(new CreativeItemStack(Integer.parseInt(string), (byte) -1)); continue;
             }
             
             ret.add(new CreativeItemStack(Integer.parseInt(string.split(":")[0]), Byte.parseByte(string.split(":")[1])));
