@@ -576,7 +576,7 @@ public class CreativePlayerListener implements Listener {
     /*
      * Player interact section
      */
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onPlayerInteract(PlayerInteractEvent e) {
         
         Player p = e.getPlayer();
@@ -594,10 +594,6 @@ public class CreativePlayerListener implements Listener {
                 e.setCancelled(true);
                 return;
             }
-        }
-        
-        if (e.isCancelled()) {
-            return;
         }
 
         if (main.selection_tool == p.getItemInHand().getTypeId()) {

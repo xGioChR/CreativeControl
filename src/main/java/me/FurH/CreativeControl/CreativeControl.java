@@ -134,8 +134,7 @@ public class CreativeControl extends CorePlugin {
         permissions = new CreativePermissions();
 
         database = new CreativeSQLDatabase(this, mainconfig.database_prefix, mainconfig.database_type, mainconfig.database_host, mainconfig.database_port, mainconfig.database_table, mainconfig.database_user, mainconfig.database_pass);
-        database.setupQueue(mainconfig.queue_speed, mainconfig.queue_threadds);
-        
+
         try {
             database.connect();
         } catch (CoreDbException ex) {

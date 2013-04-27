@@ -46,8 +46,9 @@ public class CreativeMainConfig extends Configuration {
     public String          perm_to           = "MemberCreative";
     public boolean         perm_ophas        = true;
 
-    public int             queue_threadds    = 8;
-    public double          queue_speed       = 0.1;
+    public long            queue_each        = 50;
+    public int             queue_count       = 50;
+    public int             queue_sleep       = 5000;
 
     public int             cache_capacity    = 15000;
     public int             cache_precache    = 10000;
@@ -93,8 +94,9 @@ public class CreativeMainConfig extends Configuration {
         perm_to          = getString("Permissions.MoveTo");
         perm_ophas       = getBoolean("Permissions.OpHasPerm");
 
-        queue_threadds   = getInteger("Queue.Threads");
-        queue_speed      = getDouble("Queue.Speed");
+        queue_each       = getLong("Queue.each");
+        queue_count      = getInteger("Queue.count");
+        queue_sleep      = getInteger("Queue.sleep");
         
         cache_capacity   = getInteger("Cache.MaxCapacity");
         cache_precache   = getInteger("Cache.PreCache");
