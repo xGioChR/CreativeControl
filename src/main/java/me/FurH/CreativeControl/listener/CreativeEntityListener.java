@@ -276,7 +276,7 @@ public class CreativeEntityListener implements Listener {
         
         if (event.getEntity() instanceof Player) {
             if (event.getCause() == DamageCause.FALL) {
-                if (CreativePlayerListener.changed.contains(((Player)event.getEntity()).getName())) {
+                if (CreativePlayerListener.changed.remove(((Player)event.getEntity()).getName())) {
                     event.setCancelled(true);
                     event.setDamage(0);
                 }
