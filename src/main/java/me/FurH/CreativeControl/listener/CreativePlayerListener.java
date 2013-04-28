@@ -81,7 +81,11 @@ public class CreativePlayerListener implements Listener {
         CreativeMessages            messages    = CreativeControl.getMessages();
         CreativeWorldNodes          wconfig     = CreativeControl.getWorldConfig().get(player.getWorld());
         
-        changed.add(player.getName());
+        if (!newgm.equals(GameMode.CREATIVE)) {
+            changed.add(player.getName());
+        } else {
+            changed.remove(player.getName());
+        }
         
         if (config.data_inventory) {
             if (!plugin.hasPerm(player, "Data.Status")) {
