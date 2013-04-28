@@ -384,8 +384,11 @@ public class CreativePlayerData {
             p.setExhaustion(cache.ex);
             p.setSaturation(cache.sat);
         }
-        
+
         p.getInventory().setContents(cache.items);
+        
+        p.updateInventory();
+        
         return true;
     }
 
