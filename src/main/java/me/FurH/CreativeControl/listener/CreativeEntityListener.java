@@ -42,6 +42,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.*;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.vehicle.VehicleCreateEvent;
 import org.bukkit.event.vehicle.VehicleDestroyEvent;
@@ -272,6 +273,15 @@ public class CreativeEntityListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onEntityDamage(EntityDamageEvent event) {
+        
+        if (event.getEntity() instanceof Player) {
+            if (event.getCause() == DamageCause.FALL) {
+                if (CreativePlayerListener.changed.contains(((Player)event.getEntity()).getName())) {
+                    event.setCancelled(true);
+                    event.setDamage(0);
+                }
+            }
+        }
         
         if ((event instanceof EntityDamageByEntityEvent)) {
             EntityDamageByEntityEvent e = (EntityDamageByEntityEvent)event;
