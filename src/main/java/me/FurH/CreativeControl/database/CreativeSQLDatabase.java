@@ -58,7 +58,7 @@ public final class CreativeSQLDatabase extends CoreSQLDatabase {
     }
     
     public void update(CreativeBlockData data, String world, int x, int y, int z) {
-        queue("UPDATE `"+prefix+"blocks_"+world+"` SET `allowed` = '"+data.allowed+"', `owner` = '"+getPlayerId(data.owner)+"' WHERE x = '" + x + "' AND z = '" + y + "' AND y = '" + z + "';");
+        queue("UPDATE `"+prefix+"blocks_"+world+"` SET `allowed` = '"+data.allowed+"', `owner` = '"+getPlayerId(data.owner)+"' WHERE x = '" + x + "' AND z = '" + z + "' AND y = '" + y + "';");
     }
     
     public void protect(String player, Block block) {
@@ -74,7 +74,7 @@ public final class CreativeSQLDatabase extends CoreSQLDatabase {
     }
 
     public void unprotect(String world, int x, int y, int z) {
-        queue("DELETE FROM `"+prefix+"blocks_"+world+"` WHERE x = '" + x + "' AND z = '" + y + "' AND y = '" + z + "';");
+        queue("DELETE FROM `"+prefix+"blocks_"+world+"` WHERE x = '" + x + "' AND z = '" + z + "' AND y = '" + y + "';");
     }
     
     public CreativeBlockData getFullData(Location block) {

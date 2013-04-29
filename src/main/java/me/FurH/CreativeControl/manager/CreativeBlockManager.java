@@ -29,6 +29,8 @@ import me.FurH.Core.list.CollectionUtils;
 import me.FurH.Core.location.LocationUtils;
 import me.FurH.Core.util.Communicator;
 import me.FurH.CreativeControl.CreativeControl;
+import me.FurH.CreativeControl.blacklist.CreativeBlackList;
+import me.FurH.CreativeControl.blacklist.CreativeItemStack;
 import me.FurH.CreativeControl.configuration.CreativeMainConfig;
 import me.FurH.CreativeControl.configuration.CreativeWorldNodes;
 import me.FurH.CreativeControl.data.friend.CreativePlayerFriends;
@@ -251,10 +253,13 @@ public class CreativeBlockManager {
     public boolean isprotectable(World world, int typeId) {
         CreativeWorldNodes nodes = CreativeControl.getWorldNodes(world);
 
+        CreativeBlackList       blacklist  = CreativeControl.getBlackList();
+        CreativeItemStack       itemStack  = new CreativeItemStack(typeId, (byte) -1);
+
         if (nodes.block_invert) {
-            return nodes.block_exclude.contains(typeId);
+            return blacklist.isBlackListed(nodes.block_exclude, itemStack);
         } else {
-            return !nodes.block_exclude.contains(typeId);
+            return !blacklist.isBlackListed(nodes.block_exclude, itemStack);
         }
     }
 
