@@ -48,7 +48,7 @@ public final class CreativeSQLDatabase extends CoreSQLDatabase {
         super(plugin, prefix, engine, database_host, database_port, database_table, database_user, database_pass);
         this.version = 2;
     }
-    
+
     public void protect(Player player, Block block) {
         protect(player.getName(), block);
     }

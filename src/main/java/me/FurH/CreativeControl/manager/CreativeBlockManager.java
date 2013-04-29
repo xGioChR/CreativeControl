@@ -88,9 +88,10 @@ public class CreativeBlockManager {
     
     public void unprotect(World world, int x, int y, int z, int type) {
         if (isprotectable(world, type)) {
-            cache.remove(LocationUtils.locationToString(x, y, z, world.getName()));
 
+            cache.remove(LocationUtils.locationToString(x, y, z, world.getName()));
             CreativeControl.getDb2().unprotect(world.getName(), x, y, z);
+            
         }
     }
 

@@ -474,7 +474,7 @@ public class CreativePlayerListener implements Listener {
                 if (plugin.hasPerm(p, "World.Keep") && !blocks) {
                     return false;
                 }
-                
+
                 PlayerUtils.toSafeLocation(p);
                 com.msg(p, messages.region_unallowed, p.getGameMode().toString().toLowerCase());
                 p.setGameMode(config.world_gamemode);
@@ -589,16 +589,12 @@ public class CreativePlayerListener implements Listener {
         CreativeWorldNodes    config   = CreativeControl.getWorldNodes(world);
         CreativeMainConfig    main     = CreativeControl.getMainConfig();
         CreativeBlackList     blacklist= CreativeControl.getBlackList();
-        
+                
         if (e.getAction() == Action.RIGHT_CLICK_BLOCK || e.getAction() == Action.LEFT_CLICK_BLOCK) {
             if (processEconomySign(p, i)) {
                 e.setCancelled(true);
                 return;
             }
-        }
-        
-        if (e.isCancelled()) {
-            return;
         }
 
         if (main.selection_tool == p.getItemInHand().getTypeId()) {
@@ -659,8 +655,6 @@ public class CreativePlayerListener implements Listener {
         if (config.world_exclude) {
             return;
         }
-        
-        
 
         if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
             if (p.getGameMode().equals(GameMode.CREATIVE)) {
@@ -674,8 +668,6 @@ public class CreativePlayerListener implements Listener {
                         return;
                     }
                 }
-                
-                
             }
         }
         
@@ -689,7 +681,21 @@ public class CreativePlayerListener implements Listener {
         
         if ((e.getAction() == Action.RIGHT_CLICK_AIR) || (e.getAction() == Action.RIGHT_CLICK_BLOCK)) {
             if (p.getGameMode().equals(GameMode.CREATIVE)) {
+
                 if (e.getItem() != null) {
+                    CreativeItemStack itemStack = new CreativeItemStack(e.getItem().getTypeId(), e.getItem().getData().getData());
+
+                    if (config.black_use.contains(itemStack)) {
+                        if (!plugin.hasPerm(p, "BlackList.ItemUse."+e.getItem().getTypeId())) {
+                            com.msg(p, messages.mainode_restricted);
+                            e.setCancelled(true);
+                            return;
+                        }
+                    }
+                }
+                
+                if (p.getItemInHand() != null) {
+                    
                     if (config.prevent_eggs) {
                         if ((p.getItemInHand().getType() == Material.MONSTER_EGG) || (p.getItemInHand().getType() == Material.MONSTER_EGGS)) {
                             if (!plugin.hasPerm(p, "Preventions.Eggs")) {
@@ -700,16 +706,6 @@ public class CreativePlayerListener implements Listener {
                         }
                     }
                     
-                    CreativeItemStack itemStack = new CreativeItemStack(e.getItem().getTypeId(), e.getItem().getData().getData());
-                    
-                    if (config.black_use.contains(itemStack)) {
-                        if (!plugin.hasPerm(p, "BlackList.ItemUse."+e.getItem().getTypeId())) {
-                            com.msg(p, messages.mainode_restricted);
-                            e.setCancelled(true);
-                            return;
-                        }
-                    } 
-
                     if (config.prevent_potion) {
                         if (p.getItemInHand().getTypeId() == 373) {
                             if (!plugin.hasPerm(p, "Preventions.PotionSplash")) {
