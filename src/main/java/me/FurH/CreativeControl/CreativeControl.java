@@ -190,7 +190,8 @@ public class CreativeControl extends CorePlugin {
                 log("[TAG] Database update required!");
                 
                 if (database.getCurrentVersion() >= 2) {
-                    Bukkit.getScheduler().runTaskAsynchronously(this, new CreativeDataUpdater(this));
+                    CreativeDataUpdater invUpdater = new CreativeDataUpdater(this);
+                    invUpdater.run();
                 } else {
                     Bukkit.getScheduler().runTaskAsynchronously(this, new CreativeSQLUpdater(this));
                 }

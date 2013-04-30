@@ -20,7 +20,7 @@ import org.bukkit.inventory.ItemStack;
  * @author FurmigaHumana
  * All Rights Reserved unless otherwise explicitly stated.
  */
-public class CreativeDataUpdater implements Runnable {
+public class CreativeDataUpdater {
 
     public static boolean lock = false;
     private CreativeControl plugin;
@@ -30,7 +30,6 @@ public class CreativeDataUpdater implements Runnable {
         this.plugin = plugin;
     }
     
-    @Override
     public void run() {
         if (lock) {
             System.out.println("Updater Locked");
