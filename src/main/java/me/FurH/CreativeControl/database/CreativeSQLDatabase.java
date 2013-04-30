@@ -20,6 +20,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import me.FurH.Core.CorePlugin;
 import me.FurH.Core.cache.CoreSafeCache;
 import me.FurH.Core.database.CoreSQLDatabase;
@@ -46,7 +48,7 @@ public final class CreativeSQLDatabase extends CoreSQLDatabase {
 
     public CreativeSQLDatabase(CorePlugin plugin, String prefix, String engine, String database_host, String database_port, String database_table, String database_user, String database_pass) {
         super(plugin, prefix, engine, database_host, database_port, database_table, database_user, database_pass);
-        this.version = 2;
+        this.version = 3;
     }
 
     public void protect(Player player, Block block) {
@@ -331,6 +333,36 @@ public final class CreativeSQLDatabase extends CoreSQLDatabase {
         }
         
         owners.put(player, ret);
+        return ret;
+    }
+    
+    public List<Integer> getAllPlayersId() {
+        List<Integer> ret = new ArrayList<Integer>();
+
+        Communicator com = CreativeControl.plugin.getCommunicator();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+        try {
+            ps = getQuery("SELECT id FROM `"+prefix+"players`;");
+            rs = ps.getResultSet();
+
+            while (rs.next()) {
+                ret.add(rs.getInt("id"));
+            }
+
+        } catch (SQLException ex) {
+            com.error(Thread.currentThread(), ex, "[TAG] Failed to get player data from the database, {0}", ex.getMessage());
+        } catch (CoreDbException ex) {
+            com.error(Thread.currentThread(), ex, ex.getMessage());
+        } finally {
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException ex) { }
+            }
+        }
+
         return ret;
     }
 }

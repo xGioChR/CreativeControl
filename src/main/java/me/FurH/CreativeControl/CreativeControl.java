@@ -34,6 +34,7 @@ import me.FurH.CreativeControl.configuration.CreativeMainConfig;
 import me.FurH.CreativeControl.configuration.CreativeMessages;
 import me.FurH.CreativeControl.configuration.CreativeWorldConfig;
 import me.FurH.CreativeControl.configuration.CreativeWorldNodes;
+import me.FurH.CreativeControl.data.CreativeDataUpdater;
 import me.FurH.CreativeControl.data.CreativePlayerData;
 import me.FurH.CreativeControl.data.friend.CreativePlayerFriends;
 import me.FurH.CreativeControl.database.CreativeSQLDatabase;
@@ -187,7 +188,12 @@ public class CreativeControl extends CorePlugin {
         try {
             if (database.isUpdateAvailable()) {
                 log("[TAG] Database update required!");
-                Bukkit.getScheduler().runTaskAsynchronously(this, new CreativeSQLUpdater(this));
+                
+                if (database.getCurrentVersion() >= 2) {
+                    Bukkit.getScheduler().runTaskAsynchronously(this, new CreativeDataUpdater(this));
+                } else {
+                    Bukkit.getScheduler().runTaskAsynchronously(this, new CreativeSQLUpdater(this));
+                }
             }
         } catch (CoreDbException ex) {
             getCommunicator().error(Thread.currentThread(), ex, ex.getMessage());

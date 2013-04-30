@@ -21,7 +21,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import me.FurH.Core.cache.CoreSafeCache;
 import me.FurH.Core.exceptions.CoreDbException;
-import me.FurH.Core.inventory.InvUtils;
+import me.FurH.Core.inventory.InventoryStack;
 import me.FurH.Core.util.Communicator;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.configuration.CreativeMainConfig;
@@ -71,7 +71,7 @@ public class CreativePlayerData {
                 adventurer_cache.put(cache.name, cache);
 
                 String query = "INSERT INTO `"+db.prefix+"players_adventurer` (player, health, foodlevel, exhaustion, saturation, experience, armor, inventory) VALUES "
-                        + "('"+db.getPlayerId(cache.name)+"', '"+cache.health+"', '"+cache.food+"', '"+cache.ex+"', '"+cache.sat+"', '" + cache.exp +"', '"+ toListString(cache.armor) +"', '"+ toListString(cache.items) +"');";
+                        + "('"+db.getPlayerId(cache.name)+"', '"+cache.health+"', '"+cache.food+"', '"+cache.ex+"', '"+cache.sat+"', '" + cache.exp +"', '"+ toArrayString(cache.armor) +"', '"+ toArrayString(cache.items) +"');";
                 
                 try {
                     db.execute(query);
@@ -88,7 +88,7 @@ public class CreativePlayerData {
                 adventurer_cache.put(cache.name, cache);
                 
                 String query = "UPDATE `"+db.prefix+"players_adventurer` SET health = '"+cache.health+"', foodlevel = '"+cache.food+"', exhaustion = '"+cache.ex+"', "
-                        + "saturation = '"+cache.sat+"', experience = '"+cache.exp+"', armor = '"+toListString(cache.armor)+"', inventory = '"+ toListString(cache.items) +"' WHERE id = '"+cache.id+"'";
+                        + "saturation = '"+cache.sat+"', experience = '"+cache.exp+"', armor = '"+toArrayString(cache.armor)+"', inventory = '"+ toArrayString(cache.items) +"' WHERE id = '"+cache.id+"'";
 
                 try {
                     db.execute(query);
@@ -110,7 +110,7 @@ public class CreativePlayerData {
                 creative_cache.put(cache.name, cache);
                 
                 String query = "INSERT INTO `"+db.prefix+"players_creative` (player, armor, inventory) VALUES "
-                        + "('"+db.getPlayerId(cache.name)+"', '"+ toListString(cache.armor) +"', '"+ toListString(cache.items) +"');";
+                        + "('"+db.getPlayerId(cache.name)+"', '"+ toArrayString(cache.armor) +"', '"+ toArrayString(cache.items) +"');";
 
                 try {
                     db.execute(query);
@@ -126,7 +126,7 @@ public class CreativePlayerData {
                 creative_cache.remove(cache.name);
                 creative_cache.put(cache.name, cache);
                 
-                String query = "UPDATE `"+db.prefix+"players_creative` SET armor = '"+toListString(cache.armor)+"', inventory = '"+ toListString(cache.items) +"' WHERE id = '"+cache.id+"'";
+                String query = "UPDATE `"+db.prefix+"players_creative` SET armor = '"+toArrayString(cache.armor)+"', inventory = '"+ toArrayString(cache.items) +"' WHERE id = '"+cache.id+"'";
 
                 try {
                     db.execute(query);
@@ -148,7 +148,7 @@ public class CreativePlayerData {
                 survival_cache.put(cache.name, cache);
                 
                 String query = "INSERT INTO `"+db.prefix+"players_survival` (player, health, foodlevel, exhaustion, saturation, experience, armor, inventory) VALUES "
-                        + "('"+db.getPlayerId(cache.name)+"', '"+cache.health+"', '"+cache.food+"', '"+cache.ex+"', '"+cache.sat+"', '" + cache.exp +"', '"+ toListString(cache.armor) +"', '"+ toListString(cache.items) +"');";
+                        + "('"+db.getPlayerId(cache.name)+"', '"+cache.health+"', '"+cache.food+"', '"+cache.ex+"', '"+cache.sat+"', '" + cache.exp +"', '"+ toArrayString(cache.armor) +"', '"+ toArrayString(cache.items) +"');";
 
                 try {
                     db.execute(query);
@@ -165,7 +165,7 @@ public class CreativePlayerData {
                 survival_cache.put(cache.name, cache);
                 
                 String query = "UPDATE `"+db.prefix+"players_survival` SET health = '"+cache.health+"', foodlevel = '"+cache.food+"', exhaustion = '"+cache.ex+"', "
-                        + "saturation = '"+cache.sat+"', experience = '"+cache.exp+"', armor = '"+toListString(cache.armor)+"', inventory = '"+ toListString(cache.items) +"' WHERE id = '"+cache.id+"'";
+                        + "saturation = '"+cache.sat+"', experience = '"+cache.exp+"', armor = '"+toArrayString(cache.armor)+"', inventory = '"+ toArrayString(cache.items) +"' WHERE id = '"+cache.id+"'";
                 
                 try {
                     db.execute(query);
@@ -214,18 +214,6 @@ public class CreativePlayerData {
     }
     
     private ItemStack[] setCreativeArmor(Player p) {
-
-        if (p == null) {
-            return null;
-        }
-
-        if (p.getInventory() == null) {
-            return null;
-        }
-
-        if (p.getInventory().getArmorContents() == null) {
-            return null;
-        }
         
         CreativeMainConfig config = CreativeControl.getMainConfig();
 
@@ -392,11 +380,11 @@ public class CreativePlayerData {
         return true;
     }
 
-    private String toListString(ItemStack[] armor) {
-        return InvUtils.toListString(armor);
+    private String toArrayString(ItemStack[] armor) {
+        return InventoryStack.getStringFromArray(armor);
     }
 
-    private ItemStack[] toArrayStack(String string) {
-        return InvUtils.toArrayStack(string);
+    public ItemStack[] toArrayStack(String string) {
+        return InventoryStack.getArrayFromString(string);
     }
 }
