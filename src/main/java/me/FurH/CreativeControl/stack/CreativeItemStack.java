@@ -1,4 +1,4 @@
-package me.FurH.CreativeControl.blacklist;
+package me.FurH.CreativeControl.stack;
 
 /**
  *

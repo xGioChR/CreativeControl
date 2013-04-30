@@ -23,7 +23,7 @@ import me.FurH.Core.blocks.BlockUtils;
 import me.FurH.Core.util.Communicator;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.blacklist.CreativeBlackList;
-import me.FurH.CreativeControl.blacklist.CreativeItemStack;
+import me.FurH.CreativeControl.stack.CreativeItemStack;
 import me.FurH.CreativeControl.configuration.CreativeMainConfig;
 import me.FurH.CreativeControl.configuration.CreativeMessages;
 import me.FurH.CreativeControl.configuration.CreativeWorldNodes;
