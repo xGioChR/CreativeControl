@@ -25,7 +25,6 @@ import me.FurH.Core.player.PlayerUtils;
 import me.FurH.Core.util.Communicator;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.blacklist.CreativeBlackList;
-import me.FurH.CreativeControl.stack.CreativeItemStack;
 import me.FurH.CreativeControl.configuration.CreativeMainConfig;
 import me.FurH.CreativeControl.configuration.CreativeMessages;
 import me.FurH.CreativeControl.configuration.CreativeWorldNodes;
@@ -35,6 +34,7 @@ import me.FurH.CreativeControl.manager.CreativeBlockData;
 import me.FurH.CreativeControl.manager.CreativeBlockManager;
 import me.FurH.CreativeControl.region.CreativeRegion;
 import me.FurH.CreativeControl.region.CreativeRegionManager;
+import me.FurH.CreativeControl.stack.CreativeItemStack;
 import me.FurH.CreativeControl.util.CreativeUtil;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.*;
@@ -475,7 +475,10 @@ public class CreativePlayerListener implements Listener {
                     return false;
                 }
 
-                PlayerUtils.toSafeLocation(p);
+                if (CreativeControl.getMainConfig().data_teleport) {
+                    PlayerUtils.toSafeLocation(p);
+                }
+
                 com.msg(p, messages.region_unallowed, p.getGameMode().toString().toLowerCase());
                 p.setGameMode(config.world_gamemode);
                 
@@ -695,6 +698,16 @@ public class CreativePlayerListener implements Listener {
                 }
                 
                 if (p.getItemInHand() != null) {
+
+                    CreativeItemStack itemStack = new CreativeItemStack(p.getItemInHand().getTypeId(), p.getItemInHand().getData().getData());
+
+                    if (config.black_use.contains(itemStack)) {
+                        if (!plugin.hasPerm(p, "BlackList.ItemUse."+p.getItemInHand().getTypeId())) {
+                            com.msg(p, messages.mainode_restricted);
+                            e.setCancelled(true);
+                            return;
+                        }
+                    }
                     
                     if (config.prevent_eggs) {
                         if ((p.getItemInHand().getType() == Material.MONSTER_EGG) || (p.getItemInHand().getType() == Material.MONSTER_EGGS)) {

@@ -20,7 +20,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import me.FurH.Core.exceptions.CoreDbException;
 import me.FurH.Core.exceptions.CoreMsgException;
@@ -36,9 +35,9 @@ import org.bukkit.Location;
  * @author FurmigaHumana
  */
 public class CreativeRegionManager {    
-    private HashSet<CreativeRegion> areas = new HashSet<CreativeRegion>();
+    private List<CreativeRegion> areas = new ArrayList<CreativeRegion>();
 
-    public HashSet<CreativeRegion> getAreas() {
+    public List<CreativeRegion> getAreas() {
         return areas;
     }
 
