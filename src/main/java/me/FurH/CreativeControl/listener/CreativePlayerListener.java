@@ -688,7 +688,7 @@ public class CreativePlayerListener implements Listener {
                 if (e.getItem() != null) {
                     CreativeItemStack itemStack = new CreativeItemStack(e.getItem().getTypeId(), e.getItem().getData().getData());
 
-                    if (config.black_use.contains(itemStack)) {
+                    if (blacklist.isBlackListed(config.black_use, itemStack)) {
                         if (!plugin.hasPerm(p, "BlackList.ItemUse."+e.getItem().getTypeId())) {
                             com.msg(p, messages.mainode_restricted);
                             e.setCancelled(true);
@@ -701,7 +701,7 @@ public class CreativePlayerListener implements Listener {
 
                     CreativeItemStack itemStack = new CreativeItemStack(p.getItemInHand().getTypeId(), p.getItemInHand().getData().getData());
 
-                    if (config.black_use.contains(itemStack)) {
+                    if (blacklist.isBlackListed(config.black_use, itemStack)) {
                         if (!plugin.hasPerm(p, "BlackList.ItemUse."+p.getItemInHand().getTypeId())) {
                             com.msg(p, messages.mainode_restricted);
                             e.setCancelled(true);
