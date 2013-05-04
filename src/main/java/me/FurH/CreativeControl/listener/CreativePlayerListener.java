@@ -363,10 +363,6 @@ public class CreativePlayerListener implements Listener {
                     }
                 }
             }
-
-            if (e.getInventory().getType() == InventoryType.PLAYER) {
-                onPlayerInventory(p);
-            }
         }
     }
  

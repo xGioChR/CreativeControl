@@ -39,7 +39,6 @@ import me.FurH.CreativeControl.data.CreativePlayerData;
 import me.FurH.CreativeControl.data.friend.CreativePlayerFriends;
 import me.FurH.CreativeControl.database.CreativeSQLDatabase;
 import me.FurH.CreativeControl.database.extra.CreativeSQLUpdater;
-import me.FurH.CreativeControl.integration.AuthMe;
 import me.FurH.CreativeControl.integration.MobArena;
 import me.FurH.CreativeControl.integration.SurvivalGames;
 import me.FurH.CreativeControl.integration.worldedit.CreativeEditSessionFactory;
@@ -507,7 +506,7 @@ public class CreativeControl extends CorePlugin {
         PluginManager pm = getServer().getPluginManager();
 
         if (pm.getPlugin("AuthMe") != null) {
-            return AuthMe.isLoggedInComplete(player);
+            return uk.org.whoami.authme.api.API.isAuthenticated(player);
         }
 
         if (pm.getPlugin("xAuth") != null) {
