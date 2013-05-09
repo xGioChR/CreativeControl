@@ -39,10 +39,10 @@ import me.FurH.CreativeControl.data.CreativePlayerData;
 import me.FurH.CreativeControl.data.friend.CreativePlayerFriends;
 import me.FurH.CreativeControl.database.CreativeSQLDatabase;
 import me.FurH.CreativeControl.database.extra.CreativeSQLUpdater;
+import me.FurH.CreativeControl.integration.AuthMe;
 import me.FurH.CreativeControl.integration.MobArena;
 import me.FurH.CreativeControl.integration.SurvivalGames;
 import me.FurH.CreativeControl.integration.worldedit.CreativeEditSessionFactory;
-import me.FurH.CreativeControl.integration.xAuth;
 import me.FurH.CreativeControl.listener.*;
 import me.FurH.CreativeControl.manager.CreativeBlockManager;
 import me.FurH.CreativeControl.metrics.CreativeMetrics;
@@ -161,6 +161,10 @@ public class CreativeControl extends CorePlugin {
 
         if (mainconfig.events_misc) {
             pm.registerEvents(new CreativeMiscListener(), this);
+        }
+        
+        if (pm.getPlugin("AuthMe") != null) {
+            pm.registerEvents(new AuthMe(), this);
         }
 
         loadIntegrations();
@@ -500,20 +504,6 @@ public class CreativeControl extends CorePlugin {
         PluginManager pm = getServer().getPluginManager();
         Plugin wex = pm.getPlugin("WorldEdit");
         return (WorldEditPlugin) wex;
-    }
-
-    public boolean isLoggedIn(Player player) {
-        PluginManager pm = getServer().getPluginManager();
-
-        if (pm.getPlugin("AuthMe") != null) {
-            return uk.org.whoami.authme.api.API.isAuthenticated(player);
-        }
-
-        if (pm.getPlugin("xAuth") != null) {
-            return xAuth.isLoggedIn(player);
-        }
-
-        return true;
     }
 
     private int survival = 0;

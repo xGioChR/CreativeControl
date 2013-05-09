@@ -67,7 +67,7 @@ public class CreativePlayerListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void onPlayerGameModeChange(PlayerGameModeChangeEvent e) {
         if (e.isCancelled()) { return; }
-                
+
         final Player player = e.getPlayer();
         final GameMode newgm = e.getNewGameMode();
         final GameMode oldgm = player.getGameMode();
@@ -86,19 +86,17 @@ public class CreativePlayerListener implements Listener {
         } else {
             changed.remove(player.getName());
         }
-        
+
         if (config.data_inventory) {
             if (!plugin.hasPerm(player, "Data.Status")) {
-                
+
                 InventoryView view = player.getOpenInventory();
                 view.close();
 
-                if (plugin.isLoggedIn(player)) {
-                    data.process(player, newgm, oldgm);
-                }
+                data.process(player, newgm, oldgm);
             }
         }
-                
+
         if (config.perm_enabled) {
             Permission permissions = CreativeControl.getPermissions().getVault();
             
@@ -431,11 +429,9 @@ public class CreativePlayerListener implements Listener {
         }
         
         if (CreativeControl.getMainConfig().data_survival) {
-            if (plugin.isLoggedIn(p)) {
-                p.setGameMode(GameMode.SURVIVAL);
-            }
+            p.setGameMode(GameMode.SURVIVAL);
         }
-
+        
         if (plugin.updater.isUpdateAvailable()) {
             if (plugin.hasPerm(p, "Updater.Broadcast")) {
                 Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
