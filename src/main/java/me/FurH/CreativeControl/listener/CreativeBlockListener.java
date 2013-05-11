@@ -29,6 +29,8 @@ import me.FurH.CreativeControl.configuration.CreativeWorldNodes;
 import me.FurH.CreativeControl.manager.CreativeBlockData;
 import me.FurH.CreativeControl.manager.CreativeBlockManager;
 import me.FurH.CreativeControl.stack.CreativeItemStack;
+import me.botsko.prism.Prism;
+import me.botsko.prism.actionlibs.ActionFactory;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -385,10 +387,15 @@ public class CreativeBlockListener implements Listener {
         return block.getType() == Material.SAND || block.getType() == Material.GRAVEL || block.getType() == Material.CACTUS || block.getType() == Material.SUGAR_CANE_BLOCK;
     }
     
-    public void logBlock(Player p, Block b) {
+    private void log(Player p, Block b) {
         Consumer                consumer   = CreativeControl.getLogBlock();
+        
         if (consumer != null) {
             consumer.queueBlockBreak(p.getName(), b.getState());
+        }
+        
+        if (CreativeControl.getPrism()) {
+            Prism.actionsRecorder.addToQueue(ActionFactory.create("block-break", b, p.getName()));
         }
     }
 
@@ -407,7 +414,9 @@ public class CreativeBlockListener implements Listener {
             }
             
             manager.unprotect(b);
-            logBlock(p, b);
+            
+            log(p, b);
+            
             e.setExpToDrop(0);
             b.setType(Material.AIR);
 
