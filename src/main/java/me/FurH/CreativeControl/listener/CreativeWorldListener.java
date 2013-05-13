@@ -54,7 +54,7 @@ public class CreativeWorldListener implements Listener {
             CreativeControl.getWorldConfig().load(world);
         }
 
-        CreativeControl.getDb2().load(null, world.getName(), null);
+        CreativeControl.getDb().load(null, world.getName(), null);
     }
     
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)

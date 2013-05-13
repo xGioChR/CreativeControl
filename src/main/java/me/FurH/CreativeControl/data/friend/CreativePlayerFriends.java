@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import me.FurH.Core.cache.CoreSafeCache;
-import me.FurH.Core.exceptions.CoreDbException;
+import me.FurH.Core.exceptions.CoreException;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.database.CreativeSQLDatabase;
 import me.FurH.CreativeControl.util.CreativeUtil;
@@ -45,7 +45,7 @@ public class CreativePlayerFriends {
     }
     
     public void saveFriends(String player, HashSet<String> friends) {
-        CreativeSQLDatabase db = CreativeControl.getDb2();
+        CreativeSQLDatabase db = CreativeControl.getDb();
         
         hascache.put(player, friends);
 
@@ -54,8 +54,8 @@ public class CreativePlayerFriends {
 
         try {
             db.execute(query);
-        } catch (CoreDbException ex) {
-            CreativeControl.plugin.getCommunicator().error(Thread.currentThread(), ex, ex.getMessage());
+        } catch (CoreException ex) {
+            CreativeControl.plugin.getCommunicator().error(ex, "Failed to save "+player+"'s friends to the database");
         }
 
         newFriends.clear();
@@ -64,7 +64,7 @@ public class CreativePlayerFriends {
     public HashSet<String> getFriends(String player) {
         HashSet<String> friends = hascache.get(player);
         
-        CreativeSQLDatabase db = CreativeControl.getDb2();
+        CreativeSQLDatabase db = CreativeControl.getDb();
 
         if (friends == null) {
             PreparedStatement ps = null;
@@ -82,9 +82,9 @@ public class CreativePlayerFriends {
 
                 hascache.put(player, friends);
             } catch (SQLException ex) {
-                CreativeControl.plugin.getCommunicator().error(Thread.currentThread(), ex, "[TAG] Failed to get the data from the database, " + ex.getMessage());
-            } catch (CoreDbException ex) {
-                CreativeControl.plugin.getCommunicator().error(Thread.currentThread(), ex, ex.getMessage());
+                CreativeControl.plugin.getCommunicator().error(ex, "Failed to get the data from the database");
+            } catch (CoreException ex) {
+                CreativeControl.plugin.getCommunicator().error(ex, "Failed to get the data from the database");
             } finally {
                 if (rs != null) {
                     try {

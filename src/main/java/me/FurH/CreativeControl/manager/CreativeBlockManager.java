@@ -23,8 +23,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import me.FurH.Core.cache.CoreLRUCache;
-import me.FurH.Core.exceptions.CoreDbException;
-import me.FurH.Core.exceptions.CoreMsgException;
+import me.FurH.Core.exceptions.CoreException;
 import me.FurH.Core.list.CollectionUtils;
 import me.FurH.Core.location.LocationUtils;
 import me.FurH.Core.util.Communicator;
@@ -92,7 +91,7 @@ public class CreativeBlockManager {
         if (isprotectable(world, type)) {
 
             cache.remove(LocationUtils.locationToString(x, y, z, world.getName()));
-            CreativeControl.getDb2().unprotect(world.getName(), x, y, z);
+            CreativeControl.getDb().unprotect(world.getName(), x, y, z);
             
         }
     }
@@ -111,13 +110,13 @@ public class CreativeBlockManager {
             CreativeBlockData data = new CreativeBlockData(owner, type, null);
             cache.put(LocationUtils.locationToString(x, y, z, world.getName()), data);
 
-            CreativeControl.getDb2().protect(owner, world.getName(), x, y, z, type);
+            CreativeControl.getDb().protect(owner, world.getName(), x, y, z, type);
         }
     }
     
     public int preCache() {
         
-        CreativeSQLDatabase db = CreativeControl.getDb2();
+        CreativeSQLDatabase db = CreativeControl.getDb();
         Communicator com = CreativeControl.plugin.getCommunicator();
         CreativeMainConfig config = CreativeControl.getMainConfig();
         
@@ -172,18 +171,16 @@ public class CreativeBlockManager {
             
             worldsx.clear();
         } catch (SQLException ex) {
-            com.error(Thread.currentThread(), ex, "[TAG] Failed to add protections to cache, {0}", ex.getMessage());
-        } catch (CoreDbException ex) {
-            com.error(Thread.currentThread(), ex, ex.getMessage());
-        } catch (CoreMsgException ex) {
-            com.error(Thread.currentThread(), ex, ex.getMessage());
+            com.error(ex, "Failed to add protections to cache");
+        } catch (CoreException ex) {
+            com.error(ex, "Failed to add protections to cache");
         }
-        
+
         return count;
     }
     
     public int getTotal() {
-        CreativeSQLDatabase db = CreativeControl.getDb2();
+        CreativeSQLDatabase db = CreativeControl.getDb();
         Communicator com = CreativeControl.plugin.getCommunicator();
         
         int total = 0;
@@ -191,10 +188,8 @@ public class CreativeBlockManager {
         for (World world : Bukkit.getWorlds()) {
             try {
                 total += db.getTableCount(db.prefix+"blocks_"+world.getName());
-            } catch (CoreMsgException ex) {
-                com.error(Thread.currentThread(), ex, ex.getMessage());
-            } catch (CoreDbException ex) {
-                com.error(Thread.currentThread(), ex, ex.getMessage());
+            } catch (CoreException ex) {
+                com.error(ex, "Failed to count world tables size");
             }
         }
         
@@ -206,7 +201,7 @@ public class CreativeBlockManager {
     }
     
     public void update(CreativeBlockData data, World world, int x, int y, int z) {
-        CreativeSQLDatabase  db         = CreativeControl.getDb2();
+        CreativeSQLDatabase  db         = CreativeControl.getDb();
 
         if (data == null) {
             return;
@@ -237,7 +232,7 @@ public class CreativeBlockManager {
             return cache.get(key);
         }
 
-        CreativeBlockData data = CreativeControl.getDb2().isprotected(world.getName(), x, y, z, type, nodrop);
+        CreativeBlockData data = CreativeControl.getDb().isprotected(world.getName(), x, y, z, type, nodrop);
         
         if (data != null) {
             cache.put(key, data);
@@ -247,7 +242,7 @@ public class CreativeBlockManager {
     }
     
     public CreativeBlockData getFullData(Location location) {
-        return CreativeControl.getDb2().getFullData(location);
+        return CreativeControl.getDb().getFullData(location);
     }
     
     public boolean isprotectable(World world, int typeId) {
@@ -268,16 +263,14 @@ public class CreativeBlockManager {
     }
 
     public double getTablesSize() {
-        CreativeSQLDatabase db = CreativeControl.getDb2();
+        CreativeSQLDatabase db = CreativeControl.getDb();
         double ret = 0;
         
         for (World world : Bukkit.getWorlds()) {
             try {
                 ret += db.getTableSize(db.prefix+"blocks_"+world.getName());
-            } catch (CoreDbException ex) {
-                ex.printStackTrace();
-            } catch (CoreMsgException ex) {
-                ex.printStackTrace();
+            } catch (CoreException ex) {
+                CreativeControl.getPlugin().getCommunicator().error(ex, "Failed to get world tables size");
             }
         }
         
@@ -285,16 +278,14 @@ public class CreativeBlockManager {
     }
 
     public double getTablesFree() {
-        CreativeSQLDatabase db = CreativeControl.getDb2();
+        CreativeSQLDatabase db = CreativeControl.getDb();
         double ret = 0;
         
         for (World world : Bukkit.getWorlds()) {
             try {
                 ret += db.getTableFree(db.prefix+"blocks_"+world.getName());
-            } catch (CoreDbException ex) {
-                ex.printStackTrace();
-            } catch (CoreMsgException ex) {
-                ex.printStackTrace();
+            } catch (CoreException ex) {
+                CreativeControl.getPlugin().getCommunicator().error(ex, "Failed to get world tables free size");
             }
         }
         

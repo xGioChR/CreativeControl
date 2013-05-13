@@ -5,8 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import me.FurH.Core.exceptions.CoreDbException;
-import me.FurH.Core.exceptions.CoreMsgException;
+import me.FurH.Core.exceptions.CoreException;
 import me.FurH.Core.inventory.InvUtils;
 import me.FurH.Core.inventory.InventoryStack;
 import me.FurH.Core.util.Communicator;
@@ -42,14 +41,14 @@ public class CreativeDataUpdater {
         Communicator com = plugin.getCommunicator();
         com.msg(p, "&7Initializing... ");
         
-        CreativeSQLDatabase db = CreativeControl.getDb2();
+        CreativeSQLDatabase db = CreativeControl.getDb();
 
         db.load();
 
         try {
             db.commit();
-        } catch (CoreDbException ex) {
-            com.error(Thread.currentThread(), ex, ex.getMessage());
+        } catch (CoreException ex) {
+            com.error(ex);
         }
         
         List<String> tables = new ArrayList<String>();
@@ -65,8 +64,8 @@ public class CreativeDataUpdater {
 
         try {
             db.incrementVersion(3);
-        } catch (CoreDbException ex) {
-            com.error(Thread.currentThread(), ex, ex.getMessage());
+        } catch (CoreException ex) {
+            com.error(ex, "Failed to increment the database version");
         }
         
         com.msg(p, "&7All data updated in &4{0}&7 ms", (System.currentTimeMillis() - start));
@@ -78,7 +77,7 @@ public class CreativeDataUpdater {
         Communicator com = plugin.getCommunicator();
         
         CreativePlayerData data = CreativeControl.getPlayerData();
-        CreativeSQLDatabase db = CreativeControl.getDb2();
+        CreativeSQLDatabase db = CreativeControl.getDb();
         long adventurer_start = System.currentTimeMillis();
 
         /* move table */
@@ -87,7 +86,7 @@ public class CreativeDataUpdater {
         double table_size = 0;
         try {
             table_size = db.getTableCount(table);
-        } catch (CoreMsgException ex) { } catch (CoreDbException ex) { }
+        } catch (CoreException ex) { }
 
         com.msg(p, "&7Table size: &4" + table_size);
 
@@ -138,11 +137,11 @@ public class CreativeDataUpdater {
                 if (row < 10000) {
                     break;
                 }
-            } catch (CoreDbException ex) {
-                com.error(Thread.currentThread(), ex, ex.getMessage());
+            } catch (CoreException ex) {
+                com.error(ex, "An error occurried while running the update method 'update_players_table_3'");
                 break;
             } catch (SQLException ex) {
-                com.error(Thread.currentThread(), ex, "[TAG] Failed to get statement result set, " + ex.getMessage());
+                com.error(ex, "An error occurried while running the update method 'update_players_table_3'");
                 break;
             }
         }

@@ -226,7 +226,7 @@ public class CreativeBlocksSelection {
             }
         } catch (Exception ex) {
             Communicator com        = CreativeControl.plugin.getCommunicator();
-            com.error(Thread.currentThread(), ex, "[TAG] {0} is not a valid number!", args);
+            com.error(ex, "[TAG] {0} is not a valid number!", args);
         }
     }
     

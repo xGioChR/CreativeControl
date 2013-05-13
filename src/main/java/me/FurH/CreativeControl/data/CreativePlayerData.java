@@ -19,8 +19,10 @@ package me.FurH.CreativeControl.data;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import me.FurH.Core.cache.CoreSafeCache;
-import me.FurH.Core.exceptions.CoreDbException;
+import me.FurH.Core.exceptions.CoreException;
 import me.FurH.Core.inventory.InventoryStack;
 import me.FurH.Core.util.Communicator;
 import me.FurH.CreativeControl.CreativeControl;
@@ -60,7 +62,7 @@ public class CreativePlayerData {
     }
     
     public boolean save(Player p, GameMode gm) {
-        CreativeSQLDatabase db = CreativeControl.getDb2();
+        CreativeSQLDatabase db = CreativeControl.getDb();
         if (gm.equals(GameMode.ADVENTURE)) {
             CreativePlayerCache cache = hasAdv(p.getName());
             
@@ -75,8 +77,8 @@ public class CreativePlayerData {
                 
                 try {
                     db.execute(query);
-                } catch (CoreDbException ex) {
-                    CreativeControl.plugin.getCommunicator().error(Thread.currentThread(), ex, ex.getMessage());
+                } catch (CoreException ex) {
+                    CreativeControl.plugin.getCommunicator().error(ex, "Failed to save " + p.getName() + " adventurer data");
                     return false;
                 }
                 
@@ -92,8 +94,8 @@ public class CreativePlayerData {
 
                 try {
                     db.execute(query);
-                } catch (CoreDbException ex) {
-                    CreativeControl.plugin.getCommunicator().error(Thread.currentThread(), ex, ex.getMessage());
+                } catch (CoreException ex) {
+                    CreativeControl.plugin.getCommunicator().error(ex, "Failed to save " + p.getName() + " adventurer data");
                     return false;
                 }
                 
@@ -114,8 +116,8 @@ public class CreativePlayerData {
 
                 try {
                     db.execute(query);
-                } catch (CoreDbException ex) {
-                    CreativeControl.plugin.getCommunicator().error(Thread.currentThread(), ex, ex.getMessage());
+                } catch (CoreException ex) {
+                    CreativeControl.plugin.getCommunicator().error(ex, "Failed to save " + p.getName() + " creative data");
                     return false;
                 }
 
@@ -130,8 +132,8 @@ public class CreativePlayerData {
 
                 try {
                     db.execute(query);
-                } catch (CoreDbException ex) {
-                    CreativeControl.plugin.getCommunicator().error(Thread.currentThread(), ex, ex.getMessage());
+                } catch (CoreException ex) {
+                    CreativeControl.plugin.getCommunicator().error(ex, "Failed to save " + p.getName() + " creative data");
                     return false;
                 }
 
@@ -152,8 +154,8 @@ public class CreativePlayerData {
 
                 try {
                     db.execute(query);
-                } catch (CoreDbException ex) {
-                    CreativeControl.plugin.getCommunicator().error(Thread.currentThread(), ex, ex.getMessage());
+                } catch (CoreException ex) {
+                    CreativeControl.plugin.getCommunicator().error(ex, "Failed to save " + p.getName() + " survival data");
                     return false;
                 }
                 
@@ -169,8 +171,8 @@ public class CreativePlayerData {
                 
                 try {
                     db.execute(query);
-                } catch (CoreDbException ex) {
-                    CreativeControl.plugin.getCommunicator().error(Thread.currentThread(), ex, ex.getMessage());
+                } catch (CoreException ex) {
+                    CreativeControl.plugin.getCommunicator().error(ex, "Failed to save " + p.getName() + " survival data");
                     return false;
                 }
                 
@@ -239,7 +241,7 @@ public class CreativePlayerData {
     public CreativePlayerCache hasAdv(String player) {
         CreativePlayerCache cache = adventurer_cache.get(player.toLowerCase());
         Communicator com        = CreativeControl.plugin.getCommunicator();
-        CreativeSQLDatabase db = CreativeControl.getDb2();
+        CreativeSQLDatabase db = CreativeControl.getDb();
         
         if (cache == null) {
             PreparedStatement ps = null;
@@ -262,9 +264,9 @@ public class CreativePlayerData {
                     adventurer_cache.put(cache.name, cache);
                 }
             } catch (SQLException ex) {
-                com.error(Thread.currentThread(), ex, "[TAG] Failed to get the data from the database, " + ex.getMessage());
-            } catch (CoreDbException ex) {
-                com.error(Thread.currentThread(), ex, ex.getMessage());
+                com.error(ex, "Failed to get " + player + "'s adventurer data");
+            } catch (CoreException ex) {
+                com.error(ex, "Failed to get " + player + "'s adventurer data");
             } finally {
                 if (rs != null) {
                     try {
@@ -279,7 +281,7 @@ public class CreativePlayerData {
     public CreativePlayerCache hasSur(String player) {
         CreativePlayerCache cache = survival_cache.get(player.toLowerCase());
         Communicator com        = CreativeControl.plugin.getCommunicator();
-        CreativeSQLDatabase db = CreativeControl.getDb2();
+        CreativeSQLDatabase db = CreativeControl.getDb();
         
         if (cache == null) {
             PreparedStatement ps = null;
@@ -303,9 +305,9 @@ public class CreativePlayerData {
                 }
 
             } catch (SQLException ex) {
-                com.error(Thread.currentThread(), ex, "[TAG] Failed to get the data from the database, " + ex.getMessage());
-            } catch (CoreDbException ex) {
-                com.error(Thread.currentThread(), ex, ex.getMessage());
+                com.error(ex, "Failed to get " + player + "'s survival data");
+            } catch (CoreException ex) {
+                com.error(ex, "Failed to get " + player + "'s survival data");
             } finally {
                 if (rs != null) {
                     try {
@@ -320,7 +322,7 @@ public class CreativePlayerData {
     public CreativePlayerCache hasCre(String player) {
         CreativePlayerCache cache = creative_cache.get(player.toLowerCase());
         Communicator com        = CreativeControl.plugin.getCommunicator();
-        CreativeSQLDatabase db = CreativeControl.getDb2();
+        CreativeSQLDatabase db = CreativeControl.getDb();
 
         if (cache == null) {
             PreparedStatement ps = null;
@@ -339,9 +341,9 @@ public class CreativePlayerData {
                 }
 
             } catch (SQLException ex) {
-                com.error(Thread.currentThread(), ex, "[TAG] Failed to get the data from the database, " + ex.getMessage());
-            } catch (CoreDbException ex) {
-                com.error(Thread.currentThread(), ex, ex.getMessage());
+                com.error(ex, "Failed to get " + player + "'s creative data");
+            } catch (CoreException ex) {
+                com.error(ex, "Failed to get " + player + "'s creative data");
             } finally {
                 if (rs != null) {
                     try {
@@ -381,10 +383,24 @@ public class CreativePlayerData {
     }
 
     private String toArrayString(ItemStack[] armor) {
-        return InventoryStack.getStringFromArray(armor);
+        
+        try {
+            return InventoryStack.getStringFromArray(armor);
+        } catch (CoreException ex) {
+            CreativeControl.getPlugin().error(ex, "Failed to parse ItemStack array into a string");
+        }
+        
+        return "";
     }
 
     public ItemStack[] toArrayStack(String string) {
-        return InventoryStack.getArrayFromString(string);
+        
+        try {
+            return InventoryStack.getArrayFromString(string);
+        } catch (CoreException ex) {
+            CreativeControl.getPlugin().error(ex, "Failed to parse '"+string+"' into an ItemStack array");
+        }
+        
+        return new ItemStack[] { new ItemStack(Material.AIR, 1) };
     }
 }

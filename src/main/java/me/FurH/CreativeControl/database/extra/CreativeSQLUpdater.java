@@ -22,8 +22,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import me.FurH.Core.exceptions.CoreDbException;
-import me.FurH.Core.exceptions.CoreMsgException;
+import me.FurH.Core.exceptions.CoreException;
 import me.FurH.Core.util.Communicator;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.database.CreativeSQLDatabase;
@@ -58,7 +57,7 @@ public class CreativeSQLUpdater implements Runnable {
         Communicator com = plugin.getCommunicator();
         com.msg(p, "&7Initializing... ");
         
-        CreativeSQLDatabase db = CreativeControl.getDb2();
+        CreativeSQLDatabase db = CreativeControl.getDb();
 
         List<String> thistables = new ArrayList<String>();
         thistables.add(db.prefix + "players_survival");
@@ -80,22 +79,22 @@ public class CreativeSQLUpdater implements Runnable {
                     convert.add(table);
                 }
             }
-        } catch (CoreDbException ex) {
-            com.error(Thread.currentThread(), ex, ex.getMessage());
+        } catch (CoreException ex) {
+            com.error(ex, "Failed to rename older tables");
         }
 
         try {
             db.commit();
-        } catch (CoreDbException ex) {
-            com.error(Thread.currentThread(), ex, ex.getMessage());
+        } catch (CoreException ex) {
+            com.error(ex);
         }
         
         db.load();
         
         try {
             db.commit();
-        } catch (CoreDbException ex) {
-            com.error(Thread.currentThread(), ex, ex.getMessage());
+        } catch (CoreException ex) {
+            com.error(ex);
         }
         
         /* update the players creative inventories table */
@@ -115,8 +114,8 @@ public class CreativeSQLUpdater implements Runnable {
         
         try {
             db.incrementVersion(2);
-        } catch (CoreDbException ex) {
-            com.error(Thread.currentThread(), ex, ex.getMessage());
+        } catch (CoreException ex) {
+            com.error(ex, "Failed to increment database version");
         }
         
         com.msg(p, "&7All data updated in &4{0}&7 ms", (System.currentTimeMillis() - start));
@@ -126,7 +125,7 @@ public class CreativeSQLUpdater implements Runnable {
     
     public void update_blocks_2() {
         Communicator com = plugin.getCommunicator();
-        CreativeSQLDatabase db = CreativeControl.getDb2();
+        CreativeSQLDatabase db = CreativeControl.getDb();
         long blocks_start = System.currentTimeMillis();
         
         String table = db.prefix + "blocks";
@@ -137,7 +136,7 @@ public class CreativeSQLUpdater implements Runnable {
         double blocks_size = 0;
         try {
             blocks_size = db.getTableCount(table);
-        } catch (CoreMsgException ex) { } catch (CoreDbException ex) { }
+        } catch (CoreException ex) { }
 
         com.msg(p, "&7Table size: &4" + blocks_size);
 
@@ -197,11 +196,11 @@ public class CreativeSQLUpdater implements Runnable {
                 if (row < 10000) {
                     break;
                 }
-            } catch (CoreDbException ex) {
-                com.error(Thread.currentThread(), ex, ex.getMessage());
+            } catch (CoreException ex) {
+                com.error(ex, "An error occurried while running the update method 'update_blocks_2'");
                 break;
             } catch (SQLException ex) {
-                com.error(Thread.currentThread(), ex, "[TAG] Failed to get statement result set, " + ex.getMessage());
+                com.error(ex, "An error occurried while running the update method 'update_blocks_2'");
                 break;
             }
         }
@@ -213,7 +212,7 @@ public class CreativeSQLUpdater implements Runnable {
     
     public void update_players_creative_2() {
         Communicator com = plugin.getCommunicator();
-        CreativeSQLDatabase db = CreativeControl.getDb2();
+        CreativeSQLDatabase db = CreativeControl.getDb();
         long creative_start = System.currentTimeMillis();
         
         String table = db.prefix + "players_creative";
@@ -227,7 +226,7 @@ public class CreativeSQLUpdater implements Runnable {
         double creative_size = 0;
         try {
             creative_size = db.getTableCount(table);
-        } catch (CoreMsgException ex) { } catch (CoreDbException ex) { }
+        } catch (CoreException ex) { }
 
         com.msg(p, "&7Table size: &4" + creative_size);
 
@@ -272,11 +271,11 @@ public class CreativeSQLUpdater implements Runnable {
                 if (row < 10000) {
                     break;
                 }
-            } catch (CoreDbException ex) {
-                com.error(Thread.currentThread(), ex, ex.getMessage());
+            } catch (CoreException ex) {
+                com.error(ex, "An error occurried while running the update method 'update_players_creative_2'");
                 break;
             } catch (SQLException ex) {
-                com.error(Thread.currentThread(), ex, "[TAG] Failed to get statement result set, " + ex.getMessage());
+                com.error(ex, "An error occurried while running the update method 'update_players_creative_2'");
                 break;
             }
         }
@@ -287,7 +286,7 @@ public class CreativeSQLUpdater implements Runnable {
  
     public void update_players_survival_2() {
         Communicator com = plugin.getCommunicator();
-        CreativeSQLDatabase db = CreativeControl.getDb2();
+        CreativeSQLDatabase db = CreativeControl.getDb();
         long survival_start = System.currentTimeMillis();
         
         String table = db.prefix + "players_survival";
@@ -301,7 +300,7 @@ public class CreativeSQLUpdater implements Runnable {
         double survival_size = 0;
         try {
             survival_size = db.getTableCount(table);
-        } catch (CoreMsgException ex) { } catch (CoreDbException ex) { }
+        } catch (CoreException ex) { }
 
         com.msg(p, "&7Table size: &4" + survival_size);
 
@@ -351,11 +350,11 @@ public class CreativeSQLUpdater implements Runnable {
                 if (row < 10000) {
                     break;
                 }
-            } catch (CoreDbException ex) {
-                com.error(Thread.currentThread(), ex, ex.getMessage());
+            } catch (CoreException ex) {
+                com.error(ex, "An error occurried while running the update method 'update_players_survival_2'");
                 break;
             } catch (SQLException ex) {
-                com.error(Thread.currentThread(), ex, "[TAG] Failed to get statement result set, " + ex.getMessage());
+                com.error(ex, "An error occurried while running the update method 'update_players_survival_2'");
                 break;
             }
         }
@@ -366,7 +365,7 @@ public class CreativeSQLUpdater implements Runnable {
 
     public void update_players_adventurer_2() {
         Communicator com = plugin.getCommunicator();
-        CreativeSQLDatabase db = CreativeControl.getDb2();
+        CreativeSQLDatabase db = CreativeControl.getDb();
         long adventurer_start = System.currentTimeMillis();
         
         String table = db.prefix + "players_adventurer";
@@ -380,7 +379,7 @@ public class CreativeSQLUpdater implements Runnable {
         double adventurer_size = 0;
         try {
             adventurer_size = db.getTableCount(table);
-        } catch (CoreMsgException ex) { } catch (CoreDbException ex) { }
+        } catch (CoreException ex) { }
 
         com.msg(p, "&7Table size: &4" + adventurer_size);
 
@@ -430,11 +429,11 @@ public class CreativeSQLUpdater implements Runnable {
                 if (row < 10000) {
                     break;
                 }
-            } catch (CoreDbException ex) {
-                com.error(Thread.currentThread(), ex, ex.getMessage());
+            } catch (CoreException ex) {
+                com.error(ex, "An error occurried while running the update method 'update_players_adventurer_2'");
                 break;
             } catch (SQLException ex) {
-                com.error(Thread.currentThread(), ex, "[TAG] Failed to get statement result set, " + ex.getMessage());
+                com.error(ex, "An error occurried while running the update method 'update_players_adventurer_2'");
                 break;
             }
         }
@@ -445,7 +444,7 @@ public class CreativeSQLUpdater implements Runnable {
     
     public void update_friends_2() {
         Communicator com = plugin.getCommunicator();
-        CreativeSQLDatabase db = CreativeControl.getDb2();
+        CreativeSQLDatabase db = CreativeControl.getDb();
         long friends_start = System.currentTimeMillis();
         
         String table = db.prefix + "friends";
@@ -459,7 +458,7 @@ public class CreativeSQLUpdater implements Runnable {
         double friends_size = 0;
         try {
             friends_size = db.getTableCount(table);
-        } catch (CoreMsgException ex) { } catch (CoreDbException ex) { }
+        } catch (CoreException ex) { }
 
         com.msg(p, "&7Table size: &4" + friends_size);
 
@@ -503,11 +502,11 @@ public class CreativeSQLUpdater implements Runnable {
                 if (row < 10000) {
                     break;
                 }
-            } catch (CoreDbException ex) {
-                com.error(Thread.currentThread(), ex, ex.getMessage());
+            } catch (CoreException ex) {
+                com.error(ex, "An error occurried while running the update method 'update_friends_2'");
                 break;
             } catch (SQLException ex) {
-                com.error(Thread.currentThread(), ex, "[TAG] Failed to get statement result set, " + ex.getMessage());
+                com.error(ex, "An error occurried while running the update method 'update_friends_2'");
                 break;
             }
         }

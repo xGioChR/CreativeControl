@@ -16,10 +16,11 @@
 
 package me.FurH.CreativeControl.util;
 
-import java.text.SimpleDateFormat;
 import java.util.HashSet;
-import me.FurH.Core.exceptions.CoreMsgException;
+import me.FurH.Core.exceptions.CoreException;
 import me.FurH.Core.list.CollectionUtils;
+import me.FurH.Core.number.NumberUtils;
+import me.FurH.Core.time.TimeUtils;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.configuration.CreativeWorldNodes;
 
@@ -54,8 +55,8 @@ public class CreativeUtil {
 
         try {
             return CollectionUtils.toStringHashSet(string, split);
-        } catch (CoreMsgException ex) {
-            CreativeControl.plugin.getCommunicator().error(Thread.currentThread(), ex, ex.getMessage());
+        } catch (CoreException ex) {
+            CreativeControl.plugin.getCommunicator().error(ex);
         }
 
         return null;
@@ -68,8 +69,8 @@ public class CreativeUtil {
         
         try {
             return CollectionUtils.toIntegerHashSet(string, split);
-        } catch (CoreMsgException ex) {
-            CreativeControl.plugin.getCommunicator().error(Thread.currentThread(), ex, ex.getMessage());
+        } catch (CoreException ex) {
+            CreativeControl.plugin.getCommunicator().error(ex);
         }
         
         return null;
@@ -81,9 +82,9 @@ public class CreativeUtil {
     public static int toInteger(String str) {
 
         try {
-            return CollectionUtils.toInteger(str);
-        } catch (CoreMsgException ex) {
-            CreativeControl.plugin.getCommunicator().error(Thread.currentThread(), ex, ex.getMessage());
+            return NumberUtils.toInteger(str);
+        } catch (CoreException ex) {
+            CreativeControl.plugin.getCommunicator().error(ex);
         }
         
         return 0;
@@ -92,22 +93,22 @@ public class CreativeUtil {
     public static double toDouble(String str) {
 
         try {
-            return CollectionUtils.toDouble(str);
-        } catch (CoreMsgException ex) {
-            CreativeControl.plugin.getCommunicator().error(Thread.currentThread(), ex, ex.getMessage());
+            return NumberUtils.toDouble(str);
+        } catch (CoreException ex) {
+            CreativeControl.plugin.getCommunicator().error(ex);
         }
         
         return 0;
     }
 
     public static String getSimpleDate(long date) {
-        return new SimpleDateFormat("dd-MM-yyyy-HH-mm-ss").format(date);
+        return TimeUtils.getSimpleFormatedTime(date);
     }
 
     /*
      * return the date in the defined miliseconds
      */
     public static String getDate(long date) {
-        return new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(date);
+        return TimeUtils.getFormatedTime(date);
     }
 }

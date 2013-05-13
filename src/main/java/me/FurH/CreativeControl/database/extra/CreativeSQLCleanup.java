@@ -20,8 +20,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashSet;
-import me.FurH.Core.exceptions.CoreDbException;
-import me.FurH.Core.exceptions.CoreMsgException;
+import me.FurH.Core.exceptions.CoreException;
 import me.FurH.Core.location.LocationUtils;
 import me.FurH.Core.util.Communicator;
 import me.FurH.CreativeControl.CreativeControl;
@@ -73,7 +72,7 @@ public class CreativeSQLCleanup implements Runnable {
     
     public void cleanup_blocks(World w) {
         Communicator com = plugin.getCommunicator();
-        CreativeSQLDatabase db = CreativeControl.getDb2();
+        CreativeSQLDatabase db = CreativeControl.getDb();
         long blocks_start = System.currentTimeMillis();
 
         String table = db.prefix+"blocks_" + w.getName();
@@ -86,7 +85,7 @@ public class CreativeSQLCleanup implements Runnable {
         double blocks_size = 0;
         try {
             blocks_size = db.getTableCount(table);
-        } catch (CoreMsgException ex) { } catch (CoreDbException ex) { }
+        } catch (CoreException ex) { }
 
         com.msg(p, "Table size: &4" + blocks_size);
 
@@ -154,11 +153,11 @@ public class CreativeSQLCleanup implements Runnable {
                     break;
                 }
                 
-            } catch (CoreDbException ex) {
-                com.error(Thread.currentThread(), ex, ex.getMessage());
+            } catch (CoreException ex) {
+                com.error(ex, "An error ocurried while cleaning the database");
                 break;
             } catch (SQLException ex) {
-                com.error(Thread.currentThread(), ex, "[TAG] Failed to get statement result set, " + ex.getMessage());
+                com.error(ex, "An error ocurried while cleaning the database");
                 break;
             }
         }

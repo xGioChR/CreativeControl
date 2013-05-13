@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.WeakHashMap;
 import me.FurH.Core.CorePlugin;
-import me.FurH.Core.exceptions.CoreDbException;
+import me.FurH.Core.exceptions.CoreException;
 import me.FurH.Core.updater.CoreUpdater;
 import me.FurH.CreativeControl.blacklist.CreativeBlackList;
 import me.FurH.CreativeControl.commands.CreativeCommands;
@@ -141,8 +141,8 @@ public class CreativeControl extends CorePlugin {
         
         try {
             database.connect();
-        } catch (CoreDbException ex) {
-            getCommunicator().error(Thread.currentThread(), ex, ex.getMessage());
+        } catch (CoreException ex) {
+            error(ex);
         }
 
         database.load();
@@ -199,8 +199,8 @@ public class CreativeControl extends CorePlugin {
                     Bukkit.getScheduler().runTaskAsynchronously(this, new CreativeSQLUpdater(this));
                 }
             }
-        } catch (CoreDbException ex) {
-            getCommunicator().error(Thread.currentThread(), ex, ex.getMessage());
+        } catch (CoreException ex) {
+            error(ex);
         }
         
         logEnable();
@@ -211,8 +211,8 @@ public class CreativeControl extends CorePlugin {
 
         try {
             database.disconnect(false);
-        } catch (CoreDbException ex) {
-            getCommunicator().error(Thread.currentThread(), ex, ex.getMessage());
+        } catch (CoreException ex) {
+            error(ex);
         }
 
         HandlerList.unregisterAll(this);
@@ -267,14 +267,14 @@ public class CreativeControl extends CorePlugin {
             
             try {
                 database.disconnect(false);
-            } catch (CoreDbException ex) {
-                getCommunicator().error(Thread.currentThread(), ex, ex.getMessage());
+            } catch (CoreException ex) {
+                error(ex);
             }
             
             try {
                 database.connect();
-            } catch (CoreDbException ex) {
-                getCommunicator().error(Thread.currentThread(), ex, ex.getMessage());
+            } catch (CoreException ex) {
+                error(ex);
             }
 
             database.load();
@@ -416,7 +416,7 @@ public class CreativeControl extends CorePlugin {
         return blacklist;
     }
     
-    public static CreativePermissions getPermissions() {
+    public static CreativePermissions getPermissions2() {
         return permissions;
     }
     
@@ -440,12 +440,7 @@ public class CreativeControl extends CorePlugin {
         return friends;
     }
 
-    @Override
-    public CreativeSQLDatabase getDb() { 
-        return CreativeControl.getDb2();
-    }
-    
-    public static CreativeSQLDatabase getDb2() { 
+    public static CreativeSQLDatabase getDb() { 
         return database; 
     }
     

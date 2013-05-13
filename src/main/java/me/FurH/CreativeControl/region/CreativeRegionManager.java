@@ -21,8 +21,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import me.FurH.Core.exceptions.CoreDbException;
-import me.FurH.Core.exceptions.CoreMsgException;
+import me.FurH.Core.exceptions.CoreException;
 import me.FurH.Core.location.LocationUtils;
 import me.FurH.Core.util.Communicator;
 import me.FurH.CreativeControl.CreativeControl;
@@ -72,7 +71,7 @@ public class CreativeRegionManager {
 
     public int loadRegions() {
         Communicator com    = CreativeControl.plugin.getCommunicator();
-        CreativeSQLDatabase db = CreativeControl.getDb2();
+        CreativeSQLDatabase db = CreativeControl.getDb();
 
         int total = 0;
         PreparedStatement ps = null;
@@ -90,11 +89,9 @@ public class CreativeRegionManager {
                 total++;
             }
         } catch (SQLException ex) {
-            com.error(Thread.currentThread(), ex, "[TAG] Failed to get regions from the database, " + ex.getMessage());
-        } catch (CoreMsgException ex) {
-            com.error(Thread.currentThread(), ex, ex.getMessage());
-        } catch (CoreDbException ex) {
-            com.error(Thread.currentThread(), ex, ex.getMessage());
+            com.error(ex, "Failed to get regions from the database");
+        } catch (CoreException ex) {
+            com.error(ex, "Failed to get regions from the database");
         } finally {
             if (rs != null) {
                 try {
@@ -112,7 +109,7 @@ public class CreativeRegionManager {
 
     public boolean getRegion(String name) {
         Communicator com    = CreativeControl.plugin.getCommunicator();
-        CreativeSQLDatabase db = CreativeControl.getDb2();
+        CreativeSQLDatabase db = CreativeControl.getDb();
 
         ResultSet rs = null;
         PreparedStatement ps = null;
@@ -124,9 +121,9 @@ public class CreativeRegionManager {
                 return true;
             }
         } catch (SQLException ex) {
-            com.error(Thread.currentThread(), ex, "[TAG] Failed to get region from the database, " + ex.getMessage());
-        } catch (CoreDbException ex) {
-            com.error(Thread.currentThread(), ex, ex.getMessage());
+            com.error(ex, "Failed to get region from the database");
+        } catch (CoreException ex) {
+            com.error(ex, "Failed to get region from the database");
         } finally {
             if (rs != null) {
                 try {
@@ -147,7 +144,7 @@ public class CreativeRegionManager {
      * Delete region files
      */
     public void deleteRegion(String name) {
-        CreativeSQLDatabase db = CreativeControl.getDb2();
+        CreativeSQLDatabase db = CreativeControl.getDb();
 
         deleteRegionCache(name);
         
@@ -168,7 +165,7 @@ public class CreativeRegionManager {
     }
     
     public void saveRegion(String name, GameMode type, Location start, Location end) {
-        CreativeSQLDatabase db = CreativeControl.getDb2();
+        CreativeSQLDatabase db = CreativeControl.getDb();
 
         deleteRegionCache(name);
 

@@ -25,8 +25,7 @@ import java.util.List;
 import me.FurH.Core.CorePlugin;
 import me.FurH.Core.cache.CoreSafeCache;
 import me.FurH.Core.database.CoreSQLDatabase;
-import me.FurH.Core.exceptions.CoreDbException;
-import me.FurH.Core.exceptions.CoreMsgException;
+import me.FurH.Core.exceptions.CoreException;
 import me.FurH.Core.list.CollectionUtils;
 import me.FurH.Core.location.LocationUtils;
 import me.FurH.Core.util.Communicator;
@@ -102,12 +101,10 @@ public final class CreativeSQLDatabase extends CoreSQLDatabase {
                 }
             }
 
-        } catch (CoreDbException ex) {
-            com.error(Thread.currentThread(), ex, ex.getMessage());
         } catch (SQLException ex) {
-            com.error(Thread.currentThread(), ex, "[TAG] Failed to get block from database, " + ex.getMessage());
-        } catch (CoreMsgException ex) {
-            com.error(Thread.currentThread(), ex, ex.getMessage());
+            com.error(ex, "Failed to get block from database");
+        } catch (CoreException ex) {
+            com.error(ex, "Failed to get block from database");
         } finally {
             if (rs != null) {
                 try {
@@ -154,12 +151,10 @@ public final class CreativeSQLDatabase extends CoreSQLDatabase {
                 }
             }
 
-        } catch (CoreDbException ex) {
-            com.error(Thread.currentThread(), ex, ex.getMessage());
         } catch (SQLException ex) {
-            com.error(Thread.currentThread(), ex, "[TAG] Failed to get block from database, " + ex.getMessage());
-        } catch (CoreMsgException ex) {
-            com.error(Thread.currentThread(), ex, ex.getMessage());
+            com.error(ex, "Failed to get block from database");
+        } catch (CoreException ex) {
+            com.error(ex, "Failed to get block from database");
         } finally {
             if (rs != null) {
                 try {
@@ -180,32 +175,34 @@ public final class CreativeSQLDatabase extends CoreSQLDatabase {
     }
 
     public void load(Connection connection, type type) {
-        Communicator com = plugin.getCommunicator();
+        Communicator com = CreativeControl.getPlugin().getCommunicator();
         
         try {
             /* player id table */
             createTable(connection, "CREATE TABLE IF NOT EXISTS `"+prefix+"players` ({auto}, player VARCHAR(255));", type);
-        } catch (CoreDbException ex) {
-            com.error(Thread.currentThread(), ex, "[TAG] Failed to create `"+prefix+"players` table, " + ex.getCause().getMessage());
+        } catch (CoreException ex) {
+            com.error(ex, "Failed to create `"+prefix+"players` table");
         }
-
-
-        createIndex(connection, "CREATE INDEX `"+prefix+"names` ON `"+prefix+"players` (player);");
+        try {
+            createIndex(connection, "CREATE INDEX `"+prefix+"names` ON `"+prefix+"players` (player);");
+        } catch (CoreException ex) {
+            com.error(ex, "Failed to create `"+prefix+"names` index");
+        }
         try {
             /* players inventory */
             createTable(connection, "CREATE TABLE IF NOT EXISTS `"+prefix+"players_adventurer` ({auto}, player INT, health INT, foodlevel INT, exhaustion INT, saturation INT, experience INT, armor TEXT, inventory TEXT);", type);
-        } catch (CoreDbException ex) {
-            com.error(Thread.currentThread(), ex, "[TAG] Failed to create `"+prefix+"players_adventurer` table, " + ex.getCause().getMessage());
+        } catch (CoreException ex) {
+            com.error(ex, "Failed to create `"+prefix+"players_adventurer` table");
         }
         try {
             createTable(connection, "CREATE TABLE IF NOT EXISTS `"+prefix+"players_survival` ({auto}, player INT, health INT, foodlevel INT, exhaustion INT, saturation INT, experience INT, armor TEXT, inventory TEXT);", type);
-        } catch (CoreDbException ex) {
-            com.error(Thread.currentThread(), ex, "[TAG] Failed to create `"+prefix+"players_survival` table, " + ex.getCause().getMessage());
+        } catch (CoreException ex) {
+            com.error(ex, "Failed to create `"+prefix+"players_survival` table");
         }
         try {
             createTable(connection, "CREATE TABLE IF NOT EXISTS `"+prefix+"players_creative` ({auto}, player INT, armor TEXT, inventory TEXT);", type);
-        } catch (CoreDbException ex) {
-            com.error(Thread.currentThread(), ex, "[TAG] Failed to create `"+prefix+"players_creative` table, " + ex.getCause().getMessage());
+        } catch (CoreException ex) {
+            com.error(ex, "Failed to create `"+prefix+"players_creative` table");
         }
 
         /* block data */
@@ -216,26 +213,26 @@ public final class CreativeSQLDatabase extends CoreSQLDatabase {
         try {
             /* region data */
             createTable(connection, "CREATE TABLE IF NOT EXISTS `"+prefix+"regions` ({auto}, name VARCHAR(255), start VARCHAR(255), end VARCHAR(255), type VARCHAR(255));", type);
-        } catch (CoreDbException ex) {
-            com.error(Thread.currentThread(), ex, "[TAG] Failed to create `"+prefix+"regions` table, " + ex.getCause().getMessage());
+        } catch (CoreException ex) {
+            com.error(ex, "Failed to create `"+prefix+"regions` table");
         }
         try {
             /* friends data */
             createTable(connection, "CREATE TABLE IF NOT EXISTS `"+prefix+"friends` ({auto}, player INT, friends TEXT);", type);
-        } catch (CoreDbException ex) {
-            com.error(Thread.currentThread(), ex, "[TAG] Failed to create `"+prefix+"friends` table, " + ex.getCause().getMessage());
+        } catch (CoreException ex) {
+            com.error(ex, "[TAG] Failed to create `"+prefix+"friends` table");
         }
         try {
             /* internal data */
             createTable(connection, "CREATE TABLE IF NOT EXISTS `"+prefix+"internal` (version INT);", type);
-        } catch (CoreDbException ex) {
-            com.error(Thread.currentThread(), ex, "[TAG] Failed to create `"+prefix+"internal` table, " + ex.getCause().getMessage());
+        } catch (CoreException ex) {
+            com.error(ex, "[TAG] Failed to create `"+prefix+"internal` table");
         }
     }
 
     public void load(Connection connection, String world, type type) {
-        Communicator com = plugin.getCommunicator();
-        
+        Communicator com = CreativeControl.getPlugin().getCommunicator();
+
         if (connection == null) {
             connection = this.connection;
         }
@@ -246,14 +243,18 @@ public final class CreativeSQLDatabase extends CoreSQLDatabase {
 
         try {
             createTable(connection, "CREATE TABLE IF NOT EXISTS `"+prefix+"blocks_"+world+"` (owner INT, x INT, y INT, z INT, type INT, allowed VARCHAR(255), time BIGINT);", type);
-        } catch (CoreDbException ex) {
-            com.error(Thread.currentThread(), ex, "[TAG] Failed to create `"+prefix+"blocks_"+world+"` table, " + ex.getCause().getMessage());
+        } catch (CoreException ex) {
+            com.error(ex, "Failed to create `"+prefix+"blocks_"+world+"` table");
         }
-
-        /* create the index */
-        createIndex(connection, "CREATE INDEX `"+prefix+"block_"+world+"` ON `"+prefix+"blocks_"+world+"` (x, z, y);");
-        createIndex(connection, "CREATE INDEX `"+prefix+"type_"+world+"` ON `"+prefix+"blocks_"+world+"` (type);");
-        createIndex(connection, "CREATE INDEX `"+prefix+"owner_"+world+"` ON `"+prefix+"blocks_"+world+"` (owner);");
+        
+        try {
+            /* create the index */
+            createIndex(connection, "CREATE INDEX `"+prefix+"block_"+world+"` ON `"+prefix+"blocks_"+world+"` (x, z, y);");
+            createIndex(connection, "CREATE INDEX `"+prefix+"type_"+world+"` ON `"+prefix+"blocks_"+world+"` (type);");
+            createIndex(connection, "CREATE INDEX `"+prefix+"owner_"+world+"` ON `"+prefix+"blocks_"+world+"` (owner);");
+        } catch (CoreException ex) {
+            com.error(ex, "Failed to create `"+prefix+"blocks_"+world+"` index");
+        }
     }
     
     public String getPlayerName(int id) {
@@ -276,9 +277,9 @@ public final class CreativeSQLDatabase extends CoreSQLDatabase {
                 ret = rs.getString("player");
             }
         } catch (SQLException ex) {
-            com.error(Thread.currentThread(), ex, "[TAG] Failed to get player data from the database, {0}", ex.getMessage());
-        } catch (CoreDbException ex) {
-            com.error(Thread.currentThread(), ex, ex.getMessage());
+            com.error(ex, "Failed to get the player data from the database");
+        } catch (CoreException ex) {
+            com.error(ex, "Failed to get the player data from the database");
         } finally {
             if (rs != null) {
                 try {
@@ -310,9 +311,9 @@ public final class CreativeSQLDatabase extends CoreSQLDatabase {
                 ret = rs.getInt("id");
             }
         } catch (SQLException ex) {
-            com.error(Thread.currentThread(), ex, "[TAG] Failed to get player data from the database, {0}", ex.getMessage());
-        } catch (CoreDbException ex) {
-            com.error(Thread.currentThread(), ex, ex.getMessage());
+            com.error(ex, "Failed to retrieve "+player+"'s id");
+        } catch (CoreException ex) {
+            com.error(ex, "Failed to retrieve "+player+"'s id");
         } finally {
             if (rs != null) {
                 try {
@@ -325,8 +326,8 @@ public final class CreativeSQLDatabase extends CoreSQLDatabase {
 
             try {
                 execute("INSERT INTO `"+prefix+"players` (player) VALUES ('"+player+"');");
-            } catch (CoreDbException ex) {
-                com.error(Thread.currentThread(), ex, ex.getMessage());
+            } catch (CoreException ex) {
+                com.error(ex, "Failed to insert "+player+"'s id");
             }
 
             return getPlayerId(player);
@@ -352,9 +353,9 @@ public final class CreativeSQLDatabase extends CoreSQLDatabase {
             }
 
         } catch (SQLException ex) {
-            com.error(Thread.currentThread(), ex, "[TAG] Failed to get player data from the database, {0}", ex.getMessage());
-        } catch (CoreDbException ex) {
-            com.error(Thread.currentThread(), ex, ex.getMessage());
+            com.error(ex, "Failed to get player data from the database");
+        } catch (CoreException ex) {
+            com.error(ex, "Failed to get all players id");
         } finally {
             if (rs != null) {
                 try {

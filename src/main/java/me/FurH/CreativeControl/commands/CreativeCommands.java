@@ -18,9 +18,11 @@ package me.FurH.CreativeControl.commands;
 
 import com.sk89q.worldedit.bukkit.selections.Selection;
 import java.util.HashSet;
-import me.FurH.Core.exceptions.CoreDbException;
-import me.FurH.Core.exceptions.CoreMsgException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import me.FurH.Core.exceptions.CoreException;
 import me.FurH.Core.inventory.InvUtils;
+import me.FurH.Core.inventory.InventoryStack;
 import me.FurH.Core.util.Utils;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.configuration.CreativeMainConfig;
@@ -135,10 +137,16 @@ public class CreativeCommands implements CommandExecutor {
             if (args[1].equalsIgnoreCase("armor")) {
                 Player p = (Player)sender;
 
-                config.set(config.getSettingsFile(), "CreativeArmor.Helmet", InvUtils.itemStackToString(p.getInventory().getHelmet()));
-                config.set(config.getSettingsFile(), "CreativeArmor.Chestplate", InvUtils.itemStackToString(p.getInventory().getChestplate()));
-                config.set(config.getSettingsFile(), "CreativeArmor.Leggings", InvUtils.itemStackToString(p.getInventory().getLeggings()));
-                config.set(config.getSettingsFile(), "CreativeArmor.Boots", InvUtils.itemStackToString(p.getInventory().getBoots()));
+                try {
+
+                    config.set(config.getSettingsFile(), "CreativeArmor.Helmet", InventoryStack.getStringFromItemStack(p.getInventory().getHelmet()));
+                    config.set(config.getSettingsFile(), "CreativeArmor.Chestplate", InventoryStack.getStringFromItemStack(p.getInventory().getChestplate()));
+                    config.set(config.getSettingsFile(), "CreativeArmor.Leggings", InventoryStack.getStringFromItemStack(p.getInventory().getLeggings()));
+                    config.set(config.getSettingsFile(), "CreativeArmor.Boots", InventoryStack.getStringFromItemStack(p.getInventory().getBoots()));
+
+                } catch (CoreException ex) {
+                    plugin.error(ex, "Failed to set the creative armor data");
+                }
 
                 config.updateConfig();
                 config.load();
@@ -202,7 +210,7 @@ public class CreativeCommands implements CommandExecutor {
         CreativeControl          plugin    = CreativeControl.getPlugin();
         CreativePlayerFriends    friends   = CreativeControl.getFriends();
         CreativeBlocksSelection  selection = CreativeControl.getSelector();
-        CreativeSQLDatabase      db        = CreativeControl.getDb2();
+        CreativeSQLDatabase      db        = CreativeControl.getDb();
 
         if (args.length > 3) {
             if (args[1].equalsIgnoreCase("transfer")) {
@@ -462,7 +470,7 @@ public class CreativeCommands implements CommandExecutor {
     public boolean cleanupCmd(CommandSender sender, Command cmd, String string, String[] args) {
         CreativeMessages         messages  = CreativeControl.getMessages();
         CreativeControl          plugin    = CreativeControl.getPlugin();
-        CreativeSQLDatabase      db        = CreativeControl.getDb2();
+        CreativeSQLDatabase      db        = CreativeControl.getDb();
         CreativeBlockManager     manager   = CreativeControl.getManager();
 
         if (args.length > 2) {
@@ -508,7 +516,7 @@ public class CreativeCommands implements CommandExecutor {
                 } else {
                     try {
                         db.execute("DROP TABLE `"+db.prefix+"blocks_"+args[2]+"`;");
-                    } catch (CoreDbException ex) { }
+                    } catch (CoreException ex) { }
                 }
                 
                 manager.clear();
@@ -529,7 +537,7 @@ public class CreativeCommands implements CommandExecutor {
                 for (World world : Bukkit.getWorlds()) {
                     try {
                         db.execute("DROP TABLE `"+db.prefix+"blocks_"+world.getName()+"`");
-                    } catch (CoreDbException ex) { }
+                    } catch (CoreException ex) { }
                 }
 
                 manager.clear();
@@ -822,7 +830,7 @@ public class CreativeCommands implements CommandExecutor {
     }
     
     public boolean statusCmd(CommandSender sender, Command cmd, String string, String[] args) {
-        CreativeSQLDatabase      db        = CreativeControl.getDb2();
+        CreativeSQLDatabase      db        = CreativeControl.getDb();
         CreativeMessages         messages  = CreativeControl.getMessages();
         CreativeControl          plugin    = CreativeControl.getPlugin();
         CreativeBlockManager     manager   = CreativeControl.getManager();
@@ -838,7 +846,7 @@ public class CreativeCommands implements CommandExecutor {
         msg(sender, "&4Database size&8:&7 {0} / {1}", Utils.getFormatedBytes(manager.getTablesSize()), Utils.getFormatedBytes(manager.getTablesFree()));
         try {
             msg(sender, "&4Database type&8:&7 {0}, &4ping&8:&7 {1} ms", db.type, db.ping() > 0 ? db.ping() : "<1");
-        } catch (CoreMsgException ex) { }
+        } catch (CoreException ex) { }
         msg(sender, "&4Blocks protected&8:&7 {0}", manager.getTotal());
         msg(sender, "&4Cache reads&8:&7 {0}", manager.getCache().getReads());
         msg(sender, "&4Queue writes&8:&7 {0}", manager.getCache().getWrites());

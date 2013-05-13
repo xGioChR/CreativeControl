@@ -23,8 +23,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import me.FurH.Core.database.CoreSQLDatabase.type;
-import me.FurH.Core.exceptions.CoreDbException;
-import me.FurH.Core.exceptions.CoreMsgException;
+import me.FurH.Core.exceptions.CoreException;
 import me.FurH.Core.util.Communicator;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.database.CreativeSQLDatabase;
@@ -65,14 +64,14 @@ public class CreativeSQLMigrator implements Runnable {
         Communicator com = plugin.getCommunicator();
         com.msg(p, "&7Initializing... ");
 
-        CreativeSQLDatabase db = CreativeControl.getDb2();
+        CreativeSQLDatabase db = CreativeControl.getDb();
 
         if (data.equalsIgnoreCase(">SQLite")) {
             com.msg(p, "&7Connecting to the &4SQLite&7 database...");
             try {
                 to = db.getSQLiteConnection();
-            } catch (CoreDbException ex) {
-                com.error(Thread.currentThread(), ex, ex.getMessage());
+            } catch (CoreException ex) {
+                com.error(ex, "Failed to connect to the destination database");
             }
             type = type.SQLite;
         }
@@ -81,8 +80,8 @@ public class CreativeSQLMigrator implements Runnable {
             com.msg(p, "&7Connecting to &4MySQL database...");
             try {
                 to = db.getMySQLConnection();
-            } catch (CoreDbException ex) {
-                com.error(Thread.currentThread(), ex, ex.getMessage());
+            } catch (CoreException ex) {
+                com.error(ex, "Failed to connect to the destination database");
             }
             type = type.MySQL;
         }
@@ -93,7 +92,7 @@ public class CreativeSQLMigrator implements Runnable {
             to.setAutoCommit(false);
             to.commit();
         } catch (SQLException ex) {
-            com.error(Thread.currentThread(), ex, "[TAG] Failed to set AutoCommit state, " + ex.getMessage());
+            com.error(ex, "Failed to set autocommit state");
         }
         
         db.load(to, type);
@@ -101,7 +100,7 @@ public class CreativeSQLMigrator implements Runnable {
         try {
             to.commit();
         } catch (SQLException ex) {
-            com.error(Thread.currentThread(), ex, "[TAG] Failed to set AutoCommit state, " + ex.getMessage());
+            com.error(ex);
         }
         
         /* move regions table */
@@ -144,7 +143,7 @@ public class CreativeSQLMigrator implements Runnable {
     
     public void move_blocks(String table) {
         Communicator com = plugin.getCommunicator();
-        CreativeSQLDatabase db = CreativeControl.getDb2();
+        CreativeSQLDatabase db = CreativeControl.getDb();
         long blocks_start = System.currentTimeMillis();
         
         /* move regions table */
@@ -153,7 +152,7 @@ public class CreativeSQLMigrator implements Runnable {
         double blocks_size = 0;
         try {
             blocks_size = db.getTableCount(table);
-        } catch (CoreMsgException ex) { } catch (CoreDbException ex) { }
+        } catch (CoreException ex) { }
 
         com.msg(p, "&7Table size: &4" + blocks_size);
 
@@ -203,11 +202,11 @@ public class CreativeSQLMigrator implements Runnable {
                 if (row < 10000) {
                     break;
                 }
-            } catch (CoreDbException ex) {
-                com.error(Thread.currentThread(), ex, ex.getMessage());
+            } catch (CoreException ex) {
+                com.error(ex, "An error occurried while migrating the database");
                 break;
             } catch (SQLException ex) {
-                com.error(Thread.currentThread(), ex, "[TAG] Failed to get statement result set, " + ex.getMessage());
+                com.error(ex, "An error occurried while migrating the database");
                 break;
             }
         }
@@ -218,7 +217,7 @@ public class CreativeSQLMigrator implements Runnable {
     
     public void move_regions() {
         Communicator com = plugin.getCommunicator();
-        CreativeSQLDatabase db = CreativeControl.getDb2();
+        CreativeSQLDatabase db = CreativeControl.getDb();
         long regions_start = System.currentTimeMillis();
 
         String table = db.prefix + "regions";
@@ -229,7 +228,7 @@ public class CreativeSQLMigrator implements Runnable {
         double regions_size = 0;
         try {
             regions_size = db.getTableCount(table);
-        } catch (CoreMsgException ex) { } catch (CoreDbException ex) { }
+        } catch (CoreException ex) { }
 
         com.msg(p, "&7Table size: &4" + regions_size);
 
@@ -276,11 +275,11 @@ public class CreativeSQLMigrator implements Runnable {
                 if (row < 10000) {
                     break;
                 }
-            } catch (CoreDbException ex) {
-                com.error(Thread.currentThread(), ex, ex.getMessage());
+            } catch (CoreException ex) {
+                com.error(ex, "An error occurried while migrating the database");
                 break;
             } catch (SQLException ex) {
-                com.error(Thread.currentThread(), ex, "[TAG] Failed to get statement result set, " + ex.getMessage());
+                com.error(ex, "An error occurried while migrating the database");
                 break;
             }
         }
@@ -291,7 +290,7 @@ public class CreativeSQLMigrator implements Runnable {
     
     public void move_players_survival() {
         Communicator com = plugin.getCommunicator();
-        CreativeSQLDatabase db = CreativeControl.getDb2();
+        CreativeSQLDatabase db = CreativeControl.getDb();
         long survival_start = System.currentTimeMillis();
 
         String table = db.prefix + "players_survival";
@@ -302,7 +301,7 @@ public class CreativeSQLMigrator implements Runnable {
         double survival_size = 0;
         try {
             survival_size = db.getTableCount(table);
-        } catch (CoreMsgException ex) { } catch (CoreDbException ex) { }
+        } catch (CoreException ex) { }
 
         com.msg(p, "&7Table size: &4" + survival_size);
 
@@ -353,11 +352,11 @@ public class CreativeSQLMigrator implements Runnable {
                 if (row < 10000) {
                     break;
                 }
-            } catch (CoreDbException ex) {
-                com.error(Thread.currentThread(), ex, ex.getMessage());
+            } catch (CoreException ex) {
+                com.error(ex, "An error occurried while migrating the database");
                 break;
             } catch (SQLException ex) {
-                com.error(Thread.currentThread(), ex, "[TAG] Failed to get statement result set, " + ex.getMessage());
+                com.error(ex, "An error occurried while migrating the database");
                 break;
             }
         }
@@ -368,7 +367,7 @@ public class CreativeSQLMigrator implements Runnable {
     
     public void move_players_creative() {
         Communicator com = plugin.getCommunicator();
-        CreativeSQLDatabase db = CreativeControl.getDb2();
+        CreativeSQLDatabase db = CreativeControl.getDb();
         long creative_start = System.currentTimeMillis();
 
         String table = db.prefix + "players_creative";
@@ -379,7 +378,7 @@ public class CreativeSQLMigrator implements Runnable {
         double creative_size = 0;
         try {
             creative_size = db.getTableCount(table);
-        } catch (CoreMsgException ex) { } catch (CoreDbException ex) { }
+        } catch (CoreException ex) { }
 
         com.msg(p, "&7Table size:&4 " + creative_size);
 
@@ -425,11 +424,11 @@ public class CreativeSQLMigrator implements Runnable {
                 if (row < 10000) {
                     break;
                 }
-            } catch (CoreDbException ex) {
-                com.error(Thread.currentThread(), ex, ex.getMessage());
+            } catch (CoreException ex) {
+                com.error(ex, "An error occurried while migrating the database");
                 break;
             } catch (SQLException ex) {
-                com.error(Thread.currentThread(), ex, "[TAG] Failed to get statement result set, " + ex.getMessage());
+                com.error(ex, "An error occurried while migrating the database");
                 break;
             }
         }
@@ -440,7 +439,7 @@ public class CreativeSQLMigrator implements Runnable {
 
     public void move_players_adventurer() {
         Communicator com = plugin.getCommunicator();
-        CreativeSQLDatabase db = CreativeControl.getDb2();
+        CreativeSQLDatabase db = CreativeControl.getDb();
         long adventurer_start = System.currentTimeMillis();
         
         String table = db.prefix + "players_adventurer";
@@ -451,7 +450,7 @@ public class CreativeSQLMigrator implements Runnable {
         double adventurer_size = 0;
         try {
             adventurer_size = db.getTableCount(table);
-        } catch (CoreMsgException ex) { } catch (CoreDbException ex) { }
+        } catch (CoreException ex) { }
 
         com.msg(p, "&7Table size: &4" + adventurer_size);
 
@@ -502,11 +501,11 @@ public class CreativeSQLMigrator implements Runnable {
                 if (row < 10000) {
                     break;
                 }
-            } catch (CoreDbException ex) {
-                com.error(Thread.currentThread(), ex, ex.getMessage());
+            } catch (CoreException ex) {
+                com.error(ex, "An error occurried while migrating the database");
                 break;
             } catch (SQLException ex) {
-                com.error(Thread.currentThread(), ex, "[TAG] Failed to get statement result set, " + ex.getMessage());
+                com.error(ex, "An error occurried while migrating the database");
                 break;
             }
         }
@@ -517,7 +516,7 @@ public class CreativeSQLMigrator implements Runnable {
     
     public void move_players() {
         Communicator com = plugin.getCommunicator();
-        CreativeSQLDatabase db = CreativeControl.getDb2();
+        CreativeSQLDatabase db = CreativeControl.getDb();
         long players_start = System.currentTimeMillis();
         
         String table = db.prefix + "players";
@@ -528,7 +527,7 @@ public class CreativeSQLMigrator implements Runnable {
         double players_size = 0;
         try {
             players_size = db.getTableCount(table);
-        } catch (CoreMsgException ex) { } catch (CoreDbException ex) { }
+        } catch (CoreException ex) { }
 
         com.msg(p, "&7Table size: &4" + players_size);
 
@@ -573,11 +572,11 @@ public class CreativeSQLMigrator implements Runnable {
                 if (row < 10000) {
                     break;
                 }
-            } catch (CoreDbException ex) {
-                com.error(Thread.currentThread(), ex, ex.getMessage());
+            } catch (CoreException ex) {
+                com.error(ex, "An error occurried while migrating the database");
                 break;
             } catch (SQLException ex) {
-                com.error(Thread.currentThread(), ex, "[TAG] Failed to get statement result set, " + ex.getMessage());
+                com.error(ex, "An error occurried while migrating the database");
                 break;
             }
         }
@@ -588,7 +587,7 @@ public class CreativeSQLMigrator implements Runnable {
     
     public void move_internal() {
         Communicator com = plugin.getCommunicator();
-        CreativeSQLDatabase db = CreativeControl.getDb2();
+        CreativeSQLDatabase db = CreativeControl.getDb();
         long internal_start = System.currentTimeMillis();
         
         String table = db.prefix + "internal";
@@ -599,7 +598,7 @@ public class CreativeSQLMigrator implements Runnable {
         double internal_size = 0;
         try {
             internal_size = db.getTableCount(table);
-        } catch (CoreMsgException ex) { } catch (CoreDbException ex) { }
+        } catch (CoreException ex) { }
 
         com.msg(p, "&7Table size: &4" + internal_size);
 
@@ -643,11 +642,11 @@ public class CreativeSQLMigrator implements Runnable {
                 if (row < 10000) {
                     break;
                 }
-            } catch (CoreDbException ex) {
-                com.error(Thread.currentThread(), ex, ex.getMessage());
+            } catch (CoreException ex) {
+                com.error(ex, "An error occurried while migrating the database");
                 break;
             } catch (SQLException ex) {
-                com.error(Thread.currentThread(), ex, "[TAG] Failed to get statement result set, " + ex.getMessage());
+                com.error(ex, "An error occurried while migrating the database");
                 break;
             }
         }
@@ -658,7 +657,7 @@ public class CreativeSQLMigrator implements Runnable {
     
     public void move_friends() {
         Communicator com = plugin.getCommunicator();
-        CreativeSQLDatabase db = CreativeControl.getDb2();
+        CreativeSQLDatabase db = CreativeControl.getDb();
         long friends_start = System.currentTimeMillis();
         
         String table = db.prefix + "friends";
@@ -669,7 +668,7 @@ public class CreativeSQLMigrator implements Runnable {
         double friends_size = 0;
         try {
             friends_size = db.getTableCount(table);
-        } catch (CoreMsgException ex) { } catch (CoreDbException ex) { }
+        } catch (CoreException ex) { }
 
         com.msg(p, "&7Table size: &4" + friends_size);
 
@@ -714,11 +713,11 @@ public class CreativeSQLMigrator implements Runnable {
                 if (row < 10000) {
                     break;
                 }
-            } catch (CoreDbException ex) {
-                com.error(Thread.currentThread(), ex, ex.getMessage());
+            } catch (CoreException ex) {
+                com.error(ex, "An error occurried while migrating the database");
                 break;
             } catch (SQLException ex) {
-                com.error(Thread.currentThread(), ex, "[TAG] Failed to get statement result set, " + ex.getMessage());
+                com.error(ex, "An error occurried while migrating the database");
                 break;
             }
         }
