@@ -17,7 +17,7 @@
     <repositories>
         <repository>
             <id>releases</id>
-            <url>http://localhost:8081/nexus/content/repositories/releases</url>
+            <url>http://repository-furh.forge.cloudbees.com/release/</url>
         </repository>
         <repository>
             <id>bukkit-repo</id>
@@ -30,82 +30,60 @@
             <groupId>org.anjocaido.groupmanager</groupId>
             <artifactId>GroupManager</artifactId>
             <version>2.10.1</version>
-            <scope>system</scope>
-            <systemPath>D:/Java/lib/EssentialsGroupManager.jar</systemPath>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>me.botsko</groupId>
             <artifactId>Prism</artifactId>
             <version>1.5.8</version>
-            <scope>system</scope>
-            <systemPath>D:/Java/lib/Prism.jar</systemPath>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>ru.tehkode</groupId>
             <artifactId>PermissionsEx</artifactId>
             <version>1.19.5</version>
-            <scope>system</scope>
-            <systemPath>D:/Java/lib/PermissionsEx.jar</systemPath>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.skitscape</groupId>
             <artifactId>survivalgames</artifactId>
             <version>0.5.0</version>
-            <scope>system</scope>
-            <systemPath>D:/Java/lib/SurvivalGames.jar</systemPath>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>net.milkbowl.vault</groupId>
             <artifactId>Vault</artifactId>
             <version>1.2.23</version>
-            <scope>system</scope>
-            <systemPath>D:/Java/lib/Vault.jar</systemPath>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>de.diddiz.LogBlock</groupId>
             <artifactId>LogBlock</artifactId>
             <version>1.70</version>
-            <scope>system</scope>
-            <systemPath>D:/Java/lib/LogBlock.jar</systemPath>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.sk89q.worldedit</groupId>
             <artifactId>WorldEdit</artifactId>
             <version>5.5.5</version>
-            <scope>system</scope>
-            <systemPath>D:/Java/lib/WorldEdit.jar</systemPath>
+            <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>uk.org.whoami.authme</groupId>
+            <groupId>uk.org.whoami</groupId>
             <artifactId>AuthMe</artifactId>
-            <version>2.7.15</version>
-            <scope>system</scope>
-            <systemPath>D:/Java/lib/AuthMe.jar</systemPath>
+            <version>2.7.10</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.cypherx.xauth</groupId>
             <artifactId>xAuth</artifactId>
             <version>2.0.20</version>
-            <scope>system</scope>
-            <systemPath>D:/Java/lib/xAuth.jar</systemPath>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.garbagemule.MobArena</groupId>
             <artifactId>MobArena</artifactId>
             <version>0.94.4.91</version>
-            <scope>system</scope>
-            <systemPath>D:/Java/lib/mobArena.jar</systemPath>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>3.8.1</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.bukkit</groupId>
-            <artifactId>bukkit</artifactId>
-            <version>1.5.2-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

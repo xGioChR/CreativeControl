@@ -851,6 +851,7 @@ public class CreativeCommands implements CommandExecutor {
         msg(sender, "&4Cache reads&8:&7 {0}", manager.getCache().getReads());
         msg(sender, "&4Queue writes&8:&7 {0}", manager.getCache().getWrites());
         msg(sender, "&4Cache size&8:&7 {0}/{1}", manager.getCache().size(), manager.getCache().getMaxSize());
+        msg(sender, "&4Database Memory Usage&8:&7 {0}", db.getMemoryUsage());
         return true;
     }
 
