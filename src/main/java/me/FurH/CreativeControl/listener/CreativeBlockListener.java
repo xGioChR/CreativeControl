@@ -384,7 +384,7 @@ public class CreativeBlockListener implements Listener {
     }
     
     private boolean isPhysics(Block block) {
-        return block.getType() == Material.SAND || block.getType() == Material.GRAVEL || block.getType() == Material.CACTUS || block.getType() == Material.SUGAR_CANE_BLOCK;
+        return block.getType() == Material.SAND || block.getType() == Material.GRAVEL || block.getType() == Material.CACTUS || block.getType() == Material.SUGAR_CANE_BLOCK || block.getType() == Material.ANVIL;
     }
     
     private void log(Player p, Block b) {
