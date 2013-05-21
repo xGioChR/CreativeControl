@@ -41,6 +41,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -386,7 +387,72 @@ public class CreativeBlockListener implements Listener {
     private boolean isPhysics(Block block) {
         return block.getType() == Material.SAND || block.getType() == Material.GRAVEL || block.getType() == Material.CACTUS || block.getType() == Material.SUGAR_CANE_BLOCK || block.getType() == Material.ANVIL;
     }
-    
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
+    public void onBlockFromTo(BlockFromToEvent e) {
+        if (e.isCancelled()) { return; }
+        
+        if (e.getBlock().getType() != Material.WATER && e.getBlock().getType() != Material.STATIONARY_WATER) {
+            return;
+        }
+
+        if (!isWaterAffected(e.getToBlock())) {
+            return;
+        }
+        
+        CreativeWorldNodes config = CreativeControl.getWorldNodes(e.getBlock().getWorld());
+        if (config.world_exclude) {
+            return;
+        }
+        
+        if (!config.block_water) {
+            return;
+        }
+        
+        CreativeBlockManager    manager     = CreativeControl.getManager();
+        Block block = e.getBlock();
+
+        if (config.block_nodrop) {
+            CreativeBlockData data = manager.isprotected(block, false);
+            if (data != null) {
+                block.setType(Material.AIR);
+            }
+        } else
+        if (config.block_ownblock) {
+            CreativeBlockData data = manager.isprotected(block, true);
+            if (data != null) {
+                e.setCancelled(true);
+            }
+        }
+    }
+
+    private boolean isWaterAffected(Block block) {
+        return block.getTypeId() == 6 
+                || block.getTypeId() == 30
+                || block.getTypeId() == 31
+                || block.getTypeId() == 37
+                || block.getTypeId() == 38
+                || block.getTypeId() == 39
+                || block.getTypeId() == 40
+                || block.getTypeId() == 50
+                || block.getTypeId() == 78
+                || block.getTypeId() == 390
+                || block.getTypeId() == 397
+                || block.getTypeId() == 69
+                || block.getTypeId() == 75
+                || block.getTypeId() == 76
+                || block.getTypeId() == 77
+                || block.getTypeId() == 131
+                || block.getTypeId() == 143
+                || block.getTypeId() == 55
+                || block.getTypeId() == 404
+                || block.getTypeId() == 356
+                || block.getTypeId() == 27
+                || block.getTypeId() == 28
+                || block.getTypeId() == 66
+                || block.getTypeId() == 157;
+    }
+
     private void log(Player p, Block b) {
         Consumer                consumer   = CreativeControl.getLogBlock();
         

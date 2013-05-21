@@ -37,6 +37,8 @@ MiscProtection:
   Fire: false
 
 BlockProtection:
+  ## WaterFlow, if true, creative blocks will be protected against water (eg torches)
+  WaterFlow: false
   ## WorldEdit, if true, blocks created by WorldEdit will not drop when breaked.
   WorldEdit: false
   ## OwnBlocks, if true, blocks placed by creative players will have a ownship system, only the owner or properly allowed people will be able to break it. The block still protected with NoDrop.

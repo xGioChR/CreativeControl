@@ -46,6 +46,7 @@ public class CreativeWorldNodes {
     public boolean misc_liquid           = false;
     public boolean misc_fire             = false;
     
+    public boolean block_water           = false;
     public boolean block_worledit        = false;
     public boolean block_ownblock        = false;
     public boolean block_nodrop          = true;

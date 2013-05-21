@@ -94,7 +94,8 @@ public class CreativeWorldConfig extends Configuration {
         if (x.block_ownblock && x.block_nodrop) {
             x.block_nodrop = false;
         }  
-        
+
+        x.block_water           = getBoolean(w, "BlockProtection.WaterFlow");
         x.block_explosion       = getBoolean(w, "BlockProtection.Explosions");
         x.block_creative        = getBoolean(w, "BlockProtection.CreativeOnly");
         x.block_pistons         = getBoolean(w, "BlockProtection.Pistons");
