@@ -641,12 +641,18 @@ public class CreativeCommands implements CommandExecutor {
     public boolean selCmd(CommandSender sender, Command cmd, String string, String[] args) {
         CreativeMessages         messages  = CreativeControl.getMessages();
         CreativeControl          plugin    = CreativeControl.getPlugin();
+        CreativeMainConfig       config    = CreativeControl.getMainConfig();
 
         if (!(sender instanceof Player)) {
             msg(sender, "&4This command can't be used here!");
             return false;
         }
-        
+
+        if (config.selection_usewe) {
+            msg(sender, "&4You must use the worldedit //expand command!");
+            return true;
+        }
+
         Player p = (Player) sender;
         if (args.length > 3) {
             if (args[1].equalsIgnoreCase("expand")) {
