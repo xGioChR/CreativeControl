@@ -314,14 +314,17 @@ public class CreativeControl extends CorePlugin {
             }
         }
 
-        p = pm.getPlugin("SurvivalGames");
-        if (p != null) {
-            if (p.isEnabled()) {
-                log("[TAG] SurvivalGames support enabled!");
-                pm.registerEvents(new SurvivalGames(), this);
+        try {
+            Class.forName("org.mcsg.survivalgames.api.PlayerJoinArenaEvent");
+            p = pm.getPlugin("SurvivalGames");
+            if (p != null) {
+                if (p.isEnabled()) {
+                    log("[TAG] SurvivalGames support enabled!");
+                    pm.registerEvents(new SurvivalGames(), this);
+                }
             }
-        }
-        
+        } catch (Exception ex) { }
+
         p = pm.getPlugin("Multiverse-Inventories");
         if (p != null) {
             if (p.isEnabled()) {
