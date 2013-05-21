@@ -250,6 +250,57 @@ public class CreativePlayerListener implements Listener {
         onPlayerInventory((Player) e.getPlayer());
     }
 
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onItemHeldEvent(PlayerItemHeldEvent e) {
+        if (e.isCancelled()) { return; }
+        
+        Player p = e.getPlayer();
+        
+        ItemStack item = p.getInventory().getItem(e.getNewSlot());
+        if (item == null) {
+            item = p.getInventory().getItem(e.getPreviousSlot());
+        }
+        
+        if (item == null) {
+            return;
+        }
+
+        CreativeItemStack stack = new CreativeItemStack(item.getTypeId(), item.getData().getData());
+
+        CreativeWorldNodes      config      = CreativeControl.getWorldNodes(p.getWorld());
+        CreativeControl         plugin      = CreativeControl.getPlugin();
+        CreativeBlackList       blacklist   = CreativeControl.getBlackList();
+        
+        if (config.world_exclude) {
+            return;
+        }
+        
+        if (!p.getGameMode().equals(GameMode.CREATIVE)) {
+            return;
+        }
+
+        if (!plugin.hasPerm(p, "BlackList.Inventory")) {
+            if (blacklist.isBlackListed(config.black_inventory, stack)) {
+                p.getInventory().setItem(e.getNewSlot(), new ItemStack(Material.AIR, 1));
+            } else
+            if (blacklist.isBlackListed(config.black_place, stack)) {
+                p.getInventory().setItem(e.getNewSlot(), new ItemStack(Material.AIR, 1));
+            } else
+            if (blacklist.isBlackListed(config.black_use, stack)) {
+                p.getInventory().setItem(e.getNewSlot(), new ItemStack(Material.AIR, 1));
+            }
+        }
+
+        if (!plugin.hasPerm(p, "Preventions.StackLimit")) {
+            if (config.prevent_stacklimit > 0 && config.prevent_stacklimit < item.getAmount()) {
+                item.setAmount(config.prevent_stacklimit);
+                p.getInventory().setItem(e.getNewSlot(), item);
+            }
+        }
+
+        p.updateInventory();
+    }
+    
     private void onPlayerInventory(Player p) {
         World world = p.getWorld();
 
