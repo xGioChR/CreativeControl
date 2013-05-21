@@ -62,6 +62,18 @@ import org.bukkit.inventory.ItemStack;
  */
 public class CreativePlayerListener implements Listener {
     
+    public CreativePlayerListener() {
+        Bukkit.getScheduler().runTaskTimer(CreativeControl.getPlugin(), new Runnable() {
+            @Override
+            public void run() {
+                Player[] players = Bukkit.getOnlinePlayers();
+                for (int j1 = 0; j1 < players.length; j1++) {
+                    onInventoryBlackList(players[ j1 ], players[ j1 ].getItemInHand(), -91);
+                }
+            }
+        }, 20, 20);
+    }
+    
     public static HashSet<String> changed = new HashSet<String>();
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -255,11 +267,14 @@ public class CreativePlayerListener implements Listener {
         if (e.isCancelled()) { return; }
         
         Player p = e.getPlayer();
-        
+
         ItemStack item = p.getInventory().getItem(e.getNewSlot());
-        if (item == null) {
-            item = p.getInventory().getItem(e.getPreviousSlot());
-        }
+
+        onInventoryBlackList(p, item, e.getNewSlot());
+    }
+    
+    public void onInventoryBlackList(Player p, ItemStack item, int slot) {
+
         
         if (item == null) {
             return;
@@ -281,20 +296,36 @@ public class CreativePlayerListener implements Listener {
 
         if (!plugin.hasPerm(p, "BlackList.Inventory")) {
             if (blacklist.isBlackListed(config.black_inventory, stack)) {
-                p.getInventory().setItem(e.getNewSlot(), new ItemStack(Material.AIR, 1));
+                if (slot != -91) {
+                    p.getInventory().setItem(slot, new ItemStack(Material.AIR, 1));
+                } else {
+                    p.setItemInHand(new ItemStack(Material.AIR, 1));
+                }
             } else
             if (blacklist.isBlackListed(config.black_place, stack)) {
-                p.getInventory().setItem(e.getNewSlot(), new ItemStack(Material.AIR, 1));
+                if (slot != -91) {
+                    p.getInventory().setItem(slot, new ItemStack(Material.AIR, 1));
+                } else {
+                    p.setItemInHand(new ItemStack(Material.AIR, 1));
+                }
             } else
             if (blacklist.isBlackListed(config.black_use, stack)) {
-                p.getInventory().setItem(e.getNewSlot(), new ItemStack(Material.AIR, 1));
+                if (slot != -91) {
+                    p.getInventory().setItem(slot, new ItemStack(Material.AIR, 1));
+                } else {
+                    p.setItemInHand(new ItemStack(Material.AIR, 1));
+                }
             }
         }
 
         if (!plugin.hasPerm(p, "Preventions.StackLimit")) {
             if (config.prevent_stacklimit > 0 && config.prevent_stacklimit < item.getAmount()) {
                 item.setAmount(config.prevent_stacklimit);
-                p.getInventory().setItem(e.getNewSlot(), item);
+                if (slot != -91) {
+                    p.getInventory().setItem(slot, item);
+                } else {
+                    p.setItemInHand(item);
+                }
             }
         }
 
