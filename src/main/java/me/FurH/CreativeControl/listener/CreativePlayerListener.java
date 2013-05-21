@@ -63,8 +63,8 @@ import org.bukkit.inventory.ItemStack;
 public class CreativePlayerListener implements Listener {
     
     public static HashSet<String> changed = new HashSet<String>();
-    
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerGameModeChange(PlayerGameModeChangeEvent e) {
         if (e.isCancelled()) { return; }
 

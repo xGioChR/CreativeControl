@@ -95,7 +95,7 @@
         <dependency>
             <groupId>me.FurH</groupId>
             <artifactId>FCoreLib</artifactId>
-            <version>0.3.9</version>
+            <version>0.3.22</version>
             <type>jar</type>
         </dependency>
     </dependencies>
@@ -115,6 +115,7 @@
         <plugins>
             <plugin>
                 <artifactId>maven-jar-plugin</artifactId>
+                <version>2.4</version>
                 <configuration>
                     <archive>
                         <manifest>
@@ -128,12 +129,21 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
+                <version>2.0</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
                         <goals>
                             <goal>shade</goal>
                         </goals>
+                        <configuration>
+                            <relocations>
+                                <relocation>
+                                    <pattern>me.FurH.Core</pattern>
+                                    <shadedPattern>me.FurH.${artifactId}.Core</shadedPattern>
+                                </relocation>
+                            </relocations>
+                        </configuration>
                     </execution>
                 </executions>
                 <configuration>
