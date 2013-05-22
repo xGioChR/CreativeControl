@@ -62,7 +62,7 @@ import org.bukkit.inventory.ItemStack;
  */
 public class CreativePlayerListener implements Listener {
     
-    public CreativePlayerListener() {
+    /*public CreativePlayerListener() {
         Bukkit.getScheduler().runTaskTimer(CreativeControl.getPlugin(), new Runnable() {
             @Override
             public void run() {
@@ -72,7 +72,7 @@ public class CreativePlayerListener implements Listener {
                 }
             }
         }, 20, 20);
-    }
+    }*/
     
     public static HashSet<String> changed = new HashSet<String>();
 

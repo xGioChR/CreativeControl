@@ -140,7 +140,7 @@
                             <relocations>
                                 <relocation>
                                     <pattern>me.FurH.Core</pattern>
-                                    <shadedPattern>me.FurH.${artifactId}.Core</shadedPattern>
+                                    <shadedPattern>me.FurH.${artifactId}.core</shadedPattern>
                                 </relocation>
                             </relocations>
                         </configuration>
