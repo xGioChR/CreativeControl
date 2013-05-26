@@ -68,6 +68,7 @@ public class CreativeMainConfig extends Configuration {
     public boolean         data_status       = true;
     public boolean         data_teleport     = false;
     public boolean         data_survival     = false;
+    public boolean         data_glitch       = false;
     
     public ItemStack       armor_helmet      = null;
     public ItemStack       armor_chest       = null;
@@ -120,7 +121,8 @@ public class CreativeMainConfig extends Configuration {
         data_status      = getBoolean("PlayerData.Status");
         data_teleport    = getBoolean("PlayerData.Teleport");
         data_survival    = getBoolean("PlayerData.SetSurvival");
-        
+        data_glitch      = getBoolean("PlayerData.FallGlitch");
+
         armor_helmet     = InvUtils.stringToItemStack(getString("CreativeArmor.Helmet"));
         armor_chest      = InvUtils.stringToItemStack(getString("CreativeArmor.Chestplate"));
         armor_leggs      = InvUtils.stringToItemStack(getString("CreativeArmor.Leggings"));
