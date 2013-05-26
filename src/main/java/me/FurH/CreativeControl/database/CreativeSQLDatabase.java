@@ -77,28 +77,7 @@ public final class CreativeSQLDatabase extends CoreSQLDatabase {
     public void unprotect(String world, int x, int y, int z) {
         queue("DELETE FROM `"+prefix+"blocks_"+world+"` WHERE x = '" + x + "' AND z = '" + z + "' AND y = '" + y + "';");
     }
-    
-    public long getMemoryUsage() {
-        
-        try {
-            PreparedStatement ps = getQuery("select sqlite3_user_memory();");
-            ResultSet rs = ps.getResultSet();
-            
-            
-            if (rs.next()) {
-                return rs.getLong(1);
-            }
-            
-        } catch (CoreException ex) {
-            ex.printStackTrace();
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
-        
-        return 0;
-        
-    }
-    
+
     public CreativeBlockData getFullData(Location block) {
         
         Communicator com = CreativeControl.plugin.getCommunicator();

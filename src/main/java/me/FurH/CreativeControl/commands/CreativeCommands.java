@@ -18,10 +18,7 @@ package me.FurH.CreativeControl.commands;
 
 import com.sk89q.worldedit.bukkit.selections.Selection;
 import java.util.HashSet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import me.FurH.Core.exceptions.CoreException;
-import me.FurH.Core.inventory.InvUtils;
 import me.FurH.Core.inventory.InventoryStack;
 import me.FurH.Core.util.Utils;
 import me.FurH.CreativeControl.CreativeControl;
@@ -857,7 +854,6 @@ public class CreativeCommands implements CommandExecutor {
         msg(sender, "&4Cache reads&8:&7 {0}", manager.getCache().getReads());
         msg(sender, "&4Queue writes&8:&7 {0}", manager.getCache().getWrites());
         msg(sender, "&4Cache size&8:&7 {0}/{1}", manager.getCache().size(), manager.getCache().getMaxSize());
-        msg(sender, "&4Database Memory Usage&8:&7 {0}", db.getMemoryUsage());
         return true;
     }
 
