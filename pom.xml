@@ -17,7 +17,7 @@
     <repositories>
         <repository>
             <id>releases</id>
-            <url>http://repository-furh.forge.cloudbees.com/release/</url>
+            <url>https://dl.dropboxusercontent.com/u/55730138/sonatype-work/releases</url>
         </repository>
         <repository>
             <id>bukkit-repo</id>
@@ -97,6 +97,12 @@
             <artifactId>FCoreLib</artifactId>
             <version>0.3.22</version>
             <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>net.coreprotect</groupId>
+            <artifactId>CoreProtect</artifactId>
+            <version>2.07</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
     <build>
