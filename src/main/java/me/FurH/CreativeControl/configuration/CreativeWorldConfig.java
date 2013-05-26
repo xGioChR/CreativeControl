@@ -41,6 +41,7 @@ public class CreativeWorldConfig extends Configuration {
     }
 
     public CreativeWorldNodes get(World w) {
+
         CreativeMainConfig   main   = CreativeControl.getMainConfig();
         if (main.config_single) {
             return nodes;
@@ -134,5 +135,7 @@ public class CreativeWorldConfig extends Configuration {
         } else {
             nodes = x;
         }
+        
+        updateConfig();
     }
 }

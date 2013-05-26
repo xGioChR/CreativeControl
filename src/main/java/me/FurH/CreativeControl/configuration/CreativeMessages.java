@@ -91,5 +91,6 @@ public class CreativeMessages extends Configuration {
         selection_first                   = getMessage("Selection.first_point");
         selection_second                  = getMessage("Selection.second_point");
 
+        updateConfig();
     }
 }

@@ -80,6 +80,7 @@ public class CreativeMainConfig extends Configuration {
     public boolean         com_debugstack    = true;
 
     public void load() {
+        
         database_type    = getString("Database.Type");
         database_host    = getString("Database.host");
         database_port    = getString("Database.port");
@@ -131,5 +132,7 @@ public class CreativeMainConfig extends Configuration {
         com_quiet        = getBoolean("Communicator.Quiet");
         com_debugcons    = getBoolean("Debug.Console");
         com_debugstack   = getBoolean("Debug.Stack");
+        
+        updateConfig();
     }
 }
