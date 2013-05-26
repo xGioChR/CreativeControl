@@ -13,7 +13,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package me.FurH.CreativeControl.integration.worldedit;
 
 import com.sk89q.worldedit.EditSession;
@@ -31,10 +30,13 @@ import me.FurH.CreativeControl.configuration.CreativeWorldNodes;
 import me.FurH.CreativeControl.manager.CreativeBlockManager;
 import me.botsko.prism.Prism;
 import me.botsko.prism.actionlibs.ActionFactory;
+import net.coreprotect.CoreProtectAPI;
+import net.coreprotect.Functions;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
 
@@ -67,7 +69,7 @@ public class CreativeEditSession extends EditSession {
 
         CreativeWorldNodes config = CreativeControl.getWorldNodes(w);
         CreativeBlockManager manager = CreativeControl.getManager();
-        
+
         int oldType = w.getBlockTypeIdAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
         byte oldData = w.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()).getData();
 
@@ -82,10 +84,11 @@ public class CreativeEditSession extends EditSession {
 
             logBlock(pt, block, oldType, oldData, oldState);
             prism(pt, block, oldType, oldData);
+            coreprotect(pt, block, oldType, oldData);
 
             if (!config.world_exclude && config.block_worledit) {
                 int newType = block.getType();
-                
+
                 if (newType == 0 || oldType != 0) {
                     manager.unprotect(w, pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), newType);
                 }
@@ -98,30 +101,55 @@ public class CreativeEditSession extends EditSession {
 
         return success;
     }
-    
+
+    public void coreprotect(Vector vector, BaseBlock base_block, int old_type, int old_data) {
+        CoreProtectAPI protect = CreativeControl.getCoreProtect();
+        if (protect != null) {
+
+            Block block = ((BukkitWorld) this.player.getWorld()).getWorld().getBlockAt(vector.getBlockX(), vector.getBlockY(), vector.getBlockZ());
+
+            if ((!(this.player.getWorld() instanceof BukkitWorld)) || (Functions.checkConfig(block.getWorld(), "worldedit") == 0)) {
+                return;
+            }
+
+            int new_type = block.getTypeId();
+            int new_data = block.getData();
+
+            if ((old_type != new_type) || (old_data != new_data)) {
+                if ((old_type == 0) && (new_type > 0)) {
+                    protect.logPlacement(player.getName(), block.getLocation(), block.getTypeId(), block.getData());
+                } else if ((old_type > 0) && (new_type > 0)) {
+                    protect.logPlacement(player.getName(), block.getLocation(), block.getTypeId(), block.getData());
+                } else if ((old_type > 0) && (new_type == 0)) {
+                    protect.logRemoval(player.getName(), block.getLocation(), block.getTypeId(), block.getData());
+                }
+            }
+        }
+    }
+
     public void prism(Vector pt, BaseBlock block, int typeBefore, byte dataBefore) {
         if (CreativeControl.getPrism()) {
-            
+
             if (!Prism.config.getBoolean("prism.tracking.world-edit")) {
                 return;
             }
-            
+
             Location loc = new Location(Bukkit.getWorld(player.getWorld().getName()), pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
             Prism.actionsRecorder.addToQueue(ActionFactory.create("world-edit", loc, typeBefore, dataBefore, loc.getBlock().getTypeId(), loc.getBlock().getData(), player.getName()));
         }
     }
-    
+
     public void logBlock(Vector pt, BaseBlock block, int typeBefore, byte dataBefore, BlockState stateBefore) {
         Consumer consumer = CreativeControl.getLogBlock();
-        
+
         if (consumer != null) {
-            
+
             if (!(Config.isLogging(player.getWorld().getName(), Logging.WORLDEDIT))) {
                 return;
             }
-            
+
             Location location = new Location(((BukkitWorld) player.getWorld()).getWorld(), pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
-            
+
             if (Config.isLogging(location.getWorld().getName(), Logging.SIGNTEXT) && (typeBefore == Material.SIGN_POST.getId() || typeBefore == Material.SIGN.getId())) {
                 consumer.queueSignBreak(player.getName(), (Sign) stateBefore);
                 if (block.getType() != Material.AIR.getId()) {
