@@ -31,6 +31,7 @@ import me.FurH.CreativeControl.manager.CreativeBlockManager;
 import me.FurH.CreativeControl.stack.CreativeItemStack;
 import me.botsko.prism.Prism;
 import me.botsko.prism.actionlibs.ActionFactory;
+import net.coreprotect.CoreProtectAPI;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -462,6 +463,11 @@ public class CreativeBlockListener implements Listener {
         
         if (CreativeControl.getPrism()) {
             Prism.actionsRecorder.addToQueue(ActionFactory.create("block-break", b, p.getName()));
+        }
+        
+        CoreProtectAPI protect = CreativeControl.getCoreProtect();
+        if (protect != null) {
+            protect.logRemoval(p.getName(), b.getLocation(), b.getTypeId(), b.getData());
         }
     }
 

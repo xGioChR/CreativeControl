@@ -51,6 +51,8 @@ import me.FurH.CreativeControl.permissions.CreativePermissions;
 import me.FurH.CreativeControl.region.CreativeRegion;
 import me.FurH.CreativeControl.region.CreativeRegionManager;
 import me.FurH.CreativeControl.selection.CreativeBlocksSelection;
+import net.coreprotect.CoreProtect;
+import net.coreprotect.CoreProtectAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -86,6 +88,7 @@ public class CreativeControl extends CorePlugin {
     private static Consumer lbconsumer = null;
     private static CreativeWorldConfig worldconfig;
     private static boolean prismEnabled;
+    private static CoreProtectAPI coreprotect;
     private static CreativeBlackList blacklist;
     
     private static CreativePermissions permissions;
@@ -172,9 +175,8 @@ public class CreativeControl extends CorePlugin {
         CommandExecutor cc = new CreativeCommands();
         getCommand("creativecontrol").setExecutor(cc);
 
-        setupLogBlock();
         setupWorldEdit();
-        setupPrism();
+        setupLoggers();
         
         permissions.setup();
 
@@ -471,23 +473,32 @@ public class CreativeControl extends CorePlugin {
         return lbconsumer; 
     }
 
+    public static CoreProtectAPI getCoreProtect() {
+        return coreprotect;
+    }
+    
     public static boolean getPrism() {
         return prismEnabled;
     }
     
-    public void setupLogBlock() {
+    public void setupLoggers() {
+        
         Plugin logblock = Bukkit.getPluginManager().getPlugin("LogBlock");
         if (logblock != null) {
             log("[TAG] LogBlock hooked as logging plugin");
             lbconsumer = ((LogBlock)logblock).getConsumer();
         }
-    }
-    
-    public void setupPrism() {
+
         Plugin prism = Bukkit.getPluginManager().getPlugin("Prism");
         if (prism != null) {
             log("[TAG] Prism hooked as logging plugin");
             prismEnabled = true;
+        }
+        
+        Plugin corep = Bukkit.getPluginManager().getPlugin("CoreProtect");
+        if (corep != null) {
+            log("[TAG] CoreProtect hooked as logging plugin");            
+            coreprotect = ((CoreProtect)corep).getAPI();
         }
     }
 
