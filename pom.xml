@@ -121,7 +121,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathLayoutType>custom</classpathLayoutType>
-                            <customClasspathLayout>../lib/h2.jar</customClasspathLayout>
+                            <customClasspathLayout>../lib/h2.jar ../lib/FCoreLib.jar</customClasspathLayout>
                         </manifest>
                     </archive>
                 </configuration>
