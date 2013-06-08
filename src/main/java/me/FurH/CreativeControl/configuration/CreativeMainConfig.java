@@ -117,7 +117,7 @@ public class CreativeMainConfig extends Configuration {
         
         events_move      = getBoolean("Events.PlayerMove");
         events_misc      = getBoolean("Events.MiscProtection");
-                
+
         data_inventory   = getBoolean("PlayerData.Inventory");
         data_status      = getBoolean("PlayerData.Status");
         data_teleport    = getBoolean("PlayerData.Teleport");

@@ -296,7 +296,10 @@ public class CreativeEntityListener implements Listener {
             }
             
             if (((e.getDamager() instanceof Player)) && ((e.getEntity() instanceof Player))) { //Player versus Player
+                
                 Player attacker = (Player)e.getDamager();
+                Player defender = (Player)e.getEntity();
+                
                 if (config.prevent_pvp) {
                     if (attacker.getGameMode().equals(GameMode.CREATIVE)) {
                         if (!plugin.hasPerm(attacker, "Preventions.PvP")) {
@@ -305,6 +308,8 @@ public class CreativeEntityListener implements Listener {
                         }
                     }
                 }
+
+                if (!e.isCancelled()) { removeFlyAndGameMode(attacker, defender); }
             } else 
             if (((e.getDamager() instanceof Player)) && ((e.getEntity() instanceof Creature))) { //Player versus Creature
                 Player attacker = (Player)e.getDamager();
@@ -321,6 +326,7 @@ public class CreativeEntityListener implements Listener {
                 Projectile projectile = (Projectile)e.getDamager();
                 if (((projectile.getShooter() instanceof Player)) && ((e.getEntity() instanceof Player))) { //Player versus Player with projectiles
                     Player attacker = (Player)projectile.getShooter();
+                    
                     if (config.prevent_pvp) {
                         if (attacker.getGameMode().equals(GameMode.CREATIVE)) {
                             if (!plugin.hasPerm(attacker, "Preventions.PvP")) {
@@ -329,6 +335,8 @@ public class CreativeEntityListener implements Listener {
                             }
                         }
                     }
+                    
+                    if (!e.isCancelled()) { removeFlyAndGameMode(attacker, (Player)e.getEntity()); }
                 } else 
                 if (((projectile.getShooter() instanceof Player)) && ((e.getEntity() instanceof Creature))) { //Player versus Creature with projectiles
                     Player attacker = (Player)projectile.getShooter();
@@ -341,6 +349,29 @@ public class CreativeEntityListener implements Listener {
                         }
                     }
                 }
+            }
+        }
+    }
+    
+    private void removeFlyAndGameMode(Player attacker, Player defender) {
+        
+        CreativeWorldNodes      config      = CreativeControl.getWorldNodes(attacker.getWorld());
+        
+        if (config.data_fly) {
+            if (attacker.getAllowFlight()) {
+                attacker.setAllowFlight(false);
+            }
+            if (defender.getAllowFlight()) {
+                defender.setAllowFlight(false);
+            }
+        }
+        
+        if (config.data_creative) {
+            if (attacker.getGameMode().equals(GameMode.CREATIVE)) {
+                attacker.setGameMode(GameMode.SURVIVAL);
+            }
+            if (defender.getGameMode().equals(GameMode.CREATIVE)) {
+                defender.setGameMode(GameMode.SURVIVAL);
             }
         }
     }

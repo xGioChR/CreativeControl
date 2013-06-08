@@ -109,3 +109,7 @@ Preventions:
   StackLimit: 1
   ## InventoryOpen, if true, creative players will be unable to open any inventory apart from the creative inventory.
   InventoryOpen: false
+  ## RemoveFlyOnPvp, if true, if the player hits someone with fly, he'll lost the fly mode
+  RemoveFlyOnPvP: false
+  ## NoCreativeOnPvP, if true, if the player hits someone with creative, he'll lost the creative mode
+  NoCreativeOnPvP: false
