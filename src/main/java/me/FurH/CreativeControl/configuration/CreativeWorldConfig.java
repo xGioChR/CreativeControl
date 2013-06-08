@@ -129,8 +129,8 @@ public class CreativeWorldConfig extends Configuration {
         x.prevent_limitvechile  = getInteger(w, "Preventions.VehicleLimit");
         x.prevent_stacklimit    = getInteger(w, "Preventions.StackLimit");
         x.prevent_open          = getBoolean(w, "Preventions.InventoryOpen");
-        x.data_fly              = getBoolean(w, "Preventions.RemoveFlyOnPvP");
-        x.data_creative         = getBoolean(w, "Preventions.NoCreativeOnPvP");
+        x.prevent_fly           = getBoolean(w, "Preventions.RemoveFlyOnPvP");
+        x.prevent_creative      = getBoolean(w, "Preventions.NoCreativeOnPvP");
         
         if (!main.config_single) {
             config_cache.put(w.getName(), x);

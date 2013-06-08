@@ -357,7 +357,7 @@ public class CreativeEntityListener implements Listener {
         
         CreativeWorldNodes      config      = CreativeControl.getWorldNodes(attacker.getWorld());
         
-        if (config.data_fly) {
+        if (config.prevent_fly) {
             if (attacker.getAllowFlight()) {
                 attacker.setAllowFlight(false);
             }
@@ -366,7 +366,7 @@ public class CreativeEntityListener implements Listener {
             }
         }
         
-        if (config.data_creative) {
+        if (config.prevent_creative) {
             if (attacker.getGameMode().equals(GameMode.CREATIVE)) {
                 attacker.setGameMode(GameMode.SURVIVAL);
             }

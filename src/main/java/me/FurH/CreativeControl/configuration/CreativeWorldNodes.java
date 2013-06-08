@@ -82,6 +82,6 @@ public class CreativeWorldNodes {
     public int prevent_limitvechile      = -1;
     public int prevent_stacklimit        = 1;
     public boolean prevent_open          = false;
-    public boolean data_fly              = false;
-    public boolean data_creative         = false;
+    public boolean prevent_fly           = false;
+    public boolean prevent_creative      = false;
 }
