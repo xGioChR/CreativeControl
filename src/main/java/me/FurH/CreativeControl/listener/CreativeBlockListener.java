@@ -154,23 +154,25 @@ public class CreativeBlockListener implements Listener {
             }
             
             /* piston fix */
-            BlockFace[] faces = new BlockFace[] { BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST };
-            for (BlockFace face : faces) {
-                Block relative = b.getRelative(face);
+            if (config.block_pistons) {
+                BlockFace[] faces = new BlockFace[] { BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST };
+                for (BlockFace face : faces) {
+                    Block relative = b.getRelative(face);
 
-                if (relative.getType() == Material.PISTON_BASE || relative.getType() == Material.PISTON_EXTENSION || relative.getType() == Material.PISTON_MOVING_PIECE || relative.getType() == Material.PISTON_STICKY_BASE) {
+                    if (relative.getType() == Material.PISTON_BASE || relative.getType() == Material.PISTON_EXTENSION || relative.getType() == Material.PISTON_MOVING_PIECE || relative.getType() == Material.PISTON_STICKY_BASE) {
 
-                    int data = b.getData() ^ 0x7;
+                        int data = b.getData() ^ 0x7;
 
-                    BlockFace head = relative.getFace(relative.getRelative
-                            ((data == 1 ? BlockFace.UP : (data == 2 ? BlockFace.EAST : (data == 3 ? BlockFace.WEST : (data == 4 ? BlockFace.NORTH : BlockFace.SOUTH))))));
+                        BlockFace head = relative.getFace(relative.getRelative
+                                ((data == 1 ? BlockFace.UP : (data == 2 ? BlockFace.EAST : (data == 3 ? BlockFace.WEST : (data == 4 ? BlockFace.NORTH : BlockFace.SOUTH))))));
 
-                    Block front = relative.getRelative(head.getOppositeFace());
-                    if (front.getLocation().equals(b.getLocation())) {
-                        e.setCancelled(true); return;
+                        Block front = relative.getRelative(head.getOppositeFace());
+                        if (front.getLocation().equals(b.getLocation())) {
+                            e.setCancelled(true); return;
+                        }
+
+                        break;
                     }
-                    
-                    break;
                 }
             }
             /* piston fix */
