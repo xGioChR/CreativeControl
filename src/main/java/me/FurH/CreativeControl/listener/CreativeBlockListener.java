@@ -37,6 +37,7 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -46,6 +47,7 @@ import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.material.MaterialData;
 import org.bukkit.material.PistonBaseMaterial;
 
@@ -195,10 +197,6 @@ public class CreativeBlockListener implements Listener {
                     }
                 }
             }
-            
-            if (config.block_physics && isPhysics(b)) {
-                b.setTypeIdAndData(b.getTypeId(), b.getData(), false);
-            }
 
             if (p.getGameMode().equals(GameMode.CREATIVE)) {
                 if (!plugin.hasPerm(p, "OwnBlock.DontSave")) {
@@ -281,17 +279,6 @@ public class CreativeBlockListener implements Listener {
                 }
                 
                 attached.addAll(BlockUtils.getAttachedBlock(b));
-            }
-            
-            if (config.block_physics) {
-                int tick = 256; // safe-guard
-
-                Block physics = b.getRelative(BlockFace.UP);
-                while (tick > 0 && isPhysics(physics)) {
-                    attached.add(physics);
-                    physics = physics.getRelative(BlockFace.UP);
-                    tick--; 
-                }
             }
 
             attached.add(b);
@@ -380,6 +367,31 @@ public class CreativeBlockListener implements Listener {
             Block moved = b.getRelative(direction, 2);
             CreativeBlockManager    manager    = CreativeControl.getManager();
             if (manager.isprotected(moved, true) != null) {
+                e.setCancelled(true);
+            }
+        }
+    }
+    
+    
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
+    public void onEntityChangeBlock(EntityChangeBlockEvent e) {
+        if (e.isCancelled()) { return; }
+
+        if (e.getEntity() instanceof FallingBlock) {
+
+            CreativeWorldNodes config = CreativeControl.getWorldNodes(e.getBlock().getWorld());
+           
+            if (config.world_exclude) {
+                return;
+            }
+            
+            if (!config.block_physics) {
+                return;
+            }
+            
+            CreativeBlockManager    manager    = CreativeControl.getManager();
+            
+            if (manager.isprotected(e.getBlock(), true) != null) {
                 e.setCancelled(true);
             }
         }
