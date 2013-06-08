@@ -140,7 +140,10 @@ public class CreativeControl extends CorePlugin {
         permissions = new CreativePermissions();
 
         database = new CreativeSQLDatabase(this, mainconfig.database_prefix, mainconfig.database_type, mainconfig.database_host, mainconfig.database_port, mainconfig.database_table, mainconfig.database_user, mainconfig.database_pass);
+
         database.setupQueue(mainconfig.queue_speed, mainconfig.queue_threadds);
+        database.setAllowMainThread(true);
+        database.setAutoCommit(false);
         
         try {
             database.connect();
@@ -149,6 +152,12 @@ public class CreativeControl extends CorePlugin {
         }
 
         database.load();
+        
+        try {
+            database.commit();
+        } catch (CoreException ex) {
+            ex.printStackTrace();
+        }
 
         log("[TAG] Registring Events...");
         PluginManager pm = getServer().getPluginManager();
@@ -281,7 +290,7 @@ public class CreativeControl extends CorePlugin {
 
             database.load();
 
-            msg(sender, "[TAG] Database Type: &4{0}&7 Defined.", database.type);
+            msg(sender, "[TAG] Database Type: &4{0}&7 Defined.", database.getDatabaseEngine());
         }
         
         PluginManager pm = getServer().getPluginManager();
@@ -527,7 +536,7 @@ public class CreativeControl extends CorePlugin {
             CreativeMetrics metrics = new CreativeMetrics(this);
 
             Graph dbType = metrics.createGraph("Database Type");
-            dbType.addPlotter(new CreativeMetrics.Plotter(database.type.toString()) {
+            dbType.addPlotter(new CreativeMetrics.Plotter(database.getDatabaseEngine().toString()) {
                 @Override
                 public int getValue() {
                     return 1;

@@ -43,11 +43,14 @@ import org.bukkit.entity.Player;
  * @author FurmigaHumana
  */
 public final class CreativeSQLDatabase extends CoreSQLDatabase {
+    
     private static CoreSafeCache<String, Integer> owners = new CoreSafeCache<String, Integer>();
+    public String prefix; // shame on me :D
 
     public CreativeSQLDatabase(CorePlugin plugin, String prefix, String engine, String database_host, String database_port, String database_table, String database_user, String database_pass) {
         super(plugin, prefix, engine, database_host, database_port, database_table, database_user, database_pass);
-        this.version = 3;
+        super.setDatabaseVersion(3);
+        this.prefix = prefix;
     }
 
     public void protect(Player player, Block block) {
@@ -171,7 +174,7 @@ public final class CreativeSQLDatabase extends CoreSQLDatabase {
     }
     
     public void load() {
-        load(connection, type);
+        load(this.getCoreThread().getConnection(), this.getDatabaseEngine());
     }
 
     public void load(Connection connection, type type) {
@@ -234,11 +237,11 @@ public final class CreativeSQLDatabase extends CoreSQLDatabase {
         Communicator com = CreativeControl.getPlugin().getCommunicator();
 
         if (connection == null) {
-            connection = this.connection;
+            connection = this.getCoreThread().getConnection();
         }
         
         if (type == null) {
-            type = this.type;
+            type = this.getDatabaseEngine();
         }
 
         try {
@@ -327,7 +330,7 @@ public final class CreativeSQLDatabase extends CoreSQLDatabase {
             try {
                 execute("INSERT INTO `"+prefix+"players` (player) VALUES ('"+player+"');");
             } catch (CoreException ex) {
-                com.error(ex, "Failed to insert "+player+"'s id");
+                com.error(ex, "Failed to insert "+player+"'s id"); return -1;
             }
 
             return getPlayerId(player);

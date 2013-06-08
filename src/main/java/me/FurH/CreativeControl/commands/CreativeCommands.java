@@ -848,7 +848,7 @@ public class CreativeCommands implements CommandExecutor {
         msg(sender, "&4Database writes&8:&7 {0}", db.getWrites());
         msg(sender, "&4Database size&8:&7 {0} / {1}", Utils.getFormatedBytes(manager.getTablesSize()), Utils.getFormatedBytes(manager.getTablesFree()));
         try {
-            msg(sender, "&4Database type&8:&7 {0}, &4ping&8:&7 {1} ms", db.type, db.ping() > 0 ? db.ping() : "<1");
+            msg(sender, "&4Database type&8:&7 {0}, &4ping&8:&7 {1} ms", db.getDatabaseEngine(), db.ping() > 0 ? db.ping() : "<1");
         } catch (CoreException ex) { }
         msg(sender, "&4Blocks protected&8:&7 {0}", manager.getTotal());
         msg(sender, "&4Cache reads&8:&7 {0}", manager.getCache().getReads());

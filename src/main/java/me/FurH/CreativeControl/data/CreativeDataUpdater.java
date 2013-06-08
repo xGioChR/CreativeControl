@@ -113,17 +113,11 @@ public class CreativeDataUpdater {
                 while (rs.next()) {
                     
                     int id = rs.getInt("player");
-                    
-                    PreparedStatement ps2 = db.prepare("UPDATE `"+table+"` SET armor = ?, inventory = ? WHERE player = ?;");
 
                     ItemStack[] armor = toArrayStack(rs.getString("armor"));
                     ItemStack[] contents = toArrayStack(rs.getString("inventory"));
                     
-                    ps2.setString(1, InventoryStack.getStringFromArray(armor));
-                    ps2.setString(2, InventoryStack.getStringFromArray(contents));
-                    ps2.setInt(3, id);
-                    
-                    ps2.execute();
+                    db.execute("UPDATE `"+table+"` SET armor = '"+InventoryStack.getStringFromArray(armor)+"', inventory = '"+InventoryStack.getStringFromArray(contents)+"' WHERE player = '"+id+"';");
 
                     table_done++;
                     row++;

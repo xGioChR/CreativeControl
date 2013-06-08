@@ -29,7 +29,7 @@ Permissions:
 
 Queue:
   ## Threads, the number of threads to be use to process the database
-  Threads: 1
+  Threads: 2
   ## Speed, the speed of the queue, if your server is taking too long to shutdown, increase this option.
   Speed: 0.1
 

@@ -166,7 +166,7 @@ public class CreativeSQLUpdater implements Runnable {
                     String table1 = db.prefix+"blocks_"+location[0];
                     if (!tables.contains(table1)) {
                         if (!db.hasTable(table1)) {
-                            db.load(db.connection, location[0], db.type);
+                            db.load(db.getCoreThread().getConnection(), location[0], db.getDatabaseEngine());
                             db.commit();
                         }
                         tables.add(table1);
