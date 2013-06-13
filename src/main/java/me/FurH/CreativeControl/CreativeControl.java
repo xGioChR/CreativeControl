@@ -236,16 +236,40 @@ public class CreativeControl extends CorePlugin {
         friends.clear();
         limits.clear();
         
+        messages.unload();
+        mainconfig.unload();
+        worldconfig.unload();
+
+        worldconfig.clear();
+        
+        plugin = null;
+        database = null;
+        selector = null;
+        regioner = null;
+        manager = null;
+        data = null;
+        friends = null;
+        mainconfig = null;
+        messages = null;
+        lbconsumer = null;
+        worldconfig = null;
+        prismEnabled = false;
+        coreprotect = null;
+        blacklist = null;
+        permissions = null;
+        updater = null;
+        
         getServer().getScheduler().cancelTasks(this);
         
         logDisable();
     }
     
     public void reload(CommandSender sender) {
+
         String ssql  = mainconfig.database_type;
         boolean move = mainconfig.events_move;
         boolean misc = mainconfig.events_misc;
-        
+
         clear();
         right.clear();
         left.clear();
@@ -268,6 +292,7 @@ public class CreativeControl extends CorePlugin {
         } else {
             worldconfig.load(getServer().getWorlds().get(0));
         }
+        
         loadIntegrations();
         
         String  newssql = mainconfig.database_type;
