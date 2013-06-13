@@ -428,6 +428,26 @@ public class CreativeBlockListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onBlockFromTo(BlockFromToEvent e) {
         if (e.isCancelled()) { return; }
+
+        CreativeBlockManager    manager     = CreativeControl.getManager();
+        Block block = e.getBlock();
+        CreativeWorldNodes config = CreativeControl.getWorldNodes(e.getBlock().getWorld());
+
+        if (config.world_exclude) {
+            return;
+        }
+        
+        if (e.getBlock().getType() == Material.DRAGON_EGG) {
+            
+            if (config.block_nodrop || config.block_ownblock) {
+                CreativeBlockData data = manager.isprotected(block, false);
+                if (data != null) {
+                    e.setCancelled(true);
+                }
+            }
+            
+            return;
+        }
         
         if (e.getBlock().getType() != Material.WATER && e.getBlock().getType() != Material.STATIONARY_WATER) {
             return;
@@ -437,17 +457,9 @@ public class CreativeBlockListener implements Listener {
             return;
         }
         
-        CreativeWorldNodes config = CreativeControl.getWorldNodes(e.getBlock().getWorld());
-        if (config.world_exclude) {
-            return;
-        }
-        
         if (!config.block_water) {
             return;
         }
-        
-        CreativeBlockManager    manager     = CreativeControl.getManager();
-        Block block = e.getBlock();
 
         if (config.block_nodrop) {
             CreativeBlockData data = manager.isprotected(block, false);
