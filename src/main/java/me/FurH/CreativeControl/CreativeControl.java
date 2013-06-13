@@ -227,7 +227,8 @@ public class CreativeControl extends CorePlugin {
         }
 
         HandlerList.unregisterAll(this);
-
+        getServer().getScheduler().cancelTasks(this);
+        
         clear();
         right.clear();
         left.clear();
@@ -259,7 +260,6 @@ public class CreativeControl extends CorePlugin {
         permissions = null;
         updater = null;
         
-        getServer().getScheduler().cancelTasks(this);
         
         logDisable();
     }
