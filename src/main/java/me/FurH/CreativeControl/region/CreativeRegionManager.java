@@ -42,6 +42,10 @@ public class CreativeRegionManager {
 
     public CreativeRegion getRegion(Location loc) {
 
+        if (loc == null) {
+            return null;
+        }
+        
         for (CreativeRegion region : areas) {
             
             if (region == null) {
