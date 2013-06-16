@@ -568,7 +568,7 @@ public class CreativePlayerListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onPlayerChangedWorld(PlayerChangedWorldEvent e) {
-        if (!CreativeControl.hasPermS(e.getPlayer(), "World.Keep")) {
+        if (!CreativeControl.hasPermS(e.getPlayer(), "World.Keep") && !CreativeControl.hasPermS(e.getPlayer(), "World.Keep."+e.getPlayer().getWorld().getName())) {
             onPlayerWorldChange(e.getPlayer(), true);
         }
     }
@@ -583,7 +583,7 @@ public class CreativePlayerListener implements Listener {
         if (config.world_changegm) {
             if (!p.getGameMode().equals(config.world_gamemode)) {
                 
-                if (plugin.hasPerm(p, "World.Keep") && !blocks) {
+                if ((plugin.hasPerm(p, "World.Keep") || plugin.hasPerm(p, "World.Keep."+p.getWorld().getName())) && !blocks) {
                     return false;
                 }
 
