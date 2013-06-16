@@ -364,24 +364,26 @@ public class CreativeControl extends CorePlugin {
         p = pm.getPlugin("Multiverse-Inventories");
         if (p != null) {
             if (p.isEnabled()) {
-                if (mainconfig.config_conflict) {
-                    mainconfig.data_inventory = false;
-                    mainconfig.data_status = false;
-                    int anoy = 5;
-                    while (anoy > 0) {
+                if (mainconfig.data_inventory || mainconfig.data_status) {
+                    if (mainconfig.config_conflict) {
+                        mainconfig.data_inventory = false;
+                        mainconfig.data_status = false;
+                        int anoy = 5;
+                        while (anoy > 0) {
+                            log("[TAG] ***************************************************");
+                            log("[TAG] Multiverse-Inventories Detected!!");
+                            log("[TAG] Per-GameMode inventories will be disabled by this plugin");
+                            log("[TAG] Use the multiverse inventories manager!");
+                            log("[TAG] ***************************************************");   
+                            anoy--;
+                        }
+                    } else {
                         log("[TAG] ***************************************************");
                         log("[TAG] Multiverse-Inventories Detected!!");
-                        log("[TAG] Per-GameMode inventories will be disabled by this plugin");
+                        log("[TAG] Per-GameMode inventories may be buggy!");
                         log("[TAG] Use the multiverse inventories manager!");
                         log("[TAG] ***************************************************");   
-                        anoy--;
                     }
-                } else {
-                    log("[TAG] ***************************************************");
-                    log("[TAG] Multiverse-Inventories Detected!!");
-                    log("[TAG] Per-GameMode inventories may be buggy!");
-                    log("[TAG] Use the multiverse inventories manager!");
-                    log("[TAG] ***************************************************");   
                 }
             }
         }
