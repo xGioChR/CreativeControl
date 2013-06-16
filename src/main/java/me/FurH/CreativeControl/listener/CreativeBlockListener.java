@@ -63,8 +63,11 @@ public class CreativeBlockListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockPlace(BlockPlaceEvent e) {
         if (e.isCancelled()) { return; }
-        if (e.getPlayer() == null) { return; }
-        
+
+        if (e.getPlayer() == null) {
+            return;
+        }
+
         Player p = e.getPlayer();
         Block b = e.getBlockPlaced();
         World world = p.getWorld();
@@ -238,8 +241,11 @@ public class CreativeBlockListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent e) {
         if (e.isCancelled()) { return; }
-        if (e.getPlayer() == null) { return; }
-        
+
+        if (e.getPlayer() == null) {
+            return;
+        }
+
         Player p = e.getPlayer();
         Block b = e.getBlock();
         World world = b.getWorld();
