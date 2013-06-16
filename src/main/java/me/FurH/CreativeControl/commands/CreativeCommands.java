@@ -829,7 +829,8 @@ public class CreativeCommands implements CommandExecutor {
         msg(sender, "&7Reloading...");
         plugin.reload(sender);
         msg(sender, "&7Reloaded successfuly!");
-        return false;
+        
+        return true;
     }
     
     public boolean statusCmd(CommandSender sender, Command cmd, String string, String[] args) {
