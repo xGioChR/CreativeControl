@@ -16,14 +16,12 @@ Database:
 
 ## This section will define which group the player will be added when he changes his gamemode.
 Permissions:
-  ## Enabled, if true, this system will be enabled, in way to use this, you must set it to true.
-  Enabled: false
-  ## Move, if true, the player will be removed from his original group and added to the creative group, by default the player is just added to the new group.
-  Move: false
-  ## MoveFrom, the group that will be affected when the player change his gamemode, the player will only be moved if he is a member of this group.
-  MoveFrom: MembersSurvival
-  ## MoveTo, the group that the player will be added when he change his gamemode to creative
-  MoveTo: MembersCreative
+  ## ChangeGroups, if true, creative players will be added to the 'CreativeGroup' 
+  ChangeGroups: false
+  ## CreativeGroup, the group that the player will be put on when changing to creative
+  CreativeGroup: MembersCreative
+  ## KeepCurrentGroup, if true, the player will not lose his current group, the creative group will just be added to its current groups.
+  KeepCurrentGroup: true
   ## OpHasPerm, if true, ops will have all the permissions and will not be checked by your permissions plugin
   OpHasPerm: false
 

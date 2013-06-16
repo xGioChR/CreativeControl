@@ -41,12 +41,11 @@ public class CreativeMainConfig extends Configuration {
     public String          database_prefix   = "crcr_";
 
     public boolean         perm_enabled      = false;
-    public boolean         perm_move         = false;
-    public String          perm_from         = "MemberSurvival";
-    public String          perm_to           = "MemberCreative";
+    public boolean         perm_keep         = false;
+    public String          perm_creative     = "CreativeGroup";
     public boolean         perm_ophas        = true;
 
-    public int             queue_threadds    = 8;
+    public int             queue_threadds    = 1;
     public double          queue_speed       = 0.1;
 
     public int             cache_capacity    = 15000;
@@ -88,11 +87,10 @@ public class CreativeMainConfig extends Configuration {
         database_pass    = getString("Database.pass");
         database_table   = getString("Database.database");
         database_prefix  = getString("Database.prefix");
-        
-        perm_enabled     = getBoolean("Permissions.Enabled");
-        perm_move        = getBoolean("Permissions.Move");
-        perm_from        = getString("Permissions.MoveFrom");
-        perm_to          = getString("Permissions.MoveTo");
+
+        perm_enabled     = getBoolean("Permissions.ChangeGroups");
+        perm_creative    = getString("Permissions.CreativeGroup");
+        perm_keep        = getBoolean("Permissions.KeepCurrentGroup");
         perm_ophas       = getBoolean("Permissions.OpHasPerm");
 
         queue_threadds   = getInteger("Queue.Threads");

@@ -17,6 +17,8 @@
 package me.FurH.CreativeControl.listener;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import me.FurH.Core.cache.CoreLRUCache;
@@ -30,6 +32,7 @@ import me.FurH.CreativeControl.configuration.CreativeMessages;
 import me.FurH.CreativeControl.configuration.CreativeWorldNodes;
 import me.FurH.CreativeControl.data.CreativePlayerData;
 import me.FurH.CreativeControl.data.friend.CreativePlayerFriends;
+import me.FurH.CreativeControl.database.CreativeSQLDatabase;
 import me.FurH.CreativeControl.manager.CreativeBlockData;
 import me.FurH.CreativeControl.manager.CreativeBlockManager;
 import me.FurH.CreativeControl.region.CreativeRegion;
@@ -92,6 +95,7 @@ public class CreativePlayerListener implements Listener {
         Communicator                com         = plugin.getCommunicator();
         CreativeMessages            messages    = CreativeControl.getMessages();
         CreativeWorldNodes          wconfig     = CreativeControl.getWorldConfig().get(player.getWorld());
+        CreativeSQLDatabase         db          = CreativeControl.getDb();
         
         if (config.data_glitch) {
             if (!newgm.equals(GameMode.CREATIVE)) {
@@ -111,28 +115,58 @@ public class CreativePlayerListener implements Listener {
             }
         }
 
-        if (config.perm_enabled) {
+        if (config.perm_enabled && !plugin.hasPerm(player, "Permission.Change")) {
             Permission permissions = CreativeControl.getPermissions2().getVault();
-            
+
             if (permissions != null) {
+                
                 if (newgm.equals(GameMode.CREATIVE)) {
-                    for (String group : permissions.getPlayerGroups(player)) {
-                        if (group.equalsIgnoreCase(config.perm_from)) {
-                            if (config.perm_move) {
-                                permissions.playerRemoveGroup(player, config.perm_from);
-                            }
-                            permissions.playerAddGroup(player, config.perm_to);
-                            break;
+
+                    if (config.perm_keep) {
+                        
+                        permissions.playerAddGroup(player, config.perm_creative);
+                        
+                    } else {
+                        
+                        String[] groups = permissions.getPlayerGroups(player);
+
+                        db.saveOldGroups(player, permissions.getPlayerGroups(player));
+
+                        for (String group : groups) {
+                            permissions.playerRemoveGroup(player, group);
                         }
+                        
+                        permissions.playerAddGroup(player, config.perm_creative);
                     }
+                    
                 } else {
-                    if (permissions.playerInGroup(player, config.perm_to)) {
-                        permissions.playerRemoveGroup(player, config.perm_to);
-                        if (config.perm_move) {
-                            permissions.playerAddGroup(player, config.perm_from);
+
+                    if (config.perm_keep) {
+
+                        permissions.playerRemoveGroup(player, config.perm_creative);
+
+                    } else {
+
+                        String[] current = permissions.getPlayerGroups(player);
+                        String[] groups = db.getOldGroup(player);
+
+                        Arrays.sort(groups, Collections.reverseOrder());
+
+                        if (groups != null) {
+
+                            for (String group : current) {
+                                permissions.playerRemoveGroup(player, group);
+                            }
+
+                            for (String old : groups) {
+                                permissions.playerAddGroup(player, old);
+                            }
+
                         }
                     }
                 }
+            } else {
+                com.log("The permissions function only works if Vault is installed!");
             }
         }
 

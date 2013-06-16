@@ -21,11 +21,15 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import me.FurH.Core.CorePlugin;
 import me.FurH.Core.cache.CoreSafeCache;
 import me.FurH.Core.database.CoreSQLDatabase;
 import me.FurH.Core.exceptions.CoreException;
+import me.FurH.Core.file.FileUtils;
 import me.FurH.Core.list.CollectionUtils;
 import me.FurH.Core.location.LocationUtils;
 import me.FurH.Core.util.Communicator;
@@ -51,6 +55,62 @@ public final class CreativeSQLDatabase extends CoreSQLDatabase {
         super(plugin, prefix, engine, database_host, database_port, database_table, database_user, database_pass);
         super.setDatabaseVersion(3);
         this.prefix = prefix;
+    }
+    
+    public String[] getOldGroup(Player player) {
+        String[] ret = null;
+        
+        Communicator com = CreativeControl.plugin.getCommunicator();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+        try {
+
+            ps = getQuery("SELECT groups FROM `"+prefix+"groups` WHERE player = '"+getPlayerId(player.getName()) + "' LIMIT 1;");
+            rs = ps.getResultSet();
+
+            if (rs.next()) {
+                ret = CollectionUtils.toStringList(rs.getString("groups"), ", ").toArray(new String[0]);
+            } else {
+                setOldGroups(player);
+            }
+
+        } catch (Exception ex) {
+            com.error(ex, "Failed to get old group data for the player: " + player.getName());
+        } finally {
+            FileUtils.closeQuietly(ps);
+            FileUtils.closeQuietly(rs);
+        }
+
+        return ret;
+    }
+    
+    public void saveOldGroups(Player player, String[] groups) {
+        Communicator com = CreativeControl.plugin.getCommunicator();
+
+        try {
+            execute("UPDATE `"+prefix+"groups` SET groups = '"+Arrays.toString(groups)+"' WHERE player = '"+getPlayerId(player.getName())+"';");
+        } catch (CoreException ex) {
+            com.error(ex, "Failed to save '"+player.getName()+"' groups data");
+        }
+        
+        try {
+            commit();
+        } catch (CoreException ex) { }
+    }
+    
+    private void setOldGroups(Player player) {
+        Communicator com = CreativeControl.plugin.getCommunicator();
+
+        try {
+            execute("INSERT INTO `"+prefix+"groups` (player, groups) VALUES ('"+getPlayerId(player.getName())+"', '');");
+        } catch (CoreException ex) {
+            com.error(ex, "Failed to save '"+player.getName()+"' groups data");
+        }
+
+        try {
+            commit();
+        } catch (CoreException ex) { }
     }
 
     public void protect(Player player, Block block) {
@@ -179,6 +239,13 @@ public final class CreativeSQLDatabase extends CoreSQLDatabase {
 
     public void load(Connection connection, type type) {
         Communicator com = CreativeControl.getPlugin().getCommunicator();
+        
+        try {
+            /* groups table */
+            createTable(connection, "CREATE TABLE IF NOT EXISTS `"+prefix+"groups` (player INT, groups VARCHAR(255));", type);
+        } catch (CoreException ex) {
+            com.error(ex, "Failed to create `"+prefix+"groups` table");
+        }
         
         try {
             /* player id table */
