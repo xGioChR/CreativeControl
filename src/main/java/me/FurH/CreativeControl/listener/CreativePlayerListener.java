@@ -568,7 +568,9 @@ public class CreativePlayerListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onPlayerChangedWorld(PlayerChangedWorldEvent e) {
-        onPlayerWorldChange(e.getPlayer(), true);
+        if (!CreativeControl.hasPermS(e.getPlayer(), "World.Keep")) {
+            onPlayerWorldChange(e.getPlayer(), true);
+        }
     }
 
     public static boolean onPlayerWorldChange(Player p, boolean blocks) {
