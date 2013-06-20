@@ -127,9 +127,8 @@ public class CreativeBlockManager {
         int each = (int) Math.floor(config.cache_precache / worlds);
 
         try {
-            List<World> worldsx = new ArrayList<World>();
-            worldsx.addAll(Bukkit.getWorlds());
 
+            List<World> worldsx = new ArrayList<World>(Bukkit.getWorlds());
             Collections.reverse(worldsx);
 
             for (World world : worldsx) {
@@ -184,8 +183,10 @@ public class CreativeBlockManager {
         Communicator com = CreativeControl.plugin.getCommunicator();
         
         int total = 0;
-        
-        for (World world : Bukkit.getWorlds()) {
+
+        List<World> worlds = new ArrayList<World>(Bukkit.getWorlds());
+
+        for (World world : worlds) {
             try {
                 total += db.getTableCount(db.prefix+"blocks_"+world.getName());
             } catch (CoreException ex) {

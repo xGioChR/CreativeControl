@@ -83,9 +83,12 @@ public class CreativeRegionManager {
         CreativeSQLDatabase db = CreativeControl.getDb();
 
         int total = 0;
+        
         PreparedStatement ps = null;
         ResultSet rs = null;
+        
         try {
+            
             ps = db.getQuery("SELECT * FROM `"+db.prefix+"regions`");
             rs = ps.getResultSet();
             

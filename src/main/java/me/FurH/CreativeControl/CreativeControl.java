@@ -189,9 +189,14 @@ public class CreativeControl extends CorePlugin {
         
         permissions.setup();
 
-        log("[TAG] Cached {0} protections", manager.preCache());
-        log("[TAG] Loaded {0} regions", regioner.loadRegions());
-        log("[TAG] {0} blocks protected", manager.getTotal());
+        Bukkit.getScheduler().runTaskAsynchronously(this, new Runnable() {
+            @Override
+            public void run() {
+                log("[TAG] Cached {0} protections", manager.preCache());
+                log("[TAG] Loaded {0} regions", regioner.loadRegions());
+                log("[TAG] {0} blocks protected", manager.getTotal());
+            }
+        });
 
         if (mainconfig.updater_enabled) {
             updater.setup();
