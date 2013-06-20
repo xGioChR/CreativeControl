@@ -103,6 +103,9 @@ public class CreativeControl extends CorePlugin {
 
     @Override
     public void onEnable() {
+        
+        long start = System.currentTimeMillis();
+        
         plugin = this;
         
         updater = new CoreUpdater(this, "http://dev.bukkit.org/server-mods/creativecontrol/");
@@ -219,11 +222,13 @@ public class CreativeControl extends CorePlugin {
             error(ex);
         }
         
-        logEnable();
+        logEnable(Math.abs(System.currentTimeMillis() - start));
     }
 
     @Override
     public void onDisable() {
+        
+        long start = System.currentTimeMillis();
 
         try {
             database.disconnect(false);
@@ -266,7 +271,7 @@ public class CreativeControl extends CorePlugin {
         updater = null;
         
         
-        logDisable();
+        logDisable(Math.abs(System.currentTimeMillis() - start));
     }
     
     public void reload(CommandSender sender) {
