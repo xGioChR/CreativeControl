@@ -56,6 +56,7 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.*;
+import org.bukkit.event.player.PlayerLoginEvent.Result;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 
@@ -64,7 +65,7 @@ import org.bukkit.inventory.ItemStack;
  * @author FurmigaHumana
  */
 public class CreativePlayerListener implements Listener {
-    
+        
     /*public CreativePlayerListener() {
         Bukkit.getScheduler().runTaskTimer(CreativeControl.getPlugin(), new Runnable() {
             @Override
@@ -78,6 +79,7 @@ public class CreativePlayerListener implements Listener {
     }*/
     
     public static HashSet<String> changed = new HashSet<String>();
+    private HashSet<String> dontdrop = new HashSet<String>();
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerGameModeChange(PlayerGameModeChangeEvent e) {
@@ -531,7 +533,23 @@ public class CreativePlayerListener implements Listener {
             }
         }
     }
-    
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = false)
+    public void onPlayerLogin(PlayerLoginEvent e) {
+        if (e.getResult() == Result.ALLOWED) {
+
+            final String player = e.getPlayer().getName();
+            dontdrop.add(player);
+
+            Bukkit.getScheduler().runTaskLater(CreativeControl.getPlugin(), new Runnable() {
+                @Override
+                public void run() {
+                    dontdrop.remove(player);
+                }
+            }, 20L);
+        }
+    }
+
     /*
      * Player Join Module
      */
@@ -650,6 +668,10 @@ public class CreativePlayerListener implements Listener {
                     
         if (config.world_exclude) {
             return;
+        }
+        
+        if (dontdrop.contains(p.getName())) {
+            e.setCancelled(true); return;
         }
         
         if (p.getGameMode().equals(GameMode.CREATIVE)) {
