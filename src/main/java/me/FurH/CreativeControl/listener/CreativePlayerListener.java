@@ -546,7 +546,7 @@ public class CreativePlayerListener implements Listener {
                 public void run() {
                     dontdrop.remove(player);
                 }
-            }, 20L);
+            }, 100L);
         }
     }
 
@@ -647,7 +647,14 @@ public class CreativePlayerListener implements Listener {
             }
         }
     }
-    
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = false)
+    public void onPlayerDropItemOhNoes(PlayerDropItemEvent e) {
+        if (dontdrop.contains(e.getPlayer().getName())) {
+            e.setCancelled(true);
+        }
+    }
+
     /*
      * Player Drops Item Module
      */
