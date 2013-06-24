@@ -65,19 +65,7 @@ import org.bukkit.inventory.ItemStack;
  * @author FurmigaHumana
  */
 public class CreativePlayerListener implements Listener {
-        
-    /*public CreativePlayerListener() {
-        Bukkit.getScheduler().runTaskTimer(CreativeControl.getPlugin(), new Runnable() {
-            @Override
-            public void run() {
-                Player[] players = Bukkit.getOnlinePlayers();
-                for (int j1 = 0; j1 < players.length; j1++) {
-                    onInventoryBlackList(players[ j1 ], players[ j1 ].getItemInHand(), -91);
-                }
-            }
-        }, 20, 20);
-    }*/
-    
+
     public static HashSet<String> changed = new HashSet<String>();
     private HashSet<String> dontdrop = new HashSet<String>();
 
