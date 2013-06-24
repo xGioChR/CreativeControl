@@ -1,6 +1,8 @@
 package me.FurH.CreativeControl.blacklist;
 
 import java.util.HashSet;
+import me.FurH.Core.util.Communicator;
+import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.stack.CreativeItemStack;
 
 /**
@@ -51,10 +53,12 @@ public class CreativeBlackList {
     }
     
     private boolean isClearInteger(String string) {
-
+        Communicator com = CreativeControl.getPlugin().getCommunicator();
+        
         try {
             Integer.parseInt(string.replaceAll("[^0-9-.]", ""));
         } catch (Exception ex) {
+            com.log("[TAG] &c"+string+" is not a valid item id!");
             return false;
         }
         
