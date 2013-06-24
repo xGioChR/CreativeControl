@@ -87,7 +87,7 @@ public class CreativePlayerListener implements Listener {
         CreativeSQLDatabase         db          = CreativeControl.getDb();
         
         if (config.data_glitch) {
-            if (!newgm.equals(GameMode.CREATIVE)) {
+            if (!newgm.equals(GameMode.CREATIVE) && !player.isOnGround()) {
                 changed.add(player.getName());
             } else {
                 changed.remove(player.getName());
