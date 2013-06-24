@@ -226,7 +226,7 @@ public final class CreativeSQLDatabase extends CoreSQLDatabase {
             }
         }
 
-        if (data != null && data.type != type) {
+        if (data != null && data.type != 73 && data.type != 74 && data.type != type) {
             data = null;
         }
         
