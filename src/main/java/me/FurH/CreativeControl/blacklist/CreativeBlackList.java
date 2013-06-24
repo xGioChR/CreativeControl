@@ -12,10 +12,10 @@ import me.FurH.CreativeControl.stack.CreativeItemStack;
  */
 public class CreativeBlackList {
 
-    private static CreativeItemStack fixed = new CreativeItemStack(-999, (byte) 1);
+    private static CreativeItemStack fixed = new CreativeItemStack(-59941, (byte) -1);
 
     public boolean isBlackListed(HashSet<CreativeItemStack> source, CreativeItemStack check) {
-
+        
         if (source.contains(fixed)) {
             return true;
         }
@@ -37,7 +37,7 @@ public class CreativeBlackList {
         HashSet<CreativeItemStack> ret = new HashSet<CreativeItemStack>();
         
         for (String string : source) {
-            
+
             if (!isClearInteger(string)) {
                 continue;
             }
