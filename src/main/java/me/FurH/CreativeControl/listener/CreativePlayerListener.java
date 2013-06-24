@@ -311,7 +311,6 @@ public class CreativePlayerListener implements Listener {
             }
         }
 
-        p.updateInventory();
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
