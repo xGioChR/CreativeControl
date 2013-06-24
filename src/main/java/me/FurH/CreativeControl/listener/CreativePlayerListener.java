@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import me.FurH.Core.cache.CoreLRUCache;
 import me.FurH.Core.location.LocationUtils;
 import me.FurH.Core.player.PlayerUtils;
@@ -51,10 +50,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.enchantment.EnchantItemEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryCreativeEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.inventory.InventoryType.SlotType;
 import org.bukkit.event.player.*;
 import org.bukkit.event.player.PlayerLoginEvent.Result;
 import org.bukkit.inventory.InventoryView;
@@ -277,132 +276,44 @@ public class CreativePlayerListener implements Listener {
             }
         }
     }
-    
-    /*
-     * Inventory Close Event
-     */
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
-    public void onInventoryClose(InventoryCloseEvent e) {
-        if (!(e.getPlayer() instanceof Player)) { return; }
 
-        onPlayerInventory((Player) e.getPlayer());
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void onItemHeldEvent(PlayerItemHeldEvent e) {
-        if (e.isCancelled()) { return; }
-        
-        Player p = e.getPlayer();
-
-        ItemStack item = p.getInventory().getItem(e.getNewSlot());
-
-        onInventoryBlackList(p, item, e.getNewSlot());
-    }
-    
-    public void onInventoryBlackList(Player p, ItemStack item, int slot) {
-
-        
-        if (item == null) {
-            return;
-        }
+    public void onInventoryBlackList(Player p, ItemStack item, InventoryCreativeEvent e) {
 
         CreativeItemStack stack = new CreativeItemStack(item.getTypeId(), item.getData().getData());
 
         CreativeWorldNodes      config      = CreativeControl.getWorldNodes(p.getWorld());
         CreativeControl         plugin      = CreativeControl.getPlugin();
         CreativeBlackList       blacklist   = CreativeControl.getBlackList();
-        
+
         if (config.world_exclude) {
             return;
         }
-        
+
         if (!p.getGameMode().equals(GameMode.CREATIVE)) {
             return;
         }
 
         if (!plugin.hasPerm(p, "BlackList.Inventory")) {
             if (blacklist.isBlackListed(config.black_inventory, stack)) {
-                if (slot != -91) {
-                    p.getInventory().setItem(slot, new ItemStack(Material.AIR, 1));
-                } else {
-                    p.setItemInHand(new ItemStack(Material.AIR, 1));
-                }
+                e.setCancelled(true); return;
             } else
             if (blacklist.isBlackListed(config.black_place, stack)) {
-                if (slot != -91) {
-                    p.getInventory().setItem(slot, new ItemStack(Material.AIR, 1));
-                } else {
-                    p.setItemInHand(new ItemStack(Material.AIR, 1));
-                }
+                e.setCancelled(true); return;
             } else
             if (blacklist.isBlackListed(config.black_use, stack)) {
-                if (slot != -91) {
-                    p.getInventory().setItem(slot, new ItemStack(Material.AIR, 1));
-                } else {
-                    p.setItemInHand(new ItemStack(Material.AIR, 1));
-                }
+                e.setCancelled(true); return;
             }
         }
 
         if (!plugin.hasPerm(p, "Preventions.StackLimit")) {
             if (config.prevent_stacklimit > 0 && config.prevent_stacklimit < item.getAmount()) {
                 item.setAmount(config.prevent_stacklimit);
-                if (slot != -91) {
-                    p.getInventory().setItem(slot, item);
-                } else {
-                    p.setItemInHand(item);
-                }
             }
         }
 
         p.updateInventory();
     }
-    
-    private void onPlayerInventory(Player p) {
-        World world = p.getWorld();
 
-        CreativeWorldNodes      config      = CreativeControl.getWorldNodes(world);
-        CreativeControl         plugin      = CreativeControl.getPlugin();
-        CreativeBlackList       blacklist   = CreativeControl.getBlackList();
-        
-        if (config.world_exclude) {
-            return;
-        }
-        
-        if (!p.getGameMode().equals(GameMode.CREATIVE)) {
-            return;
-        }
-        
-        int limitAmount = config.prevent_stacklimit;
-
-        boolean blackList = plugin.hasPerm(p, "BlackList.Inventory");
-        boolean stackLimit = plugin.hasPerm(p, "Preventions.StackLimit");
-
-        List<ItemStack> toRemove = new ArrayList<ItemStack>();
-        
-        for (ItemStack item : p.getInventory().getContents()) {
-            if (item != null) {
-
-                CreativeItemStack itemStack = new CreativeItemStack(item.getTypeId(), item.getData().getData());
-
-                if (blacklist.isBlackListed(config.black_inventory, itemStack) && !blackList) {
-                    toRemove.add(item);
-                }
-
-                if (limitAmount > 0 && item.getAmount() > limitAmount && !stackLimit) {
-                    item.setAmount(limitAmount);
-                }
-            }
-        }
-        
-        for (ItemStack stack : toRemove) {
-            p.getInventory().remove(stack);
-        }
-        
-        p.updateInventory();
-        toRemove.clear();
-    }
-    
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onInventoryOpen(InventoryOpenEvent e) {
         if (e.isCancelled()) { return; }
@@ -439,7 +350,7 @@ public class CreativePlayerListener implements Listener {
      * Inventory Click Module
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
-    public void onInventoryClick(InventoryClickEvent e) {
+    public void onInventoryClick(InventoryCreativeEvent e) {
         if (e.isCancelled()) { return; }
         
         if (!(e.getWhoClicked() instanceof Player)) {
@@ -457,18 +368,24 @@ public class CreativePlayerListener implements Listener {
         }
 
         if (p.getGameMode().equals(GameMode.CREATIVE)) {
-
+            
             if (config.prevent_invinteract) {
-                if (!plugin.hasPerm(p, "Preventions.InventoryInteract")) { int slot = e.getRawSlot();
-                    if (e.getInventory().getType() == InventoryType.PLAYER) {
-                        if (!((slot >= 36) && (slot <= 44))) {
-                            e.setCancelled(true);
+                if (e.getInventory().getType() == InventoryType.PLAYER) {
+                    if (e.getSlotType() != SlotType.QUICKBAR) {
+                        if (e.getSlotType() == SlotType.ARMOR) {
+                            if (!plugin.hasPerm(p, "Preventions.InventoryArmor")) {
+                                e.setCancelled(true); return;
+                            }
+                        } else if (!plugin.hasPerm(p, "Preventions.InventoryInteract")) {
+                            e.setCancelled(true); return;
                         }
-                    } else {
-                        e.setCancelled(true);
                     }
                 }
             }
+            
+            onInventoryBlackList(p, e.getCurrentItem(), e);
+            onInventoryBlackList(p, e.getCursor(), e);
+            
         }
     }
  
