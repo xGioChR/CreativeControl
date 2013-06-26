@@ -71,6 +71,11 @@ public class CreativeWorldListener implements Listener {
         }
 
         Player p = e.getPlayer();
+        
+        if (p == null) {
+            return;
+        }
+        
         if (!e.isFromBonemeal()) {
             return;
         }
