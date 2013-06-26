@@ -511,11 +511,9 @@ public class CreativeCommands implements CommandExecutor {
                 if (db.hasTable(db.prefix+"blocks_"+args[2])) {
                     msg(sender, "&4There is no world called {0}", args[2]);
                 } else {
-                    try {
-                        db.execute("DROP TABLE `"+db.prefix+"blocks_"+args[2]+"`;");
-                    } catch (CoreException ex) { }
+                    db.queue("DROP TABLE `"+db.prefix+"blocks_"+args[2]+"`;");
                 }
-                
+
                 manager.clear();
                 db.load();
 
@@ -532,9 +530,7 @@ public class CreativeCommands implements CommandExecutor {
                 }
 
                 for (World world : Bukkit.getWorlds()) {
-                    try {
-                        db.execute("DROP TABLE `"+db.prefix+"blocks_"+world.getName()+"`");
-                    } catch (CoreException ex) { }
+                    db.queue("DROP TABLE `"+db.prefix+"blocks_"+world.getName()+"`");
                 }
 
                 manager.clear();
