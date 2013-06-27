@@ -279,6 +279,10 @@ public class CreativePlayerListener implements Listener {
 
     public void onInventoryBlackList(Player p, ItemStack item, InventoryCreativeEvent e) {
 
+        if (p == null || item == null || e == null) {
+            return;
+        }
+        
         CreativeItemStack stack = new CreativeItemStack(item.getTypeId(), item.getData().getData());
 
         CreativeWorldNodes      config      = CreativeControl.getWorldNodes(p.getWorld());
