@@ -12,7 +12,7 @@ import me.FurH.CreativeControl.stack.CreativeItemStack;
  */
 public class CreativeBlackList {
 
-    private static CreativeItemStack fixed = new CreativeItemStack(-59941, (byte) -1);
+    private static CreativeItemStack fixed = new CreativeItemStack(-59941, -1);
 
     public boolean isBlackListed(HashSet<CreativeItemStack> source, CreativeItemStack check) {
         
@@ -43,10 +43,10 @@ public class CreativeBlackList {
             }
             
             if (!string.contains(":")) {
-                ret.add(new CreativeItemStack(Integer.parseInt(string), (byte) -1)); continue;
+                ret.add(new CreativeItemStack(Integer.parseInt(string), -1)); continue;
             }
             
-            ret.add(new CreativeItemStack(Integer.parseInt(string.split(":")[0]), Byte.parseByte(string.split(":")[1])));
+            ret.add(new CreativeItemStack(Integer.parseInt(string.split(":")[0]), Integer.parseInt(string.split(":")[1])));
         }
         
         return ret;

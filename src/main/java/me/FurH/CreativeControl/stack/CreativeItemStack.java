@@ -8,9 +8,9 @@ package me.FurH.CreativeControl.stack;
 public class CreativeItemStack {
 
     public int     type;
-    public byte    data;
-    
-    public CreativeItemStack(int type, byte data) {
+    public int     data;
+
+    public CreativeItemStack(int type, int data) {
         this.type = type;
         this.data = data;
     }
