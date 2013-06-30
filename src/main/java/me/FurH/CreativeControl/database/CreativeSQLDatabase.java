@@ -23,13 +23,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import me.FurH.Core.CorePlugin;
 import me.FurH.Core.cache.CoreSafeCache;
 import me.FurH.Core.database.CoreSQLDatabase;
 import me.FurH.Core.exceptions.CoreException;
-import me.FurH.Core.file.FileUtils;
 import me.FurH.Core.list.CollectionUtils;
 import me.FurH.Core.location.LocationUtils;
 import me.FurH.Core.util.Communicator;
@@ -49,7 +46,6 @@ import org.bukkit.entity.Player;
 public final class CreativeSQLDatabase extends CoreSQLDatabase {
     
     private static CoreSafeCache<String, Integer> owners = new CoreSafeCache<String, Integer>();
-    public String prefix; // shame on me :D
 
     public CreativeSQLDatabase(CorePlugin plugin, String prefix, String engine, String database_host, String database_port, String database_table, String database_user, String database_pass) {
         super(plugin, prefix, engine, database_host, database_port, database_table, database_user, database_pass);
@@ -78,8 +74,8 @@ public final class CreativeSQLDatabase extends CoreSQLDatabase {
         } catch (Exception ex) {
             com.error(ex, "Failed to get old group data for the player: " + player.getName());
         } finally {
-            FileUtils.closeQuietly(ps);
-            FileUtils.closeQuietly(rs);
+            closeQuietly(ps);
+            closeQuietly(rs);
         }
 
         return ret;
@@ -169,11 +165,7 @@ public final class CreativeSQLDatabase extends CoreSQLDatabase {
         } catch (CoreException ex) {
             com.error(ex, "Failed to get block from database");
         } finally {
-            if (rs != null) {
-                try {
-                    rs.close();
-                } catch (Exception ex) { }
-            }
+            closeQuietly(rs);
         }
         
         return data;
@@ -219,11 +211,7 @@ public final class CreativeSQLDatabase extends CoreSQLDatabase {
         } catch (CoreException ex) {
             com.error(ex, "Failed to get block from database");
         } finally {
-            if (rs != null) {
-                try {
-                    rs.close();
-                } catch (Exception ex) { }
-            }
+            closeQuietly(rs);
         }
 
         if (data != null && data.type != 73 && data.type != 74 && data.type != type) {
@@ -234,7 +222,7 @@ public final class CreativeSQLDatabase extends CoreSQLDatabase {
     }
     
     public void load() {
-        load(this.getCoreThread().getConnection(), this.getDatabaseEngine());
+        load(this.connection, this.getDatabaseEngine());
     }
 
     public void load(Connection connection, type type) {
@@ -304,7 +292,7 @@ public final class CreativeSQLDatabase extends CoreSQLDatabase {
         Communicator com = CreativeControl.getPlugin().getCommunicator();
 
         if (connection == null) {
-            connection = this.getCoreThread().getConnection();
+            connection = this.connection;
         }
         
         if (type == null) {
@@ -351,11 +339,7 @@ public final class CreativeSQLDatabase extends CoreSQLDatabase {
         } catch (CoreException ex) {
             com.error(ex, "Failed to get the player data from the database");
         } finally {
-            if (rs != null) {
-                try {
-                    rs.close();
-                } catch (SQLException ex) { }
-            }
+            closeQuietly(rs);
         }
 
         owners.put(ret, id);
@@ -385,11 +369,7 @@ public final class CreativeSQLDatabase extends CoreSQLDatabase {
         } catch (CoreException ex) {
             com.error(ex, "Failed to retrieve "+player+"'s id");
         } finally {
-            if (rs != null) {
-                try {
-                    rs.close();
-                } catch (SQLException ex) { }
-            }
+            closeQuietly(rs);
         }
         
         if (ret == -1) {
@@ -427,11 +407,7 @@ public final class CreativeSQLDatabase extends CoreSQLDatabase {
         } catch (CoreException ex) {
             com.error(ex, "Failed to get all players id");
         } finally {
-            if (rs != null) {
-                try {
-                    rs.close();
-                } catch (SQLException ex) { }
-            }
+            closeQuietly(rs);
         }
 
         return ret;

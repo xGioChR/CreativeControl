@@ -25,6 +25,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.UUID;
 import java.util.WeakHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import me.FurH.Core.CorePlugin;
 import me.FurH.Core.exceptions.CoreException;
 import me.FurH.Core.updater.CoreUpdater;
@@ -145,8 +147,14 @@ public class CreativeControl extends CorePlugin {
         database = new CreativeSQLDatabase(this, mainconfig.database_prefix, mainconfig.database_type, mainconfig.database_host, mainconfig.database_port, mainconfig.database_table, mainconfig.database_user, mainconfig.database_pass);
 
         database.setupQueue(mainconfig.queue_speed, mainconfig.queue_threadds);
+        
         database.setAllowMainThread(true);
-        database.setAutoCommit(false);
+        
+        try {
+            database.setAutoCommit(false);
+        } catch (CoreException ex) {
+            error(ex);
+        }
         
         try {
             database.connect();
