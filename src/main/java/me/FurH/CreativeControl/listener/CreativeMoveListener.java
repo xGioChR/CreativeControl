@@ -83,17 +83,23 @@ public class CreativeMoveListener implements Listener {
             }
             
         } else if (!p.getGameMode().equals(config.world_gamemode)) {
-            if (!plugin.hasPerm(p, "World.Keep")) {
-                
-                region = CreativeControl.getRegioner().getRegion(e.getFrom());
-                PlayerUtils.toSafeLocation(p);
-                
-                if (region != null) {
-                    com.msg(p, messages.region_farewell, region.gamemode.toString().toLowerCase());
-                }
-                
-                p.setGameMode(config.world_gamemode);
+            
+            if (plugin.hasPerm(p, "World.Keep")) {
+                return;
             }
+
+            if (plugin.hasPerm(p, "World.Keep."+e.getTo().getWorld().getName())) {
+                return;
+            }
+
+            region = CreativeControl.getRegioner().getRegion(e.getFrom());
+            PlayerUtils.toSafeLocation(p);
+
+            if (region != null) {
+                com.msg(p, messages.region_farewell, region.gamemode.toString().toLowerCase());
+            }
+
+            p.setGameMode(config.world_gamemode);
         }
     }
 }
