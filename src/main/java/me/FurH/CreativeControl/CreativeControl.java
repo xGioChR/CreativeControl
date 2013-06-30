@@ -25,8 +25,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.UUID;
 import java.util.WeakHashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import me.FurH.Core.CorePlugin;
 import me.FurH.Core.exceptions.CoreException;
 import me.FurH.Core.updater.CoreUpdater;
@@ -42,6 +40,7 @@ import me.FurH.CreativeControl.data.friend.CreativePlayerFriends;
 import me.FurH.CreativeControl.database.CreativeSQLDatabase;
 import me.FurH.CreativeControl.database.extra.CreativeSQLUpdater;
 import me.FurH.CreativeControl.integration.AuthMe;
+import me.FurH.CreativeControl.integration.CreativeHideInventory;
 import me.FurH.CreativeControl.integration.MobArena;
 import me.FurH.CreativeControl.integration.SurvivalGames;
 import me.FurH.CreativeControl.integration.worldedit.CreativeEditSessionFactory;
@@ -185,8 +184,9 @@ public class CreativeControl extends CorePlugin {
         if (mainconfig.events_misc) {
             pm.registerEvents(new CreativeMiscListener(), this);
         }
-        
-        if (pm.getPlugin("AuthMe") != null) {
+
+        if (mainconfig.data_hide && pm.getPlugin("AuthMe") != null) {
+            pm.registerEvents(new CreativeHideInventory(), this);
             pm.registerEvents(new AuthMe(), this);
         }
 
