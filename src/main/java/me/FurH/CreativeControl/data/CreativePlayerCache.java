@@ -25,7 +25,7 @@ import org.bukkit.inventory.ItemStack;
  */
 public class CreativePlayerCache {
     public ItemStack[] armor = new ItemStack[] { new ItemStack(Material.AIR), new ItemStack(Material.AIR), new ItemStack(Material.AIR), new ItemStack(Material.AIR) };
-    public int health = 20;
+    public double health = 20.0D;
     public int food = 20;
     public float ex = 0;
     public int id = -1;

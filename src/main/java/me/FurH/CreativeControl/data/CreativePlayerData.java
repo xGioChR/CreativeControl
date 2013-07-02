@@ -19,8 +19,6 @@ package me.FurH.CreativeControl.data;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import me.FurH.Core.cache.CoreSafeCache;
 import me.FurH.Core.exceptions.CoreException;
 import me.FurH.Core.inventory.InventoryStack;
@@ -254,7 +252,7 @@ public class CreativePlayerData {
                     cache = new CreativePlayerCache();
                     cache.id = rs.getInt("id");
                     cache.name = rs.getString("player");
-                    cache.health = rs.getInt("health");
+                    cache.health = rs.getDouble("health");
                     cache.food = rs.getInt("foodlevel");
                     cache.ex = rs.getShort("exhaustion");
                     cache.sat = rs.getShort("saturation");
@@ -294,7 +292,7 @@ public class CreativePlayerData {
                     cache = new CreativePlayerCache();
                     cache.id = rs.getInt("id");
                     cache.name = rs.getString("player");
-                    cache.health = rs.getInt("health");
+                    cache.health = rs.getDouble("health");
                     cache.food = rs.getInt("foodlevel");
                     cache.ex = rs.getShort("exhaustion");
                     cache.sat = rs.getShort("saturation");
@@ -363,7 +361,7 @@ public class CreativePlayerData {
         CreativeMainConfig    config   = CreativeControl.getMainConfig();
         if (config.data_status) {
 
-            int health = cache.health;
+            double health = cache.health;
             
             if (health <= 0) { health = 20; }
             if (health > 20) { health = 20; }
