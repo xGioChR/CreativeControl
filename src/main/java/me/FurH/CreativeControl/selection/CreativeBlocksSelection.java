@@ -26,11 +26,9 @@ import me.FurH.CreativeControl.configuration.CreativeMessages;
 import me.FurH.CreativeControl.configuration.CreativeWorldNodes;
 import me.FurH.CreativeControl.manager.CreativeBlockData;
 import me.FurH.CreativeControl.manager.CreativeBlockManager;
-import net.minecraft.server.v1_6_R2.WorldServer;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.v1_6_R2.CraftWorld;
 import org.bukkit.entity.Player;
 
 /**
@@ -92,8 +90,6 @@ public class CreativeBlocksSelection {
         final Player player = (Player) sender;
         final World w = min.getWorld();
 
-        final WorldServer worldServer = ((CraftWorld)w).getHandle();
-
         Thread t = new Thread() {
             @Override
             public void run() {
@@ -101,7 +97,7 @@ public class CreativeBlocksSelection {
                     for (int y = min.getBlockY(); y <= max.getBlockY(); y++) {
                         for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
 
-                            int id = worldServer.getTypeId(x, y, z);
+                            int id = w.getBlockTypeIdAt(x, y, z);
                             if (id == 0) { continue; }
 
                             CreativeWorldNodes wconfig = CreativeControl.getWorldNodes(w);

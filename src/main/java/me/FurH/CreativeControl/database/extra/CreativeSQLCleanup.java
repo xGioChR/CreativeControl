@@ -25,10 +25,8 @@ import me.FurH.Core.location.LocationUtils;
 import me.FurH.Core.util.Communicator;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.database.CreativeSQLDatabase;
-import net.minecraft.server.v1_6_R2.WorldServer;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
-import org.bukkit.craftbukkit.v1_6_R2.CraftWorld;
 import org.bukkit.entity.Player;
 
 /**
@@ -80,8 +78,6 @@ public class CreativeSQLCleanup implements Runnable {
         /* move regions table */
         com.msg(p, "&7Cleaning table '&4"+table+"&7' ...");
 
-        final WorldServer worldServer = ((CraftWorld)w).getHandle();
-
         double blocks_size = 0;
         try {
             blocks_size = db.getTableCount(table);
@@ -119,7 +115,7 @@ public class CreativeSQLCleanup implements Runnable {
                     int y = rs.getInt("y");
                     int z = rs.getInt("z");
                     int type = rs.getInt("type");
-                    int id = worldServer.getTypeId(x, y, z);
+                    int id = w.getBlockTypeIdAt(x, y, z);
 
                     if (type != id) {
                         com.msg(p, "&7Invalid block at X: &4" + x + "&7, Y: &4" + y + "&7, Z: &4" + z + "&7, I1: &4" + type + "&7, I2: &4" + id);
