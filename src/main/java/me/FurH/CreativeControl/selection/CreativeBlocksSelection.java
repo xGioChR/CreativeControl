@@ -229,9 +229,11 @@ public class CreativeBlocksSelection {
     public Selection getSelection(Player p) {
         CreativeControl plugin = CreativeControl.getPlugin();
         WorldEditPlugin we = plugin.getWorldEdit();
+        
         if (we != null) {
             return plugin.getWorldEdit().getSelection(p);
         }
+        
         return null;
     }
 }
