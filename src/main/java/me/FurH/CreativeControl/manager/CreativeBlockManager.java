@@ -50,6 +50,7 @@ public class CreativeBlockManager {
 
     public CreativeBlockManager() {
         cache = new CoreSoftCache<String, CreativeBlockData>(CreativeControl.getMainConfig().cache_capacity);
+        cache.cleanupTask(); // remove null values every minute
     }
 
     public CoreSoftCache<String, CreativeBlockData> getCache() {
