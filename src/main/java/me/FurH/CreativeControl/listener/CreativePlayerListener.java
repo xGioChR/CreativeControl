@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import me.FurH.Core.cache.CoreLRUCache;
+import me.FurH.Core.cache.soft.CoreSoftCache;
 import me.FurH.Core.location.LocationUtils;
 import me.FurH.Core.player.PlayerUtils;
 import me.FurH.Core.util.Communicator;
@@ -819,7 +820,7 @@ public class CreativePlayerListener implements Listener {
         
         CreativeBlockManager manager = CreativeControl.getManager();
         
-        CoreLRUCache<String, CreativeBlockData> cache = manager.getCache();
+        CoreSoftCache<String, CreativeBlockData> cache = manager.getCache();
 
         CreativeBlockData data1 = manager.getFullData(b.getLocation());        
         CreativeBlockData data2 = null;

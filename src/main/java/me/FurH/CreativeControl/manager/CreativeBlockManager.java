@@ -22,7 +22,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import me.FurH.Core.cache.CoreLRUCache;
+import me.FurH.Core.cache.soft.CoreSoftCache;
 import me.FurH.Core.exceptions.CoreException;
 import me.FurH.Core.list.CollectionUtils;
 import me.FurH.Core.location.LocationUtils;
@@ -45,13 +45,14 @@ import org.bukkit.entity.Player;
  * @author FurmigaHumana
  */
 public class CreativeBlockManager {
-    private static CoreLRUCache<String, CreativeBlockData> cache;
+    
+    private static CoreSoftCache<String, CreativeBlockData> cache;
 
     public CreativeBlockManager() {
-        cache = new CoreLRUCache<String, CreativeBlockData>(CreativeControl.getMainConfig().cache_capacity);
+        cache = new CoreSoftCache<String, CreativeBlockData>(CreativeControl.getMainConfig().cache_capacity);
     }
-    
-    public CoreLRUCache<String, CreativeBlockData> getCache() {
+
+    public CoreSoftCache<String, CreativeBlockData> getCache() {
         return cache;
     }
 
@@ -230,9 +231,16 @@ public class CreativeBlockManager {
         String key = LocationUtils.locationToString(x, y, z, world.getName());
 
         if (cache.containsKey(key)) {
-            return cache.get(key);
+            System.out.println("Cached");
+            CreativeBlockData ret = cache.get(key);
+            if (ret != null) {
+                System.out.println("Cached not null");
+                return ret;
+            }
         }
 
+        System.out.println("TEST: " + cache.size());
+        
         CreativeBlockData data = CreativeControl.getDb().isprotected(world.getName(), x, y, z, type, nodrop);
         
         if (data != null) {
