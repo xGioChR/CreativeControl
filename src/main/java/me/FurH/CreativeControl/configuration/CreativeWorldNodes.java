@@ -58,6 +58,7 @@ public class CreativeWorldNodes {
     public boolean block_attach          = false;
     public boolean block_invert          = false;
     public HashSet<CreativeItemStack> block_exclude   = new HashSet<CreativeItemStack>();//Arrays.asList(new Integer[] { 0, 8, 9, 10, 11 });
+    public int block_minutelimit         = -1;
     
     public boolean prevent_drop          = true;
     public boolean prevent_pickup        = true;

@@ -22,6 +22,7 @@ BlockManager:
   blockunprotected: "&4Block removed from the database"
   worlddisabled: "&cThis world is disabled in the configuration."
   typeexcluded: "&cThis block can't be protected!"
+  minutelimit: "&7You have reached the limit of &c{0}&7 blocks per minute!"
 
 BlockBreak:
   cantbreak: "&7You can't break this block in creative mode!"

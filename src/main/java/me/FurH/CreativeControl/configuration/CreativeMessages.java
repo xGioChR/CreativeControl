@@ -42,6 +42,7 @@ public class CreativeMessages extends Configuration {
     public String blockmanager_removed              = "BlockManager.blockunprotected";
     public String blockmanager_worldexcluded        = "BlockManager.worlddisabled";
     public String blockmanager_excluded             = "BlockManager.typeexcluded";
+    public String blockmanager_limit                = "BlockManager.minutelimit";
 
     public String blockbreak_cantbreak              = "BlockBreak.cantbreak";
     public String blockbreak_survival               = "BlockBreak.nosurvival";
@@ -71,9 +72,10 @@ public class CreativeMessages extends Configuration {
         blockmanager_unprotected          = getMessage("BlockManager.unprotected");
         blockmanager_already              = getMessage("BlockManager.alreadyprotected");
         blockmanager_protected            = getMessage("BlockManager.blockprotected");
-        blockmanager_removed                = getMessage("BlockManager.blockunprotected");
-        blockmanager_worldexcluded                = getMessage("BlockManager.worlddisabled");
+        blockmanager_removed              = getMessage("BlockManager.blockunprotected");
+        blockmanager_worldexcluded        = getMessage("BlockManager.worlddisabled");
         blockmanager_excluded             = getMessage("BlockManager.typeexcluded");
+        blockmanager_limit                = getMessage("BlockManager.minutelimit");
 
         blockbreak_cantbreak              = getMessage("BlockBreak.cantbreak");
         blockbreak_survival               = getMessage("BlockBreak.nosurvival");

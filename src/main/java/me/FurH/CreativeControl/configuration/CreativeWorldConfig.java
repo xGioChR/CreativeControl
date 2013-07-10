@@ -105,6 +105,7 @@ public class CreativeWorldConfig extends Configuration {
         x.block_attach          = getBoolean(w, "BlockProtection.CheckAttached");
         x.block_invert          = getBoolean(w, "BlockProtection.inverted");
         x.block_exclude         = blacklist.buildHashSet(getStringAsStringSet(w, "BlockProtection.exclude"));
+        x.block_minutelimit     = getInteger(w, "BlockProtection.BlockPerMinute");
 
         x.prevent_drop          = getBoolean(w, "Preventions.ItemDrop");
         x.prevent_pickup        = getBoolean(w, "Preventions.ItemPickup");

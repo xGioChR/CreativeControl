@@ -61,6 +61,8 @@ BlockProtection:
   inverted: false
   ## exclude, list here, all block ids to be ignored by the NoDrop/OwnBlocks system, more blocks you list here, better will be the performance.
   exclude: 0, 8, 9, 10, 11
+  ## BlockPerMinute, set the amount of blocks a player can place per minute
+  BlockPerMinute: -1
 
 Preventions:
   ##ItemDrop, if true, creative players will be unable to drop items

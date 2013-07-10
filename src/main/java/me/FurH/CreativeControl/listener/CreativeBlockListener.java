@@ -20,6 +20,7 @@ import de.diddiz.LogBlock.Consumer;
 import java.util.ArrayList;
 import java.util.List;
 import me.FurH.Core.blocks.BlockUtils;
+import me.FurH.Core.cache.soft.CoreSoftCache;
 import me.FurH.Core.util.Communicator;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.blacklist.CreativeBlackList;
@@ -27,6 +28,7 @@ import me.FurH.CreativeControl.configuration.CreativeMainConfig;
 import me.FurH.CreativeControl.configuration.CreativeMessages;
 import me.FurH.CreativeControl.configuration.CreativeWorldNodes;
 import me.FurH.CreativeControl.manager.CreativeBlockData;
+import me.FurH.CreativeControl.manager.CreativeBlockLimit;
 import me.FurH.CreativeControl.manager.CreativeBlockManager;
 import me.FurH.CreativeControl.stack.CreativeItemStack;
 import me.botsko.prism.Prism;
@@ -56,6 +58,8 @@ import org.bukkit.material.PistonBaseMaterial;
  * @author FurmigaHumana
  */
 public class CreativeBlockListener implements Listener {
+    
+    private CoreSoftCache<String, CoreSoftCache<String, CreativeBlockLimit>> limits = new CoreSoftCache<String, CoreSoftCache<String, CreativeBlockLimit>>();
     
     /*
      * Block Place Module
@@ -182,6 +186,12 @@ public class CreativeBlockListener implements Listener {
             /* piston fix */
         }
 
+        int limit = config.block_minutelimit;
+        if (isLimitReached(p, limit)) {
+            com.msg(p, messages.blockmanager_limit, limit);
+            e.setCancelled(true); return;
+        }
+        
         CreativeBlockManager    manager    = CreativeControl.getManager();
 
         Block r = e.getBlockReplacedState().getBlock();
@@ -552,5 +562,37 @@ public class CreativeBlockListener implements Listener {
                 com.msg(p, messages.blockbreak_creativeblock);
             }
         }
+    }
+    
+    public boolean isLimitReached(Player player, int limit) {
+        
+        if (limit < 0) {
+            return false;
+        }
+        
+        if (CreativeControl.hasPermS(player, "Preventions.MinuteLimit")) {
+            return false;
+        }
+
+        if (!limits.containsKey(player.getName())) {
+            limits.put(player.getName(), new CoreSoftCache<String, CreativeBlockLimit>());
+        }
+        
+        CoreSoftCache<String, CreativeBlockLimit> world = limits.get(player.getName());
+        if (!world.containsKey(player.getWorld().getName())) {
+            world.put(player.getWorld().getName(), new CreativeBlockLimit());
+        }
+        
+        CreativeBlockLimit data = world.get(player.getWorld().getName());
+        if (data.isExpired()) {
+            data.reset();
+        }
+        
+        data.increment();
+
+        world.put(player.getWorld().getName(), data);
+        limits.put(player.getName(), world);
+
+        return data.getPlaced() > limit;
     }
 }
