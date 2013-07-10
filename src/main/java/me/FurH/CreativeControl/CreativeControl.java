@@ -27,6 +27,7 @@ import java.util.UUID;
 import java.util.WeakHashMap;
 import me.FurH.Core.CorePlugin;
 import me.FurH.Core.exceptions.CoreException;
+import me.FurH.Core.internals.InternalManager;
 import me.FurH.Core.updater.CoreUpdater;
 import me.FurH.CreativeControl.blacklist.CreativeBlackList;
 import me.FurH.CreativeControl.commands.CreativeCommands;
@@ -123,7 +124,7 @@ public class CreativeControl extends CorePlugin {
 
         worldconfig = new CreativeWorldConfig(this);
         worldconfig.setSingleConfig(mainconfig.config_single);
-
+        
         if (!mainconfig.config_single) {
             for (World w : getServer().getWorlds()) { worldconfig.load(w); }
         } else {
@@ -186,6 +187,9 @@ public class CreativeControl extends CorePlugin {
         }
 
         if (mainconfig.data_hide && pm.getPlugin("AuthMe") != null) {
+            
+            InternalManager.setup(this);
+            
             pm.registerEvents(new CreativeHideInventory(), this);
             pm.registerEvents(new AuthMe(), this);
         }
