@@ -20,7 +20,7 @@ import de.diddiz.LogBlock.Consumer;
 import java.util.ArrayList;
 import java.util.List;
 import me.FurH.Core.blocks.BlockUtils;
-import me.FurH.Core.cache.soft.CoreSoftCache;
+import me.FurH.Core.cache.CoreLRUCache;
 import me.FurH.Core.util.Communicator;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.blacklist.CreativeBlackList;
@@ -59,7 +59,7 @@ import org.bukkit.material.PistonBaseMaterial;
  */
 public class CreativeBlockListener implements Listener {
     
-    private CoreSoftCache<String, CoreSoftCache<String, CreativeBlockLimit>> limits = new CoreSoftCache<String, CoreSoftCache<String, CreativeBlockLimit>>();
+    private CoreLRUCache<String, CoreLRUCache<String, CreativeBlockLimit>> limits = new CoreLRUCache<String, CoreLRUCache<String, CreativeBlockLimit>>();
     
     /*
      * Block Place Module
@@ -575,10 +575,10 @@ public class CreativeBlockListener implements Listener {
         }
 
         if (!limits.containsKey(player.getName())) {
-            limits.put(player.getName(), new CoreSoftCache<String, CreativeBlockLimit>());
+            limits.put(player.getName(), new CoreLRUCache<String, CreativeBlockLimit>());
         }
         
-        CoreSoftCache<String, CreativeBlockLimit> world = limits.get(player.getName());
+        CoreLRUCache<String, CreativeBlockLimit> world = limits.get(player.getName());
         if (!world.containsKey(player.getWorld().getName())) {
             world.put(player.getWorld().getName(), new CreativeBlockLimit());
         }
