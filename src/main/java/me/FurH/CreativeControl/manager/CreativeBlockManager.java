@@ -50,7 +50,7 @@ public class CreativeBlockManager {
 
     public CreativeBlockManager() {
         cache = new CoreSoftCache<String, CreativeBlockData>(CreativeControl.getMainConfig().cache_capacity);
-        cache.cleanupTask(); // remove null values every minute
+        cache.cleanupTask(300000); // remove null values every 5 minute
     }
 
     public CoreSoftCache<String, CreativeBlockData> getCache() {
@@ -231,14 +231,12 @@ public class CreativeBlockManager {
         
         String key = LocationUtils.locationToString(x, y, z, world.getName());
 
-        if (cache.containsKey(key)) {
-            CreativeBlockData ret = cache.get(key);
-            if (ret != null) {
-                return ret;
-            }
+        CreativeBlockData data = cache.get(key);
+        if (data != null) {
+            return data;
         }
-        
-        CreativeBlockData data = CreativeControl.getDb().isprotected(world.getName(), x, y, z, type, nodrop);
+
+        data = CreativeControl.getDb().isprotected(world.getName(), x, y, z, type, nodrop);
         
         if (data != null) {
             cache.put(key, data);
