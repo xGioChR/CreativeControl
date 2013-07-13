@@ -188,7 +188,7 @@ public class CreativeControl extends CorePlugin {
 
         if (mainconfig.data_hide && pm.getPlugin("AuthMe") != null) {
             
-            InternalManager.setup(this);
+            InternalManager.setup(true);
             
             pm.registerEvents(new CreativeHideInventory(), this);
             pm.registerEvents(new AuthMe(), this);
