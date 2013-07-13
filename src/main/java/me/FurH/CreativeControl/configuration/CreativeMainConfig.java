@@ -16,8 +16,6 @@
 
 package me.FurH.CreativeControl.configuration;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import me.FurH.Core.CorePlugin;
 import me.FurH.Core.configuration.Configuration;
 import me.FurH.Core.exceptions.CoreException;

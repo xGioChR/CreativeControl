@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
-import me.FurH.Core.cache.CoreLRUCache;
 import me.FurH.Core.cache.soft.CoreSoftCache;
 import me.FurH.Core.location.LocationUtils;
 import me.FurH.Core.player.PlayerUtils;
