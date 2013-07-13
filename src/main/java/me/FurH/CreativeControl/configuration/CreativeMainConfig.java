@@ -16,9 +16,13 @@
 
 package me.FurH.CreativeControl.configuration;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import me.FurH.Core.CorePlugin;
 import me.FurH.Core.configuration.Configuration;
-import me.FurH.Core.inventory.InvUtils;
+import me.FurH.Core.exceptions.CoreException;
+import me.FurH.Core.inventory.InventoryStack;
+import me.FurH.CreativeControl.CreativeControl;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 
@@ -123,12 +127,18 @@ public class CreativeMainConfig extends Configuration {
         data_survival    = getBoolean("PlayerData.SetSurvival");
         data_glitch      = getBoolean("PlayerData.FallGlitch");
         data_hide        = getBoolean("PlayerData.HideInventory");
-
-        armor_helmet     = InvUtils.stringToItemStack(getString("CreativeArmor.Helmet"));
-        armor_chest      = InvUtils.stringToItemStack(getString("CreativeArmor.Chestplate"));
-        armor_leggs      = InvUtils.stringToItemStack(getString("CreativeArmor.Leggings"));
-        armor_boots      = InvUtils.stringToItemStack(getString("CreativeArmor.Boots"));
         
+        try {
+
+            armor_helmet     = InventoryStack.getItemStackFromString(getString("CreativeArmor.Helmet"));
+            armor_chest      = InventoryStack.getItemStackFromString(getString("CreativeArmor.Chestplate"));
+            armor_leggs      = InventoryStack.getItemStackFromString(getString("CreativeArmor.Leggings"));
+            armor_boots      = InventoryStack.getItemStackFromString(getString("CreativeArmor.Boots"));
+
+        } catch (CoreException ex) {
+            CreativeControl.getPlugin().error(ex, "Failed to handle the creative armor settings!");
+        }
+
         com_quiet        = getBoolean("Communicator.Quiet");
         com_debugcons    = getBoolean("Debug.Console");
         com_debugstack   = getBoolean("Debug.Stack");
