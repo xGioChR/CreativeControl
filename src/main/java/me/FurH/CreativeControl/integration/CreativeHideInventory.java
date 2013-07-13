@@ -21,7 +21,7 @@ public class CreativeHideInventory implements Listener {
         CreativeMainConfig config = CreativeControl.getMainConfig();
         if (config.data_hide) {
             try {
-                InternalManager.getEntityPlayer(e.getPlayer(), false).hideInventory();
+                InternalManager.getEntityPlayer(e.getPlayer(), true).hideInventory();
             } catch (CoreException ex) {
                 CreativeControl.getPlugin().error(ex, "Failed to hide '" + e.getPlayer().getName() + "' inventory!");
             }
@@ -33,7 +33,7 @@ public class CreativeHideInventory implements Listener {
         CreativeMainConfig config = CreativeControl.getMainConfig();
         if (config.data_hide) {
             try {
-                InternalManager.getEntityPlayer(e.getPlayer(), false).unHideInventory();
+                InternalManager.getEntityPlayer(e.getPlayer(), true).unHideInventory();
             } catch (CoreException ex) {
                 CreativeControl.getPlugin().error(ex, "Failed to restore '" + e.getPlayer().getName() + "' inventory!");
             }
