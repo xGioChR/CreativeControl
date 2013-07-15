@@ -46,6 +46,7 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.vehicle.VehicleCreateEvent;
 import org.bukkit.event.vehicle.VehicleDestroyEvent;
+import org.bukkit.metadata.FixedMetadataValue;
 
 /**
  *
@@ -91,6 +92,9 @@ public class CreativeEntityListener implements Listener {
                     com.msg(p, messages.limits_vehicles);
                     vehicle.remove();
                 } else {
+
+                    vehicle.setMetadata("CreativeVehicle", new FixedMetadataValue(plugin, "CreativeVehicle"));
+
                     entities.add(vehicle.getUniqueId());
                     plugin.limits.put(p.getName(), entities);
                 }
@@ -108,16 +112,14 @@ public class CreativeEntityListener implements Listener {
         }
 
         CreativeWorldNodes config = CreativeControl.getWorldNodes(vehicle.getWorld());
-        CreativeControl plugin = CreativeControl.getPlugin();
 
         if (config.world_exclude) {
             return;
         }
 
         if (config.prevent_vehicle) {
-            String master = plugin.removeVehicle(vehicle.getUniqueId());
-
-            if (master == null) {
+            
+            if (!vehicle.hasMetadata("CreativeVehicle")) {
                 return;
             }
 
@@ -125,7 +127,7 @@ public class CreativeEntityListener implements Listener {
             vehicle.remove();
         }
     }
-    
+
     /*
      * Anti Block explosion Module
      */

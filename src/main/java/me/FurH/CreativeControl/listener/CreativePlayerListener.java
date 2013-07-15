@@ -724,15 +724,17 @@ public class CreativePlayerListener implements Listener {
                 }
             }
         }
-        
-        if ((e.getAction() == Action.LEFT_CLICK_BLOCK || e.getAction() == Action.RIGHT_CLICK_BLOCK) && (e.getMaterial() == Material.MINECART || e.getMaterial() == Material.BOAT)) {
+
+        if ((e.getAction() == Action.LEFT_CLICK_BLOCK || e.getAction() == Action.RIGHT_CLICK_BLOCK) && (e.getMaterial() == Material.MINECART || e.getMaterial() == Material.BOAT || 
+                e.getMaterial() == Material.STORAGE_MINECART || e.getMaterial() == Material.POWERED_MINECART || e.getMaterial() == Material.EXPLOSIVE_MINECART || e.getMaterial() == Material.HOPPER_MINECART)) {
+
             if (p.getGameMode().equals(GameMode.CREATIVE)) {
                 if (!CreativeEntityListener.waiting.contains(p)) {
                     CreativeEntityListener.waiting.add(p);
                 }
             }
         }
-        
+
         if ((e.getAction() == Action.RIGHT_CLICK_AIR) || (e.getAction() == Action.RIGHT_CLICK_BLOCK)) {
             if (p.getGameMode().equals(GameMode.CREATIVE)) {
 

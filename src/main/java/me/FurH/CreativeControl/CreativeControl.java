@@ -416,27 +416,6 @@ public class CreativeControl extends CorePlugin {
         return ((sender instanceof Player)) ? permissions.hasPerm((Player)sender, "CreativeControl."+node) : true;
     }
     
-    public String removeVehicle(UUID uuid) {
-        String master = null;
-        
-        for (String key : limits.keySet()) {
-            if (limits.get(key).contains(uuid)) {
-                master = key;
-                break;
-            }
-        }
-
-        if (master == null) {
-            return null;
-        }
-        
-        HashSet<UUID> entity = limits.get(master);
-        entity.remove(uuid);
-
-        limits.put(master, entity);
-        return master;
-    }
-    
     private void clear() {
         HashSet<UUID> entity = new HashSet<UUID>();
 
