@@ -504,7 +504,7 @@ public class CreativeBlockListener implements Listener {
             return;
         }
 
-        if (!isWaterAffected(e.getBlock())) {
+        if (!isWaterAffected(e.getBlock()) || e.getChangedTypeId() == e.getBlock().getTypeId()) {
             return;
         }
         
