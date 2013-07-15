@@ -45,7 +45,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockEvent;
 import org.bukkit.event.block.BlockFromToEvent;
+import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -467,16 +469,46 @@ public class CreativeBlockListener implements Listener {
             
             return;
         }
-        
-        if (e.getBlock().getType() != Material.WATER && e.getBlock().getType() != Material.STATIONARY_WATER) {
-            return;
-        }
 
         if (!isWaterAffected(e.getToBlock())) {
             return;
         }
         
         if (!config.block_water) {
+            return;
+        }
+
+        if (config.block_nodrop) {
+            CreativeBlockData data = manager.isprotected(block, false);
+            if (data != null) {
+                block.setType(Material.AIR);
+            }
+        } else
+        if (config.block_ownblock) {
+            CreativeBlockData data = manager.isprotected(block, true);
+            if (data != null) {
+                e.setCancelled(true);
+            }
+        }
+    }
+
+    @EventHandler
+    public void onBlockPhysics(BlockPhysicsEvent e) {
+        if (e.isCancelled()) { return; }
+
+        CreativeBlockManager    manager     = CreativeControl.getManager();
+        Block block = e.getBlock();
+        CreativeWorldNodes config = CreativeControl.getWorldNodes(e.getBlock().getWorld());
+
+        if (config.world_exclude) {
+            return;
+        }
+
+        if (!isWaterAffected(e.getBlock())) {
+            return;
+        }
+        
+        if (!config.block_water) { // handle this as the waterflow protection
             return;
         }
 
