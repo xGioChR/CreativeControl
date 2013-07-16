@@ -63,10 +63,17 @@ public final class CreativeSQLDatabase extends CoreSQLDatabase {
         try {
 
             ps = getQuery("SELECT groups FROM `"+prefix+"groups` WHERE player = '"+getPlayerId(player.getName()) + "' LIMIT 1;");
-            rs = ps.getResultSet();
+            
+            try {
+                rs = ps.getResultSet();
+            } catch (SQLException ex) {
+                if (ex.getMessage() != null && ex.getMessage().toLowerCase().contains("executing")) {
+                    rs = ps.executeQuery();
+                }
+            }
 
             if (rs.next()) {
-                ret = CollectionUtils.toStringList(rs.getString("groups"), ", ").toArray(new String[0]);
+                ret = CollectionUtils.toStringList(rs.getString("groups"), ", ").toArray(new String[1]);
             } else {
                 setOldGroups(player);
             }
