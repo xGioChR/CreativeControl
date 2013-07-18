@@ -1,11 +1,13 @@
 package me.FurH.CreativeControl.integration;
 
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import uk.org.whoami.authme.events.LoginEvent;
 import uk.org.whoami.authme.events.ProtectInventoryEvent;
+import uk.org.whoami.authme.events.SessionEvent;
 
 /**
  *
@@ -23,5 +25,20 @@ public class AuthMe implements Listener {
     public void onLogin(LoginEvent e) {
         CreativeUniversalLogin event = new CreativeUniversalLogin(e.getPlayer());
         Bukkit.getPluginManager().callEvent(event);
+    }
+    
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
+    public void onSession(SessionEvent e) {
+        if (!e.isCancelled()) {
+            
+            Player player = Bukkit.getPlayerExact(e.getPlayerAuth().getNickname());
+            
+            if (player == null) {
+                return;
+            }
+            
+            CreativeUniversalLogin event = new CreativeUniversalLogin(player);
+            Bukkit.getPluginManager().callEvent(event);
+        }
     }
 }
