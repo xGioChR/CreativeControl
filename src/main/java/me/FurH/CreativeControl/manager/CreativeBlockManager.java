@@ -22,7 +22,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import me.FurH.Core.cache.soft.CoreSoftCache;
+import me.FurH.Core.cache.CoreLRUCache;
 import me.FurH.Core.exceptions.CoreException;
 import me.FurH.Core.list.CollectionUtils;
 import me.FurH.Core.location.LocationUtils;
@@ -46,14 +46,13 @@ import org.bukkit.entity.Player;
  */
 public class CreativeBlockManager {
     
-    private static CoreSoftCache<String, CreativeBlockData> cache;
+    private static CoreLRUCache<String, CreativeBlockData> cache;
 
     public CreativeBlockManager() {
-        cache = new CoreSoftCache<String, CreativeBlockData>(CreativeControl.getMainConfig().cache_capacity);
-        cache.cleanupTask(300000); // remove null values every 5 minute
+        cache = new CoreLRUCache<String, CreativeBlockData>(CreativeControl.getMainConfig().cache_capacity);
     }
 
-    public CoreSoftCache<String, CreativeBlockData> getCache() {
+    public CoreLRUCache<String, CreativeBlockData> getCache() {
         return cache;
     }
 

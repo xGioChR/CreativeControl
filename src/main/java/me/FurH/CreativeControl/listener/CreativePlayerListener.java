@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import me.FurH.Core.cache.CoreLRUCache;
 import me.FurH.Core.cache.soft.CoreSoftCache;
 import me.FurH.Core.location.LocationUtils;
 import me.FurH.Core.player.PlayerUtils;
@@ -818,10 +819,9 @@ public class CreativePlayerListener implements Listener {
         if (!is(p, b)) { return; }
 
         CreativeWorldNodes nodes = CreativeControl.getWorldNodes(b.getWorld());
-        
         CreativeBlockManager manager = CreativeControl.getManager();
-        
-        CoreSoftCache<String, CreativeBlockData> cache = manager.getCache();
+
+        CoreLRUCache<String, CreativeBlockData> cache = manager.getCache();
 
         CreativeBlockData data1 = manager.getFullData(b.getLocation());        
         CreativeBlockData data2 = null;
