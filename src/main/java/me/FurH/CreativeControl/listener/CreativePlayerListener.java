@@ -20,7 +20,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import me.FurH.Core.cache.soft.CoreSoftCache;
+import me.FurH.Core.exceptions.CoreException;
 import me.FurH.Core.location.LocationUtils;
 import me.FurH.Core.player.PlayerUtils;
 import me.FurH.Core.util.Communicator;
@@ -99,8 +102,13 @@ public class CreativePlayerListener implements Listener {
 
                 InventoryView view = player.getOpenInventory();
                 view.close();
-
-                data.process(player, newgm, oldgm);
+                
+                try {
+                    data.process(player, newgm, oldgm);
+                } catch (CoreException ex) {
+                    com.msg(player, "&4Failed to change gamemode, inventory error.");
+                    com.error(ex); e.setCancelled(true); return;
+                }
             }
         }
 
@@ -118,8 +126,13 @@ public class CreativePlayerListener implements Listener {
                     } else {
                         
                         String[] groups = permissions.getPlayerGroups(player);
-
-                        db.saveOldGroups(player, permissions.getPlayerGroups(player));
+                        
+                        try {
+                            db.saveOldGroups(player, permissions.getPlayerGroups(player));
+                        } catch (Throwable ex) {
+                            com.msg(player, "&4Failed to change gamemode, groups error.");
+                            com.error(ex); e.setCancelled(true); return;
+                        }
 
                         for (String group : groups) {
                             permissions.playerRemoveGroup(player, group);
@@ -137,11 +150,20 @@ public class CreativePlayerListener implements Listener {
                     } else {
 
                         String[] current = permissions.getPlayerGroups(player);
-                        String[] groups = db.getOldGroup(player);
+                        String[] groups = null;
 
-                        Arrays.sort(groups, Collections.reverseOrder());
+                        try {
+
+                            groups = db.getOldGroup(player);
+
+                        } catch (Throwable ex) {
+                            com.msg(player, "&4Failed to change gamemode, groups error.");
+                            com.error(ex); e.setCancelled(true); return;
+                        }
 
                         if (groups != null) {
+                            
+                            Arrays.sort(groups, Collections.reverseOrder());
 
                             for (String group : current) {
                                 permissions.playerRemoveGroup(player, group);
@@ -150,7 +172,6 @@ public class CreativePlayerListener implements Listener {
                             for (String old : groups) {
                                 permissions.playerAddGroup(player, old);
                             }
-
                         }
                     }
                 }

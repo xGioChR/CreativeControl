@@ -53,10 +53,9 @@ public final class CreativeSQLDatabase extends CoreSQLDatabase {
         this.prefix = prefix;
     }
     
-    public String[] getOldGroup(Player player) {
+    public String[] getOldGroup(Player player) throws Throwable {
         String[] ret = null;
-        
-        Communicator com = CreativeControl.plugin.getCommunicator();
+
         PreparedStatement ps = null;
         ResultSet rs = null;
         
@@ -72,7 +71,7 @@ public final class CreativeSQLDatabase extends CoreSQLDatabase {
             }
 
         } catch (Throwable ex) {
-            com.error(ex, "Failed to get old group data for the player: " + player.getName());
+            throw new CoreException(ex, "Failed to get old group data for the player: " + player.getName());
         } finally {
             closeQuietly(ps);
             closeQuietly(rs);
@@ -81,32 +80,14 @@ public final class CreativeSQLDatabase extends CoreSQLDatabase {
         return ret;
     }
     
-    public void saveOldGroups(Player player, String[] groups) {
-        Communicator com = CreativeControl.plugin.getCommunicator();
-
-        try {
-            execute("UPDATE `"+prefix+"groups` SET groups = '"+Arrays.toString(groups)+"' WHERE player = '"+getPlayerId(player.getName())+"';");
-        } catch (CoreException ex) {
-            com.error(ex, "Failed to save '"+player.getName()+"' groups data");
-        }
-        
-        try {
-            commit();
-        } catch (CoreException ex) { }
+    public void saveOldGroups(Player player, String[] groups) throws Throwable {
+        execute("UPDATE `"+prefix+"groups` SET groups = '"+Arrays.toString(groups)+"' WHERE player = '"+getPlayerId(player.getName())+"';");
+        commit();
     }
-    
-    private void setOldGroups(Player player) {
-        Communicator com = CreativeControl.plugin.getCommunicator();
 
-        try {
-            execute("INSERT INTO `"+prefix+"groups` (player, groups) VALUES ('"+getPlayerId(player.getName())+"', '');");
-        } catch (CoreException ex) {
-            com.error(ex, "Failed to save '"+player.getName()+"' groups data");
-        }
-
-        try {
-            commit();
-        } catch (CoreException ex) { }
+    private void setOldGroups(Player player) throws Throwable {
+        execute("INSERT INTO `"+prefix+"groups` (player, groups) VALUES ('"+getPlayerId(player.getName())+"', '');");
+        commit();
     }
 
     public void protect(Player player, Block block) {

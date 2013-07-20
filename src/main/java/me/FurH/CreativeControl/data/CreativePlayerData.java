@@ -18,11 +18,10 @@ package me.FurH.CreativeControl.data;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import me.FurH.Core.cache.CoreSafeCache;
 import me.FurH.Core.exceptions.CoreException;
+import me.FurH.Core.file.FileUtils;
 import me.FurH.Core.inventory.InventoryStack;
-import me.FurH.Core.util.Communicator;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.configuration.CreativeMainConfig;
 import me.FurH.CreativeControl.database.CreativeSQLDatabase;
@@ -36,6 +35,7 @@ import org.bukkit.inventory.ItemStack;
  * @author FurmigaHumana
  */
 public class CreativePlayerData {
+
     public CoreSafeCache<String, CreativePlayerCache> adventurer_cache = new CoreSafeCache<String, CreativePlayerCache>();
     public CoreSafeCache<String, CreativePlayerCache> creative_cache = new CoreSafeCache<String, CreativePlayerCache>();
     public CoreSafeCache<String, CreativePlayerCache> survival_cache = new CoreSafeCache<String, CreativePlayerCache>();
@@ -52,34 +52,35 @@ public class CreativePlayerData {
         survival_cache.remove(player);
     }
     
-    public boolean process(Player player, GameMode newgm, GameMode oldgm) {
+    public boolean process(Player player, GameMode newgm, GameMode oldgm) throws CoreException {
+
         if (save(player, oldgm)) {
             return restore(player, newgm);
         }
+
         return false;
     }
     
-    public boolean save(Player p, GameMode gm) {
+    public boolean save(Player p, GameMode gm) throws CoreException {
         CreativeSQLDatabase db = CreativeControl.getDb();
         if (gm.equals(GameMode.ADVENTURE)) {
             CreativePlayerCache cache = hasAdv(p.getName());
             
             if (cache == null) {
                 cache = new CreativePlayerCache(); cache.name = p.getName().toLowerCase();
-                
+
                 cache = newCache(p, cache);
                 adventurer_cache.put(cache.name, cache);
 
                 String query = "INSERT INTO `"+db.prefix+"players_adventurer` (player, health, foodlevel, exhaustion, saturation, experience, armor, inventory) VALUES "
                         + "('"+db.getPlayerId(cache.name)+"', '"+cache.health+"', '"+cache.food+"', '"+cache.ex+"', '"+cache.sat+"', '" + cache.exp +"', '"+ toArrayString(cache.armor) +"', '"+ toArrayString(cache.items) +"');";
-                
+
                 try {
                     db.execute(query);
                 } catch (CoreException ex) {
-                    CreativeControl.plugin.getCommunicator().error(ex, "Failed to save " + p.getName() + " adventurer data");
-                    return false;
+                    throw new CoreException(ex, "Failed to save " + p.getName() + " adventurer data");
                 }
-                
+
                 return true;
             } else {
                 cache = newCache(p, cache);
@@ -93,8 +94,7 @@ public class CreativePlayerData {
                 try {
                     db.execute(query);
                 } catch (CoreException ex) {
-                    CreativeControl.plugin.getCommunicator().error(ex, "Failed to save " + p.getName() + " adventurer data");
-                    return false;
+                    throw new CoreException(ex, "Failed to save " + p.getName() + " adventurer data");
                 }
                 
                 return true;
@@ -115,8 +115,7 @@ public class CreativePlayerData {
                 try {
                     db.execute(query);
                 } catch (CoreException ex) {
-                    CreativeControl.plugin.getCommunicator().error(ex, "Failed to save " + p.getName() + " creative data");
-                    return false;
+                    throw new CoreException(ex, "Failed to save " + p.getName() + " creative data");
                 }
 
                 return true;
@@ -131,8 +130,7 @@ public class CreativePlayerData {
                 try {
                     db.execute(query);
                 } catch (CoreException ex) {
-                    CreativeControl.plugin.getCommunicator().error(ex, "Failed to save " + p.getName() + " creative data");
-                    return false;
+                    throw new CoreException(ex, "Failed to save " + p.getName() + " creative data");
                 }
 
                 return true;
@@ -153,8 +151,7 @@ public class CreativePlayerData {
                 try {
                     db.execute(query);
                 } catch (CoreException ex) {
-                    CreativeControl.plugin.getCommunicator().error(ex, "Failed to save " + p.getName() + " survival data");
-                    return false;
+                    throw new CoreException(ex, "Failed to save " + p.getName() + " survival data");
                 }
                 
                 return true;
@@ -170,8 +167,7 @@ public class CreativePlayerData {
                 try {
                     db.execute(query);
                 } catch (CoreException ex) {
-                    CreativeControl.plugin.getCommunicator().error(ex, "Failed to save " + p.getName() + " survival data");
-                    return false;
+                    throw new CoreException(ex, "Failed to save " + p.getName() + " survival data");
                 }
                 
                 return true;
@@ -191,10 +187,13 @@ public class CreativePlayerData {
         return cache;
     }
 
-    public boolean restore(Player p, GameMode gm) {        
+    public boolean restore(Player p, GameMode gm) throws CoreException {        
+
         if (gm.equals(GameMode.ADVENTURE)) {
+            
             CreativePlayerCache cache = hasAdv(p.getName());
             return restore(p, cache);
+            
         } else
         if (gm.equals(GameMode.CREATIVE)) {
             CreativePlayerCache cache = hasCre(p.getName());
@@ -207,9 +206,12 @@ public class CreativePlayerData {
             return restore(p, cache);
         } else
         if (gm.equals(GameMode.SURVIVAL)) {
+
             CreativePlayerCache cache = hasSur(p.getName());
             return restore(p, cache);
+
         }
+        
         return false;
     }
     
@@ -236,18 +238,21 @@ public class CreativePlayerData {
         return p.getInventory().getArmorContents();
     }
     
-    public CreativePlayerCache hasAdv(String player) {
+    public CreativePlayerCache hasAdv(String player) throws CoreException {
+
         CreativePlayerCache cache = adventurer_cache.get(player.toLowerCase());
-        Communicator com        = CreativeControl.plugin.getCommunicator();
         CreativeSQLDatabase db = CreativeControl.getDb();
-        
+
         if (cache == null) {
+
             PreparedStatement ps = null;
             ResultSet rs = null;
+
             try {
-                ps = db.getQuery("SELECT * FROM `"+db.prefix+"players_adventurer` WHERE player = '" + db.getPlayerId(player.toLowerCase()) + "'");
+
+                ps = db.getRawQuery("SELECT * FROM `"+db.prefix+"players_adventurer` WHERE player = '" + db.getPlayerId(player.toLowerCase()) + "'");
                 rs = ps.getResultSet();
-                
+
                 if (rs.next()) {
                     cache = new CreativePlayerCache();
                     cache.id = rs.getInt("id");
@@ -261,33 +266,32 @@ public class CreativePlayerData {
                     cache.items = toArrayStack(rs.getString("inventory"));
                     adventurer_cache.put(cache.name, cache);
                 }
-            } catch (SQLException ex) {
-                com.error(ex, "Failed to get " + player + "'s adventurer data");
-            } catch (CoreException ex) {
-                com.error(ex, "Failed to get " + player + "'s adventurer data");
+                
+            } catch (Throwable ex) {
+                throw new CoreException(ex, "Failed to get " + player + "'s adventurer data");
             } finally {
-                if (rs != null) {
-                    try {
-                        rs.close();
-                    } catch (SQLException ex) { }
-                }
+                FileUtils.closeQuietly(rs);
             }
         }
+        
         return cache;
     }
     
-    public CreativePlayerCache hasSur(String player) {
-        CreativePlayerCache cache = survival_cache.get(player.toLowerCase());
-        Communicator com        = CreativeControl.plugin.getCommunicator();
-        CreativeSQLDatabase db = CreativeControl.getDb();
+    public CreativePlayerCache hasSur(String player) throws CoreException {
         
+        CreativePlayerCache cache = survival_cache.get(player.toLowerCase());
+        CreativeSQLDatabase db = CreativeControl.getDb();
+
         if (cache == null) {
+
             PreparedStatement ps = null;
             ResultSet rs = null;
+
             try {
-                ps = db.getQuery("SELECT * FROM `"+db.prefix+"players_survival` WHERE player = '" + db.getPlayerId(player.toLowerCase()) + "'");
-                rs = ps.getResultSet();
                 
+                ps = db.getRawQuery("SELECT * FROM `"+db.prefix+"players_survival` WHERE player = '" + db.getPlayerId(player.toLowerCase()) + "'");
+                rs = ps.getResultSet();
+
                 if (rs.next()) {
                     cache = new CreativePlayerCache();
                     cache.id = rs.getInt("id");
@@ -302,31 +306,29 @@ public class CreativePlayerData {
                     survival_cache.put(cache.name, cache);
                 }
 
-            } catch (SQLException ex) {
-                com.error(ex, "Failed to get " + player + "'s survival data");
-            } catch (CoreException ex) {
-                com.error(ex, "Failed to get " + player + "'s survival data");
+            } catch (Throwable ex) {
+                throw new CoreException(ex, "Failed to get " + player + "'s survival data");
             } finally {
-                if (rs != null) {
-                    try {
-                        rs.close();
-                    } catch (SQLException ex) { }
-                }
+                FileUtils.closeQuietly(rs);
             }
         }
+        
         return cache;
     }
     
-    public CreativePlayerCache hasCre(String player) {
+    public CreativePlayerCache hasCre(String player) throws CoreException {
+        
         CreativePlayerCache cache = creative_cache.get(player.toLowerCase());
-        Communicator com        = CreativeControl.plugin.getCommunicator();
         CreativeSQLDatabase db = CreativeControl.getDb();
 
         if (cache == null) {
+
             PreparedStatement ps = null;
             ResultSet rs = null;
+
             try {
-                ps = db.getQuery("SELECT * FROM `"+db.prefix+"players_creative` WHERE player = '" + db.getPlayerId(player.toLowerCase()) + "'");
+
+                ps = db.getRawQuery("SELECT * FROM `"+db.prefix+"players_creative` WHERE player = '" + db.getPlayerId(player.toLowerCase()) + "'");
                 rs = ps.getResultSet();
 
                 if (rs.next()) {
@@ -338,18 +340,13 @@ public class CreativePlayerData {
                     creative_cache.put(cache.name, cache);
                 }
 
-            } catch (SQLException ex) {
-                com.error(ex, "Failed to get " + player + "'s creative data");
-            } catch (CoreException ex) {
-                com.error(ex, "Failed to get " + player + "'s creative data");
+            } catch (Throwable ex) {
+                throw new CoreException(ex, "Failed to get " + player + "'s creative data");
             } finally {
-                if (rs != null) {
-                    try {
-                        rs.close();
-                    } catch (SQLException ex) { }
-                }
+                FileUtils.closeQuietly(rs);
             }
         }
+
         return cache;
     }
     
