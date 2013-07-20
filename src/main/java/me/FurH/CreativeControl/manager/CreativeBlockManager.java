@@ -271,7 +271,7 @@ public class CreativeBlockManager {
     public double getTablesSize() {
         CreativeSQLDatabase db = CreativeControl.getDb();
         double ret = 0;
-        
+
         for (World world : Bukkit.getWorlds()) {
             try {
                 ret += db.getTableSize(db.prefix+"blocks_"+world.getName());
@@ -279,14 +279,14 @@ public class CreativeBlockManager {
                 CreativeControl.getPlugin().getCommunicator().error(ex, "Failed to get world tables size");
             }
         }
-        
+
         return ret;
     }
 
     public double getTablesFree() {
         CreativeSQLDatabase db = CreativeControl.getDb();
         double ret = 0;
-        
+
         for (World world : Bukkit.getWorlds()) {
             try {
                 ret += db.getTableFree(db.prefix+"blocks_"+world.getName());
@@ -294,8 +294,7 @@ public class CreativeBlockManager {
                 CreativeControl.getPlugin().getCommunicator().error(ex, "Failed to get world tables free size");
             }
         }
-        
-        
+
         return ret;
     }
 }
