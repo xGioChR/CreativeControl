@@ -829,28 +829,34 @@ public class CreativeCommands implements CommandExecutor {
         return true;
     }
     
-    public boolean statusCmd(CommandSender sender, Command cmd, String string, String[] args) {
-        CreativeSQLDatabase      db        = CreativeControl.getDb();
+    public boolean statusCmd(final CommandSender sender, Command cmd, String string, String[] args) {
+        final CreativeSQLDatabase      db        = CreativeControl.getDb();
         CreativeMessages         messages  = CreativeControl.getMessages();
         CreativeControl          plugin    = CreativeControl.getPlugin();
-        CreativeBlockManager     manager   = CreativeControl.getManager();
+        final CreativeBlockManager     manager   = CreativeControl.getManager();
 
         if (!plugin.hasPerm(sender, "Commands.Status")) {
             msg(sender, "&4You dont have permission to use this command!");
             return true;
         }
 
-        msg(sender, "&4Queue size&8:&7 {0}", db.getQueueSize());
-        msg(sender, "&4Database reads&8:&7 {0}", db.getReads());
-        msg(sender, "&4Database writes&8:&7 {0}", db.getWrites());
-        msg(sender, "&4Database size&8:&7 {0} / {1}", Utils.getFormatedBytes(manager.getTablesSize()), Utils.getFormatedBytes(manager.getTablesFree()));
-        try {
-            msg(sender, "&4Database type&8:&7 {0}, &4ping&8:&7 {1} ms", db.getDatabaseEngine(), db.ping() > 0 ? db.ping() : "<1");
-        } catch (CoreException ex) { }
-        msg(sender, "&4Blocks protected&8:&7 {0}", manager.getTotal());
-        msg(sender, "&4Cache reads&8:&7 {0}", manager.getCache().getReads());
-        msg(sender, "&4Queue writes&8:&7 {0}", manager.getCache().getWrites());
-        msg(sender, "&4Cache size&8:&7 {0}/{1}", manager.getCache().size(), manager.getCache().getMaxSize());
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+            @Override
+            public void run() {
+                msg(sender, "&4Queue size&8:&7 {0}", db.getQueueSize());
+                msg(sender, "&4Database reads&8:&7 {0}", db.getReads());
+                msg(sender, "&4Database writes&8:&7 {0}", db.getWrites());
+                msg(sender, "&4Database size&8:&7 {0} / {1}", Utils.getFormatedBytes(manager.getTablesSize()), Utils.getFormatedBytes(manager.getTablesFree()));
+                try {
+                    msg(sender, "&4Database type&8:&7 {0}, &4ping&8:&7 {1} ms, &4LocalHost&8:&7 {2}", db.getDatabaseEngine(), db.ping() > 0 ? db.ping() : "<1", db.isLocalHost());
+                } catch (CoreException ex) { }
+                msg(sender, "&4Blocks protected&8:&7 {0}", manager.getTotal());
+                msg(sender, "&4Cache reads&8:&7 {0}", manager.getCache().getReads());
+                msg(sender, "&4Queue writes&8:&7 {0}", manager.getCache().getWrites());
+                msg(sender, "&4Cache size&8:&7 {0}/{1}", manager.getCache().size(), manager.getCache().getMaxSize());
+            }
+        });
+
         return true;
     }
 
