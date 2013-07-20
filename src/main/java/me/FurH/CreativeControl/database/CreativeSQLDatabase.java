@@ -62,15 +62,8 @@ public final class CreativeSQLDatabase extends CoreSQLDatabase {
         
         try {
 
-            ps = getQuery("SELECT groups FROM `"+prefix+"groups` WHERE player = '"+getPlayerId(player.getName()) + "' LIMIT 1;");
-            
-            try {
-                rs = ps.getResultSet();
-            } catch (SQLException ex) {
-                if (ex.getMessage() != null && ex.getMessage().toLowerCase().contains("executing")) {
-                    rs = ps.executeQuery();
-                }
-            }
+            ps = getRawQuery("SELECT groups FROM `"+prefix+"groups` WHERE player = '"+getPlayerId(player.getName()) + "' LIMIT 1;");
+            rs = ps.getResultSet();
 
             if (rs.next()) {
                 ret = CollectionUtils.toStringList(rs.getString("groups"), ", ").toArray(new String[1]);
@@ -78,7 +71,7 @@ public final class CreativeSQLDatabase extends CoreSQLDatabase {
                 setOldGroups(player);
             }
 
-        } catch (Exception ex) {
+        } catch (Throwable ex) {
             com.error(ex, "Failed to get old group data for the player: " + player.getName());
         } finally {
             closeQuietly(ps);
