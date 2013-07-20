@@ -47,7 +47,7 @@ BlockProtection:
   NoDrop: true
   ## Explosions, if true, creative blocks will be protected against explosions. [REQUIRE NoDrop or OwnBlocks Activated]
   Explosions: false
-  ## CreativeOnly, if true, only creative players area ble to break creative blocks. [REQUIRE NoDrop or OwnBlocks Activated]
+  ## CreativeOnly, if true, only creative players are able to break creative blocks. [REQUIRE NoDrop or OwnBlocks Activated]
   CreativeOnly: false
   ## Pistons, if true, blocks placed by creative players will not be pushed/pulled by pistons [REQUIRE NoDrop or OwnBlocks Activated]
   Pistons: false
