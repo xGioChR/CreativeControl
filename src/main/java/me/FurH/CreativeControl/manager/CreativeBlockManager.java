@@ -230,14 +230,17 @@ public class CreativeBlockManager {
         }
         
         String key = LocationUtils.locationToString(x, y, z, world.getName());
+        CreativeBlockData data = null;
 
-        CreativeBlockData data = cache.get(key);
-        if (data != null) {
-            return data;
+        if (cache.containsKey(key)) {
+            data = cache.get(key);
+            if (data != null) {
+                return data;
+            }
         }
 
         data = CreativeControl.getDb().isprotected(world.getName(), x, y, z, type, nodrop);
-        
+
         if (data != null) {
             cache.put(key, data);
         }
