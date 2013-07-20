@@ -189,18 +189,16 @@ public class CreativeBlockListener implements Listener {
         }
 
         int limit = config.block_minutelimit;
-        if (isLimitReached(p, limit)) {
+        if (limit > 0 && isLimitReached(p, limit)) {
             com.msg(p, messages.blockmanager_limit, limit);
             e.setCancelled(true); return;
         }
-        
-        CreativeBlockManager    manager    = CreativeControl.getManager();
 
-        Block r = e.getBlockReplacedState().getBlock();
-        Block ba = e.getBlockAgainst();
+        CreativeBlockManager    manager    = CreativeControl.getManager();
 
         if (config.block_nodrop) {
             if (config.misc_liquid) {
+                Block r = e.getBlockReplacedState().getBlock();
                 if (r.getType() != Material.AIR) {
                     manager.unprotect(r);
                 }
@@ -213,6 +211,7 @@ public class CreativeBlockListener implements Listener {
         } else
         if (config.block_ownblock) {
             if (config.misc_liquid) {
+                Block r = e.getBlockReplacedState().getBlock();
                 if (r.getType() != Material.AIR) {
                     CreativeBlockData data = manager.isprotected(r, true);
                     if (data != null) {
@@ -228,6 +227,9 @@ public class CreativeBlockListener implements Listener {
             }
 
             if (config.block_against) {
+                
+                Block ba = e.getBlockAgainst();
+                
                 CreativeBlockData data = manager.isprotected(ba, true);
                 if (data != null) {
                     if (!manager.isAllowed(p, data)) {
