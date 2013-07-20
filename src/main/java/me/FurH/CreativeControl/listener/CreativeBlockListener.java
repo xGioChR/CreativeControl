@@ -313,7 +313,7 @@ public class CreativeBlockListener implements Listener {
                 }
             }
         }
-        
+
         List<Block> attached = new ArrayList<Block>();
 
         if (config.block_nodrop || config.block_ownblock) {
@@ -331,7 +331,9 @@ public class CreativeBlockListener implements Listener {
         }
 
         if (config.block_nodrop) {
-            for (Block block : attached) {
+            for (int j1 = 0; j1 < attached.size(); j1++) {
+                Block block = attached.get(0);
+
                 CreativeBlockData data = manager.isprotected(block, false);
 
                 if (data != null) {
@@ -340,7 +342,9 @@ public class CreativeBlockListener implements Listener {
             }
         } else
         if (config.block_ownblock) {
-            for (Block block : attached) {
+            for (int j1 = 0; j1 < attached.size(); j1++) {
+                Block block = attached.get(0);
+
                 CreativeBlockData data = manager.isprotected(block, true);
 
                 if (data != null) {
