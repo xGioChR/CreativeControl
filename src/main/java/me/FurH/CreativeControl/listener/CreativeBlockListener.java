@@ -512,7 +512,7 @@ public class CreativeBlockListener implements Listener {
         if (!isWaterAffected(e.getBlock()) || e.getChangedTypeId() == e.getBlock().getTypeId()) {
             return;
         }
-        
+
         if (!config.block_water) { // handle this as the waterflow protection
             return;
         }
@@ -532,30 +532,34 @@ public class CreativeBlockListener implements Listener {
     }
 
     private boolean isWaterAffected(Block block) {
-        return block.getTypeId() == 6 
-                || block.getTypeId() == 30
-                || block.getTypeId() == 31
-                || block.getTypeId() == 37
-                || block.getTypeId() == 38
-                || block.getTypeId() == 39
-                || block.getTypeId() == 40
-                || block.getTypeId() == 50
-                || block.getTypeId() == 78
-                || block.getTypeId() == 390
-                || block.getTypeId() == 397
-                || block.getTypeId() == 69
-                || block.getTypeId() == 75
-                || block.getTypeId() == 76
-                || block.getTypeId() == 77
-                || block.getTypeId() == 131
-                || block.getTypeId() == 143
-                || block.getTypeId() == 55
-                || block.getTypeId() == 404
-                || block.getTypeId() == 356
-                || block.getTypeId() == 27
-                || block.getTypeId() == 28
-                || block.getTypeId() == 66
-                || block.getTypeId() == 157;
+        return isWaterAffected(block.getTypeId());
+    }
+
+    private boolean isWaterAffected(int id) {
+        return id == 6 
+                || id == 30
+                || id == 31
+                || id == 37
+                || id == 38
+                || id == 39
+                || id == 40
+                || id == 50
+                || id == 78
+                || id == 390
+                || id == 397
+                || id == 69
+                || id == 75
+                || id == 76
+                || id == 77
+                || id == 131
+                || id == 143
+                || id == 55
+                || id == 404
+                || id == 356
+                || id == 27
+                || id == 28
+                || id == 66
+                || id == 157;
     }
 
     private void log(Player p, Block b) {
