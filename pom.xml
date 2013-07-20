@@ -109,7 +109,7 @@
         <dependency>
             <groupId>me.FurH</groupId>
             <artifactId>FCoreLib</artifactId>
-            <version>0.7.16</version>
+            <version>0.7.18</version>
             <type>jar</type>
         </dependency>
         <dependency>

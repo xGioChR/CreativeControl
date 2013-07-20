@@ -821,7 +821,7 @@ public class CreativePlayerListener implements Listener {
         CreativeWorldNodes nodes = CreativeControl.getWorldNodes(b.getWorld());
         CreativeBlockManager manager = CreativeControl.getManager();
 
-        CoreLRUCache<String, CreativeBlockData> cache = manager.getCache();
+        CoreSoftCache<String, CreativeBlockData> cache = manager.getCache();
 
         CreativeBlockData data1 = manager.getFullData(b.getLocation());        
         CreativeBlockData data2 = null;
