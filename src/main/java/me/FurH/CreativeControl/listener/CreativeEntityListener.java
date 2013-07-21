@@ -20,11 +20,13 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
+import me.FurH.Core.cache.CoreHashSet;
 import me.FurH.Core.util.Communicator;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.configuration.CreativeMessages;
 import me.FurH.CreativeControl.configuration.CreativeWorldNodes;
 import me.FurH.CreativeControl.manager.CreativeBlockManager;
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -81,8 +83,26 @@ public class CreativeEntityListener implements Listener {
         if (config.prevent_vehicle) {
             if (!plugin.hasPerm(p, "Preventions.Vehicle")) {
                 int limit = config.prevent_limitvechile;
-                
-                HashSet<UUID> entities = new HashSet<UUID>();
+
+                CoreHashSet<UUID> entities = new CoreHashSet<UUID>(true) {
+
+                    private static final long serialVersionUID = -829811997817455230L;
+
+                    @Override
+                    public void gc() throws Throwable {
+                        
+                        for (World w : Bukkit.getWorlds()) {
+                            for (Entity x : w.getEntities()) {
+                                if (this.contains(x.getUniqueId())) {
+                                    x.remove();
+                                }
+                            }
+                        }
+
+                        super.gc();
+                    }
+                };
+
                 if (plugin.limits.containsKey(p.getName())) {
                     entities = plugin.limits.get(p.getName());
                 }

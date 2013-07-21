@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.WeakHashMap;
 import me.FurH.Core.CorePlugin;
+import me.FurH.Core.cache.CoreHashSet;
 import me.FurH.Core.exceptions.CoreException;
 import me.FurH.Core.internals.InternalManager;
 import me.FurH.Core.updater.CoreUpdater;
@@ -98,8 +99,8 @@ public class CreativeControl extends CorePlugin {
     public WeakHashMap<Player, Location> right = new WeakHashMap<Player, Location>();
     public WeakHashMap<Player, Location> left = new WeakHashMap<Player, Location>();
 
+    public Map<String, CoreHashSet<UUID>> limits = new HashMap<String, CoreHashSet<UUID>>();
     public Map<String, Integer> mods = new HashMap<String, Integer>();
-    public Map<String, HashSet<UUID>> limits = new HashMap<String, HashSet<UUID>>();
 
     public CoreUpdater updater;
 
@@ -417,7 +418,7 @@ public class CreativeControl extends CorePlugin {
     }
     
     private void clear() {
-        HashSet<UUID> entity = new HashSet<UUID>();
+        CoreHashSet<UUID> entity = new CoreHashSet<UUID>();
 
         for (String key : limits.keySet()) {
             entity.addAll(limits.get(key));
@@ -436,7 +437,7 @@ public class CreativeControl extends CorePlugin {
     }
     
     public void clear(Player player) {
-        HashSet<UUID> entity = limits.get(player.getName());
+        CoreHashSet<UUID> entity = limits.get(player.getName());
 
         if (entity == null) {
             return;
