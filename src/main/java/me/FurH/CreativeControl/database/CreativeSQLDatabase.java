@@ -152,10 +152,6 @@ public final class CreativeSQLDatabase extends CoreSQLDatabase {
         return data;
     }
     
-    public CreativeBlockData isprotected(Block block, boolean nodrop) {
-        return null;
-    }
-    
     public CreativeBlockData isprotected(String world, int x, int y, int z, int type, boolean nodrop) {
         
         Communicator com = CreativeControl.plugin.getCommunicator();
