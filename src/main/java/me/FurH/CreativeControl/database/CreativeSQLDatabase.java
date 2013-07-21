@@ -164,6 +164,7 @@ public final class CreativeSQLDatabase extends CoreSQLDatabase {
         ResultSet rs = null;
         
         try {
+
             if (nodrop) {
                 ps = getQuery("SELECT owner, type, allowed FROM `"+prefix+"blocks_"+world+"` WHERE x = '" + x + "' AND z = '" + z + "' AND y = '" + y + "';");
             } else {
@@ -171,14 +172,17 @@ public final class CreativeSQLDatabase extends CoreSQLDatabase {
             }
 
             rs = ps.getResultSet();
-        
+
             if (rs.next()) {
+
                 if (nodrop) {
                     data = new CreativeBlockData(getPlayerName(rs.getInt("owner")), rs.getInt("type"), CollectionUtils.toStringHashSet(rs.getString("allowed"), ", "));
                 } else {
                     data = new CreativeBlockData(rs.getInt("type"));
                 }
+
             } else if (CreativeSQLUpdater.lock) {
+
                 ps = getQuery("SELECT owner, type, allowed FROM `"+prefix+"blocks` WHERE location = "+LocationUtils.locationToString2(world, x, y, z)+"';");
                 rs = ps.getResultSet();
 
@@ -191,8 +195,6 @@ public final class CreativeSQLDatabase extends CoreSQLDatabase {
             com.error(ex, "Failed to get block from database");
         } catch (CoreException ex) {
             com.error(ex, "Failed to get block from database");
-        } finally {
-            closeQuietly(rs);
         }
 
         if (data != null && data.type != 73 && data.type != 74 && data.type != type) {
@@ -309,18 +311,18 @@ public final class CreativeSQLDatabase extends CoreSQLDatabase {
         ResultSet rs = null;
 
         try {
+            
             ps = getQuery("SELECT player FROM `"+prefix+"players` WHERE id = '" + id + "' LIMIT 1;");
             rs = ps.getResultSet();
             
             if (rs.next()) {
                 ret = rs.getString("player");
             }
+            
         } catch (SQLException ex) {
             com.error(ex, "Failed to get the player data from the database");
         } catch (CoreException ex) {
             com.error(ex, "Failed to get the player data from the database");
-        } finally {
-            closeQuietly(rs);
         }
 
         owners.put(ret, id);
@@ -339,18 +341,18 @@ public final class CreativeSQLDatabase extends CoreSQLDatabase {
         ResultSet rs = null;
         
         try {
+            
             ps = getQuery("SELECT id FROM `"+prefix+"players` WHERE player = '" + player + "' LIMIT 1;");
             rs = ps.getResultSet();
             
             if (rs.next()) {
                 ret = rs.getInt("id");
             }
+            
         } catch (SQLException ex) {
             com.error(ex, "Failed to retrieve "+player+"'s id");
         } catch (CoreException ex) {
             com.error(ex, "Failed to retrieve "+player+"'s id");
-        } finally {
-            closeQuietly(rs);
         }
         
         if (ret == -1) {
@@ -363,7 +365,7 @@ public final class CreativeSQLDatabase extends CoreSQLDatabase {
 
             return getPlayerId(player);
         }
-        
+
         owners.put(player, ret);
         return ret;
     }
@@ -387,8 +389,6 @@ public final class CreativeSQLDatabase extends CoreSQLDatabase {
             com.error(ex, "Failed to get player data from the database");
         } catch (CoreException ex) {
             com.error(ex, "Failed to get all players id");
-        } finally {
-            closeQuietly(rs);
         }
 
         return ret;

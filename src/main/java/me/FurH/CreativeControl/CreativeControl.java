@@ -21,7 +21,6 @@ import de.diddiz.LogBlock.Consumer;
 import de.diddiz.LogBlock.LogBlock;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.UUID;
 import java.util.WeakHashMap;

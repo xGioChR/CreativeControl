@@ -17,9 +17,13 @@
 package me.FurH.CreativeControl.commands;
 
 import com.sk89q.worldedit.bukkit.selections.Selection;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.Random;
 import me.FurH.Core.exceptions.CoreException;
 import me.FurH.Core.inventory.InventoryStack;
+import me.FurH.Core.player.PlayerUtils;
 import me.FurH.Core.util.Utils;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.configuration.CreativeMainConfig;
@@ -832,17 +836,63 @@ public class CreativeCommands implements CommandExecutor {
     public boolean statusCmd(final CommandSender sender, Command cmd, String string, String[] args) {
         final CreativeSQLDatabase      db        = CreativeControl.getDb();
         CreativeMessages         messages  = CreativeControl.getMessages();
-        CreativeControl          plugin    = CreativeControl.getPlugin();
+        final CreativeControl          plugin    = CreativeControl.getPlugin();
         final CreativeBlockManager     manager   = CreativeControl.getManager();
 
         if (!plugin.hasPerm(sender, "Commands.Status")) {
             msg(sender, "&4You dont have permission to use this command!");
             return true;
         }
+        
+        msg(sender, "&8Loading...");
 
         Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
             @Override
             public void run() {
+                
+                World world = null;
+                long lastSize = 0;
+
+                for (World w : Bukkit.getWorlds()) {
+                    try {
+                        
+                        long size = db.getTableSize(db.prefix+"blocks_"+w.getName());
+                        if (size > lastSize) {
+                            lastSize = size;
+                            world = w;
+                        }
+                    } catch (CoreException ex) {
+                        plugin.error(ex, "Failed to get world tables size");
+                    }
+                }
+
+                Double[] times = new Double[ 10 ];
+                Random rnd = new Random();
+                
+                int id = 56;
+
+                while (!manager.isprotectable(world, id)) {
+                    id = rnd.nextInt(256);
+                }
+                
+                msg(sender, "&7Testing table &8'"+db.prefix+"blocks_"+world.getName()+"'&7 with id &8'" + id + "'&7...");
+
+                for (int j1 = 0; j1 < times.length; j1++) {
+                    double start = (double) System.currentTimeMillis();
+
+                    int x = rnd.nextInt(30000000);
+                    int y = rnd.nextInt(256);
+                    int z = rnd.nextInt(30000000);
+
+                    manager.isprotected(world, x, y, z, id, false);
+
+                    times[ j1 ] = ((double) System.currentTimeMillis()) - start;
+                }
+
+                double average = PlayerUtils.getAverage(times);
+                double max = Collections.max(Arrays.asList(times));
+                double min = Collections.min(Arrays.asList(times));
+
                 msg(sender, "&4Queue size&8:&7 {0}", db.getQueueSize());
                 msg(sender, "&4Database reads&8:&7 {0}", db.getReads());
                 msg(sender, "&4Database writes&8:&7 {0}", db.getWrites());
@@ -854,6 +904,7 @@ public class CreativeCommands implements CommandExecutor {
                 msg(sender, "&4Cache reads&8:&7 {0}", manager.getCache().getReads());
                 msg(sender, "&4Queue writes&8:&7 {0}", manager.getCache().getWrites());
                 msg(sender, "&4Cache size&8:&7 {0}/{1}", manager.getCache().size(), manager.getCache().getMaxSize());
+                msg(sender, "&4Database Time&8:&7 {0} ms &8[&7 {1} max &8/&7 {2} min &8]", average, max, min);
             }
         });
 
