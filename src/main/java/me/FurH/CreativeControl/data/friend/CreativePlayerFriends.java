@@ -34,7 +34,8 @@ import org.bukkit.entity.Player;
  * @author FurmigaHumana
  */
 public class CreativePlayerFriends {
-    private CoreSafeCache<String, HashSet<String>> hascache = new CoreSafeCache<String, HashSet<String>>();
+    
+    private CoreSafeCache<String, HashSet<String>> hascache = new CoreSafeCache<String, HashSet<String>>(true);
     
     public void uncache(Player p) {
         hascache.remove(p.getName().toLowerCase());

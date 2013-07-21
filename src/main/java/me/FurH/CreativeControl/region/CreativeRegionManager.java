@@ -18,10 +18,8 @@ package me.FurH.CreativeControl.region;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import me.FurH.Core.exceptions.CoreException;
 import me.FurH.Core.file.FileUtils;
 import me.FurH.Core.location.LocationUtils;
 import me.FurH.Core.util.Communicator;

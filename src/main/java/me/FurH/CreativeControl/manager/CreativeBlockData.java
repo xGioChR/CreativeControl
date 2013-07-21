@@ -23,6 +23,7 @@ import java.util.HashSet;
  * @author FurmigaHumana
  */
 public class CreativeBlockData {
+    
     public String owner;
     public int type;
     public HashSet<String> allowed;

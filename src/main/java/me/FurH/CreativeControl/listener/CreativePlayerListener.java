@@ -646,9 +646,6 @@ public class CreativePlayerListener implements Listener {
         }
     }
 
-    /*
-     * Player interact section
-     */
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void onPlayerInteract(PlayerInteractEvent e) {
         

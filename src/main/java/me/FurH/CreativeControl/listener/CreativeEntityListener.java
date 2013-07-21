@@ -53,6 +53,7 @@ import org.bukkit.metadata.FixedMetadataValue;
  * @author FurmigaHumana
  */
 public class CreativeEntityListener implements Listener {
+    
     public static List<Player> waiting = new ArrayList<Player>();
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)

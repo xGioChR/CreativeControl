@@ -24,6 +24,7 @@ import org.bukkit.Location;
  * @author FurmigaHumana
  */
 public class CreativeRegion {
+    
     public Location start;
     public Location end;
     public GameMode gamemode;

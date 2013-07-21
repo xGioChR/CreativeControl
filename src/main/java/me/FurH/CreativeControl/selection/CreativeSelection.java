@@ -24,12 +24,14 @@ import org.bukkit.util.Vector;
  * @author FurmigaHumana
  */
 public class CreativeSelection {
+
     private Location start, end;
     private Vector vector;
 
     public CreativeSelection(Location start, Location end) {
         int sx = start.getBlockX();
         int ex = end.getBlockX();
+        
         if (sx > ex) {
             int i = sx;
             sx = ex;
@@ -38,6 +40,7 @@ public class CreativeSelection {
 
         int sy = start.getBlockY();
         int ey = end.getBlockY();
+        
         if (sy > ey) {
             int i = sy;
             sy = ey;
@@ -46,6 +49,7 @@ public class CreativeSelection {
 
         int sz = start.getBlockZ();
         int ez = end.getBlockZ();
+        
         if (sz > ez) {
             int i = sz;
             sz = ez;
@@ -91,6 +95,7 @@ public class CreativeSelection {
     }
     
     public int getArea() {
+
         Location min = start;
         Location max = end;
 

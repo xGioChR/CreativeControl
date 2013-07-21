@@ -18,7 +18,6 @@ package me.FurH.CreativeControl.manager;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -94,14 +93,13 @@ public class CreativeBlockManager {
 
             cache.remove(LocationUtils.locationToString(x, y, z, world.getName()));
             CreativeControl.getDb().unprotect(world.getName(), x, y, z);
-            
         }
     }
 
     public void protect(Player p, Block b) {
         protect(p.getName(), b);
     }
-    
+
     public void protect(String player, Block b) {
         protect(player, b.getWorld(), b.getX(), b.getY(), b.getZ(), b.getTypeId());
     }
@@ -134,6 +132,7 @@ public class CreativeBlockManager {
             Collections.reverse(worldsx);
 
             for (World world : worldsx) {
+
                 PreparedStatement ps = db.getQuery("SELECT * FROM `"+db.prefix+"blocks_"+world.getName() + "` ORDER BY 'time' DESC LIMIT "+each+";");
                 ResultSet rs = ps.getResultSet();
 
@@ -171,9 +170,7 @@ public class CreativeBlockManager {
             }
             
             worldsx.clear();
-        } catch (SQLException ex) {
-            com.error(ex, "Failed to add protections to cache");
-        } catch (CoreException ex) {
+        } catch (Exception ex) {
             com.error(ex, "Failed to add protections to cache");
         }
 
