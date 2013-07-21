@@ -36,6 +36,7 @@ import org.bukkit.entity.Player;
  * @author FurmigaHumana
  */
 public class CreativeBlocksSelection {
+    
     private long elapsedTime = 0;
     private Location min = null;
     private Location max = null;
@@ -45,6 +46,7 @@ public class CreativeBlocksSelection {
     };
 
     public boolean allBlocks(CommandSender sender, final String args, final Type type) {
+        
         final CreativeControl      plugin   = CreativeControl.getPlugin();
         final CreativeBlockManager manager  = CreativeControl.getManager();
         final Communicator         com      = plugin.getCommunicator();
@@ -195,6 +197,7 @@ public class CreativeBlocksSelection {
                 com.msg(player, "&7All blocks processed in &4{0}&7 ms", elapsedTime);
             }
         };
+        t.setDaemon(true);
         t.setName("CreativeControl Selection Thread");
         t.setPriority(1);
         t.start();
