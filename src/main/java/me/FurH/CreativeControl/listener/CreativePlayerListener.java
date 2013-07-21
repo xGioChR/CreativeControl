@@ -19,7 +19,7 @@ package me.FurH.CreativeControl.listener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
+import me.FurH.Core.cache.CoreHashSet;
 import me.FurH.Core.cache.CoreLRUCache;
 import me.FurH.Core.exceptions.CoreException;
 import me.FurH.Core.location.LocationUtils;
@@ -66,8 +66,8 @@ import org.bukkit.inventory.ItemStack;
  */
 public class CreativePlayerListener implements Listener {
 
-    public static HashSet<String> changed = new HashSet<String>();
-    private HashSet<String> dontdrop = new HashSet<String>();
+    public static CoreHashSet<String> changed = new CoreHashSet<String>(true);
+    private CoreHashSet<String> dontdrop = new CoreHashSet<String>(true);
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerGameModeChange(PlayerGameModeChangeEvent e) {
