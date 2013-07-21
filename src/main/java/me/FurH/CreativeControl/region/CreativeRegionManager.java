@@ -22,6 +22,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import me.FurH.Core.exceptions.CoreException;
+import me.FurH.Core.file.FileUtils;
 import me.FurH.Core.location.LocationUtils;
 import me.FurH.Core.util.Communicator;
 import me.FurH.CreativeControl.CreativeControl;
@@ -34,6 +35,7 @@ import org.bukkit.Location;
  * @author FurmigaHumana
  */
 public class CreativeRegionManager {    
+    
     private List<CreativeRegion> areas = new ArrayList<CreativeRegion>();
 
     public List<CreativeRegion> getAreas() {
@@ -56,12 +58,13 @@ public class CreativeRegionManager {
                 return region;
             }
         }
-        
+
         return null;
     }
     
     public void addRegion(String name, Location start, Location end, String type) {
         CreativeRegion region = new CreativeRegion();
+        
         region.start = start;
         region.end = end;
 
@@ -100,21 +103,12 @@ public class CreativeRegionManager {
                 addRegion(name, start, end, type);
                 total++;
             }
-        } catch (SQLException ex) {
-            com.error(ex, "Failed to get regions from the database");
-        } catch (CoreException ex) {
+
+        } catch (Exception ex) {
             com.error(ex, "Failed to get regions from the database");
         } finally {
-            if (rs != null) {
-                try {
-                    rs.close();
-                } catch (SQLException ex) { }
-            }
-            if (ps != null) {
-                try {
-                    ps.close();
-                } catch (SQLException ex) { }
-            }
+            FileUtils.closeQuietly(rs);
+            FileUtils.closeQuietly(ps);
         }
         return total;
     }
@@ -132,21 +126,11 @@ public class CreativeRegionManager {
             if (rs.next()) {
                 return true;
             }
-        } catch (SQLException ex) {
-            com.error(ex, "Failed to get region from the database");
-        } catch (CoreException ex) {
+        } catch (Exception ex) {
             com.error(ex, "Failed to get region from the database");
         } finally {
-            if (rs != null) {
-                try {
-                    rs.close();
-                } catch (SQLException ex) { }
-            }
-            if (ps != null) {
-                try {
-                    ps.close();
-                } catch (SQLException ex) { }
-            }
+            FileUtils.closeQuietly(rs);
+            FileUtils.closeQuietly(ps);
         }
         
         return false;
