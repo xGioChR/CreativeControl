@@ -146,7 +146,7 @@ public final class CreativeSQLDatabase extends CoreSQLDatabase {
         } catch (CoreException ex) {
             com.error(ex, "Failed to get block from database");
         } finally {
-            closeQuietly(rs);
+            closeLater(rs);
         }
         
         return data;
@@ -191,6 +191,8 @@ public final class CreativeSQLDatabase extends CoreSQLDatabase {
             com.error(ex, "Failed to get block from database");
         } catch (CoreException ex) {
             com.error(ex, "Failed to get block from database");
+        } finally {
+            closeLater(rs);
         }
 
         if (data != null && data.type != 73 && data.type != 74 && data.type != type) {
@@ -319,6 +321,8 @@ public final class CreativeSQLDatabase extends CoreSQLDatabase {
             com.error(ex, "Failed to get the player data from the database");
         } catch (CoreException ex) {
             com.error(ex, "Failed to get the player data from the database");
+        } finally {
+            closeLater(rs);
         }
 
         owners.put(ret, id);
@@ -349,6 +353,8 @@ public final class CreativeSQLDatabase extends CoreSQLDatabase {
             com.error(ex, "Failed to retrieve "+player+"'s id");
         } catch (CoreException ex) {
             com.error(ex, "Failed to retrieve "+player+"'s id");
+        } finally {
+            closeLater(rs);
         }
         
         if (ret == -1) {
@@ -385,6 +391,8 @@ public final class CreativeSQLDatabase extends CoreSQLDatabase {
             com.error(ex, "Failed to get player data from the database");
         } catch (CoreException ex) {
             com.error(ex, "Failed to get all players id");
+        } finally {
+            closeLater(rs);
         }
 
         return ret;
