@@ -53,6 +53,7 @@ import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
+import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.material.MaterialData;
 import org.bukkit.material.PistonBaseMaterial;
 
@@ -464,27 +465,54 @@ public class CreativeBlockListener implements Listener {
     public void onBlockFromTo(BlockFromToEvent e) {
         if (e.isCancelled()) { return; }
 
-        CreativeBlockManager    manager     = CreativeControl.getManager();
-        Block block = e.getBlock();
         CreativeWorldNodes config = CreativeControl.getWorldNodes(e.getBlock().getWorld());
+        CreativeBlockManager    manager     = CreativeControl.getManager();
+        Block block = e.getToBlock();
+        
+        if (config.world_exclude) {
+            return;
+        }
+
+        if (e.getBlock().getType() != Material.WATER &&
+                e.getBlock().getType() != Material.STATIONARY_WATER) {
+            return;
+        }
+
+        if (!config.block_water) {
+            return;
+        }
+
+        if (config.block_nodrop) {
+            CreativeBlockData data = manager.isprotected(block, false);
+            if (data != null) {
+                block.setType(Material.AIR);
+            }
+        } else
+        if (config.block_ownblock) {
+            CreativeBlockData data = manager.isprotected(block, true);
+            if (data != null) {
+                e.setCancelled(true);
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
+    public void onBucketEmpty(PlayerBucketEmptyEvent e) {
+        if (e.isCancelled()) { return; }
+        
+        if (e.getBlockClicked() == null) {
+            return;
+        }
+        
+        CreativeWorldNodes config = CreativeControl.getWorldNodes(e.getBlockClicked().getWorld());
+        CreativeBlockManager    manager     = CreativeControl.getManager();
+        Block block = e.getBlockClicked().getRelative(BlockFace.UP);
 
         if (config.world_exclude) {
             return;
         }
-        
-        if (e.getBlock().getType() == Material.DRAGON_EGG) {
-            
-            if (config.block_nodrop || config.block_ownblock) {
-                CreativeBlockData data = manager.isprotected(block, false);
-                if (data != null) {
-                    e.setCancelled(true);
-                }
-            }
-            
-            return;
-        }
 
-        if (!isWaterAffected(e.getToBlock())) {
+        if (!isWaterAffected(block)) {
             return;
         }
         
@@ -505,45 +533,7 @@ public class CreativeBlockListener implements Listener {
             }
         }
     }
-
-    @EventHandler
-    public void onBlockPhysics(BlockPhysicsEvent e) {
-        if (e.isCancelled()) { return; }
-
-        CreativeBlockManager    manager     = CreativeControl.getManager();
-        Block block = e.getBlock();
-        CreativeWorldNodes config = CreativeControl.getWorldNodes(e.getBlock().getWorld());
-
-        if (config.world_exclude) {
-            return;
-        }
-
-        if (!isWaterAffected(e.getBlock()) || e.getChangedTypeId() == e.getBlock().getTypeId()) {
-            return;
-        }
-
-        if (!config.block_water) { // handle this as the waterflow protection
-            return;
-        }
-
-        if (placed.contains(e.getBlock().getLocation())) {
-            return;
-        }
-
-        if (config.block_nodrop) {
-            CreativeBlockData data = manager.isprotected(block, false);
-            if (data != null) {
-                block.setType(Material.AIR);
-            }
-        } else
-        if (config.block_ownblock) {
-            CreativeBlockData data = manager.isprotected(block, true);
-            if (data != null) {
-                e.setCancelled(true);
-            }
-        }
-    }
-
+    
     private boolean isWaterAffected(Block block) {
         return isWaterAffected(block.getTypeId());
     }
