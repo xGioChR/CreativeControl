@@ -20,7 +20,6 @@ import de.diddiz.LogBlock.Consumer;
 import java.util.ArrayList;
 import java.util.List;
 import me.FurH.Core.blocks.BlockUtils;
-import me.FurH.Core.cache.CoreHashSet;
 import me.FurH.Core.cache.CoreLRUCache;
 import me.FurH.Core.util.Communicator;
 import me.FurH.CreativeControl.CreativeControl;
@@ -36,7 +35,6 @@ import me.botsko.prism.Prism;
 import me.botsko.prism.actionlibs.ActionFactory;
 import net.coreprotect.CoreProtectAPI;
 import org.bukkit.GameMode;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -63,7 +61,6 @@ import org.bukkit.material.PistonBaseMaterial;
 public class CreativeBlockListener implements Listener {
     
     private CoreLRUCache<String, CoreLRUCache<String, CreativeBlockLimit>> limits = new CoreLRUCache<String, CoreLRUCache<String, CreativeBlockLimit>>(true);
-    private CoreHashSet<Location> placed = new CoreHashSet<Location>(true);
 
     /*
      * Block Place Module
@@ -248,12 +245,6 @@ public class CreativeBlockListener implements Listener {
                     manager.protect(p, b);
                 }
             }
-        }
-
-        if (isWaterAffected(e.getBlock().getTypeId()) && 
-                p.getGameMode().equals(GameMode.CREATIVE) && !e.isCancelled()) {
-
-            placed.add(e.getBlock().getLocation());
         }
     }
 
