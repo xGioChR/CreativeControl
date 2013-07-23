@@ -33,9 +33,9 @@ Queue:
 
 Cache:
   ## MaxCapacity, the maximum cache capacity, higher this value is, better will be the performance, but also the memory usage will increase.
-  MaxCapacity: 15000
+  MaxCapacity: 50000
   ## PreCache, the amount of items to be cached on startup, if you have a big database, this may increase the load time.
-  PreCache: 10000
+  PreCache: 30000
 
 Configurations:
   ## Single, if true, only the world.yml file will be used, other ones will be ignored.
