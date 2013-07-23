@@ -48,6 +48,13 @@ public class CreativePermissions {
             }
         }
 
+        plugin = pm.getPlugin("Multiverse-Core");
+        if (plugin != null && plugin.isEnabled()) {
+            handler = new CreativeMultiVerse(plugin);
+            com.log("[TAG] MultiVerse hooked as permissions bridge!");
+            return;
+        }
+        
         plugin = pm.getPlugin("GroupManager");
         if (plugin != null && plugin.isEnabled()) {
             handler = new CreativeGroupManager(plugin);
