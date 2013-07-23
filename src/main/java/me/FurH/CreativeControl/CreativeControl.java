@@ -106,7 +106,7 @@ public class CreativeControl extends CorePlugin {
     @Override
     public void onEnable() {
         
-        long start = System.currentTimeMillis();
+        long localStart = System.currentTimeMillis();
         
         plugin = this;
         
@@ -234,13 +234,13 @@ public class CreativeControl extends CorePlugin {
             error(ex);
         }
         
-        logEnable(Math.abs(System.currentTimeMillis() - start));
+        logEnable(Math.abs(System.currentTimeMillis() - localStart));
     }
 
     @Override
     public void onDisable() {
         
-        long start = System.currentTimeMillis();
+        long localStart = System.currentTimeMillis();
 
         try {
             database.disconnect(false);
@@ -283,7 +283,7 @@ public class CreativeControl extends CorePlugin {
         updater = null;
         
         
-        logDisable(Math.abs(System.currentTimeMillis() - start));
+        logDisable(Math.abs(System.currentTimeMillis() - localStart));
     }
     
     public void reload(CommandSender sender) {
