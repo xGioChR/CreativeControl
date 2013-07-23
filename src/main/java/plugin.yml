@@ -3,7 +3,7 @@ version: 6.4
 author: FurmigaHumana
 description: Keep yours creatives in the line!
 main: me.FurH.CreativeControl.CreativeControl
-softdepend: ['Vault', 'WorldEdit', 'LogBlock', 'Prism', 'AuthMe', 'xAuth', 'MobArena', 'Multiverse-Inventories', 'FCoreLib', 'SurvivalGames', 'PermissionsEx', 'GroupManager']
+softdepend: ['Vault', 'WorldEdit', 'LogBlock', 'Prism', 'AuthMe', 'CoreProtect', 'xAuth', 'MobArena', 'Multiverse-Inventories', 'Multiverse-Core', 'FCoreLib', 'SurvivalGames', 'PermissionsEx', 'GroupManager']
 commands:
   creativecontrol:
     aliases: [cc, ccontrol]
