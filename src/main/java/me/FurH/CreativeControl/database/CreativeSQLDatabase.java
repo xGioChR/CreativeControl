@@ -195,11 +195,37 @@ public final class CreativeSQLDatabase extends CoreSQLDatabase {
             closeLater(rs);
         }
 
-        if (data != null && data.type != 73 && data.type != 74 && data.type != type) {
+        if (data != null && data.type != type && !wontChangeId(data.type)) {
             data = null;
         }
         
         return data;
+    }
+    
+    public boolean wontChangeId(int id) {
+        switch (id) {
+            case 2:
+            case 3:
+            case 8:
+            case 9:
+            case 10:
+            case 11:
+            case 43:
+            case 44:
+            case 73:
+            case 74:
+            case 75:
+            case 76:
+            case 93:
+            case 94:
+            case 123:
+            case 124:
+            case 149:
+            case 150:
+                return true;
+            default:
+                return false;
+        }
     }
     
     public void load() {
