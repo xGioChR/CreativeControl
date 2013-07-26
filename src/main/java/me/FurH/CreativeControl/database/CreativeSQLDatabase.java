@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import me.FurH.Core.CorePlugin;
-import me.FurH.Core.cache.CoreSafeCache;
 import me.FurH.Core.database.CoreSQLDatabase;
 import me.FurH.Core.exceptions.CoreException;
 import me.FurH.Core.list.CollectionUtils;
@@ -45,8 +44,6 @@ import org.bukkit.entity.Player;
  */
 public final class CreativeSQLDatabase extends CoreSQLDatabase {
     
-    private static CoreSafeCache<String, Integer> owners = new CoreSafeCache<String, Integer>(true);
-
     public CreativeSQLDatabase(CorePlugin plugin, String prefix, String engine, String database_host, String database_port, String database_table, String database_user, String database_pass) {
         super(plugin, prefix, engine, database_host, database_port, database_table, database_user, database_pass);
         super.setDatabaseVersion(3);
@@ -322,79 +319,29 @@ public final class CreativeSQLDatabase extends CoreSQLDatabase {
         }
     }
     
+    @Override
     public String getPlayerName(int id) {
         String ret = null;
-        
-        if (owners.containsValue(id)) {
-            return owners.getKey(id);
-        }
-        
-        Communicator com = CreativeControl.plugin.getCommunicator();
-
-        PreparedStatement ps = null;
-        ResultSet rs = null;
 
         try {
-            
-            ps = getQuery("SELECT player FROM `"+prefix+"players` WHERE id = '" + id + "' LIMIT 1;");
-            rs = ps.getResultSet();
-            
-            if (rs.next()) {
-                ret = rs.getString("player");
-            }
-            
-        } catch (SQLException ex) {
-            com.error(ex, "Failed to get the player data from the database");
-        } catch (CoreException ex) {
-            com.error(ex, "Failed to get the player data from the database");
-        } finally {
-            closeLater(rs);
+            ret = super.getPlayerName(id);
+        } catch (Exception ex) {
+            CreativeControl.plugin.error(ex, "Failed to get the player data from the database");
         }
 
-        owners.put(ret, id);
         return ret;
     }
-    
+
+    @Override
     public int getPlayerId(String player) {
         int ret = -1;
-        
-        if (owners.containsKey(player)) {
-            return owners.get(player);
-        }
 
-        Communicator com = CreativeControl.plugin.getCommunicator();
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-        
         try {
-            
-            ps = getQuery("SELECT id FROM `"+prefix+"players` WHERE player = '" + player + "' LIMIT 1;");
-            rs = ps.getResultSet();
-            
-            if (rs.next()) {
-                ret = rs.getInt("id");
-            }
-            
-        } catch (SQLException ex) {
-            com.error(ex, "Failed to retrieve "+player+"'s id");
-        } catch (CoreException ex) {
-            com.error(ex, "Failed to retrieve "+player+"'s id");
-        } finally {
-            closeLater(rs);
+            ret = super.getPlayerId(player);
+        } catch (Exception ex) {
+            CreativeControl.plugin.error(ex, "Failed to retrieve "+player+"'s id");
         }
         
-        if (ret == -1) {
-
-            try {
-                execute("INSERT INTO `"+prefix+"players` (player) VALUES ('"+player+"');");
-            } catch (CoreException ex) {
-                com.error(ex, "Failed to insert "+player+"'s id"); return -1;
-            }
-
-            return getPlayerId(player);
-        }
-
-        owners.put(player, ret);
         return ret;
     }
     
