@@ -25,6 +25,7 @@ import com.sk89q.worldedit.bukkit.BukkitWorld;
 import de.diddiz.LogBlock.Consumer;
 import de.diddiz.LogBlock.Logging;
 import de.diddiz.LogBlock.config.Config;
+import java.lang.reflect.Method;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.configuration.CreativeWorldNodes;
 import me.FurH.CreativeControl.manager.CreativeBlockManager;
@@ -32,6 +33,7 @@ import me.botsko.prism.Prism;
 import me.botsko.prism.actionlibs.ActionFactory;
 import net.coreprotect.CoreProtectAPI;
 import net.coreprotect.Functions;
+import net.coreprotect.worldedit.WorldEdit;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -39,6 +41,7 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
+import org.bukkit.inventory.ItemStack;
 
 /**
  *
@@ -78,13 +81,18 @@ public class CreativeEditSession extends EditSession {
             oldState = w.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()).getState();
         }
 
+        Block block_ = ((BukkitWorld)player.getWorld()).getWorld().getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
+
+        BlockState block_state = block_.getState();
+        ItemStack[] container_contents = getContainerContents(block_);
+
         boolean success = super.rawSetBlock(pt, block);
 
         if (success) {
 
             logBlock(pt, block, oldType, oldData, oldState);
             prism(pt, block, oldType, oldData);
-            coreprotect(pt, block, oldType, oldData);
+            coreprotect(pt, block, block_state, block_, container_contents);
 
             if (!config.world_exclude && config.block_worledit) {
                 int newType = block.getType();
@@ -112,30 +120,45 @@ public class CreativeEditSession extends EditSession {
 
         return success;
     }
+    
+    public void coreprotect(Vector vector, BaseBlock base_block, BlockState block_state, Block block, ItemStack[] container_contents) {
 
-    public void coreprotect(Vector vector, BaseBlock base_block, int old_type, int old_data) {
         CoreProtectAPI protect = CreativeControl.getCoreProtect();
-        if (protect != null) {
 
-            Block block = ((BukkitWorld) this.player.getWorld()).getWorld().getBlockAt(vector.getBlockX(), vector.getBlockY(), vector.getBlockZ());
-
-            if ((!(this.player.getWorld() instanceof BukkitWorld)) || (Functions.checkConfig(block.getWorld(), "worldedit") == 0)) {
-                return;
-            }
-
-            int new_type = block.getTypeId();
-            int new_data = block.getData();
-
-            if ((old_type != new_type) || (old_data != new_data)) {
-                if ((old_type == 0) && (new_type > 0)) {
-                    protect.logPlacement(player.getName(), block.getLocation(), block.getTypeId(), block.getData());
-                } else if ((old_type > 0) && (new_type > 0)) {
-                    protect.logPlacement(player.getName(), block.getLocation(), block.getTypeId(), block.getData());
-                } else if ((old_type > 0) && (new_type == 0)) {
-                    protect.logRemoval(player.getName(), block.getLocation(), block.getTypeId(), block.getData());
-                }
-            }
+        if (protect == null) {
+            return;
         }
+
+        if (Functions.checkConfig(block.getWorld(), "worldedit") == 0) {
+            return;
+        }
+
+        try {
+
+            Method log = WorldEdit.class.getDeclaredMethod("logData", LocalPlayer.class, Vector.class, Block.class, BlockState.class, ItemStack[].class);
+            log.setAccessible(true);
+            log.invoke(null, player, vector, block, block_state, container_contents);
+
+        } catch (Exception ex) {
+            
+            String methods = "";
+            
+            for (Method m : WorldEdit.class.getDeclaredMethods()) {
+                methods += m.getName() + ", ";
+            }
+            
+            System.out.println("[ " + ex.getClass().getSimpleName() + " ]: Failed to invoke logData method, Available: " + methods);
+        }
+    }
+
+    private ItemStack[] getContainerContents(Block block) {
+        CoreProtectAPI protect = CreativeControl.getCoreProtect();
+
+        if (protect == null) {
+            return null;
+        }
+
+        return Functions.getContainerContents(block);
     }
 
     public void prism(Vector pt, BaseBlock block, int typeBefore, byte dataBefore) {
