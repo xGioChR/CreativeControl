@@ -94,7 +94,18 @@ public class CreativeEditSession extends EditSession {
                 }
 
                 if (newType != 0) {
-                    manager.protect(player.getName(), w, pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), newType);
+                    
+                    if (config.block_ownblock) {
+                        if (!player.hasPermission("CreativeControl.OwnBlock.DontSave")) {
+                            manager.protect(player.getName(), w, pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), newType);
+                        }
+                    }
+
+                    if (config.block_nodrop) {
+                        if (!player.hasPermission("CreativeControl.NoDrop.DontSave")) {
+                            manager.protect(player.getName(), w, pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), newType);
+                        }
+                    }   
                 }
             }
         }
