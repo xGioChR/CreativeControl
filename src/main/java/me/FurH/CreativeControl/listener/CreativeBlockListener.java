@@ -332,7 +332,7 @@ public class CreativeBlockListener implements Listener {
 
         if (config.block_nodrop) {
             for (int j1 = 0; j1 < attached.size(); j1++) {
-                Block block = attached.get(0);
+                Block block = attached.get(j1);
 
                 CreativeBlockData data = manager.isprotected(block, false);
 
@@ -343,7 +343,7 @@ public class CreativeBlockListener implements Listener {
         } else
         if (config.block_ownblock) {
             for (int j1 = 0; j1 < attached.size(); j1++) {
-                Block block = attached.get(0);
+                Block block = attached.get(j1);
 
                 CreativeBlockData data = manager.isprotected(block, true);
 
