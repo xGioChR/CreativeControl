@@ -16,7 +16,6 @@
 
 package me.FurH.CreativeControl;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -26,7 +25,6 @@ import me.FurH.Core.CorePlugin;
 import me.FurH.Core.cache.CoreHashSet;
 import me.FurH.Core.exceptions.CoreException;
 import me.FurH.Core.internals.InternalManager;
-import me.FurH.Core.updater.CoreUpdater;
 import me.FurH.CreativeControl.blacklist.CreativeBlackList;
 import me.FurH.CreativeControl.commands.CreativeCommands;
 import me.FurH.CreativeControl.configuration.CreativeMainConfig;
@@ -49,17 +47,13 @@ import me.FurH.CreativeControl.listener.CreativeMoveListener;
 import me.FurH.CreativeControl.listener.CreativePlayerListener;
 import me.FurH.CreativeControl.listener.CreativeWorldListener;
 import me.FurH.CreativeControl.manager.CreativeBlockManager;
-import me.FurH.CreativeControl.metrics.CreativeMetrics;
-import me.FurH.CreativeControl.metrics.CreativeMetrics.Graph;
 import me.FurH.CreativeControl.permissions.CreativePermissions;
-import me.FurH.CreativeControl.region.CreativeRegion;
 import me.FurH.CreativeControl.region.CreativeRegionManager;
 import me.FurH.CreativeControl.selection.CreativeBlocksSelection;
 import net.coreprotect.CoreProtect;
 import net.coreprotect.CoreProtectAPI;
 
 import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.CommandExecutor;
@@ -109,17 +103,13 @@ public class CreativeControl extends CorePlugin {
     public Map<String, CoreHashSet<UUID>> limits = new HashMap<String, CoreHashSet<UUID>>();
     public Map<String, Integer> mods = new HashMap<String, Integer>();
 
-    public CoreUpdater updater;
-
     @Override
     public void onEnable() {
         
         long localStart = System.currentTimeMillis();
         
         plugin = this;
-        
-        updater = new CoreUpdater(this, "http://dev.bukkit.org/server-mods/creativecontrol/");
-
+       
         messages = new CreativeMessages(this);
         messages.load();
 
@@ -220,12 +210,6 @@ public class CreativeControl extends CorePlugin {
                 log("[TAG] {0} blocks protected", manager.getTotal());
             }
         });
-
-        if (mainconfig.updater_enabled) {
-            updater.setup();
-        }
-
-        startMetrics();
         
         try {
             if (database.isUpdateAvailable()) {
@@ -288,7 +272,6 @@ public class CreativeControl extends CorePlugin {
         coreprotect = null;
         blacklist = null;
         permissions = null;
-        updater = null;
         
         
         logDisable(Math.abs(System.currentTimeMillis() - localStart));
@@ -548,108 +531,5 @@ public class CreativeControl extends CorePlugin {
         Plugin wex = pm.getPlugin("WorldEdit");
         return (WorldEditPlugin) wex;
     }
-
-    private int survival = 0;
-    private int creative = 0;
-    private int useMove = 0;
-    private int useMisc = 0;
-    private int OwnBlock = 0;
-    private int NoDrop = 0;
-    
-    private void startMetrics() {
-        try {
-            CreativeMetrics metrics = new CreativeMetrics(this);
-
-            Graph dbType = metrics.createGraph("Database Type");
-            dbType.addPlotter(new CreativeMetrics.Plotter(database.getDatabaseEngine().toString()) {
-                @Override
-                public int getValue() {
-                    return 1;
-                }
-            });
-
-            for (CreativeRegion CR : regioner.getAreas()) {
-                if (CR.gamemode == GameMode.CREATIVE) {
-                    creative++;
-                } else {
-                    survival++;
-                }
-            }
-            
-            Graph reg = metrics.createGraph("Regions");
-            reg.addPlotter(new CreativeMetrics.Plotter("Regions") {
-                    @Override
-                    public int getValue() {
-                            return creative+survival;
-                    }
-            });
-            
-            Graph reg1 = metrics.createGraph("Regions Type");
-            reg1.addPlotter(new CreativeMetrics.Plotter("Creative") {
-                    @Override
-                    public int getValue() {
-                            return creative;
-                    }
-            });
-            
-            reg1.addPlotter(new CreativeMetrics.Plotter("Survival") {
-
-                    @Override
-                    public int getValue() {
-                            return survival;
-                    }
-
-            });
-            
-            if (mainconfig.events_move) {
-                useMove++;
-            }
-            
-            if (mainconfig.events_misc) {
-                useMisc++;
-            }
-            
-            Graph extra = metrics.createGraph("Extra Events");
-            extra.addPlotter(new CreativeMetrics.Plotter("Move Event") {
-                    @Override
-                    public int getValue() {
-                            return useMove;
-                    }
-            });
-            
-            extra.addPlotter(new CreativeMetrics.Plotter("Misc Protection") {
-                    @Override
-                    public int getValue() {
-                            return useMisc;
-                    }
-            });
-            
-            for (World world : getServer().getWorlds()) {
-                if (worldconfig.get(world).block_ownblock) {
-                    OwnBlock++;
-                } else
-                if (worldconfig.get(world).block_nodrop) {
-                    NoDrop++;
-                }
-            }
-            
-            Graph ptype = metrics.createGraph("Protection Type");
-             ptype.addPlotter(new CreativeMetrics.Plotter("OwnBlocks") {
-                    @Override
-                    public int getValue() {
-                            return OwnBlock;
-                    }
-            });
-            
-             ptype.addPlotter(new CreativeMetrics.Plotter("NoDrop") {
-                    @Override
-                    public int getValue() {
-                            return NoDrop;
-                    }
-            });
-            
-            metrics.start();
-        } catch (IOException e) {
-        }
-    }
+   
 }

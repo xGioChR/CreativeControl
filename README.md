@@ -6,7 +6,7 @@ This is a unofficial fork of CreativeControl plugin which was maintained by Furm
 Changes:
 * Updated for Minecraft 1.7.4
 * Fixed Prism and AuthMe-Reloaded hooks.
-* Attempting to fix known bugs.
+* Dropped support for xAuth and SurvivalGames.
 * Removed Metrics and Updater.
 * Code cleanup.
 * More changes will come up in the commits.
