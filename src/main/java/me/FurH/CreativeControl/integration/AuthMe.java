@@ -5,9 +5,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import uk.org.whoami.authme.events.LoginEvent;
-import uk.org.whoami.authme.events.ProtectInventoryEvent;
-import uk.org.whoami.authme.events.SessionEvent;
+
+import fr.xephi.authme.events.LoginEvent;
+import fr.xephi.authme.events.ProtectInventoryEvent;
+import fr.xephi.authme.events.SessionEvent;
 
 /**
  *

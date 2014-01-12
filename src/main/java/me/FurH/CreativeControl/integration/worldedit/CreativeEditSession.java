@@ -22,18 +22,23 @@ import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.bags.BlockBag;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.bukkit.BukkitWorld;
+
 import de.diddiz.LogBlock.Consumer;
 import de.diddiz.LogBlock.Logging;
 import de.diddiz.LogBlock.config.Config;
+
 import java.lang.reflect.Method;
+
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.configuration.CreativeWorldNodes;
 import me.FurH.CreativeControl.manager.CreativeBlockManager;
 import me.botsko.prism.Prism;
 import me.botsko.prism.actionlibs.ActionFactory;
+import me.botsko.prism.actionlibs.RecordingQueue;
 import net.coreprotect.CoreProtectAPI;
 import net.coreprotect.Functions;
 import net.coreprotect.worldedit.WorldEdit;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -169,7 +174,7 @@ public class CreativeEditSession extends EditSession {
             }
 
             Location loc = new Location(Bukkit.getWorld(player.getWorld().getName()), pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
-            Prism.actionsRecorder.addToQueue(ActionFactory.create("world-edit", loc, typeBefore, dataBefore, loc.getBlock().getTypeId(), loc.getBlock().getData(), player.getName()));
+            RecordingQueue.addToQueue(ActionFactory.create("world-edit", loc, typeBefore, dataBefore, loc.getBlock().getTypeId(), loc.getBlock().getData(), player.getName()));
         }
     }
 

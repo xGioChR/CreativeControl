@@ -16,9 +16,9 @@
 
 package me.FurH.CreativeControl.listener;
 
-import de.diddiz.LogBlock.Consumer;
 import java.util.ArrayList;
 import java.util.List;
+
 import me.FurH.Core.blocks.BlockUtils;
 import me.FurH.Core.cache.CoreLRUCache;
 import me.FurH.Core.util.Communicator;
@@ -31,9 +31,10 @@ import me.FurH.CreativeControl.manager.CreativeBlockData;
 import me.FurH.CreativeControl.manager.CreativeBlockLimit;
 import me.FurH.CreativeControl.manager.CreativeBlockManager;
 import me.FurH.CreativeControl.stack.CreativeItemStack;
-import me.botsko.prism.Prism;
 import me.botsko.prism.actionlibs.ActionFactory;
+import me.botsko.prism.actionlibs.RecordingQueue;
 import net.coreprotect.CoreProtectAPI;
+
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -53,6 +54,8 @@ import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.material.MaterialData;
 import org.bukkit.material.PistonBaseMaterial;
+
+import de.diddiz.LogBlock.Consumer;
 
 /**
  *
@@ -563,7 +566,7 @@ public class CreativeBlockListener implements Listener {
         }
         
         if (CreativeControl.getPrism()) {
-            Prism.actionsRecorder.addToQueue(ActionFactory.create("block-break", b, p.getName()));
+        	RecordingQueue.addToQueue(ActionFactory.create("block-break", b, p.getName()));
         }
         
         CoreProtectAPI protect = CreativeControl.getCoreProtect();

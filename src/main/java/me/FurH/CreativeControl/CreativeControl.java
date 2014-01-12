@@ -16,14 +16,12 @@
 
 package me.FurH.CreativeControl;
 
-import com.sk89q.worldedit.bukkit.WorldEditPlugin;
-import de.diddiz.LogBlock.Consumer;
-import de.diddiz.LogBlock.LogBlock;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.WeakHashMap;
+
 import me.FurH.Core.CorePlugin;
 import me.FurH.Core.cache.CoreHashSet;
 import me.FurH.Core.exceptions.CoreException;
@@ -43,9 +41,13 @@ import me.FurH.CreativeControl.database.extra.CreativeSQLUpdater;
 import me.FurH.CreativeControl.integration.AuthMe;
 import me.FurH.CreativeControl.integration.CreativeHideInventory;
 import me.FurH.CreativeControl.integration.MobArena;
-import me.FurH.CreativeControl.integration.SurvivalGames;
 import me.FurH.CreativeControl.integration.worldedit.CreativeEditSessionFactory;
-import me.FurH.CreativeControl.listener.*;
+import me.FurH.CreativeControl.listener.CreativeBlockListener;
+import me.FurH.CreativeControl.listener.CreativeEntityListener;
+import me.FurH.CreativeControl.listener.CreativeMiscListener;
+import me.FurH.CreativeControl.listener.CreativeMoveListener;
+import me.FurH.CreativeControl.listener.CreativePlayerListener;
+import me.FurH.CreativeControl.listener.CreativeWorldListener;
 import me.FurH.CreativeControl.manager.CreativeBlockManager;
 import me.FurH.CreativeControl.metrics.CreativeMetrics;
 import me.FurH.CreativeControl.metrics.CreativeMetrics.Graph;
@@ -55,6 +57,7 @@ import me.FurH.CreativeControl.region.CreativeRegionManager;
 import me.FurH.CreativeControl.selection.CreativeBlocksSelection;
 import net.coreprotect.CoreProtect;
 import net.coreprotect.CoreProtectAPI;
+
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -66,6 +69,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
+
+import com.sk89q.worldedit.bukkit.WorldEditPlugin;
+
+import de.diddiz.LogBlock.Consumer;
+import de.diddiz.LogBlock.LogBlock;
 
 /**
  *
@@ -371,17 +379,6 @@ public class CreativeControl extends CorePlugin {
                 pm.registerEvents(new MobArena(), this);
             }
         }
-
-        try {
-            Class.forName("org.mcsg.survivalgames.api.PlayerJoinArenaEvent");
-            p = pm.getPlugin("SurvivalGames");
-            if (p != null) {
-                if (p.isEnabled()) {
-                    log("[TAG] SurvivalGames support enabled!");
-                    pm.registerEvents(new SurvivalGames(), this);
-                }
-            }
-        } catch (Exception ex) { }
 
         p = pm.getPlugin("Multiverse-Inventories");
         if (p != null) {
