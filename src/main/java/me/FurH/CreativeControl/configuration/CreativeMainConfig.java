@@ -21,6 +21,7 @@ import me.FurH.Core.configuration.Configuration;
 import me.FurH.Core.exceptions.CoreException;
 import me.FurH.Core.inventory.InventoryStack;
 import me.FurH.CreativeControl.CreativeControl;
+
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 

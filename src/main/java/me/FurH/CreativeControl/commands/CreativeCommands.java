@@ -16,11 +16,11 @@
 
 package me.FurH.CreativeControl.commands;
 
-import com.sk89q.worldedit.bukkit.selections.Selection;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Random;
+
 import me.FurH.Core.exceptions.CoreException;
 import me.FurH.Core.inventory.InventoryStack;
 import me.FurH.Core.player.PlayerUtils;
@@ -38,6 +38,7 @@ import me.FurH.CreativeControl.selection.CreativeBlocksSelection;
 import me.FurH.CreativeControl.selection.CreativeBlocksSelection.Type;
 import me.FurH.CreativeControl.selection.CreativeSelection;
 import me.FurH.CreativeControl.util.CreativeUtil;
+
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -46,6 +47,8 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import com.sk89q.worldedit.bukkit.selections.Selection;
 
 /**
  *

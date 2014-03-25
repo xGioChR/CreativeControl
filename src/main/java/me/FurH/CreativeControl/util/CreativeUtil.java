@@ -17,6 +17,7 @@
 package me.FurH.CreativeControl.util;
 
 import java.util.HashSet;
+
 import me.FurH.Core.exceptions.CoreException;
 import me.FurH.Core.list.CollectionUtils;
 import me.FurH.Core.number.NumberUtils;

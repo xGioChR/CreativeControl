@@ -1,6 +1,7 @@
 package me.FurH.CreativeControl.blacklist;
 
 import java.util.HashSet;
+
 import me.FurH.Core.util.Communicator;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.stack.CreativeItemStack;

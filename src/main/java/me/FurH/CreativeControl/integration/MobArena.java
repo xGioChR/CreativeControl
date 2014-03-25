@@ -16,15 +16,17 @@
 
 package me.FurH.CreativeControl.integration;
 
-import com.garbagemule.MobArena.events.ArenaPlayerJoinEvent;
 import me.FurH.Core.util.Communicator;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.configuration.CreativeMessages;
+
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+
+import com.garbagemule.MobArena.events.ArenaPlayerJoinEvent;
 
 /**
  *

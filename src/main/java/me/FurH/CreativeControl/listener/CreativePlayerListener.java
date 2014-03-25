@@ -19,6 +19,7 @@ package me.FurH.CreativeControl.listener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+
 import me.FurH.Core.cache.CoreHashSet;
 import me.FurH.Core.cache.CoreLRUCache;
 import me.FurH.Core.exceptions.CoreException;
@@ -40,7 +41,12 @@ import me.FurH.CreativeControl.region.CreativeRegionManager;
 import me.FurH.CreativeControl.stack.CreativeItemStack;
 import me.FurH.CreativeControl.util.CreativeUtil;
 import net.milkbowl.vault.permission.Permission;
-import org.bukkit.*;
+
+import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.HumanEntity;
@@ -55,8 +61,19 @@ import org.bukkit.event.inventory.InventoryCreativeEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.inventory.InventoryType.SlotType;
-import org.bukkit.event.player.*;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerEggThrowEvent;
+import org.bukkit.event.player.PlayerGameModeChangeEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerKickEvent;
+import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerLoginEvent.Result;
+import org.bukkit.event.player.PlayerPickupItemEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 
@@ -493,17 +510,6 @@ public class CreativePlayerListener implements Listener {
         
         if (CreativeControl.getMainConfig().data_survival) {
             p.setGameMode(GameMode.SURVIVAL);
-        }
-        
-        if (plugin.updater.isUpdateAvailable()) {
-            if (plugin.hasPerm(p, "Updater.Broadcast")) {
-                Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-                    @Override
-                    public void run() {
-                        plugin.updater.announce(p);
-                    }
-                }, 40L);
-            }
         }
         
     }

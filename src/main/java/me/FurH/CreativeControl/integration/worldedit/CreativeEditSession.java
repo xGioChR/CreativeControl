@@ -15,18 +15,6 @@
  */
 package me.FurH.CreativeControl.integration.worldedit;
 
-import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.LocalPlayer;
-import com.sk89q.worldedit.LocalWorld;
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.bags.BlockBag;
-import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.bukkit.BukkitWorld;
-
-import de.diddiz.LogBlock.Consumer;
-import de.diddiz.LogBlock.Logging;
-import de.diddiz.LogBlock.config.Config;
-
 import java.lang.reflect.Method;
 
 import me.FurH.CreativeControl.CreativeControl;
@@ -47,6 +35,18 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
 import org.bukkit.inventory.ItemStack;
+
+import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.LocalPlayer;
+import com.sk89q.worldedit.LocalWorld;
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.bags.BlockBag;
+import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.bukkit.BukkitWorld;
+
+import de.diddiz.LogBlock.Consumer;
+import de.diddiz.LogBlock.Logging;
+import de.diddiz.LogBlock.config.Config;
 
 /**
  *

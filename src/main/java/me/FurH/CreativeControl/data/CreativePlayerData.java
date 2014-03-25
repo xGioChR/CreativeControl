@@ -18,6 +18,7 @@ package me.FurH.CreativeControl.data;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+
 import me.FurH.Core.cache.CoreSafeCache;
 import me.FurH.Core.exceptions.CoreException;
 import me.FurH.Core.file.FileUtils;
@@ -25,6 +26,7 @@ import me.FurH.Core.inventory.InventoryStack;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.configuration.CreativeMainConfig;
 import me.FurH.CreativeControl.database.CreativeSQLDatabase;
+
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;

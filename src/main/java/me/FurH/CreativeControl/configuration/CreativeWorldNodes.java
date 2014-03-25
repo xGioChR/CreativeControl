@@ -17,7 +17,9 @@
 package me.FurH.CreativeControl.configuration;
 
 import java.util.HashSet;
+
 import me.FurH.CreativeControl.stack.CreativeItemStack;
+
 import org.bukkit.GameMode;
 
 /**
