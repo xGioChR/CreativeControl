@@ -78,7 +78,6 @@ public class CreativeDataUpdater {
     public void update_players_table_3(String table) {
         Communicator com = plugin.getCommunicator();
         
-        CreativePlayerData data = CreativeControl.getPlayerData();
         CreativeSQLDatabase db = CreativeControl.getDb();
         long adventurer_start = System.currentTimeMillis();
 

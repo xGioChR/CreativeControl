@@ -74,7 +74,7 @@ public class CreativeSQLUpdater implements Runnable {
                     ResultSet rs = ps.getResultSet();
                     
                     if (rs.next()) {
-                        String player = rs.getString("player");
+                        rs.getString("player");
                     }
                 } catch (Exception ex) {
                     db.execute("ALTER TABLE `"+table+"` RENAME TO `old_"+table+"`;");

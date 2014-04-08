@@ -352,7 +352,8 @@ public class CreativePlayerData {
         return cache;
     }
     
-    private boolean restore(Player p, CreativePlayerCache cache) {
+    @SuppressWarnings("deprecation")
+	private boolean restore(Player p, CreativePlayerCache cache) {
         if (cache == null) { cache = new CreativePlayerCache(); }
         
         p.getInventory().setArmorContents(cache.armor);

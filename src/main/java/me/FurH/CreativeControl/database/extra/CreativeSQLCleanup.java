@@ -90,7 +90,6 @@ public class CreativeSQLCleanup implements Runnable {
         double blocks_process = 0;
         double blocks_done = 0;
         double blocks_last = 0;
-        double blocks_removed = 0;
 
         HashSet<String> locations = new HashSet<String>();
         
@@ -117,7 +116,8 @@ public class CreativeSQLCleanup implements Runnable {
                     int y = rs.getInt("y");
                     int z = rs.getInt("z");
                     int type = rs.getInt("type");
-                    int id = w.getBlockTypeIdAt(x, y, z);
+                    @SuppressWarnings("deprecation")
+					int id = w.getBlockTypeIdAt(x, y, z);
 
                     if (type != id) {
                         com.msg(p, "&7Invalid block at X: &4" + x + "&7, Y: &4" + y + "&7, Z: &4" + z + "&7, I1: &4" + type + "&7, I2: &4" + id);
@@ -135,7 +135,6 @@ public class CreativeSQLCleanup implements Runnable {
 
                     if (delete) {
                         db.execute("DELETE FROM `"+table+"` WHERE x = '" + x + "' AND z = '" + z + "' AND y = '" + y + "' AND time = '"+rs.getString("time")+"';");
-                        blocks_removed++;
                     }
 
                     blocks_done++;

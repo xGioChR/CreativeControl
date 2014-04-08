@@ -27,7 +27,6 @@ import me.FurH.Core.player.PlayerUtils;
 import me.FurH.Core.util.Utils;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.configuration.CreativeMainConfig;
-import me.FurH.CreativeControl.configuration.CreativeMessages;
 import me.FurH.CreativeControl.data.friend.CreativePlayerFriends;
 import me.FurH.CreativeControl.database.CreativeSQLDatabase;
 import me.FurH.CreativeControl.database.extra.CreativeSQLCleanup;
@@ -58,7 +57,6 @@ public class CreativeCommands implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String string, String[] args) {
-        CreativeMessages         messages  = CreativeControl.getMessages();
         CreativeControl          plugin    = CreativeControl.getPlugin();
 
         if (args.length <= 0) {
@@ -122,8 +120,6 @@ public class CreativeCommands implements CommandExecutor {
      * /cc set[0] armor[1]
      */
     public boolean onSetArmorCommand(CommandSender sender, Command cmd, String string, String[] args) {
-
-        CreativeMessages    messages    = CreativeControl.getMessages();
         CreativeControl     plugin      = CreativeControl.getPlugin();
         CreativeMainConfig  config      = CreativeControl.getMainConfig();
 
@@ -168,7 +164,6 @@ public class CreativeCommands implements CommandExecutor {
      * //cc admin[0] migrator[1] [>sqlite/>mysql/>lwc][2]
      */
     public boolean onAdminCommand(CommandSender sender, Command cmd, String string, String[] args) {
-        CreativeMessages messages = CreativeControl.getMessages();
         CreativeControl plugin = CreativeControl.getPlugin();
         
         if (!plugin.hasPerm(sender, "Commands.Admin")) {
@@ -210,7 +205,6 @@ public class CreativeCommands implements CommandExecutor {
      * /cc f[0] transfer[1] <player/all>[2] <player>[3]
      */
     public boolean friendCmd(CommandSender sender, Command cmd, String string, String[] args) {
-        CreativeMessages         messages  = CreativeControl.getMessages();
         CreativeControl          plugin    = CreativeControl.getPlugin();
         CreativePlayerFriends    friends   = CreativeControl.getFriends();
         CreativeBlocksSelection  selection = CreativeControl.getSelector();
@@ -376,8 +370,8 @@ public class CreativeCommands implements CommandExecutor {
      * /cc check[0] status[1]
      * /cc check[0] player[1] <player>[2]
      */
-    public boolean checkCmd(CommandSender sender, Command cmd, String string, String[] args) {
-        CreativeMessages         messages  = CreativeControl.getMessages();
+    @SuppressWarnings("deprecation")
+	public boolean checkCmd(CommandSender sender, Command cmd, String string, String[] args) {
         CreativeControl          plugin    = CreativeControl.getPlugin();
 
         if (args.length > 2) {
@@ -433,7 +427,6 @@ public class CreativeCommands implements CommandExecutor {
      * /cc add[0] player[1] [<player>][2]
      */
     public boolean addCmd(CommandSender sender, Command cmd, String string, String[] args) {
-        CreativeMessages         messages  = CreativeControl.getMessages();
         CreativeControl          plugin    = CreativeControl.getPlugin();
         CreativeBlocksSelection  selection = CreativeControl.getSelector();
 
@@ -472,7 +465,6 @@ public class CreativeCommands implements CommandExecutor {
      * /cc cleanup[0] world[1] <world>[2]
      */
     public boolean cleanupCmd(CommandSender sender, Command cmd, String string, String[] args) {
-        CreativeMessages         messages  = CreativeControl.getMessages();
         CreativeControl          plugin    = CreativeControl.getPlugin();
         CreativeSQLDatabase      db        = CreativeControl.getDb();
         CreativeBlockManager     manager   = CreativeControl.getManager();
@@ -586,7 +578,6 @@ public class CreativeCommands implements CommandExecutor {
      * /cc del[0] player[1] <player>[2]
      */
     public boolean delCmd(CommandSender sender, Command cmd, String string, String[] args) {
-        CreativeMessages         messages  = CreativeControl.getMessages();
         CreativeControl          plugin    = CreativeControl.getPlugin();
         CreativeBlocksSelection  selection = CreativeControl.getSelector();
 
@@ -639,7 +630,6 @@ public class CreativeCommands implements CommandExecutor {
      * /cc sel[0] expand[1] down[2] <amount>[3]
      */
     public boolean selCmd(CommandSender sender, Command cmd, String string, String[] args) {
-        CreativeMessages         messages  = CreativeControl.getMessages();
         CreativeControl          plugin    = CreativeControl.getPlugin();
         CreativeMainConfig       config    = CreativeControl.getMainConfig();
 
@@ -732,7 +722,6 @@ public class CreativeCommands implements CommandExecutor {
      * /cc region[0] remove[1] <name>[3]
      */
     public boolean regionCmd(CommandSender sender, Command cmd, String string, String[] args) {
-        CreativeMessages         messages  = CreativeControl.getMessages();
         CreativeControl          plugin    = CreativeControl.getPlugin();
         CreativeBlocksSelection  selection = CreativeControl.getSelector();
         CreativeMainConfig       main      = CreativeControl.getMainConfig();
@@ -821,7 +810,6 @@ public class CreativeCommands implements CommandExecutor {
     }
 
     public boolean reloadCmd(CommandSender sender, Command cmd, String string, String[] args) {
-        CreativeMessages         messages  = CreativeControl.getMessages();
         CreativeControl          plugin    = CreativeControl.getPlugin();
 
         if (!plugin.hasPerm(sender, "Commands.Reload")) {
@@ -838,7 +826,6 @@ public class CreativeCommands implements CommandExecutor {
     
     public boolean statusCmd(final CommandSender sender, Command cmd, String string, String[] args) {
         final CreativeSQLDatabase      db        = CreativeControl.getDb();
-        CreativeMessages         messages  = CreativeControl.getMessages();
         final CreativeControl          plugin    = CreativeControl.getPlugin();
         final CreativeBlockManager     manager   = CreativeControl.getManager();
 
@@ -919,7 +906,6 @@ public class CreativeCommands implements CommandExecutor {
      * /cc tool[0] del[1]
      */
     public boolean toolCmd(CommandSender sender, Command cmd, String string, String[] args) {
-        CreativeMessages         messages  = CreativeControl.getMessages();
         CreativeControl          plugin    = CreativeControl.getPlugin();
         
         if (!(sender instanceof Player)) {

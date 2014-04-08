@@ -45,6 +45,7 @@ import org.bukkit.entity.Player;
  *
  * @author FurmigaHumana
  */
+@SuppressWarnings("deprecation")
 public class CreativeBlockManager {
     
     private static CoreLRUCache<String, CreativeBlockData> cache;
@@ -86,7 +87,7 @@ public class CreativeBlockManager {
         return false;
     }
     
-    public void unprotect(Block b) {
+	public void unprotect(Block b) {
         unprotect(b.getWorld(), b.getX(), b.getY(), b.getZ(), b.getTypeId());
     }
     

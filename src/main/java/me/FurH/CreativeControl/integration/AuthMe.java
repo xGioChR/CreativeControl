@@ -28,7 +28,8 @@ public class AuthMe implements Listener {
         Bukkit.getPluginManager().callEvent(event);
     }
     
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
+    @SuppressWarnings("deprecation")
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onSession(SessionEvent e) {
         if (!e.isCancelled()) {
             

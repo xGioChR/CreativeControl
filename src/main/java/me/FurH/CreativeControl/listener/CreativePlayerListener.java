@@ -81,12 +81,13 @@ import org.bukkit.inventory.ItemStack;
  *
  * @author FurmigaHumana
  */
+@SuppressWarnings("deprecation")
 public class CreativePlayerListener implements Listener {
 
     public static CoreHashSet<String> changed = new CoreHashSet<String>(true);
     private CoreHashSet<String> dontdrop = new CoreHashSet<String>(true);
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerGameModeChange(PlayerGameModeChangeEvent e) {
         if (e.isCancelled()) { return; }
 
@@ -501,8 +502,6 @@ public class CreativePlayerListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent e) {
         
         final Player p = e.getPlayer();
-
-        final CreativeControl       plugin   = CreativeControl.getPlugin();
 
         if (CreativeControl.getMainConfig().data_teleport) {
             PlayerUtils.toSafeLocation(p);

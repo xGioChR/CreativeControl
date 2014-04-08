@@ -61,6 +61,7 @@ import de.diddiz.LogBlock.Consumer;
  *
  * @author FurmigaHumana
  */
+@SuppressWarnings("deprecation")
 public class CreativeBlockListener implements Listener {
     
     private CoreLRUCache<String, CoreLRUCache<String, CreativeBlockLimit>> limits = new CoreLRUCache<String, CoreLRUCache<String, CreativeBlockLimit>>(true);
@@ -68,7 +69,7 @@ public class CreativeBlockListener implements Listener {
     /*
      * Block Place Module
      */
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockPlace(BlockPlaceEvent e) {
         if (e.isCancelled()) { return; }
 

@@ -21,7 +21,6 @@ import java.util.HashSet;
 import me.FurH.Core.util.Communicator;
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.configuration.CreativeMainConfig;
-import me.FurH.CreativeControl.configuration.CreativeMessages;
 import me.FurH.CreativeControl.configuration.CreativeWorldNodes;
 import me.FurH.CreativeControl.manager.CreativeBlockData;
 import me.FurH.CreativeControl.manager.CreativeBlockManager;
@@ -38,6 +37,7 @@ import com.sk89q.worldedit.bukkit.selections.Selection;
  *
  * @author FurmigaHumana
  */
+@SuppressWarnings("deprecation")
 public class CreativeBlocksSelection {
     
     private long elapsedTime = 0;
@@ -53,7 +53,6 @@ public class CreativeBlocksSelection {
         final CreativeControl      plugin   = CreativeControl.getPlugin();
         final CreativeBlockManager manager  = CreativeControl.getManager();
         final Communicator         com      = plugin.getCommunicator();
-        final CreativeMessages     messages = CreativeControl.getMessages();
         final CreativeMainConfig   main     = CreativeControl.getMainConfig();
         
         if (!plugin.hasPerm(sender, "Commands.Use.others")) {
@@ -96,7 +95,7 @@ public class CreativeBlocksSelection {
         final World w = min.getWorld();
 
         Thread t = new Thread() {
-            @Override
+			@Override
             public void run() {
                 for (int x = min.getBlockX(); x <= max.getBlockX(); x++) {
                     for (int y = min.getBlockY(); y <= max.getBlockY(); y++) {

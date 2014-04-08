@@ -25,12 +25,9 @@ import com.sk89q.worldedit.EditSessionFactory;
 import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.bags.BlockBag;
 
-/**
- *
- * @author FurmigaHumana
- */
+/** TODO */
+@SuppressWarnings("deprecation")
 public class CreativeEditSessionFactory extends EditSessionFactory {
     
     @Override

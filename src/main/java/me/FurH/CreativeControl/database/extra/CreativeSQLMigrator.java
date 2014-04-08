@@ -23,7 +23,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import me.FurH.Core.database.CoreSQLDatabase.type;
+import me.FurH.Core.database.CoreSQLDatabase.Type;
 import me.FurH.Core.exceptions.CoreException;
 import me.FurH.Core.util.Communicator;
 import me.FurH.CreativeControl.CreativeControl;
@@ -43,7 +43,7 @@ public class CreativeSQLMigrator implements Runnable {
     public static boolean lock = false;
     private String data;
     private Player p;
-    private type type;
+    private Type type;
     
     private Connection to;
 
@@ -53,7 +53,8 @@ public class CreativeSQLMigrator implements Runnable {
         this.p = p;
     }
   
-    @Override
+    @SuppressWarnings("static-access")
+	@Override
     public void run() {
         if (lock) {
             System.out.println("Migrator Locked");

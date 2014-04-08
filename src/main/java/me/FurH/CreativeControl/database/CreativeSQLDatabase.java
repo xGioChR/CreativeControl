@@ -44,6 +44,7 @@ import org.bukkit.entity.Player;
  *
  * @author FurmigaHumana
  */
+@SuppressWarnings({"resource", "deprecation"})
 public final class CreativeSQLDatabase extends CoreSQLDatabase {
     
     public CreativeSQLDatabase(CorePlugin plugin, String prefix, String engine, String database_host, String database_port, String database_table, String database_user, String database_pass) {
@@ -151,7 +152,7 @@ public final class CreativeSQLDatabase extends CoreSQLDatabase {
         return data;
     }
     
-    public CreativeBlockData isprotected(String world, int x, int y, int z, int type, boolean nodrop) {
+	public CreativeBlockData isprotected(String world, int x, int y, int z, int type, boolean nodrop) {
         
         Communicator com = CreativeControl.plugin.getCommunicator();
         CreativeBlockData data = null;
@@ -231,7 +232,7 @@ public final class CreativeSQLDatabase extends CoreSQLDatabase {
         load(this.connection, this.getDatabaseEngine());
     }
 
-    public void load(Connection connection, type type) {
+    public void load(Connection connection, Type type) {
         Communicator com = CreativeControl.getPlugin().getCommunicator();
         
         try {
@@ -294,7 +295,7 @@ public final class CreativeSQLDatabase extends CoreSQLDatabase {
         }
     }
 
-    public void load(Connection connection, String world, type type) {
+    public void load(Connection connection, String world, Type type) {
         Communicator com = CreativeControl.getPlugin().getCommunicator();
 
         if (connection == null) {
