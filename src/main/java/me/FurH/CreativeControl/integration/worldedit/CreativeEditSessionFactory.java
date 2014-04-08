@@ -39,7 +39,7 @@ public class CreativeEditSessionFactory extends EditSessionFactory {
     }
 
     @Override
-    public EditSession getEditSession(LocalWorld world, int maxBlocks, BlockBag blockBag, LocalPlayer player) {
+    public EditSession getEditSession(LocalWorld world, int maxBlocks, com.sk89q.worldedit.extent.inventory.BlockBag blockBag, LocalPlayer player) {
         return new CreativeEditSession(world, maxBlocks, blockBag, player);
     }
 

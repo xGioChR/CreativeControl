@@ -61,7 +61,7 @@ public class CreativeEditSession extends EditSession {
         this.player = player;
     }
 
-    public CreativeEditSession(LocalWorld world, int maxBlocks, BlockBag blockBag, LocalPlayer player) {
+    public CreativeEditSession(LocalWorld world, int maxBlocks, com.sk89q.worldedit.extent.inventory.BlockBag blockBag, LocalPlayer player) {
         super(world, maxBlocks, blockBag);
         this.player = player;
     }
