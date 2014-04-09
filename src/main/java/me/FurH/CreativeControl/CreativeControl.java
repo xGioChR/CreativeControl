@@ -39,7 +39,7 @@ import me.FurH.CreativeControl.database.extra.CreativeSQLUpdater;
 import me.FurH.CreativeControl.integration.AuthMe;
 import me.FurH.CreativeControl.integration.CreativeHideInventory;
 import me.FurH.CreativeControl.integration.MobArena;
-import me.FurH.CreativeControl.integration.worldedit.CreativeEditSessionFactory;
+import me.FurH.CreativeControl.integration.worldedit.CreativeEditSession;
 import me.FurH.CreativeControl.listener.CreativeBlockListener;
 import me.FurH.CreativeControl.listener.CreativeEntityListener;
 import me.FurH.CreativeControl.listener.CreativeMiscListener;
@@ -522,7 +522,7 @@ public class CreativeControl extends CorePlugin {
     public void setupWorldEdit() {
         Plugin we = Bukkit.getPluginManager().getPlugin("WorldEdit");
         if (we != null && we.isEnabled()) {
-            CreativeEditSessionFactory.setup();
+            new CreativeEditSession().init();
         }
     }
     

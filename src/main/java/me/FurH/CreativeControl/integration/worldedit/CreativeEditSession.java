@@ -30,7 +30,6 @@ import net.coreprotect.worldedit.WorldEdit;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
@@ -38,169 +37,182 @@ import org.bukkit.inventory.ItemStack;
 
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalPlayer;
-import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.bukkit.BukkitWorld;
+import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.event.extent.EditSessionEvent;
+import com.sk89q.worldedit.extension.platform.Actor;
+import com.sk89q.worldedit.extent.logging.AbstractLoggingExtent;
+import com.sk89q.worldedit.util.eventbus.Subscribe;
 
 import de.diddiz.LogBlock.Consumer;
 import de.diddiz.LogBlock.Logging;
 import de.diddiz.LogBlock.config.Config;
 
-/** TODO */
 @SuppressWarnings("deprecation")
-public class CreativeEditSession extends EditSession {
+public class CreativeEditSession  {
 
-    private LocalPlayer player;
 
-    public CreativeEditSession(LocalWorld world, int maxBlocks, LocalPlayer player) {
-        super(world, maxBlocks);
-        this.player = player;
-    }
+	public void init() {
+		com.sk89q.worldedit.WorldEdit.getInstance().getEventBus().register(new Object() {
+			@Subscribe
+			public void wrapForLogging(final EditSessionEvent event) {
+				final Actor actor = event.getActor();
+				if (actor == null || !(actor instanceof Player)) return;
 
-    public CreativeEditSession(LocalWorld world, int maxBlocks, com.sk89q.worldedit.extent.inventory.BlockBag blockBag, LocalPlayer player) {
-        super(world, maxBlocks, blockBag);
-        this.player = player;
-    }
+				String worldName = event.getWorld().getName();
+				final org.bukkit.World bukkitWorld = Bukkit.getWorld(worldName);
+				if (bukkitWorld == null)
+					return;
 
-    @Override
-    public boolean rawSetBlock(Vector pt, BaseBlock block) {
+				final CreativeWorldNodes config = CreativeControl.getWorldNodes(bukkitWorld);
+				final CreativeBlockManager manager = CreativeControl.getManager();
 
-        if (!(world instanceof BukkitWorld)) {
-            return super.rawSetBlock(pt, block);
-        }
+				event.setExtent(new AbstractLoggingExtent(event.getExtent()) {
+					@Override
+					protected void onBlockChange(Vector pt, BaseBlock block) {
 
-        World w = ((BukkitWorld) world).getWorld();
+						if (event.getStage() != EditSession.Stage.BEFORE_CHANGE) {
+							return;
+						}
+						
+						Location location = new Location(bukkitWorld, pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
+						Block origin = location.getBlock();
+						int oldType = origin.getTypeId();
+						byte oldData = origin.getData();
 
-        CreativeWorldNodes config = CreativeControl.getWorldNodes(w);
-        CreativeBlockManager manager = CreativeControl.getManager();
+						BlockState oldState = null;
+						if (oldType == Material.SIGN_POST.getId() || oldType == Material.SIGN.getId()) {
+							oldState = origin.getState();
+						}
 
-        int oldType = w.getBlockTypeIdAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
-        byte oldData = w.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()).getData();
+						Block block_ = ((BukkitWorld)actor.getWorld()).getWorld().getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
 
-        BlockState oldState = null;
-        if (oldType == Material.SIGN_POST.getId() || oldType == Material.SIGN.getId()) {
-            oldState = w.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()).getState();
-        }
+						BlockState block_state = block_.getState();
+						ItemStack[] container_contents = getContainerContents(block_);
 
-        Block block_ = ((BukkitWorld)player.getWorld()).getWorld().getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
+						boolean success;
+						try {
+							success = super.setBlock(pt, block);
+						} catch (WorldEditException e) {
+							throw new Error("Error on set block by worldedit", e);
+						}
 
-        BlockState block_state = block_.getState();
-        ItemStack[] container_contents = getContainerContents(block_);
+						if (success) {
 
-        boolean success = super.rawSetBlock(pt, block);
+							logBlock(actor, pt, block, oldType, oldData, oldState);
+							prism(actor, pt, block, oldType, oldData);
+							coreprotect(actor, pt, block, block_state, block_, container_contents);
 
-        if (success) {
+							if (!config.world_exclude && config.block_worledit) {
+								int newType = block.getType();
 
-            logBlock(pt, block, oldType, oldData, oldState);
-            prism(pt, block, oldType, oldData);
-            coreprotect(pt, block, block_state, block_, container_contents);
+								if (newType == 0 || oldType != 0) {
+									manager.unprotect(bukkitWorld, pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), newType);
+								}
 
-            if (!config.world_exclude && config.block_worledit) {
-                int newType = block.getType();
+								if (newType != 0) {
 
-                if (newType == 0 || oldType != 0) {
-                    manager.unprotect(w, pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), newType);
-                }
+									if (config.block_ownblock) {
+										if (!actor.hasPermission("CreativeControl.OwnBlock.DontSave")) {
+											manager.protect(actor.getName(), bukkitWorld, pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), newType);
+										}
+									}
 
-                if (newType != 0) {
-                    
-                    if (config.block_ownblock) {
-                        if (!player.hasPermission("CreativeControl.OwnBlock.DontSave")) {
-                            manager.protect(player.getName(), w, pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), newType);
-                        }
-                    }
+									if (config.block_nodrop) {
+										if (!actor.hasPermission("CreativeControl.NoDrop.DontSave")) {
+											manager.protect(actor.getName(), bukkitWorld, pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), newType);
+										}
+									}   
+								}
+							}
+						}
+					}
+				});
+			}
+		});
+	}
 
-                    if (config.block_nodrop) {
-                        if (!player.hasPermission("CreativeControl.NoDrop.DontSave")) {
-                            manager.protect(player.getName(), w, pt.getBlockX(), pt.getBlockY(), pt.getBlockZ(), newType);
-                        }
-                    }   
-                }
-            }
-        }
+	public void coreprotect(Actor actor, Vector vector, BaseBlock base_block, BlockState block_state, Block block, ItemStack[] container_contents) {
 
-        return success;
-    }
-    
-    public void coreprotect(Vector vector, BaseBlock base_block, BlockState block_state, Block block, ItemStack[] container_contents) {
+		CoreProtectAPI protect = CreativeControl.getCoreProtect();
 
-        CoreProtectAPI protect = CreativeControl.getCoreProtect();
+		if (protect == null) {
+			return;
+		}
 
-        if (protect == null) {
-            return;
-        }
+		if (Functions.checkConfig(block.getWorld(), "worldedit") == 0) {
+			return;
+		}
 
-        if (Functions.checkConfig(block.getWorld(), "worldedit") == 0) {
-            return;
-        }
+		try {
+			// FIXME CHECK IF IT´S RIGHT TODO //
+			Method log = WorldEdit.class.getDeclaredMethod("logData", LocalPlayer.class, Vector.class, Block.class, BlockState.class, ItemStack[].class);
+			log.setAccessible(true);
+			log.invoke(null, actor, vector, block, block_state, container_contents);
+			// FIXME CHECK IF IT´S RIGHT TODO //
+		} catch (Exception ex) {
 
-        try {
+			String methods = "";
 
-            Method log = WorldEdit.class.getDeclaredMethod("logData", LocalPlayer.class, Vector.class, Block.class, BlockState.class, ItemStack[].class);
-            log.setAccessible(true);
-            log.invoke(null, player, vector, block, block_state, container_contents);
+			for (Method m : WorldEdit.class.getDeclaredMethods()) {
+				methods += m.getName() + ", ";
+			}
 
-        } catch (Exception ex) {
-            
-            String methods = "";
-            
-            for (Method m : WorldEdit.class.getDeclaredMethods()) {
-                methods += m.getName() + ", ";
-            }
-            
-            System.out.println("[ " + ex.getClass().getSimpleName() + " ]: Failed to invoke logData method, Available: " + methods);
-        }
-    }
+			System.out.println("[ " + ex.getClass().getSimpleName() + " ]: Failed to invoke logData method, Available: " + methods);
+		}
+	}
 
-    private ItemStack[] getContainerContents(Block block) {
-        CoreProtectAPI protect = CreativeControl.getCoreProtect();
+	private ItemStack[] getContainerContents(Block block) {
+		CoreProtectAPI protect = CreativeControl.getCoreProtect();
 
-        if (protect == null) {
-            return null;
-        }
+		if (protect == null) {
+			return null;
+		}
 
-        return Functions.getContainerContents(block);
-    }
+		return Functions.getContainerContents(block);
+	}
 
-    public void prism(Vector pt, BaseBlock block, int typeBefore, byte dataBefore) {
-        if (CreativeControl.getPrism()) {
+	public void prism(Actor actor, Vector pt, BaseBlock block, int typeBefore, byte dataBefore) {
+		if (CreativeControl.getPrism()) {
 
-            if (!Prism.config.getBoolean("prism.tracking.world-edit")) {
-                return;
-            }
+			if (!Prism.config.getBoolean("prism.tracking.world-edit")) {
+				return;
+			}
 
-            Location loc = new Location(Bukkit.getWorld(player.getWorld().getName()), pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
-            RecordingQueue.addToQueue(ActionFactory.create("world-edit", loc, typeBefore, dataBefore, loc.getBlock().getTypeId(), loc.getBlock().getData(), player.getName()));
-        }
-    }
+			Location loc = new Location(Bukkit.getWorld(actor.getWorld().getName()), pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
+			RecordingQueue.addToQueue(ActionFactory.create("world-edit", loc, typeBefore, dataBefore, loc.getBlock().getTypeId(), loc.getBlock().getData(), actor.getName()));
+		}
+	}
 
-    public void logBlock(Vector pt, BaseBlock block, int typeBefore, byte dataBefore, BlockState stateBefore) {
-        Consumer consumer = CreativeControl.getLogBlock();
+	public void logBlock(Actor actor, Vector pt, BaseBlock block, int typeBefore, byte dataBefore, BlockState stateBefore) {
+		Consumer consumer = CreativeControl.getLogBlock();
 
-        if (consumer != null) {
+		if (consumer != null) {
 
-            if (!(Config.isLogging(player.getWorld().getName(), Logging.WORLDEDIT))) {
-                return;
-            }
+			if (!(Config.isLogging(actor.getWorld().getName(), Logging.WORLDEDIT))) {
+				return;
+			}
 
-            Location location = new Location(((BukkitWorld) player.getWorld()).getWorld(), pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
+			Location location = new Location(((BukkitWorld) actor.getWorld()).getWorld(), pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
 
-            if (Config.isLogging(location.getWorld().getName(), Logging.SIGNTEXT) && (typeBefore == Material.SIGN_POST.getId() || typeBefore == Material.SIGN.getId())) {
-                consumer.queueSignBreak(player.getName(), (Sign) stateBefore);
-                if (block.getType() != Material.AIR.getId()) {
-                    consumer.queueBlockPlace(player.getName(), location, block.getType(), (byte) block.getData());
-                }
-            } else {
-                if (dataBefore != 0) {
-                    consumer.queueBlockBreak(player.getName(), location, typeBefore, dataBefore);
-                    if (block.getType() != Material.AIR.getId()) {
-                        consumer.queueBlockPlace(player.getName(), location, block.getType(), (byte) block.getData());
-                    }
-                } else {
-                    consumer.queueBlock(player.getName(), location, typeBefore, block.getType(), (byte) block.getData());
-                }
-            }
-        }
-    }
+			if (Config.isLogging(location.getWorld().getName(), Logging.SIGNTEXT) && (typeBefore == Material.SIGN_POST.getId() || typeBefore == Material.SIGN.getId())) {
+				consumer.queueSignBreak(actor.getName(), (Sign) stateBefore);
+				if (block.getType() != Material.AIR.getId()) {
+					consumer.queueBlockPlace(actor.getName(), location, block.getType(), (byte) block.getData());
+				}
+			} else {
+				if (dataBefore != 0) {
+					consumer.queueBlockBreak(actor.getName(), location, typeBefore, dataBefore);
+					if (block.getType() != Material.AIR.getId()) {
+						consumer.queueBlockPlace(actor.getName(), location, block.getType(), (byte) block.getData());
+					}
+				} else {
+					consumer.queueBlock(actor.getName(), location, typeBefore, block.getType(), (byte) block.getData());
+				}
+			}
+		}
+	}
 }
