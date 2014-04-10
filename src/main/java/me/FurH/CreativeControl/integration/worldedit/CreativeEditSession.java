@@ -1,61 +1,73 @@
-/*
- * Copyright (C) 2011-2013 FurmigaHumana.  All rights reserved.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation,  version 3.
- * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
 package me.FurH.CreativeControl.integration.worldedit;
 
-import java.lang.reflect.Method;
 
 import me.FurH.CreativeControl.CreativeControl;
 import me.FurH.CreativeControl.configuration.CreativeWorldNodes;
 import me.FurH.CreativeControl.manager.CreativeBlockManager;
-import me.botsko.prism.Prism;
-import me.botsko.prism.actionlibs.ActionFactory;
-import me.botsko.prism.actionlibs.RecordingQueue;
-import net.coreprotect.CoreProtectAPI;
-import net.coreprotect.Functions;
-import net.coreprotect.worldedit.WorldEdit;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockState;
-import org.bukkit.block.Sign;
-import org.bukkit.inventory.ItemStack;
+import org.bukkit.World;
 
-import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.LocalPlayer;
+import com.sk89q.worldedit.EditSession.Stage;
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.bukkit.BukkitWorld;
-import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.event.extent.EditSessionEvent;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extent.logging.AbstractLoggingExtent;
+import com.sk89q.worldedit.util.eventbus.EventHandler.Priority;
 import com.sk89q.worldedit.util.eventbus.Subscribe;
-
-import de.diddiz.LogBlock.Consumer;
-import de.diddiz.LogBlock.Logging;
-import de.diddiz.LogBlock.config.Config;
 
 @SuppressWarnings("deprecation")
 public class CreativeEditSession  {
 
-
 	public void init() {
+		com.sk89q.worldedit.WorldEdit.getInstance().getEventBus().register(new Object() {
+			@Subscribe(priority=Priority.VERY_LATE)
+			public void wrapForLogging(final EditSessionEvent e) {
+				if(e.getStage() != Stage.BEFORE_HISTORY)
+					return;
+
+				final Actor actor = e.getActor();
+
+				e.setExtent(new AbstractLoggingExtent(e.getExtent()) {
+					@Override
+					protected void onBlockChange(Vector pos, BaseBlock newBlock) {
+
+						World world = Bukkit.getWorld(e.getWorld().getName());
+						CreativeWorldNodes config = CreativeControl.getWorldNodes(world);
+						CreativeBlockManager manager = CreativeControl.getManager();
+
+						if (!config.world_exclude && config.block_worledit) {
+							int newType = newBlock.getType();
+							if (newType == 0) {
+								manager.unprotect(world, pos.getBlockX(), pos.getBlockY(), pos.getBlockZ(), newType);
+								System.out.println("unprotecting block @" + pos);
+							}
+
+							if (newType != 0) {
+								if (config.block_ownblock) {
+									if (!actor.hasPermission("CreativeControl.OwnBlock.DontSave")) {
+										System.out.println("OwnBlock registered " + org.bukkit.Material.getMaterial(newBlock.getType()) + " @ " + pos);
+										manager.protect(actor.getName(), world, pos.getBlockX(), pos.getBlockY(), pos.getBlockZ(), newType);
+									}
+								}
+
+								if (config.block_nodrop) {
+									if (!actor.hasPermission("CreativeControl.NoDrop.DontSave")) {
+										System.out.println("NoDrop registered " + org.bukkit.Material.getMaterial(newBlock.getType()) + " @ " + pos);
+										manager.protect(actor.getName(), world, pos.getBlockX(), pos.getBlockY(), pos.getBlockZ(), newType);
+									}
+								}   
+							}
+						}
+
+					}
+				});
+			}
+		});
+	}
+
+	/*public void init() {
 		com.sk89q.worldedit.WorldEdit.getInstance().getEventBus().register(new Object() {
 			@Subscribe
 			public void wrapForLogging(final EditSessionEvent event) {
@@ -77,7 +89,7 @@ public class CreativeEditSession  {
 						if (event.getStage() != EditSession.Stage.BEFORE_CHANGE) {
 							return;
 						}
-						
+
 						Location location = new Location(bukkitWorld, pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
 						Block origin = location.getBlock();
 						int oldType = origin.getTypeId();
@@ -148,11 +160,9 @@ public class CreativeEditSession  {
 		}
 
 		try {
-			// FIXME CHECK IF IT´S RIGHT TODO //
 			Method log = WorldEdit.class.getDeclaredMethod("logData", LocalPlayer.class, Vector.class, Block.class, BlockState.class, ItemStack[].class);
 			log.setAccessible(true);
 			log.invoke(null, actor, vector, block, block_state, container_contents);
-			// FIXME CHECK IF IT´S RIGHT TODO //
 		} catch (Exception ex) {
 
 			String methods = "";
@@ -214,5 +224,5 @@ public class CreativeEditSession  {
 				}
 			}
 		}
-	}
+	}*/
 }
