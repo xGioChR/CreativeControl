@@ -22,9 +22,9 @@ public class CreativeEditSession  {
 
 	public void init() {
 		com.sk89q.worldedit.WorldEdit.getInstance().getEventBus().register(new Object() {
-			@Subscribe(priority=Priority.VERY_LATE)
+			@Subscribe(priority=Priority.NORMAL)
 			public void wrapForLogging(final EditSessionEvent e) {
-				if(e.getStage() != Stage.BEFORE_HISTORY)
+				if(e.getStage() != Stage.BEFORE_CHANGE)
 					return;
 
 				final Actor actor = e.getActor();
