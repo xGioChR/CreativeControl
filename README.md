@@ -4,7 +4,7 @@ CreativeControl
 This is a unofficial fork of CreativeControl plugin which was maintained by FurmigaHumana.
 
 Changes:
-* Updated for Minecraft 1.7.4
+* Updated for Minecraft 1.7.8
 * Fixed Prism and AuthMe-Reloaded hooks.
 * Added support for WorldEdit 6.x
 * Dropped support for xAuth and SurvivalGames.
