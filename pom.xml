@@ -33,28 +33,28 @@
         <dependency>
             <groupId>org.anjocaido.groupmanager</groupId>
             <artifactId>EssentialsGroupManager</artifactId>
-            <version>2.12.2</version>
+            <version>2.13.151</version>
             <scope>system</scope>
             <systemPath>${project.basedir}/lib/EssentialsGroupManager.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>me.botsko</groupId>
             <artifactId>Prism</artifactId>
-            <version>2.0-beta7</version>
+            <version>2.0-beta8</version>
             <scope>system</scope>
             <systemPath>${project.basedir}/lib/Prism.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>ru.tehkode</groupId>
             <artifactId>PermissionsEx</artifactId>
-            <version>1.20.4</version>
+            <version>1.21.2</version>
             <scope>system</scope>
             <systemPath>${project.basedir}/lib/PermissionsEx.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>net.milkbowl.vault</groupId>
             <artifactId>Vault</artifactId>
-            <version>1.2.31</version>
+            <version>1.2.32</version>
             <scope>system</scope>
             <systemPath>${project.basedir}/lib/Vault.jar</systemPath>
         </dependency>
@@ -89,7 +89,7 @@
         <dependency>
             <groupId>com.garbagemule.MobArena</groupId>
             <artifactId>MobArena</artifactId>
-            <version>0.96.3</version>
+            <version>0.96.4</version>
             <scope>system</scope>
             <systemPath>${project.basedir}/lib/MobArena.jar</systemPath>
         </dependency>
@@ -103,7 +103,7 @@
         <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>bukkit</artifactId>
-            <version>1.7.5-R0.1-SNAPSHOT</version>
+            <version>1.7.8-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
