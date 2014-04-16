@@ -118,7 +118,7 @@ public class CreativeDataUpdater {
                     ItemStack[] armor = toArrayStack(rs.getString("armor"));
                     ItemStack[] contents = toArrayStack(rs.getString("inventory"));
                     
-                    db.execute("UPDATE `"+table+"` SET armor = '"+InventoryStack.getStringFromArray(armor)+"', inventory = '"+InventoryStack.getStringFromArray(contents)+"' WHERE player = '"+id+"';");
+                    db.execute("UPDATE `"+table+"` SET armor = '" + InventoryStack.getStringFromArray(armor)+"', inventory = '"+InventoryStack.getStringFromArray(contents)+"' WHERE player = '"+id+"';");
 
                     table_done++;
                     row++;

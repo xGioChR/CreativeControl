@@ -72,8 +72,6 @@ PlayerData:
   SetSurvival: false
   ## FallGlith, if true, if the player is falling and right before hitting the ground he change its gamemode to survival he wont take damage
   FallGlitch: false
-  ## HideInventory, if true, the player inventory will be hidden until login using an auth plugin
-  HideInventory: false
   
 ## This section will define the armor to set on every creative player, for advanced options, while wearing the armor type /cc set armor.
 CreativeArmor:

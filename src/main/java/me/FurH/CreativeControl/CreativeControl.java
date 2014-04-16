@@ -24,7 +24,6 @@ import java.util.WeakHashMap;
 import me.FurH.Core.CorePlugin;
 import me.FurH.Core.cache.CoreHashSet;
 import me.FurH.Core.exceptions.CoreException;
-import me.FurH.Core.internals.InternalManager;
 import me.FurH.CreativeControl.blacklist.CreativeBlackList;
 import me.FurH.CreativeControl.commands.CreativeCommands;
 import me.FurH.CreativeControl.configuration.CreativeMainConfig;
@@ -36,10 +35,8 @@ import me.FurH.CreativeControl.data.CreativePlayerData;
 import me.FurH.CreativeControl.data.friend.CreativePlayerFriends;
 import me.FurH.CreativeControl.database.CreativeSQLDatabase;
 import me.FurH.CreativeControl.database.extra.CreativeSQLUpdater;
-import me.FurH.CreativeControl.integration.AuthMe;
-import me.FurH.CreativeControl.integration.CreativeHideInventory;
 import me.FurH.CreativeControl.integration.MobArena;
-import me.FurH.CreativeControl.integration.worldedit.CreativeEditSession;
+import me.FurH.CreativeControl.integration.WorldEdit;
 import me.FurH.CreativeControl.listener.CreativeBlockListener;
 import me.FurH.CreativeControl.listener.CreativeEntityListener;
 import me.FurH.CreativeControl.listener.CreativeMiscListener;
@@ -182,14 +179,6 @@ public class CreativeControl extends CorePlugin {
 
         if (mainconfig.events_misc) {
             pm.registerEvents(new CreativeMiscListener(), this);
-        }
-
-        if (mainconfig.data_hide && pm.getPlugin("AuthMe") != null) {
-            
-            InternalManager.setup(true);
-            
-            pm.registerEvents(new CreativeHideInventory(), this);
-            pm.registerEvents(new AuthMe(), this);
         }
 
         loadIntegrations();
@@ -522,7 +511,7 @@ public class CreativeControl extends CorePlugin {
     public void setupWorldEdit() {
         Plugin we = Bukkit.getPluginManager().getPlugin("WorldEdit");
         if (we != null && we.isEnabled()) {
-            new CreativeEditSession().init();
+            new WorldEdit().init();
         }
     }
     

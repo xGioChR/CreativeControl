@@ -1,4 +1,4 @@
-package me.FurH.CreativeControl.integration.worldedit;
+package me.FurH.CreativeControl.integration;
 
 
 import me.FurH.CreativeControl.CreativeControl;
@@ -18,7 +18,7 @@ import com.sk89q.worldedit.util.eventbus.EventHandler.Priority;
 import com.sk89q.worldedit.util.eventbus.Subscribe;
 
 @SuppressWarnings("deprecation")
-public class CreativeEditSession  {
+public class WorldEdit  {
 
 	public void init() {
 		com.sk89q.worldedit.WorldEdit.getInstance().getEventBus().register(new Object() {

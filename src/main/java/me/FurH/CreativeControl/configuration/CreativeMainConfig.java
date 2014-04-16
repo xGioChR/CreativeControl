@@ -71,7 +71,6 @@ public class CreativeMainConfig extends Configuration {
     public boolean         data_teleport     = false;
     public boolean         data_survival     = false;
     public boolean         data_glitch       = false;
-    public boolean         data_hide         = false;
     
     public ItemStack       armor_helmet      = null;
     public ItemStack       armor_chest       = null;
@@ -125,7 +124,6 @@ public class CreativeMainConfig extends Configuration {
         data_teleport    = getBoolean("PlayerData.Teleport");
         data_survival    = getBoolean("PlayerData.SetSurvival");
         data_glitch      = getBoolean("PlayerData.FallGlitch");
-        data_hide        = getBoolean("PlayerData.HideInventory");
         
         try {
 

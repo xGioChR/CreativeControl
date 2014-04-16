@@ -80,13 +80,6 @@
             <systemPath>${project.basedir}/lib/WorldEdit.jar</systemPath>
         </dependency>
         <dependency>
-            <groupId>uk.org.whoami</groupId>
-            <artifactId>AuthMe</artifactId>
-            <version>3.3.6</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/AuthMe.jar</systemPath>
-        </dependency>
-        <dependency>
             <groupId>com.garbagemule.MobArena</groupId>
             <artifactId>MobArena</artifactId>
             <version>0.96.4</version>
