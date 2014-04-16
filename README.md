@@ -10,6 +10,8 @@ Changes:
 * Dropped support for xAuth and SurvivalGames.
 * Removed Metrics and Updater.
 * Code cleanup.
+* Dropped support for inventory hiding (is now integrated in AuthMe)
+* Fixed error (cannot find NBTBase).
 * More changes will come up in the commits.
 
 Compilation
