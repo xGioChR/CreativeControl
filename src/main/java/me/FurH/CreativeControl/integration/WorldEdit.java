@@ -17,7 +17,6 @@ import com.sk89q.worldedit.extent.logging.AbstractLoggingExtent;
 import com.sk89q.worldedit.util.eventbus.EventHandler.Priority;
 import com.sk89q.worldedit.util.eventbus.Subscribe;
 
-@SuppressWarnings("deprecation")
 public class WorldEdit  {
 
 	public void init() {
@@ -41,20 +40,20 @@ public class WorldEdit  {
 							int newType = newBlock.getType();
 							if (newType == 0) {
 								manager.unprotect(world, pos.getBlockX(), pos.getBlockY(), pos.getBlockZ(), newType);
-								System.out.println("unprotecting block @" + pos);
+								//System.out.println("unprotecting block @" + pos);
 							}
 
 							if (newType != 0) {
 								if (config.block_ownblock) {
 									if (!actor.hasPermission("CreativeControl.OwnBlock.DontSave")) {
-										System.out.println("OwnBlock registered " + org.bukkit.Material.getMaterial(newBlock.getType()) + " @ " + pos);
+										//System.out.println("OwnBlock registered " + org.bukkit.Material.getMaterial(newBlock.getType()) + " @ " + pos);
 										manager.protect(actor.getName(), world, pos.getBlockX(), pos.getBlockY(), pos.getBlockZ(), newType);
 									}
 								}
 
 								if (config.block_nodrop) {
 									if (!actor.hasPermission("CreativeControl.NoDrop.DontSave")) {
-										System.out.println("NoDrop registered " + org.bukkit.Material.getMaterial(newBlock.getType()) + " @ " + pos);
+										//System.out.println("NoDrop registered " + org.bukkit.Material.getMaterial(newBlock.getType()) + " @ " + pos);
 										manager.protect(actor.getName(), world, pos.getBlockX(), pos.getBlockY(), pos.getBlockZ(), newType);
 									}
 								}   
