@@ -1,15 +1,15 @@
 /*
  * Copyright (C) 2011-2013 FurmigaHumana.  All rights reserved.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation,  version 3.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
@@ -33,45 +33,43 @@ import org.bukkit.plugin.RegisteredServiceProvider;
  */
 public class CreativePermissions {
 
-    private Permission vault;
-    private CreativePermissionsInterface handler;
+	private Permission vault;
+	private CreativePermissionsInterface handler;
 
-    public void setup() {
-        Communicator com = CreativeControl.plugin.getCommunicator();
-        PluginManager pm = Bukkit.getPluginManager();
+	public void setup() {
+		Communicator com = CreativeControl.plugin.getCommunicator();
+		PluginManager pm = Bukkit.getPluginManager();
 
-        Plugin plugin = pm.getPlugin("Vault");
-        if (plugin != null && plugin.isEnabled()) {
-            RegisteredServiceProvider<Permission> permissionProvider = Bukkit.getServicesManager().getRegistration(net.milkbowl.vault.permission.Permission.class);
-            if (permissionProvider != null) {
-                vault = permissionProvider.getProvider();
-                com.log("[TAG] Vault hooked as permissions plugin");
-            }
-        }
+		Plugin plugin = pm.getPlugin("Vault");
+		if (plugin != null && plugin.isEnabled()) {
+			RegisteredServiceProvider<Permission> permissionProvider = Bukkit.getServicesManager().getRegistration(net.milkbowl.vault.permission.Permission.class);
+			if (permissionProvider != null) {
+				vault = permissionProvider.getProvider();
+				com.log("[TAG] Vault hooked as permissions plugin");
+			}
+		}
 
-        plugin = pm.getPlugin("Multiverse-Core");
-        if (plugin != null && plugin.isEnabled()) {
-            handler = new CreativeMultiVerse(plugin);
-            com.log("[TAG] MultiVerse hooked as permissions bridge!");
-            return;
-        }
-    }
+		plugin = pm.getPlugin("Multiverse-Core");
+		if (plugin != null && plugin.isEnabled()) {
+			handler = new CreativeMultiVerse(plugin);
+			com.log("[TAG] MultiVerse hooked as permissions bridge!");
+			return;
+		}
+	}
 
-    public boolean hasPerm(Player player, String node) {
-        CreativeMainConfig config = CreativeControl.getMainConfig();
+	public boolean hasPerm(Player player, String node) {
+		CreativeMainConfig config = CreativeControl.getMainConfig();
 
-        if (player.isOp() && config.perm_ophas) {
-            return true;
-        }
+		if (player.isOp() && config.perm_ophas)
+			return true;
 
-        if (handler != null) {
-            return handler.hasPerm(player, node);
-        }
-        
-        return player.hasPermission(node);
-    }
-    
-    public Permission getVault() {
-        return vault;
-    }
+		if (handler != null)
+			return handler.hasPerm(player, node);
+
+		return player.hasPermission(node);
+	}
+
+	public Permission getVault() {
+		return vault;
+	}
 }

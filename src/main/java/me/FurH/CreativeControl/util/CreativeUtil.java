@@ -1,15 +1,15 @@
 /*
  * Copyright (C) 2011-2013 FurmigaHumana.  All rights reserved.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation,  version 3.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
@@ -31,86 +31,86 @@ import me.FurH.CreativeControl.configuration.CreativeWorldNodes;
  */
 public class CreativeUtil {
 
-    /*
-     * return true if the first line of the sign is listed as a economy sign
-     */
-    public static boolean isBlackListedSign(org.bukkit.block.Sign sign) {
+	/*
+	 * return true if the first line of the sign is listed as a economy sign
+	 */
+	public static boolean isBlackListedSign(org.bukkit.block.Sign sign) {
 
-        String line1 = removeCodes(sign.getLine(0).replaceAll(" ", "_"));
-        String line2 = removeCodes(sign.getLine(1).replaceAll(" ", "_"));
-        String line3 = removeCodes(sign.getLine(2).replaceAll(" ", "_"));
-        String line4 = removeCodes(sign.getLine(3).replaceAll(" ", "_"));
+		String line1 = removeCodes(sign.getLine(0).replaceAll(" ", "_"));
+		String line2 = removeCodes(sign.getLine(1).replaceAll(" ", "_"));
+		String line3 = removeCodes(sign.getLine(2).replaceAll(" ", "_"));
+		String line4 = removeCodes(sign.getLine(3).replaceAll(" ", "_"));
 
-        CreativeWorldNodes config = CreativeControl.getWorldNodes(sign.getWorld());
+		CreativeWorldNodes config = CreativeControl.getWorldNodes(sign.getWorld());
 
-        return config.black_sign.contains(line1) || config.black_sign.contains(line2) || config.black_sign.contains(line3) || config.black_sign.contains(line4);
-    }
+		return config.black_sign.contains(line1) || config.black_sign.contains(line2) || config.black_sign.contains(line3) || config.black_sign.contains(line4);
+	}
 
-    private static String removeCodes(String line) {
-        return line.toLowerCase().replaceAll("§([0-9a-fk-or])", "").replaceAll("[^a-zA-Z0-9]", "");
-    }
+	private static String removeCodes(String line) {
+		return line.toLowerCase().replaceAll("§([0-9a-fk-or])", "").replaceAll("[^a-zA-Z0-9]", "");
+	}
 
-    /*
-     * return a HashSet of the List contends
-     */
-    public static HashSet<String> toStringHashSet(String string, String split) {
+	/*
+	 * return a HashSet of the List contends
+	 */
+	public static HashSet<String> toStringHashSet(String string, String split) {
 
-        try {
-            return CollectionUtils.toStringHashSet(string, split);
-        } catch (CoreException ex) {
-            CreativeControl.plugin.getCommunicator().error(ex);
-        }
+		try {
+			return CollectionUtils.toStringHashSet(string, split);
+		} catch (CoreException ex) {
+			CreativeControl.plugin.getCommunicator().error(ex);
+		}
 
-        return null;
-    }
-    
-    /*
-     * return a HashSet of the List contends
-     */
-    public static HashSet<Integer> toIntegerHashSet(String string, String split) {
-        
-        try {
-            return CollectionUtils.toIntegerHashSet(string, split);
-        } catch (CoreException ex) {
-            CreativeControl.plugin.getCommunicator().error(ex);
-        }
-        
-        return null;
-    }
-    
-    /*
-     * return a Integer
-     */
-    public static int toInteger(String str) {
+		return null;
+	}
 
-        try {
-            return NumberUtils.toInteger(str);
-        } catch (CoreException ex) {
-            CreativeControl.plugin.getCommunicator().error(ex);
-        }
-        
-        return 0;
-    }
-    
-    public static double toDouble(String str) {
+	/*
+	 * return a HashSet of the List contends
+	 */
+	public static HashSet<Integer> toIntegerHashSet(String string, String split) {
 
-        try {
-            return NumberUtils.toDouble(str);
-        } catch (CoreException ex) {
-            CreativeControl.plugin.getCommunicator().error(ex);
-        }
-        
-        return 0;
-    }
+		try {
+			return CollectionUtils.toIntegerHashSet(string, split);
+		} catch (CoreException ex) {
+			CreativeControl.plugin.getCommunicator().error(ex);
+		}
 
-    public static String getSimpleDate(long date) {
-        return TimeUtils.getSimpleFormatedTime(date);
-    }
+		return null;
+	}
 
-    /*
-     * return the date in the defined miliseconds
-     */
-    public static String getDate(long date) {
-        return TimeUtils.getFormatedTime(date);
-    }
+	/*
+	 * return a Integer
+	 */
+	public static int toInteger(String str) {
+
+		try {
+			return NumberUtils.toInteger(str);
+		} catch (CoreException ex) {
+			CreativeControl.plugin.getCommunicator().error(ex);
+		}
+
+		return 0;
+	}
+
+	public static double toDouble(String str) {
+
+		try {
+			return NumberUtils.toDouble(str);
+		} catch (CoreException ex) {
+			CreativeControl.plugin.getCommunicator().error(ex);
+		}
+
+		return 0;
+	}
+
+	public static String getSimpleDate(long date) {
+		return TimeUtils.getSimpleFormatedTime(date);
+	}
+
+	/*
+	 * return the date in the defined miliseconds
+	 */
+	public static String getDate(long date) {
+		return TimeUtils.getFormatedTime(date);
+	}
 }

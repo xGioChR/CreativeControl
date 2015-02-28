@@ -23,129 +23,128 @@ import org.bukkit.inventory.ItemStack;
  */
 public class CreativeDataUpdater {
 
-    public static boolean lock = false;
-    private CreativeControl plugin;
-    private Player p;
-    
-    public CreativeDataUpdater(CreativeControl plugin) {
-        this.plugin = plugin;
-    }
-    
-    public void run() {
-        if (lock) {
-            System.out.println("Updater Locked");
-            return;
-        }
-        
-        lock = true;
-        long start = System.currentTimeMillis();
+	public static boolean lock = false;
+	private CreativeControl plugin;
+	private Player p;
 
-        Communicator com = plugin.getCommunicator();
-        com.msg(p, "&7Initializing... ");
-        
-        CreativeSQLDatabase db = CreativeControl.getDb();
+	public CreativeDataUpdater(CreativeControl plugin) {
+		this.plugin = plugin;
+	}
 
-        db.load();
+	public void run() {
+		if (lock) {
+			System.out.println("Updater Locked");
+			return;
+		}
 
-        try {
-            db.commit();
-        } catch (CoreException ex) {
-            com.error(ex);
-        }
-        
-        List<String> tables = new ArrayList<String>();
-        
-        tables.add(db.prefix + "players_adventurer");
-        tables.add(db.prefix + "players_survival");
-        tables.add(db.prefix + "players_creative");
+		lock = true;
+		long start = System.currentTimeMillis();
 
-        /* update the players inventories tables */
-        for (String table : tables) {
-            update_players_table_3(table);
-        }
+		Communicator com = plugin.getCommunicator();
+		com.msg(p, "&7Initializing... ");
 
-        try {
-            db.incrementVersion(3);
-        } catch (CoreException ex) {
-            com.error(ex, "Failed to increment the database version");
-        }
-        
-        com.msg(p, "&7All data updated in &4{0}&7 ms", (System.currentTimeMillis() - start));
+		CreativeSQLDatabase db = CreativeControl.getDb();
 
-        lock = false;
-    }
-    
-    public void update_players_table_3(String table) {
-        Communicator com = plugin.getCommunicator();
-        
-        CreativeSQLDatabase db = CreativeControl.getDb();
-        long adventurer_start = System.currentTimeMillis();
+		db.load();
 
-        /* move table */
-        com.msg(p, "&7Updating table '&4"+table+"&7' ...");
+		try {
+			db.commit();
+		} catch (CoreException ex) {
+			com.error(ex);
+		}
 
-        double table_size = 0;
-        try {
-            table_size = db.getTableCount(table);
-        } catch (CoreException ex) { }
+		List<String> tables = new ArrayList<String>();
 
-        com.msg(p, "&7Table size: &4" + table_size);
+		tables.add(db.prefix + "players_adventurer");
+		tables.add(db.prefix + "players_survival");
+		tables.add(db.prefix + "players_creative");
 
-        double table_processed = 0;
-        double table_done = 0;
-        double table_last = 0;
+		/* update the players inventories tables */
+		for (String table : tables)
+			update_players_table_3(table);
 
-        while (true) {
+		try {
+			db.incrementVersion(3);
+		} catch (CoreException ex) {
+			com.error(ex, "Failed to increment the database version");
+		}
 
-            table_processed = ((table_done / table_size) * 100.0D);
+		com.msg(p, "&7All data updated in &4{0}&7 ms", System.currentTimeMillis() - start);
 
-            int row = 0;
+		lock = false;
+	}
 
-            if (table_processed - table_last >= 5) {
-                System.gc();
-                com.msg(p, "&4{0}&7 of ~&4{1}&7 queries processed, &4{2}&7%", table_done, table_size, String.format("%d", (int) table_processed));
-                table_last = table_processed;
-            }
+	public void update_players_table_3(String table) {
+		Communicator com = plugin.getCommunicator();
 
-            try {
-                PreparedStatement ps = db.getQuery("SELECT * FROM `"+table+"` LIMIT " + (int) table_done + ", " + 10000 + ";");
-                ResultSet rs = ps.getResultSet();
+		CreativeSQLDatabase db = CreativeControl.getDb();
+		long adventurer_start = System.currentTimeMillis();
 
-                while (rs.next()) {
-                    
-                    int id = rs.getInt("player");
+		/* move table */
+		com.msg(p, "&7Updating table '&4" + table + "&7' ...");
 
-                    ItemStack[] armor = toArrayStack(rs.getString("armor"));
-                    ItemStack[] contents = toArrayStack(rs.getString("inventory"));
-                    
-                    db.execute("UPDATE `"+table+"` SET armor = '" + InventoryStack.getStringFromArray(armor)+"', inventory = '"+InventoryStack.getStringFromArray(contents)+"' WHERE player = '"+id+"';");
+		double table_size = 0;
+		try {
+			table_size = db.getTableCount(table);
+		} catch (CoreException ex) {
+		}
 
-                    table_done++;
-                    row++;
-                }
+		com.msg(p, "&7Table size: &4" + table_size);
 
-                db.commit();
+		double table_processed = 0;
+		double table_done = 0;
+		double table_last = 0;
 
-                rs.close();
-                ps.close();
+		while (true) {
 
-                if (row < 10000) {
-                    break;
-                }
-            } catch (CoreException ex) {
-                com.error(ex, "An error occurried while running the update method 'update_players_table_3'");
-                break;
-            } catch (SQLException ex) {
-                com.error(ex, "An error occurried while running the update method 'update_players_table_3'");
-                break;
-            }
-        }
-        
-        long table_time = (System.currentTimeMillis() - adventurer_start);
-        com.msg(p, "&7Table '&4" + table + "&7' updated in &4{0}&7 ms", table_time);
-    }
-    
-    public ItemStack[] toArrayStack(String string) {
-        return InvUtils.toArrayStack(string);
-    }
+			table_processed = table_done / table_size * 100.0D;
+
+			int row = 0;
+
+			if (table_processed - table_last >= 5) {
+				System.gc();
+				com.msg(p, "&4{0}&7 of ~&4{1}&7 queries processed, &4{2}&7%", table_done, table_size, String.format("%d", (int) table_processed));
+				table_last = table_processed;
+			}
+
+			try {
+				PreparedStatement ps = db.getQuery("SELECT * FROM `" + table + "` LIMIT " + (int) table_done + ", " + 10000 + ";");
+				ResultSet rs = ps.getResultSet();
+
+				while (rs.next()) {
+
+					int id = rs.getInt("player");
+
+					ItemStack[] armor = toArrayStack(rs.getString("armor"));
+					ItemStack[] contents = toArrayStack(rs.getString("inventory"));
+
+					db.execute("UPDATE `" + table + "` SET armor = '" + InventoryStack.getStringFromArray(armor) + "', inventory = '" + InventoryStack.getStringFromArray(contents) + "' WHERE player = '" + id + "';");
+
+					table_done++;
+					row++;
+				}
+
+				db.commit();
+
+				rs.close();
+				ps.close();
+
+				if (row < 10000)
+					break;
+			} catch (CoreException ex) {
+				com.error(ex, "An error occurried while running the update method 'update_players_table_3'");
+				break;
+			} catch (SQLException ex) {
+				com.error(ex, "An error occurried while running the update method 'update_players_table_3'");
+				break;
+			}
+		}
+
+		long table_time = System.currentTimeMillis() - adventurer_start;
+		com.msg(p, "&7Table '&4" + table + "&7' updated in &4{0}&7 ms", table_time);
+	}
+
+	public ItemStack[] toArrayStack(String string) {
+		return InvUtils.toArrayStack(string);
+	}
 }

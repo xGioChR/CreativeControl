@@ -1,15 +1,15 @@
 /*
  * Copyright (C) 2011-2013 FurmigaHumana.  All rights reserved.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation,  version 3.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
@@ -72,453 +72,434 @@ import de.diddiz.LogBlock.LogBlock;
  */
 public class CreativeControl extends CorePlugin {
 
-    public CreativeControl() {
-        super("&8[&3CreativeControl&8]&7:&f");
-    }
+	public CreativeControl() {
+		super("&8[&3CreativeControl&8]&7:&f");
+	}
 
-    /* classes */
-    public static CreativeControl plugin;
-    private static CreativeSQLDatabase database;
-    private static CreativeBlocksSelection selector;
-    private static CreativeRegionManager regioner;
-    private static CreativeBlockManager manager;
-    private static CreativePlayerData data;
-    private static CreativePlayerFriends friends;
-    private static CreativeMainConfig mainconfig;
-    private static CreativeMessages messages;
-    private static Consumer lbconsumer = null;
-    private static CreativeWorldConfig worldconfig;
-    private static boolean prismEnabled;
-    private static CoreProtectAPI coreprotect;
-    private static CreativeBlackList blacklist;
-    
-    private static CreativePermissions permissions;
+	/* classes */
+	public static CreativeControl plugin;
+	private static CreativeSQLDatabase database;
+	private static CreativeBlocksSelection selector;
+	private static CreativeRegionManager regioner;
+	private static CreativeBlockManager manager;
+	private static CreativePlayerData data;
+	private static CreativePlayerFriends friends;
+	private static CreativeMainConfig mainconfig;
+	private static CreativeMessages messages;
+	private static Consumer lbconsumer = null;
+	private static CreativeWorldConfig worldconfig;
+	private static boolean prismEnabled;
+	private static CoreProtectAPI coreprotect;
+	private static CreativeBlackList blacklist;
 
-    public WeakHashMap<Player, Location> right = new WeakHashMap<Player, Location>();
-    public WeakHashMap<Player, Location> left = new WeakHashMap<Player, Location>();
+	private static CreativePermissions permissions;
 
-    public Map<String, CoreHashSet<UUID>> limits = new HashMap<String, CoreHashSet<UUID>>();
-    public Map<String, Integer> mods = new HashMap<String, Integer>();
+	public WeakHashMap<Player, Location> right = new WeakHashMap<Player, Location>();
+	public WeakHashMap<Player, Location> left = new WeakHashMap<Player, Location>();
 
-    @Override
-    public void onEnable() {
-        
-        long localStart = System.currentTimeMillis();
-        
-        plugin = this;
-       
-        messages = new CreativeMessages(this);
-        messages.load();
+	public Map<String, CoreHashSet<UUID>> limits = new HashMap<String, CoreHashSet<UUID>>();
+	public Map<String, Integer> mods = new HashMap<String, Integer>();
 
-        getCommunicator().setTag(messages.prefix_tag);
-        blacklist = new CreativeBlackList();
-        
-        log("[TAG] Initializing configurations...");
-        mainconfig = new CreativeMainConfig(this);
-        mainconfig.load();
+	@Override
+	public void onEnable() {
 
-        worldconfig = new CreativeWorldConfig(this);
-        worldconfig.setSingleConfig(mainconfig.config_single);
-        
-        if (!mainconfig.config_single) {
-            for (World w : getServer().getWorlds()) { worldconfig.load(w); }
-        } else {
-            worldconfig.load(getServer().getWorlds().get(0));
-        }
+		long localStart = System.currentTimeMillis();
 
-        mainconfig.updateConfig();
+		plugin = this;
 
-        getCommunicator().setDebug(mainconfig.com_debugcons);
-        getCommunicator().setQuiet(mainconfig.com_quiet);
+		messages = new CreativeMessages(this);
+		messages.load();
 
-        log("[TAG] Loading Modules...");
-        selector = new CreativeBlocksSelection();
-        regioner = new CreativeRegionManager();
-        manager = new CreativeBlockManager();
-        friends = new CreativePlayerFriends();
-        data = new CreativePlayerData();
-        permissions = new CreativePermissions();
+		getCommunicator().setTag(messages.prefix_tag);
+		blacklist = new CreativeBlackList();
 
-        database = new CreativeSQLDatabase(this, mainconfig.database_prefix, mainconfig.database_type, mainconfig.database_host, mainconfig.database_port, mainconfig.database_table, mainconfig.database_user, mainconfig.database_pass);
+		log("[TAG] Initializing configurations...");
+		mainconfig = new CreativeMainConfig(this);
+		mainconfig.load();
 
-        database.setupQueue(mainconfig.queue_speed, mainconfig.queue_threadds);
-        
-        database.setAllowMainThread(true);
-        
-        try {
-            database.setAutoCommit(false);
-        } catch (CoreException ex) {
-            error(ex);
-        }
-        
-        try {
-            database.connect();
-        } catch (CoreException ex) {
-            error(ex);
-        }
+		worldconfig = new CreativeWorldConfig(this);
+		worldconfig.setSingleConfig(mainconfig.config_single);
 
-        database.load();
-        
-        try {
-            database.commit();
-        } catch (CoreException ex) {
-            ex.printStackTrace();
-        }
+		if (!mainconfig.config_single)
+			for (World w : getServer().getWorlds())
+				worldconfig.load(w);
+		else
+			worldconfig.load(getServer().getWorlds().get(0));
 
-        log("[TAG] Registring Events...");
-        PluginManager pm = getServer().getPluginManager();
+		mainconfig.updateConfig();
 
-        pm.registerEvents(new CreativeBlockListener(), this);
-        pm.registerEvents(new CreativeEntityListener(), this);
-        pm.registerEvents(new CreativePlayerListener(), this);
-        pm.registerEvents(new CreativeWorldListener(), this);
+		getCommunicator().setDebug(mainconfig.com_debugcons);
+		getCommunicator().setQuiet(mainconfig.com_quiet);
 
-        if (mainconfig.events_move) {
-            pm.registerEvents(new CreativeMoveListener(), this);
-        }
+		log("[TAG] Loading Modules...");
+		selector = new CreativeBlocksSelection();
+		regioner = new CreativeRegionManager();
+		manager = new CreativeBlockManager();
+		friends = new CreativePlayerFriends();
+		data = new CreativePlayerData();
+		permissions = new CreativePermissions();
 
-        if (mainconfig.events_misc) {
-            pm.registerEvents(new CreativeMiscListener(), this);
-        }
+		database = new CreativeSQLDatabase(this, mainconfig.database_prefix, mainconfig.database_type, mainconfig.database_host, mainconfig.database_port, mainconfig.database_table, mainconfig.database_user, mainconfig.database_pass);
 
-        loadIntegrations();
-                
-        CommandExecutor cc = new CreativeCommands();
-        getCommand("creativecontrol").setExecutor(cc);
+		database.setupQueue(mainconfig.queue_speed, mainconfig.queue_threadds);
 
-        setupWorldEdit();
-        setupLoggers();
-        
-        permissions.setup();
+		database.setAllowMainThread(true);
 
-        Bukkit.getScheduler().runTaskAsynchronously(this, new Runnable() {
-            @Override
-            public void run() {
-                log("[TAG] Cached {0} protections", manager.preCache());
-                log("[TAG] Loaded {0} regions", regioner.loadRegions());
-                log("[TAG] {0} blocks protected", manager.getTotal());
-            }
-        });
-        
-        try {
-            if (database.isUpdateAvailable()) {
-                log("[TAG] Database update required!");
-                
-                if (database.getCurrentVersion() >= 2) {
-                    CreativeDataUpdater invUpdater = new CreativeDataUpdater(this);
-                    invUpdater.run();
-                } else {
-                    Bukkit.getScheduler().runTaskAsynchronously(this, new CreativeSQLUpdater(this));
-                }
-            }
-        } catch (CoreException ex) {
-            error(ex);
-        }
-        
-        logEnable(Math.abs(System.currentTimeMillis() - localStart));
-    }
+		try {
+			database.setAutoCommit(false);
+		} catch (CoreException ex) {
+			error(ex);
+		}
 
-    @Override
-    public void onDisable() {
-        
-        long localStart = System.currentTimeMillis();
+		try {
+			database.connect();
+		} catch (CoreException ex) {
+			error(ex);
+		}
 
-        try {
-            database.disconnect(false);
-        } catch (CoreException ex) {
-            error(ex);
-        }
+		database.load();
 
-        HandlerList.unregisterAll(this);
-        getServer().getScheduler().cancelTasks(this);
-        
-        clear();
-        right.clear();
-        left.clear();
-        mods.clear();
-        data.clear();
-        friends.clear();
-        limits.clear();
-        
-        messages.unload();
-        mainconfig.unload();
-        worldconfig.unload();
+		try {
+			database.commit();
+		} catch (CoreException ex) {
+			ex.printStackTrace();
+		}
 
-        worldconfig.clear();
-        
-        plugin = null;
-        database = null;
-        selector = null;
-        regioner = null;
-        manager = null;
-        data = null;
-        friends = null;
-        mainconfig = null;
-        messages = null;
-        lbconsumer = null;
-        worldconfig = null;
-        prismEnabled = false;
-        coreprotect = null;
-        blacklist = null;
-        permissions = null;
-        
-        
-        logDisable(Math.abs(System.currentTimeMillis() - localStart));
-    }
-    
-    public void reload(CommandSender sender) {
+		log("[TAG] Registring Events...");
+		PluginManager pm = getServer().getPluginManager();
 
-        String ssql  = mainconfig.database_type;
-        boolean move = mainconfig.events_move;
-        boolean misc = mainconfig.events_misc;
+		pm.registerEvents(new CreativeBlockListener(), this);
+		pm.registerEvents(new CreativeEntityListener(), this);
+		pm.registerEvents(new CreativePlayerListener(), this);
+		pm.registerEvents(new CreativeWorldListener(), this);
 
-        clear();
-        right.clear();
-        left.clear();
-        mods.clear();
-        data.clear();
-        friends.clear();
-        limits.clear();
-        
-        messages.unload();
-        mainconfig.unload();
-        worldconfig.unload();
-        
-        messages.load();
-        mainconfig.load();
+		if (mainconfig.events_move)
+			pm.registerEvents(new CreativeMoveListener(), this);
 
-        worldconfig.clear();
+		if (mainconfig.events_misc)
+			pm.registerEvents(new CreativeMiscListener(), this);
 
-        if (!mainconfig.config_single) {
-            for (World w : getServer().getWorlds()) { worldconfig.load(w); }
-        } else {
-            worldconfig.load(getServer().getWorlds().get(0));
-        }
-        
-        loadIntegrations();
-        
-        String  newssql = mainconfig.database_type;
-        boolean newmove = mainconfig.events_move;
-        boolean newmisc = mainconfig.events_misc;
+		loadIntegrations();
 
-        if (!ssql.equals(newssql)) {
-            
-            try {
-                database.disconnect(false);
-            } catch (CoreException ex) {
-                error(ex);
-            }
-            
-            try {
-                database.connect();
-            } catch (CoreException ex) {
-                error(ex);
-            }
+		CommandExecutor cc = new CreativeCommands();
+		getCommand("creativecontrol").setExecutor(cc);
 
-            database.load();
+		setupWorldEdit();
+		setupLoggers();
 
-            msg(sender, "[TAG] Database Type: &4{0}&7 Defined.", database.getDatabaseEngine());
-        }
-        
-        PluginManager pm = getServer().getPluginManager();
-        if (move != newmove) {
-            if (newmove) {
-                pm.registerEvents(new CreativeMoveListener(), this);
-                msg(sender, "[TAG] CreativeMoveListener registred, Listener enabled.");
-            } else {
-                HandlerList.unregisterAll(new CreativeMoveListener());
-                msg(sender, "[TAG] CreativeMoveListener unregistered, Listener disabled.");
-            }
-        }
+		permissions.setup();
 
-        if (misc != newmisc) {
-            if (newmisc) {
-                pm.registerEvents(new CreativeMiscListener(), this);
-                msg(sender, "[TAG] CreativeMiscListener registred, Listener enabled.");
-            } else {
-                HandlerList.unregisterAll(new CreativeMoveListener());
-                msg(sender, "[TAG] CreativeMiscListener unregistered, Listener disabled.");
-            }
-        }
-    }
-    
-    public void loadIntegrations() {
-        PluginManager pm = getServer().getPluginManager();
-        Plugin p = pm.getPlugin("MobArena");
-        if (p != null) {
-            if (p.isEnabled()) {
-                log("[TAG] MobArena support enabled!");
-                pm.registerEvents(new MobArena(), this);
-            }
-        }
+		Bukkit.getScheduler().runTaskAsynchronously(this, new Runnable() {
+			@Override
+			public void run() {
+				log("[TAG] Cached {0} protections", manager.preCache());
+				log("[TAG] Loaded {0} regions", regioner.loadRegions());
+				log("[TAG] {0} blocks protected", manager.getTotal());
+			}
+		});
 
-        p = pm.getPlugin("Multiverse-Inventories");
-        if (p != null) {
-            if (p.isEnabled()) {
-                if (mainconfig.data_inventory || mainconfig.data_status) {
-                    if (mainconfig.config_conflict) {
-                        mainconfig.data_inventory = false;
-                        mainconfig.data_status = false;
-                        int anoy = 5;
-                        while (anoy > 0) {
-                            log("[TAG] ***************************************************");
-                            log("[TAG] Multiverse-Inventories Detected!!");
-                            log("[TAG] Per-GameMode inventories will be disabled by this plugin");
-                            log("[TAG] Use the multiverse inventories manager!");
-                            log("[TAG] ***************************************************");   
-                            anoy--;
-                        }
-                    } else {
-                        log("[TAG] ***************************************************");
-                        log("[TAG] Multiverse-Inventories Detected!!");
-                        log("[TAG] Per-GameMode inventories may be buggy!");
-                        log("[TAG] Use the multiverse inventories manager!");
-                        log("[TAG] ***************************************************");   
-                    }
-                }
-            }
-        }
-    }
+		try {
+			if (database.isUpdateAvailable()) {
+				log("[TAG] Database update required!");
 
-    @Override
-    public boolean hasPerm(CommandSender sender, String node) {
-        return ((sender instanceof Player)) ? permissions.hasPerm((Player)sender, "CreativeControl."+node) : true;
-    }
-    
-    private void clear() {
-        CoreHashSet<UUID> entity = new CoreHashSet<UUID>();
+				if (database.getCurrentVersion() >= 2) {
+					CreativeDataUpdater invUpdater = new CreativeDataUpdater(this);
+					invUpdater.run();
+				} else
+					Bukkit.getScheduler().runTaskAsynchronously(this, new CreativeSQLUpdater(this));
+			}
+		} catch (CoreException ex) {
+			error(ex);
+		}
 
-        for (String key : limits.keySet()) {
-            entity.addAll(limits.get(key));
-        }
+		logEnable(Math.abs(System.currentTimeMillis() - localStart));
+	}
 
-        for (World w : getServer().getWorlds()) {
-            for (Entity x : w.getEntities()) {
-                if (entity.contains(x.getUniqueId())) {
-                    x.remove();
-                }
-            }
-        }
-        
-        entity.clear();
-        limits.clear();
-    }
-    
-    public void clear(Player player) {
-        CoreHashSet<UUID> entity = limits.get(player.getName());
+	@Override
+	public void onDisable() {
 
-        if (entity == null) {
-            return;
-        }
+		long localStart = System.currentTimeMillis();
 
-        for (World w : Bukkit.getWorlds()) {
-            for (Entity x : w.getEntities()) {
-                if (entity.contains(x.getUniqueId())) {
-                    x.remove();
-                }
-            }
-        }
+		try {
+			database.disconnect(false);
+		} catch (CoreException ex) {
+			error(ex);
+		}
 
-        entity.clear();
-        limits.remove(player.getName());
-    }
-    
-    public static CreativeBlackList getBlackList() {
-        return blacklist;
-    }
-    
-    public static CreativePermissions getPermissions2() {
-        return permissions;
-    }
-    
-    public static CreativeWorldConfig getWorldConfig() {
-        return worldconfig;
-    }
+		HandlerList.unregisterAll(this);
+		getServer().getScheduler().cancelTasks(this);
 
-    public static CreativeWorldNodes getWorldNodes(World world) {
-        return worldconfig.get(world);
-    }
+		clear();
+		right.clear();
+		left.clear();
+		mods.clear();
+		data.clear();
+		friends.clear();
+		limits.clear();
 
-    public static CreativeControl getPlugin() { 
-        return plugin; 
-    }
+		messages.unload();
+		mainconfig.unload();
+		worldconfig.unload();
 
-    public static CreativeBlocksSelection getSelector() { 
-        return selector; 
-    }
-    
-    public static CreativePlayerFriends getFriends() {
-        return friends;
-    }
+		worldconfig.clear();
 
-    public static CreativeSQLDatabase getDb() { 
-        return database; 
-    }
-    
-    public static CreativeRegionManager getRegioner() { 
-        return regioner; 
-    }
-    
-    public static CreativeMainConfig getMainConfig() {
-        return mainconfig;
-    }
+		plugin = null;
+		database = null;
+		selector = null;
+		regioner = null;
+		manager = null;
+		data = null;
+		friends = null;
+		mainconfig = null;
+		messages = null;
+		lbconsumer = null;
+		worldconfig = null;
+		prismEnabled = false;
+		coreprotect = null;
+		blacklist = null;
+		permissions = null;
 
-    public static CreativeBlockManager getManager() { 
-        return manager; 
-    }
-    
-    public static CreativePlayerData getPlayerData() { 
-        return data; 
-    }
+		logDisable(Math.abs(System.currentTimeMillis() - localStart));
+	}
 
-    public static CreativeMessages getMessages() {
-        return messages;
-    }
-    
-    public static Consumer getLogBlock() { 
-        return lbconsumer; 
-    }
+	public void reload(CommandSender sender) {
 
-    public static CoreProtectAPI getCoreProtect() {
-        return coreprotect;
-    }
-    
-    public static boolean getPrism() {
-        return prismEnabled;
-    }
-    
-    public void setupLoggers() {
-        
-        Plugin logblock = Bukkit.getPluginManager().getPlugin("LogBlock");
-        if (logblock != null) {
-            log("[TAG] LogBlock hooked as logging plugin");
-            lbconsumer = ((LogBlock)logblock).getConsumer();
-        }
+		String ssql = mainconfig.database_type;
+		boolean move = mainconfig.events_move;
+		boolean misc = mainconfig.events_misc;
 
-        Plugin prism = Bukkit.getPluginManager().getPlugin("Prism");
-        if (prism != null) {
-            log("[TAG] Prism hooked as logging plugin");
-            prismEnabled = true;
-        }
-        
-        Plugin corep = Bukkit.getPluginManager().getPlugin("CoreProtect");
-        if (corep != null) {
-            log("[TAG] CoreProtect hooked as logging plugin");            
-            coreprotect = ((CoreProtect)corep).getAPI();
-        }
-    }
+		clear();
+		right.clear();
+		left.clear();
+		mods.clear();
+		data.clear();
+		friends.clear();
+		limits.clear();
 
-    public void setupWorldEdit() {
-        Plugin we = Bukkit.getPluginManager().getPlugin("WorldEdit");
-        if (we != null && we.isEnabled()) {
-            new WorldEdit().init();
-        }
-    }
-    
-    public WorldEditPlugin getWorldEdit() {
-        PluginManager pm = getServer().getPluginManager();
-        Plugin wex = pm.getPlugin("WorldEdit");
-        return (WorldEditPlugin) wex;
-    }
-   
+		messages.unload();
+		mainconfig.unload();
+		worldconfig.unload();
+
+		messages.load();
+		mainconfig.load();
+
+		worldconfig.clear();
+
+		if (!mainconfig.config_single)
+			for (World w : getServer().getWorlds())
+				worldconfig.load(w);
+		else
+			worldconfig.load(getServer().getWorlds().get(0));
+
+		loadIntegrations();
+
+		String newssql = mainconfig.database_type;
+		boolean newmove = mainconfig.events_move;
+		boolean newmisc = mainconfig.events_misc;
+
+		if (!ssql.equals(newssql)) {
+
+			try {
+				database.disconnect(false);
+			} catch (CoreException ex) {
+				error(ex);
+			}
+
+			try {
+				database.connect();
+			} catch (CoreException ex) {
+				error(ex);
+			}
+
+			database.load();
+
+			msg(sender, "[TAG] Database Type: &4{0}&7 Defined.", database.getDatabaseEngine());
+		}
+
+		PluginManager pm = getServer().getPluginManager();
+		if (move != newmove)
+			if (newmove) {
+				pm.registerEvents(new CreativeMoveListener(), this);
+				msg(sender, "[TAG] CreativeMoveListener registred, Listener enabled.");
+			} else {
+				HandlerList.unregisterAll(new CreativeMoveListener());
+				msg(sender, "[TAG] CreativeMoveListener unregistered, Listener disabled.");
+			}
+
+		if (misc != newmisc)
+			if (newmisc) {
+				pm.registerEvents(new CreativeMiscListener(), this);
+				msg(sender, "[TAG] CreativeMiscListener registred, Listener enabled.");
+			} else {
+				HandlerList.unregisterAll(new CreativeMoveListener());
+				msg(sender, "[TAG] CreativeMiscListener unregistered, Listener disabled.");
+			}
+	}
+
+	public void loadIntegrations() {
+		PluginManager pm = getServer().getPluginManager();
+		Plugin p = pm.getPlugin("MobArena");
+		if (p != null)
+			if (p.isEnabled()) {
+				log("[TAG] MobArena support enabled!");
+				pm.registerEvents(new MobArena(), this);
+			}
+
+		p = pm.getPlugin("Multiverse-Inventories");
+		if (p != null)
+			if (p.isEnabled())
+				if (mainconfig.data_inventory || mainconfig.data_status)
+					if (mainconfig.config_conflict) {
+						mainconfig.data_inventory = false;
+						mainconfig.data_status = false;
+						int anoy = 5;
+						while (anoy > 0) {
+							log("[TAG] ***************************************************");
+							log("[TAG] Multiverse-Inventories Detected!!");
+							log("[TAG] Per-GameMode inventories will be disabled by this plugin");
+							log("[TAG] Use the multiverse inventories manager!");
+							log("[TAG] ***************************************************");
+							anoy--;
+						}
+					} else {
+						log("[TAG] ***************************************************");
+						log("[TAG] Multiverse-Inventories Detected!!");
+						log("[TAG] Per-GameMode inventories may be buggy!");
+						log("[TAG] Use the multiverse inventories manager!");
+						log("[TAG] ***************************************************");
+					}
+	}
+
+	@Override
+	public boolean hasPerm(CommandSender sender, String node) {
+		return sender instanceof Player ? permissions.hasPerm((Player) sender, "CreativeControl." + node) : true;
+	}
+
+	private void clear() {
+		CoreHashSet<UUID> entity = new CoreHashSet<UUID>();
+
+		for (String key : limits.keySet())
+			entity.addAll(limits.get(key));
+
+		for (World w : getServer().getWorlds())
+			for (Entity x : w.getEntities())
+				if (entity.contains(x.getUniqueId()))
+					x.remove();
+
+		entity.clear();
+		limits.clear();
+	}
+
+	public void clear(Player player) {
+		CoreHashSet<UUID> entity = limits.get(player.getName());
+
+		if (entity == null)
+			return;
+
+		for (World w : Bukkit.getWorlds())
+			for (Entity x : w.getEntities())
+				if (entity.contains(x.getUniqueId()))
+					x.remove();
+
+		entity.clear();
+		limits.remove(player.getName());
+	}
+
+	public static CreativeBlackList getBlackList() {
+		return blacklist;
+	}
+
+	public static CreativePermissions getPermissions2() {
+		return permissions;
+	}
+
+	public static CreativeWorldConfig getWorldConfig() {
+		return worldconfig;
+	}
+
+	public static CreativeWorldNodes getWorldNodes(World world) {
+		return worldconfig.get(world);
+	}
+
+	public static CreativeControl getPlugin() {
+		return plugin;
+	}
+
+	public static CreativeBlocksSelection getSelector() {
+		return selector;
+	}
+
+	public static CreativePlayerFriends getFriends() {
+		return friends;
+	}
+
+	public static CreativeSQLDatabase getDb() {
+		return database;
+	}
+
+	public static CreativeRegionManager getRegioner() {
+		return regioner;
+	}
+
+	public static CreativeMainConfig getMainConfig() {
+		return mainconfig;
+	}
+
+	public static CreativeBlockManager getManager() {
+		return manager;
+	}
+
+	public static CreativePlayerData getPlayerData() {
+		return data;
+	}
+
+	public static CreativeMessages getMessages() {
+		return messages;
+	}
+
+	public static Consumer getLogBlock() {
+		return lbconsumer;
+	}
+
+	public static CoreProtectAPI getCoreProtect() {
+		return coreprotect;
+	}
+
+	public static boolean getPrism() {
+		return prismEnabled;
+	}
+
+	public void setupLoggers() {
+
+		Plugin logblock = Bukkit.getPluginManager().getPlugin("LogBlock");
+		if (logblock != null) {
+			log("[TAG] LogBlock hooked as logging plugin");
+			lbconsumer = ((LogBlock) logblock).getConsumer();
+		}
+
+		Plugin prism = Bukkit.getPluginManager().getPlugin("Prism");
+		if (prism != null) {
+			log("[TAG] Prism hooked as logging plugin");
+			prismEnabled = true;
+		}
+
+		Plugin corep = Bukkit.getPluginManager().getPlugin("CoreProtect");
+		if (corep != null) {
+			log("[TAG] CoreProtect hooked as logging plugin");
+			coreprotect = ((CoreProtect) corep).getAPI();
+		}
+	}
+
+	public void setupWorldEdit() {
+		Plugin we = Bukkit.getPluginManager().getPlugin("WorldEdit");
+		if (we != null && we.isEnabled())
+			new WorldEdit().init();
+	}
+
+	public WorldEditPlugin getWorldEdit() {
+		PluginManager pm = getServer().getPluginManager();
+		Plugin wex = pm.getPlugin("WorldEdit");
+		return (WorldEditPlugin) wex;
+	}
+
 }

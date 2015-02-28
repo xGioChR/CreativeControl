@@ -13,14 +13,14 @@ import com.onarandombox.MultiverseCore.utils.MVPermissions;
  */
 public class CreativeMultiVerse implements CreativePermissionsInterface {
 
-    private MVPermissions ph;
+	private MVPermissions ph;
 
-    public CreativeMultiVerse(Plugin plugin) {
-        ph = ((MultiverseCore)plugin).getMVPerms();
-    }
+	public CreativeMultiVerse(Plugin plugin) {
+		ph = ((MultiverseCore) plugin).getMVPerms();
+	}
 
-    @Override
-    public boolean hasPerm(Player player, String node) {
-        return ph.hasPermission(player, node, false);
-    }
+	@Override
+	public boolean hasPerm(Player player, String node) {
+		return ph.hasPermission(player, node, false);
+	}
 }

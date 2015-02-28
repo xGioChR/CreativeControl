@@ -7,41 +7,38 @@ package me.FurH.CreativeControl.stack;
  */
 public class CreativeItemStack {
 
-    public int     type;
-    public int     data;
+	public int type;
+	public int data;
 
-    public CreativeItemStack(int type, int data) {
-        this.type = type;
-        this.data = data;
-    }
-    
-    @Override
-    public boolean equals(Object object) {
-        
-        if (!(object instanceof CreativeItemStack)) {
-            return false;
-        }
+	public CreativeItemStack(int type, int data) {
+		this.type = type;
+		this.data = data;
+	}
 
-        CreativeItemStack stack = (CreativeItemStack)object;
+	@Override
+	public boolean equals(Object object) {
 
-        if (stack.type != type) {
-            return false;
-        }
+		if (!(object instanceof CreativeItemStack))
+			return false;
 
-        if (data == -1) {
-            return true;
-        }
+		CreativeItemStack stack = (CreativeItemStack) object;
 
-        return data == stack.data;
-    }
+		if (stack.type != type)
+			return false;
 
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        
-        hash = 17 * hash + this.type;
-        hash = 17 * hash + this.data;
+		if (data == -1)
+			return true;
 
-        return hash;
-    }
+		return data == stack.data;
+	}
+
+	@Override
+	public int hashCode() {
+		int hash = 7;
+
+		hash = 17 * hash + type;
+		hash = 17 * hash + data;
+
+		return hash;
+	}
 }
