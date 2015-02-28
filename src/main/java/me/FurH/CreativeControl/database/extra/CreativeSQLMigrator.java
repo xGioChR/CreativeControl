@@ -53,7 +53,6 @@ public class CreativeSQLMigrator implements Runnable {
 		this.p = p;
 	}
 
-	@SuppressWarnings("static-access")
 	@Override
 	public void run() {
 		if (lock) {

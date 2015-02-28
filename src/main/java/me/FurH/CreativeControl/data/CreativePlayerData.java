@@ -345,7 +345,6 @@ public class CreativePlayerData {
 		return cache;
 	}
 
-	@SuppressWarnings("deprecation")
 	private boolean restore(Player p, CreativePlayerCache cache) {
 		if (cache == null)
 			cache = new CreativePlayerCache();

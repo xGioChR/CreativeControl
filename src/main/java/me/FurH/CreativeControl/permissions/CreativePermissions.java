@@ -16,60 +16,17 @@
 
 package me.FurH.CreativeControl.permissions;
 
-import me.FurH.Core.util.Communicator;
 import me.FurH.CreativeControl.CreativeControl;
-import me.FurH.CreativeControl.configuration.CreativeMainConfig;
-import net.milkbowl.vault.permission.Permission;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.RegisteredServiceProvider;
 
-/**
- *
- * @author FurmigaHumana
- */
 public class CreativePermissions {
 
-	private Permission vault;
-	private CreativePermissionsInterface handler;
-
-	public void setup() {
-		Communicator com = CreativeControl.plugin.getCommunicator();
-		PluginManager pm = Bukkit.getPluginManager();
-
-		Plugin plugin = pm.getPlugin("Vault");
-		if (plugin != null && plugin.isEnabled()) {
-			RegisteredServiceProvider<Permission> permissionProvider = Bukkit.getServicesManager().getRegistration(net.milkbowl.vault.permission.Permission.class);
-			if (permissionProvider != null) {
-				vault = permissionProvider.getProvider();
-				com.log("[TAG] Vault hooked as permissions plugin");
-			}
-		}
-
-		plugin = pm.getPlugin("Multiverse-Core");
-		if (plugin != null && plugin.isEnabled()) {
-			handler = new CreativeMultiVerse(plugin);
-			com.log("[TAG] MultiVerse hooked as permissions bridge!");
-			return;
-		}
-	}
 
 	public boolean hasPerm(Player player, String node) {
-		CreativeMainConfig config = CreativeControl.getMainConfig();
-
-		if (player.isOp() && config.perm_ophas)
+		if (player.isOp() && CreativeControl.getMainConfig().perm_ophas)
 			return true;
 
-		if (handler != null)
-			return handler.hasPerm(player, node);
-
 		return player.hasPermission(node);
-	}
-
-	public Permission getVault() {
-		return vault;
 	}
 }

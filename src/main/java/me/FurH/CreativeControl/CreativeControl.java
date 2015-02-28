@@ -187,8 +187,6 @@ public class CreativeControl extends CorePlugin {
 		setupWorldEdit();
 		setupLoggers();
 
-		permissions.setup();
-
 		Bukkit.getScheduler().runTaskAsynchronously(this, new Runnable() {
 			@Override
 			public void run() {

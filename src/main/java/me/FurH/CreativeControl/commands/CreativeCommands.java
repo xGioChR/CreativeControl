@@ -345,7 +345,6 @@ public class CreativeCommands implements CommandExecutor {
 	 * /cc check[0] status[1]
 	 * /cc check[0] player[1] <player>[2]
 	 */
-	@SuppressWarnings("deprecation")
 	public boolean checkCmd(CommandSender sender, Command cmd, String string, String[] args) {
 		CreativeControl plugin = CreativeControl.getPlugin();
 

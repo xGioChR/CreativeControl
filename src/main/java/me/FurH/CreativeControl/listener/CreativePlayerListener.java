@@ -17,8 +17,6 @@
 package me.FurH.CreativeControl.listener;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 
 import me.FurH.Core.cache.CoreHashSet;
 import me.FurH.Core.cache.CoreLRUCache;
@@ -33,14 +31,12 @@ import me.FurH.CreativeControl.configuration.CreativeMessages;
 import me.FurH.CreativeControl.configuration.CreativeWorldNodes;
 import me.FurH.CreativeControl.data.CreativePlayerData;
 import me.FurH.CreativeControl.data.friend.CreativePlayerFriends;
-import me.FurH.CreativeControl.database.CreativeSQLDatabase;
 import me.FurH.CreativeControl.manager.CreativeBlockData;
 import me.FurH.CreativeControl.manager.CreativeBlockManager;
 import me.FurH.CreativeControl.region.CreativeRegion;
 import me.FurH.CreativeControl.region.CreativeRegionManager;
 import me.FurH.CreativeControl.stack.CreativeItemStack;
 import me.FurH.CreativeControl.util.CreativeUtil;
-import net.milkbowl.vault.permission.Permission;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -104,7 +100,6 @@ public class CreativePlayerListener implements Listener {
 		Communicator com = plugin.getCommunicator();
 		CreativeMessages messages = CreativeControl.getMessages();
 		CreativeWorldNodes wconfig = CreativeControl.getWorldConfig().get(player.getWorld());
-		CreativeSQLDatabase db = CreativeControl.getDb();
 
 		if (config.data_glitch)
 			if (!newgm.equals(GameMode.CREATIVE) && !player.isOnGround())
@@ -127,67 +122,6 @@ public class CreativePlayerListener implements Listener {
 					return;
 				}
 			}
-
-		if (config.perm_enabled && !plugin.hasPerm(player, "Permission.Change")) {
-			Permission permissions = CreativeControl.getPermissions2().getVault();
-
-			if (permissions != null) {
-
-				if (newgm.equals(GameMode.CREATIVE)) {
-
-					if (config.perm_keep)
-						permissions.playerAddGroup(player, config.perm_creative);
-					else {
-
-						String[] groups = permissions.getPlayerGroups(player);
-
-						try {
-							db.saveOldGroups(player, permissions.getPlayerGroups(player));
-						} catch (Throwable ex) {
-							com.msg(player, "&4Failed to change gamemode, groups error.");
-							com.error(ex);
-							e.setCancelled(true);
-							return;
-						}
-
-						for (String group : groups)
-							permissions.playerRemoveGroup(player, group);
-
-						permissions.playerAddGroup(player, config.perm_creative);
-					}
-
-				} else if (config.perm_keep)
-					permissions.playerRemoveGroup(player, config.perm_creative);
-				else {
-
-					String[] current = permissions.getPlayerGroups(player);
-					String[] groups = null;
-
-					try {
-
-						groups = db.getOldGroup(player);
-
-					} catch (Throwable ex) {
-						com.msg(player, "&4Failed to change gamemode, groups error.");
-						com.error(ex);
-						e.setCancelled(true);
-						return;
-					}
-
-					if (groups != null) {
-
-						Arrays.sort(groups, Collections.reverseOrder());
-
-						for (String group : current)
-							permissions.playerRemoveGroup(player, group);
-
-						for (String old : groups)
-							permissions.playerAddGroup(player, old);
-					}
-				}
-			} else
-				com.log("The permissions function only works if Vault is installed!");
-		}
 
 		if (region != null)
 			if (!newgm.equals(region.gamemode) && !newgm.equals(wconfig.world_gamemode))
