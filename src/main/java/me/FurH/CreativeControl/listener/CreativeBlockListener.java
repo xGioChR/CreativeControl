@@ -55,6 +55,7 @@ import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.material.MaterialData;
 import org.bukkit.material.PistonBaseMaterial;
 
+import de.diddiz.LogBlock.Actor;
 import de.diddiz.LogBlock.Consumer;
 
 /**
@@ -560,10 +561,10 @@ public class CreativeBlockListener implements Listener {
     }
 
     private void log(Player p, Block b) {
-        Consumer                consumer   = CreativeControl.getLogBlock();
+        Consumer consumer   = CreativeControl.getLogBlock();
         
         if (consumer != null) {
-            consumer.queueBlockBreak(p.getName(), b.getState());
+            consumer.queueBlockBreak(Actor.actorFromEntity(p), b.getState());
         }
         
         if (CreativeControl.getPrism()) {

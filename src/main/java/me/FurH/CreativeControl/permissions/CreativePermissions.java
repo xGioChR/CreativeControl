@@ -55,12 +55,6 @@ public class CreativePermissions {
             com.log("[TAG] MultiVerse hooked as permissions bridge!");
             return;
         }
-        
-        plugin = pm.getPlugin("GroupManager");
-        if (plugin != null && plugin.isEnabled()) {
-            handler = new CreativeGroupManager(plugin);
-            com.log("[TAG] GroupManager hooked as permissions plugin");
-        }
     }
 
     public boolean hasPerm(Player player, String node) {
